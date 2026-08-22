@@ -57,7 +57,7 @@ from utils import base_url_host_matches, base_url_hostname, env_float, env_int
 
 logger = logging.getLogger(__name__)
 _OPENROUTER_PROVIDER_SORT_VALUES = {"throughput", "latency", "price"}
-_PROVIDER_STREAM_ERROR_FINISH_REASONS = {"error", "error_finish"}
+_PROVIDER_STREAM_ERROR_FINISH_REASONS = {"error", "error_finish", "network_error", "network-error"}
 _PROVIDER_STREAM_SSE_FIELDS = {"event", "data", "id", "retry"}
 _PROVIDER_STREAM_ERROR_TEXT_LIMIT = 4096
 
@@ -3364,6 +3364,20 @@ class _StreamingCall(StreamingWaitMonitor):
         if finish_reason is None and not content_parts and not reasoning_parts and not refusal_parts and not tool_calls_acc:
             raise EmptyStreamError(
                 "Provider returned an empty stream with no finish_reason (possible upstream error or malformed SSE response).")
+        # finish_reason="network_error"/"network-error" (observed on OpenCode Zen
+        # x-preview-f-free): the stream terminates cleanly with an error finish reason
+        # and often ZERO content. Raise so the bounded stream-retry machinery handles it
+        # like any transient provider drop.
+        _fr_text = str(finish_reason or "").strip().lower()
+        if (
+            _fr_text in ("network_error", "network-error")
+            and not content_parts
+            and not reasoning_parts
+            and not tool_calls_acc
+        ):
+            raise EmptyStreamError(
+                f"Provider stream ended with finish_reason={_fr_text} and no "
+                "content (transient upstream network failure).")
         if has_truncated_tool_args and finish_reason is None:
             # Partial args WITH finish_reason="length" is a real output cap; with NONE the
             # upstream dropped mid tool-call, and stamping "length" burns 3 useless retries.
