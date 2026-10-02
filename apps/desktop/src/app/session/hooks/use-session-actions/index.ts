@@ -67,6 +67,7 @@ import {
 import { $projectScope } from '@/store/project-scope'
 import { projectProfile, resolveNewSessionCwd } from '@/store/projects'
 import { clearAllPrompts } from '@/store/prompts'
+import { openRouteTile } from '@/store/route-tiles'
 import { clearStoredTranscriptReadOnly, markStoredTranscriptReadOnly } from '@/store/read-only-transcript'
 import {
   $activeSessionStoredIdRotation,
@@ -156,7 +157,7 @@ import type {
   UsageStats
 } from '@/types/hermes'
 
-import { navigateToWorkspacePage, NEW_CHAT_ROUTE, sessionRoute, SETTINGS_ROUTE } from '../../../routes'
+import { contributedRoutes, navigateToWorkspacePage, NEW_CHAT_ROUTE, sessionRoute, SETTINGS_ROUTE } from '../../../routes'
 import type { ClientSessionState, SidebarNavItem } from '../../../types'
 import {
   pinStoredSessionForOwner,
@@ -1048,6 +1049,15 @@ export function useSessionActions({
       }
 
       if (item.route) {
+        // Plugin pages (Kanban, …) open as closable tiles beside the live
+        // chat. Navigating the workspace to them hid the Bot Chat with no
+        // back path (#101593). Built-in rows (Capabilities/…) stay full-page.
+        if (contributedRoutes().some(route => route.path === item.route)) {
+          openRouteTile(item.route)
+
+          return
+        }
+
         navigateToWorkspacePage(navigate, item.route)
       }
     },
