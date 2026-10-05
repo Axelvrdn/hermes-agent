@@ -14,6 +14,7 @@ import contextlib
 import contextvars
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -118,6 +119,25 @@ def _cron_mirror_delivery_enabled(job: dict, cfg: Optional[dict] = None) -> bool
         return bool((cfg.get("cron", {}) or {}).get("mirror_delivery", False))
     except Exception:
         return False
+
+
+_DISCORD_CALENDAR_APPROVAL_RE = re.compile(
+    r"(?:^|\n)\[HERMES_DISCORD_CALENDAR_CONFIRM_V1:"
+    r"(?P<approval_id>REV-[A-Z0-9-]{1,64})\]\s*$"
+)
+
+
+def _extract_discord_calendar_confirmation(content: str) -> tuple[str, Optional[str]]:
+    """Remove the reserved final-line Discord calendar marker and return its opaque id.
+
+    The marker intentionally carries no event arguments, personal data, or executable text.  It
+    must be the final non-whitespace line so ordinary prose cannot accidentally create controls.
+    """
+    text = str(content or "")
+    match = _DISCORD_CALENDAR_APPROVAL_RE.search(text)
+    if not match:
+        return text, None
+    return text[:match.start()].rstrip(), match.group("approval_id")
 
 
 def _target_matches_origin(origin: dict, platform_name: str, chat_id: str,
@@ -1324,6 +1344,7 @@ class _TargetDelivery:
     in_channel_surface: bool
     inchannel_continuable: bool
     opened_thread_id: Optional[str]
+    discord_calendar_approval_id: Optional[str] = None
     live_adapter_ready: bool = False
     live_error: Optional[str] = None  # the live lane's own rejection string, e.g. "send_path_degraded"
 
@@ -1465,6 +1486,14 @@ def _live_route_metadata(t: _TargetDelivery) -> tuple[Optional[str], dict, dict]
     # Relay egress discriminators (scope_id / user_id) from the persisted origin: the adapter's caches are cold
     # after a restart. See cron/scheduler_delivery_origin.py.
     _origin.stamp_origin_discriminators(t, route_metadata, media_metadata)
+    if t.discord_calendar_approval_id:
+        route_metadata["discord_cron_authorization"] = {
+            "version": 1,
+            "approval_id": t.discord_calendar_approval_id,
+            "expected_user_id": str(t.origin_user_id),
+            "job_id": str(job.get("id") or ""),
+            "execution_id": str(job.get("execution_id") or ""),
+        }
     return route_thread_id, route_metadata, media_metadata
 
 
@@ -1843,7 +1872,7 @@ def _deliver_standalone(
 
 def _prepare_target_delivery(
     job: dict, target: dict, *, adapters, loop, config, notify_delivery: bool, mirror_enabled: bool,
-    mirror_text: str, delivery_errors: list,
+    mirror_text: str, delivery_errors: list, discord_calendar_approval_id: Optional[str] = None,
 ) -> Optional[_TargetDelivery]:
     """Per-target prologue of ``_deliver_result``: origin/mirror/in_channel gates, transport
     resolution, continuable-thread open. None (error noted in ``delivery_errors``) if unservable."""
@@ -1944,7 +1973,19 @@ def _prepare_target_delivery(
         origin=origin, origin_target=origin_target, origin_user_id=origin_user_id,
         is_dm_target=is_dm_target, mirror_text=mirror_text, mirror_this_target=mirror_this_target,
         in_channel_surface=in_channel_surface, inchannel_continuable=inchannel_continuable,
-        opened_thread_id=opened_thread_id, live_adapter_ready=live_adapter_ready)
+        opened_thread_id=opened_thread_id,
+        discord_calendar_approval_id=(
+            discord_calendar_approval_id
+            if (
+                platform_name.lower() == "discord"
+                and job.get("attach_to_session") is True
+                and origin_target
+                and origin_user_id
+                and live_adapter_ready
+            )
+            else None
+        ),
+        live_adapter_ready=live_adapter_ready)
 
 
 def _unresolved_delivery_outcome(job: dict, for_failure: bool) -> Optional[str]:
@@ -2005,6 +2046,10 @@ def _deliver_result(
         refreshed = get_job(job["id"]) or {}
         job["last_delivery_queued"] = refreshed.get("last_delivery_queued")
         return error
+
+    content, discord_calendar_approval_id = _extract_discord_calendar_confirmation(content)
+    if for_failure:
+        discord_calendar_approval_id = None
 
     from gateway.config import load_gateway_config
 
@@ -2100,7 +2145,8 @@ def _deliver_result(
         t = _prepare_target_delivery(
             job, target, adapters=adapters, loop=loop, config=config,
             notify_delivery=notify_delivery,
-            mirror_enabled=mirror_enabled, mirror_text=mirror_text, delivery_errors=delivery_errors)
+            mirror_enabled=mirror_enabled, mirror_text=mirror_text, delivery_errors=delivery_errors,
+            discord_calendar_approval_id=discord_calendar_approval_id)
         if t is None:
             continue
         target_errors: list = []

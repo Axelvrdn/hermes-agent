@@ -3333,13 +3333,27 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             )
             message_ids = []
             reference = self._reply_reference_for_send(reply_to, channel)
+            approval = (metadata or {}).get("discord_cron_authorization") or {}
+            approval_id = str(approval.get("approval_id") or "")
+            expected_user_id = str(approval.get("expected_user_id") or "")
+            approval_view = None
+            if approval_id and expected_user_id:
+                approval_view = CronCalendarApprovalView(
+                    adapter=self,
+                    approval_id=approval_id,
+                    expected_user_id=expected_user_id,
+                    allowed_user_ids=self._allowed_user_ids,
+                    allowed_role_ids=self._allowed_role_ids,
+                )
             for i, chunk in enumerate(chunks):
                 if self._reply_to_mode == "all":
                     chunk_reference = reference
                 else:  # "first" (default) or "off"
                     chunk_reference = reference if i == 0 else None
+                chunk_view = approval_view if approval_view is not None and i == len(chunks) - 1 else None
                 try:
-                    msg = await channel.send(content=chunk, reference=chunk_reference)
+                    msg = await channel.send(
+                        content=chunk, reference=chunk_reference, view=chunk_view)
                 except Exception as e:
                     if chunk_reference is not None and self._is_reply_reference_rejected(e):
                         logger.warning(
@@ -3347,10 +3361,12 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                             self.name, reply_to,
                         )
                         reference = None
-                        msg = await channel.send(content=chunk, reference=None)
+                        msg = await channel.send(content=chunk, reference=None, view=chunk_view)
                     else:
                         raise
                 message_ids.append(str(msg.id))
+                if chunk_view is not None:
+                    approval_view._message = msg
             # Track the last sent message for history backfill (skips the full history scan).
             if message_ids:
                 _target_id = thread_id or chat_id
@@ -4893,6 +4909,13 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             auto_skill=self._resolve_channel_skills(channel_id, parent_id or None),
         )
 
+    async def _dispatch_cron_calendar_authorization(
+        self, interaction: discord.Interaction, approval_id: str, decision: str,
+    ) -> None:
+        """Inject a cron calendar decision as a normal authenticated inbound Discord message."""
+        prefix = "✅ AUTORISER" if decision == "authorize" else "❌ REFUSER"
+        await self.handle_message(self._build_slash_event(interaction, f"{prefix} {approval_id}"))
+
     # --- Thread creation helpers ---
 
     async def _handle_thread_create_slash(
@@ -6399,7 +6422,7 @@ def _resolve_exec_approval_admin_gate(config_extra: Optional[dict]) -> tuple[boo
 def _define_discord_view_classes() -> None:
     """Register Discord UI view classes as module globals.
     Called at module load and after a lazy install so the classes exist whenever DISCORD_AVAILABLE."""
-    global ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView, ClarifyChoiceView, ChoicePickerView
+    global ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView, ClarifyChoiceView, ChoicePickerView, CronCalendarApprovalView
 
     class _HermesView(discord.ui.View):
         """Shared plumbing for Hermes component views: allowlist auth, single-use
@@ -6480,6 +6503,64 @@ def _define_discord_view_classes() -> None:
             self.resolved = True
             self._disable_all()
             await self._expire_embed(t("platform.discord.prompt.expired_footer"))
+
+    class CronCalendarApprovalView(_HermesView):
+        """Non-blocking Authorize/Refuse controls for a continuable Discord cron brief."""
+
+        def __init__(
+            self, adapter, approval_id: str, expected_user_id: str,
+            allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
+        ):
+            super().__init__(allowed_user_ids, allowed_role_ids, timeout=7 * 24 * 60 * 60)
+            self.adapter = adapter
+            self.approval_id = approval_id
+            self.expected_user_id = str(expected_user_id)
+            self._decision_lock = asyncio.Lock()
+
+        def _check_auth(self, interaction: discord.Interaction) -> bool:
+            user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")
+            return user_id == self.expected_user_id and super()._check_auth(interaction)
+
+        async def _resolve(self, interaction: discord.Interaction, decision: str) -> None:
+            async with self._decision_lock:
+                if not await self._gate(
+                    interaction,
+                    resolved_msg="Cette demande a déjà été traitée.",
+                    unauth_msg=_unauthorized(),
+                ):
+                    return
+                self.resolved = True
+                await interaction.response.defer(ephemeral=True)
+                try:
+                    await self.adapter._dispatch_cron_calendar_authorization(
+                        interaction, self.approval_id, decision)
+                except Exception:
+                    self.resolved = False
+                    logger.exception(
+                        "Failed to dispatch Discord cron calendar decision %s", self.approval_id)
+                    with suppress(Exception):
+                        await interaction.followup.send(
+                            "La décision n'a pas pu être transmise. Réessaie.", ephemeral=True)
+                    return
+                self._disable_all()
+                with suppress(Exception):
+                    await interaction.message.edit(view=self)
+                with suppress(Exception):
+                    await interaction.followup.send("Décision transmise.", ephemeral=True)
+
+        @discord.ui.button(
+            label="Autoriser", style=discord.ButtonStyle.green,
+            custom_id="hermes:cron-calendar:authorize",
+        )
+        async def authorize(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await self._resolve(interaction, "authorize")
+
+        @discord.ui.button(
+            label="Refuser", style=discord.ButtonStyle.red,
+            custom_id="hermes:cron-calendar:refuse",
+        )
+        async def refuse(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await self._resolve(interaction, "refuse")
 
     class ExecApprovalView(_HermesView):
         """Allow Once / Allow Session / Always Allow / Deny buttons for a dangerous command.
