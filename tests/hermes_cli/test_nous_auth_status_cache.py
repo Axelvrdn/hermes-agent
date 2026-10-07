@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 from unittest.mock import patch
 
+
 def _seed_auth_file(tmp_path):
     """Drop a placeholder auth.json into the test HERMES_HOME.
 

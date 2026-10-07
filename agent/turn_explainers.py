@@ -10,11 +10,14 @@ from typing import Any, Dict, Optional
 
 from agent.i18n import t
 from agent.tool_dispatch_helpers import (
-    _extract_error_preview, _extract_file_mutation_targets, _extract_landed_file_mutation_paths
+    _extract_error_preview,
+    _extract_file_mutation_targets,
+    _extract_landed_file_mutation_paths,
 )
 from agent.tool_result_classification import (
-    FILE_MUTATING_TOOL_NAMES as _FILE_MUTATING_TOOLS, file_mutation_result_landed
+    FILE_MUTATING_TOOL_NAMES as _FILE_MUTATING_TOOLS,
 )
+from agent.tool_result_classification import file_mutation_result_landed
 
 # One text for "the model produced nothing after retries" on every surface (CLI explainer,
 # gateway ``(empty)`` rewrite, desktop). English source kept as a constant for importers; surfaces

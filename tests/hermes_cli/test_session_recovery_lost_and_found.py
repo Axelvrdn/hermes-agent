@@ -16,13 +16,12 @@ from pathlib import Path
 
 import pytest
 
-from hermes_state import SessionDB
-from hermes_cli import session_recovery
-from hermes_cli import session_schema_history
+from hermes_cli import session_recovery, session_schema_history
 from hermes_cli.session_lost_and_found import (
     STUB_TITLE_PREFIX,
     _cli_recover_attempts,
     classify_lost_and_found_row,
+    find_sqlite3_cli,
     map_lost_and_found_rows,
     rebuild_fts_indexes,
     stub_missing_parent_sessions,
@@ -33,14 +32,11 @@ from hermes_cli.session_recovery import (
     _probe_populated_edge,
     recover_session_database,
 )
-
+from hermes_state import SessionDB
 from tests.hermes_cli.test_session_recovery import (
     _btree_leaf_pages,
     _make_page_spanning_source,
 )
-
-
-from hermes_cli.session_lost_and_found import find_sqlite3_cli
 
 # .recover needs a sqlite3 shell built with sqlite_dbpage — PATH presence
 # alone is not enough (Ubuntu CI ships a build without it).

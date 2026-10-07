@@ -1,7 +1,7 @@
 """Tests for the Hermes plugin system (hermes_cli.plugins)."""
 
-import logging
 import json
+import logging
 import sys
 import threading
 import types
@@ -9,28 +9,27 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-import hermes_yaml as yaml
 
-from hermes_cli.plugins import (
-    ENTRY_POINTS_GROUP,
-    PluginContext,
-    PluginManager,
-    PluginManifest,
-    _dispatch_pre_tool_call_hooks,
-    get_pre_tool_call_block_message,
-    get_pre_verify_continue_message,
-    has_middleware,
-    resolve_plugin_command_result,
-    _portable_skill_namespace,
-)
-from hermes_cli.relay_plugin_cutover import RELAY_PLUGINS_CONFIG_ENV
+import hermes_yaml as yaml
 from hermes_cli.middleware import (
     apply_llm_request_middleware,
     apply_tool_request_middleware,
     run_llm_execution_middleware,
     run_tool_execution_middleware,
 )
-
+from hermes_cli.plugins import (
+    ENTRY_POINTS_GROUP,
+    PluginContext,
+    PluginManager,
+    PluginManifest,
+    _dispatch_pre_tool_call_hooks,
+    _portable_skill_namespace,
+    get_pre_tool_call_block_message,
+    get_pre_verify_continue_message,
+    has_middleware,
+    resolve_plugin_command_result,
+)
+from hermes_cli.relay_plugin_cutover import RELAY_PLUGINS_CONFIG_ENV
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -157,8 +156,8 @@ class TestPluginDiscovery:
     def test_enabled_portable_plugin_registers_components(
         self, tmp_path, monkeypatch
     ):
-        from hermes_cli.agent_plugins import MCP_SCHEMA_V1, PLUGIN_SCHEMA_V1
         from hermes_cli import plugins as plugins_mod
+        from hermes_cli.agent_plugins import MCP_SCHEMA_V1, PLUGIN_SCHEMA_V1
 
         home = tmp_path / "home"
         plugin = home / "plugins" / "portable"
@@ -234,8 +233,8 @@ class TestPluginDiscovery:
     def test_two_portable_plugins_with_the_same_server_name_do_not_both_load(self, tmp_path, monkeypatch):
         """Readable server names can clash where the old digest could not: the second plugin's server
         is skipped with a warning naming the first, and the first's config is the one served."""
-        from hermes_cli.agent_plugins import MCP_SCHEMA_V1, PLUGIN_SCHEMA_V1
         from hermes_cli import plugins as plugins_mod
+        from hermes_cli.agent_plugins import MCP_SCHEMA_V1, PLUGIN_SCHEMA_V1
 
         home = tmp_path / ".hermes"
         # Two unrelated plugins both call their server "shared": one readable name, one owner.
@@ -263,8 +262,8 @@ class TestPluginDiscovery:
         assert servers["shared"]["command"] in {"python-a", "python-b"}
 
     def test_disabled_portable_plugin_registers_nothing(self, tmp_path, monkeypatch):
-        from hermes_cli.agent_plugins import PLUGIN_SCHEMA_V1
         from hermes_cli import plugins as plugins_mod
+        from hermes_cli.agent_plugins import PLUGIN_SCHEMA_V1
 
         home = tmp_path / "home"
         plugin = home / "plugins" / "portable"
@@ -1653,8 +1652,8 @@ class TestForceReloadSymmetry:
         manager must leave profile B's shell hook registered exactly once —
         not duplicated, not dropped (#92682 review).
         """
-        import hermes_cli.plugins as plugins_mod
         import agent.shell_hooks as shell_hooks_mod
+        import hermes_cli.plugins as plugins_mod
 
         cfg = {"hooks": {"on_session_start": [{"command": "/bin/true"}]}}
         monkeypatch.setenv("HERMES_ACCEPT_HOOKS", "1")
@@ -2009,8 +2008,8 @@ class TestThreadToolWhitelist:
 
     def test_allowed_tool_passes_through_to_hooks(self, monkeypatch):
         from hermes_cli.plugins import (
-            set_thread_tool_whitelist,
             clear_thread_tool_whitelist,
+            set_thread_tool_whitelist,
         )
 
         monkeypatch.setattr(
@@ -2026,8 +2025,8 @@ class TestThreadToolWhitelist:
 
     def test_clear_restores_unrestricted_behavior(self, monkeypatch):
         from hermes_cli.plugins import (
-            set_thread_tool_whitelist,
             clear_thread_tool_whitelist,
+            set_thread_tool_whitelist,
         )
 
         monkeypatch.setattr(
@@ -2045,8 +2044,8 @@ class TestThreadToolWhitelist:
         import threading
 
         from hermes_cli.plugins import (
-            set_thread_tool_whitelist,
             clear_thread_tool_whitelist,
+            set_thread_tool_whitelist,
         )
 
         monkeypatch.setattr(
@@ -2089,8 +2088,8 @@ class TestPluginContext:
         enabled third-party plugin could replace a built-in tool (e.g.
         ``shell_exec``, ``write_file``) without the operator's knowledge.
         """
-        from tools.registry import registry
         from hermes_cli.plugins import PluginToolOverrideError
+        from tools.registry import registry
 
         registry.register(
             name="gated_override_target",
@@ -2416,8 +2415,11 @@ class TestPluginCommands:
         NOT touch ``os.environ``. A regression test that only flips the
         ``HERMES_HOME`` env var never exercises this path.
         """
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
         import hermes_cli.plugins as plugins_mod
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         def write_engine_plugin(home: Path) -> None:
             _make_plugin_dir(
@@ -2500,8 +2502,11 @@ class TestPluginCommands:
         leaking the previous profile's module-level state (and code) into
         the new profile.
         """
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
         import hermes_cli.plugins as plugins_mod
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         def write_stateful_plugin(home: Path, marker: str) -> None:
             plugin_dir = (home / "plugins" / "stateful-plugin")

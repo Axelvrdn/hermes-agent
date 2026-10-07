@@ -10,9 +10,9 @@ session's own profile would build with; the launch profile's session still sees 
 
 from __future__ import annotations
 
-import hermes_yaml as yaml
 import pytest
 
+import hermes_yaml as yaml
 import tui_gateway.server as server
 from tui_gateway.methods_profiles import _save_toolset_pin
 

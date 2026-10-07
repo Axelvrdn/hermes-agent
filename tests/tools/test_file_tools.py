@@ -549,8 +549,8 @@ class TestSilentFileMisplacementE2E:
     """
 
     def test_relative_write_after_env_cleanup_lands_in_user_cwd(self, tmp_path, monkeypatch):
-        import tools.terminal_tool as tt
         import tools.file_tools as ft
+        import tools.terminal_tool as tt
 
         project = tmp_path / "project"
         config_default = tmp_path / "config_default"
@@ -604,8 +604,8 @@ class TestDedupInvalidationTaskResolution:
     """
 
     def test_invalidate_evicts_the_task_resolved_key(self, tmp_path, monkeypatch):
-        import tools.terminal_tool as tt
         import tools.file_tools as ft
+        import tools.terminal_tool as tt
 
         workspace = tmp_path / "workspace"
         proc = tmp_path / "proc"
@@ -804,8 +804,12 @@ class TestNotFoundCache:
     def test_not_found_ttl_expires(self):
         # A cache entry older than _NOT_FOUND_TTL_SECONDS must be discarded.
         from tools.file_tools_read_tracking import (
-            _NOT_FOUND_TTL_SECONDS, _check_not_found_cache, _read_tracker, _read_tracker_lock,
-            _record_not_found)
+            _NOT_FOUND_TTL_SECONDS,
+            _check_not_found_cache,
+            _read_tracker,
+            _read_tracker_lock,
+            _record_not_found,
+        )
 
         tid = "neg-cache-ttl-6"
         _read_tracker.pop(tid, None)
@@ -830,7 +834,11 @@ class TestNotFoundCache:
         by a terminal command or any external process, NOT write_file_tool —
         must be served for real on the next read. The agent pattern
         'check for file → create it → read it' breaks otherwise."""
-        from tools.file_tools_read_tracking import _check_not_found_cache, _record_not_found, _read_tracker
+        from tools.file_tools_read_tracking import (
+            _check_not_found_cache,
+            _read_tracker,
+            _record_not_found,
+        )
 
         tid = "neg-cache-oob-read"
         _read_tracker.pop(tid, None)
@@ -854,7 +862,11 @@ class TestNotFoundCache:
     def test_out_of_band_creation_defeats_cached_search_miss(self, tmp_path):
         """Same contract for search roots: creating a file under a
         previously-missing directory must defeat the cached 'Path not found'."""
-        from tools.file_tools_read_tracking import _check_not_found_cache, _record_not_found, _read_tracker
+        from tools.file_tools_read_tracking import (
+            _check_not_found_cache,
+            _read_tracker,
+            _record_not_found,
+        )
 
         tid = "neg-cache-oob-search"
         _read_tracker.pop(tid, None)
@@ -873,8 +885,12 @@ class TestNotFoundCache:
     def test_notify_other_tool_call_clears_not_found(self):
         """Belt-and-suspenders: any non-read tool (terminal etc.) invalidates
         the task's negative cache via the dispatcher's notify hook."""
-        from tools.file_tools_read_tracking import _check_not_found_cache, _record_not_found, _read_tracker
-        from tools.file_tools_read_tracking import notify_other_tool_call
+        from tools.file_tools_read_tracking import (
+            _check_not_found_cache,
+            _read_tracker,
+            _record_not_found,
+            notify_other_tool_call,
+        )
 
         tid = "neg-cache-notify"
         _read_tracker.pop(tid, None)

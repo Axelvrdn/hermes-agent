@@ -7,8 +7,8 @@ from ``hermes_cli.config`` (get_env_value / save_env_value / remove_env_value)
 and ``hermes_cli.cli_output`` (prompt / prompt_yes_no / print_*), so we patch
 those source modules.
 """
-import hermes_cli.config as config_mod
 import hermes_cli.cli_output as cli_output_mod
+import hermes_cli.config as config_mod
 from plugins.platforms.slack.adapter import interactive_setup
 
 

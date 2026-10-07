@@ -1,7 +1,7 @@
 """Recovery hints must name the user-visible notebook, not its byte-transport copy."""
 import json
-from pathlib import Path
 import shlex
+from pathlib import Path
 
 import pytest
 

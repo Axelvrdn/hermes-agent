@@ -16,14 +16,30 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from agent.model_metadata import CHARS_PER_TOKEN
-from tools.tts_command_provider import (
-    _command_output_format, _command_timeout, _is_command_provider_config as _is_command_stt_provider_config,
-    _named_provider_config, _resolve_command_config, command_env_passthrough as _command_stt_env_passthrough,
-    command_failure_detail, render_command_template as _render_command_stt_template,
-    run_command_provider as _run_command_stt)
 from tools.transcription_audio import _transcode_audio_for_stt
 from tools.transcription_common import (
-    BUILTIN_STT_PROVIDERS, _error_result, _log_prompt_unsupported, _ok_result)
+    BUILTIN_STT_PROVIDERS,
+    _error_result,
+    _log_prompt_unsupported,
+    _ok_result,
+)
+from tools.tts_command_provider import (
+    _command_output_format,
+    _command_timeout,
+    _named_provider_config,
+    _resolve_command_config,
+    command_failure_detail,
+)
+from tools.tts_command_provider import (
+    _is_command_provider_config as _is_command_stt_provider_config,
+)
+from tools.tts_command_provider import (
+    command_env_passthrough as _command_stt_env_passthrough,
+)
+from tools.tts_command_provider import (
+    render_command_template as _render_command_stt_template,
+)
+from tools.tts_command_provider import run_command_provider as _run_command_stt
 from utils import is_truthy_value
 
 # Log-record parity with the origin module.

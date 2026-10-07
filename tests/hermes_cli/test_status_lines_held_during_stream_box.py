@@ -16,8 +16,8 @@ def _plain(s: str) -> str:
 
 @pytest.fixture
 def cli_stub(monkeypatch):
-    from cli import HermesCLI
     import cli as climod
+    from cli import HermesCLI
 
     cli = HermesCLI.__new__(HermesCLI)
     cli.show_reasoning = False
@@ -84,6 +84,7 @@ def test_interrupted_reply_panel_after_tool_call_boundary(cli_stub, monkeypatch,
     """#65666: an interrupted reply streamed before a tool-call boundary reset per-segment stream
     state must not be re-rendered as a Panel, but an unstreamed interrupt status message still is."""
     from types import SimpleNamespace
+
     import cli as climod
 
     cli, _ = cli_stub
@@ -104,6 +105,7 @@ def test_unstreamed_final_reply_after_streamed_segment_still_prints_panel(cli_st
     A turn that streamed text A, crossed a tool boundary, then returned an unstreamed final B must
     still render B."""
     from types import SimpleNamespace
+
     import cli as climod
 
     cli, _ = cli_stub

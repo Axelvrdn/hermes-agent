@@ -28,9 +28,8 @@ from copy import deepcopy
 
 from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
-from lxml import etree
-
 from docx_common import iter_part_roots
+from lxml import etree
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 COMMENTS_CT = ("application/vnd.openxmlformats-officedocument"

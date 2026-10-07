@@ -7,13 +7,14 @@ for GatewayRunner (mixin bound via the MRO).
 
 from __future__ import annotations
 
-import logging
-from typing import TYPE_CHECKING
 import asyncio
 import contextlib
 import json
+import logging
 import os
 import time
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+
 from agent.i18n import DEFAULT_LANGUAGE, t
 from agent.session_activity import format_iteration_progress
 from gateway.config import Platform
@@ -21,7 +22,6 @@ from gateway.platforms.base import EphemeralReply
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.session import SessionSource
 from gateway.whatsapp_identity import canonical_whatsapp_identifier
-from typing import Any, Dict, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:  # string annotations only; never imported at runtime (cycle)
     from gateway.run import GatewayRunner  # noqa: F401
@@ -457,7 +457,12 @@ class GatewayBusySessionMixin:
         }
         origin = {key: value for key, value in origin.items() if value not in (None, "")}
         from gateway.run import _load_gateway_config
-        from gateway.session import _hash_chat_id, _hash_id, _hash_sender_id, _should_redact_pii
+        from gateway.session import (
+            _hash_chat_id,
+            _hash_id,
+            _hash_sender_id,
+            _should_redact_pii,
+        )
 
         # Adapter busy callbacks can bypass the routed normal-message scope.
         with self._profile_scope_for_source(source):
@@ -706,8 +711,8 @@ class GatewayBusySessionMixin:
 
     def _busy_steer_ack_enabled(self, event: MessageEvent, session_key: str) -> bool:
         # Some mobile chat setups want silent steering — keep the behavior, drop the bubble.
-        from gateway.run import _load_gateway_config, _platform_config_key
         from gateway.display_config import resolve_display_setting
+        from gateway.run import _load_gateway_config, _platform_config_key
         steer_ack_env = os.environ.get("HERMES_GATEWAY_BUSY_STEER_ACK_ENABLED")
         if steer_ack_env is not None:
             steer_ack_enabled = steer_ack_env.strip().lower() in {"1", "true", "yes", "on"}
@@ -731,10 +736,13 @@ class GatewayBusySessionMixin:
         is_steer_mode: bool, is_queue_mode: bool, is_redirect_mode: bool,
         demoted_for_subagents: bool, demoted_for_compression: bool,
     ) -> str:
-        from gateway.run import (
-            _AGENT_PENDING_SENTINEL, _hermes_home, _load_gateway_config, _platform_config_key
-        )
         from gateway.display_config import resolve_display_setting
+        from gateway.run import (
+            _AGENT_PENDING_SENTINEL,
+            _hermes_home,
+            _load_gateway_config,
+            _platform_config_key,
+        )
 
         # Terse by default; iteration/tool detail opts in via display.platforms.<p>.busy_ack_detail.
         status_parts = []
@@ -784,7 +792,12 @@ class GatewayBusySessionMixin:
 
         # One-time onboarding hint about the queue/interrupt knob (flag persisted to config.yaml).
         try:
-            from agent.onboarding import (BUSY_INPUT_FLAG, busy_input_hint_gateway, is_seen, mark_seen)
+            from agent.onboarding import (
+                BUSY_INPUT_FLAG,
+                busy_input_hint_gateway,
+                is_seen,
+                mark_seen,
+            )
             if not is_seen(_load_gateway_config(), BUSY_INPUT_FLAG):
                 _hint_mode = (
                     "steer" if is_steer_mode

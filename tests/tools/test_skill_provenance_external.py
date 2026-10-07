@@ -93,6 +93,7 @@ class TestLearningGraphExcludesExternal:
         is why it masqueraded as a runner/env-dependence (run_tests.sh vs bare pytest) rather
         than the scan-order bug it was."""
         from pathlib import Path
+
         from agent import learning_graph
         _write_local_skill(external_home, "my-local")
         real_rglob = Path.rglob
@@ -111,6 +112,7 @@ class TestLearningGraphExcludesExternal:
 
 def _patched_usage(data):
     from unittest.mock import patch
+
     from agent import learning_graph
     return patch.object(learning_graph, "_load_usage", lambda: data)
 
@@ -132,8 +134,8 @@ class TestWebRouterProvenanceTwin:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
         c = TestClient(app)

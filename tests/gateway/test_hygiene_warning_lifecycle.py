@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
+
 from hermes_state import SessionDB
 from tests.gateway.test_session_hygiene import _make_cooldown_runner
 

@@ -13,7 +13,6 @@ import pytest
 
 from gateway.config import PlatformConfig
 
-
 # ---------------------------------------------------------------------------
 # Mock the telegram package if it's not installed
 # ---------------------------------------------------------------------------
@@ -23,7 +22,6 @@ from plugins.platforms.telegram.adapter import (  # noqa: E402
     _strip_mdv2,
     _wrap_markdown_tables,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

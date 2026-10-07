@@ -1,7 +1,7 @@
 """Canary policy on real Git refs; GitHub publication stays an inert boundary."""
+import subprocess
 from datetime import datetime, timezone
 from types import SimpleNamespace
-import subprocess
 
 import pytest
 

@@ -12,8 +12,8 @@ from typing import Any
 
 import pytest
 
-from hermes_cli import lifecycle, plugins
 from agent import relay_runtime
+from hermes_cli import lifecycle, plugins
 from hermes_cli.observability import relay_shared_metrics
 from hermes_cli.plugins import PluginManager
 
@@ -816,10 +816,10 @@ def test_real_binding_correlates_plugin_approval_denial_to_tool_metric(
     tmp_path,
     monkeypatch,
 ):
+    import tools.approval_context as approval_context
+    import tools.approval_prompt as approval_prompt
     from hermes_cli.observability.shared_metrics import SharedMetricsStore
     from tools import approval
-    import tools.approval_prompt as approval_prompt
-    import tools.approval_context as approval_context
 
     assert real_binding_runtime._native is not None
     base = {
@@ -2567,7 +2567,11 @@ def test_task_ends_do_not_wait_on_the_process_wide_flush_barrier(parked_flush, t
 def test_background_flush_runs_under_the_finishing_turns_profile(
     direct_runtime, tmp_path, monkeypatch
 ):
-    from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
+    from hermes_constants import (
+        get_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
 
     seen: list[Any] = []
     monkeypatch.setattr(
@@ -2932,7 +2936,9 @@ def test_milestone_install_age_is_the_subscriber_profile_not_the_relay_thread(tm
     import time
 
     from hermes_cli.observability.shared_metrics import SharedMetricsStore
-    from hermes_cli.observability.shared_metrics_subscriber import SharedMetricsSubscriber
+    from hermes_cli.observability.shared_metrics_subscriber import (
+        SharedMetricsSubscriber,
+    )
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     launch, other = tmp_path / "A", tmp_path / "B"

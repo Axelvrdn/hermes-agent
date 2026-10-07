@@ -16,7 +16,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
-
 PROMPT_CANARY = "relay-smoke-sensitive-prompt"
 MODEL_CANARY = "gpt-relay-smoke-sensitive-model"
 RESPONSE_CANARY = "relay-smoke-sensitive-response"

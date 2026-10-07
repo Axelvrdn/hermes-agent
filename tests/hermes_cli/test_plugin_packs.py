@@ -10,12 +10,11 @@ import json
 from unittest import mock
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.plugin_packs import (
     PackError,
     ResolvedPackPlugin,
-    _sanitized_entry_config as real_sanitized_entry_config,
     cmd_pack_install,
     export_pack,
     install_pack_plugins,
@@ -23,6 +22,9 @@ from hermes_cli.plugin_packs import (
     parse_pack,
     resolve_pack_plugins,
     validate_config_seed,
+)
+from hermes_cli.plugin_packs import (
+    _sanitized_entry_config as real_sanitized_entry_config,
 )
 
 SHA_A = "a" * 40

@@ -7,11 +7,15 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from hermes_state_common import (
-    AUTO_VACUUM_MIN_FREELIST_RATIO, _id_chunks, _non_continuation_child_sql, _placeholders, _sql_session_last_active,
-    escape_like as _escape_like
-)
 from hermes_startup_watchdog import report_startup_progress
+from hermes_state_common import (
+    AUTO_VACUUM_MIN_FREELIST_RATIO,
+    _id_chunks,
+    _non_continuation_child_sql,
+    _placeholders,
+    _sql_session_last_active,
+)
+from hermes_state_common import escape_like as _escape_like
 
 # caplog tests pin the "hermes_state" logger name.
 logger = logging.getLogger("hermes_state")
@@ -441,7 +445,10 @@ class SessionMaintenanceMixin:
         ``request_dump_*``) for pruned sessions are removed as part of the same sweep (issue #3015).
         Messaging and UI sources are never touched here. See #54189.
         """
-        from hermes_state_repair import _release_auto_maintenance_lock, _try_acquire_auto_maintenance_lock
+        from hermes_state_repair import (
+            _release_auto_maintenance_lock,
+            _try_acquire_auto_maintenance_lock,
+        )
         result: Dict[str, Any] = {"skipped": False, "pruned": 0, "closed": 0, "vacuumed": False}
         if retention_days is None or retention_days < 0:
             # A negative retention would build a future cutoff and match every ended
@@ -491,7 +498,9 @@ class SessionMaintenanceMixin:
                 # just as much a holder as another process would be.
                 # Automatic maintenance only ever SKIPS — a turn is never refused over housekeeping.
                 from hermes_state_holders import (
-                    foreign_state_db_holders, in_process_state_db_holders)
+                    foreign_state_db_holders,
+                    in_process_state_db_holders,
+                )
                 holders = (foreign_state_db_holders(self.db_path)
                            + in_process_state_db_holders(self.db_path, exclude=self))
                 if holders:

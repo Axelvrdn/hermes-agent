@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import contextvars
-from contextlib import contextmanager
 import faulthandler
 import logging
 import os
@@ -24,6 +23,7 @@ import subprocess
 import sys
 import threading
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Optional, Protocol
 

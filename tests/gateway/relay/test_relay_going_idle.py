@@ -9,14 +9,14 @@ close), and the RelayAdapter emitting going_idle from its existing drain
 
 from __future__ import annotations
 
-import logging
 import asyncio
 import json
+import logging
 
 import pytest
 import pytest_asyncio
 
-from gateway.relay.ws_transport import WebSocketRelayTransport, WEBSOCKETS_AVAILABLE
+from gateway.relay.ws_transport import WEBSOCKETS_AVAILABLE, WebSocketRelayTransport
 
 pytestmark = pytest.mark.skipif(not WEBSOCKETS_AVAILABLE, reason="websockets not installed")
 

@@ -7,8 +7,8 @@ The interactive_setup wizard lazy-imports its CLI helpers from
 the wizard runs without provisioning dependencies. Covers the home-channel
 clear-on-blank behavior added in the follow-up to PR #58421.
 """
-import hermes_cli.config as config_mod
 import hermes_cli.cli_output as cli_output_mod
+import hermes_cli.config as config_mod
 import pm as pm_mod
 from plugins.platforms.matrix.adapter import interactive_setup
 

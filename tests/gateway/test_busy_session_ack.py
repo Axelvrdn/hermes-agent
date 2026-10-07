@@ -3,15 +3,15 @@
 Verifies that users get an immediate status response instead of total silence
 when the agent is working on a task. See PR fix for the @Lonely__MH report.
 """
-import time
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
-
 # ---------------------------------------------------------------------------
 # Minimal stubs so we can import gateway code without heavy deps
 # ---------------------------------------------------------------------------
-import sys, types
+import sys
+import time
+import types
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 _tg = types.ModuleType("telegram")
 _tg.constants = types.ModuleType("telegram.constants")
@@ -30,7 +30,6 @@ from gateway.platforms.base import (
     build_session_key,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -55,7 +54,7 @@ def _make_event(text="hello", chat_id="123", platform_val="telegram"):
 
 def _make_runner():
     """Build a minimal GatewayRunner-like object for testing."""
-    from gateway.run import GatewayRunner, _AGENT_PENDING_SENTINEL
+    from gateway.run import _AGENT_PENDING_SENTINEL, GatewayRunner
 
     runner = object.__new__(GatewayRunner)
     runner._running_agents = {}
@@ -480,6 +479,7 @@ class TestLongRunningNotificationOwnership:
         in flight must not be followed by a fresh "Working" send when that edit fails (#10990)."""
         import asyncio
         from types import SimpleNamespace
+
         from gateway.run import GatewayRunner
         from gateway.turn_context import TurnContext
 

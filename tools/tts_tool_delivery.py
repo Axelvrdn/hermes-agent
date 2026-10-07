@@ -23,8 +23,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from hermes_cli._subprocess_compat import windows_hide_flags
 from tools.tts_command_provider import (
-    BUILTIN_TTS_PROVIDERS, DEFAULT_COMMAND_TTS_MAX_TEXT_LENGTH, _get_named_provider_config,
-    _is_command_provider_config)
+    BUILTIN_TTS_PROVIDERS,
+    DEFAULT_COMMAND_TTS_MAX_TEXT_LENGTH,
+    _get_named_provider_config,
+    _is_command_provider_config,
+)
 
 logger = logging.getLogger("tools.tts_tool")
 
@@ -84,7 +87,9 @@ def _resolve_max_text_length(provider: Optional[str], tts_config: Optional[Dict[
     if override:
         return override
     if key == "elevenlabs":
-        from tools.tts_tool_providers import DEFAULT_ELEVENLABS_MODEL_ID  # providers imports this module
+        from tools.tts_tool_providers import (
+            DEFAULT_ELEVENLABS_MODEL_ID,  # providers imports this module
+        )
         model_id = prov_cfg.get("model_id") or DEFAULT_ELEVENLABS_MODEL_ID
         mapped = ELEVENLABS_MODEL_MAX_TEXT_LENGTH.get(str(model_id).strip())
         if mapped:

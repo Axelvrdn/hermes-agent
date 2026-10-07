@@ -95,9 +95,14 @@ def test_local_guard_unreadable_start_time_live_leader_is_best_effort(monkeypatc
 # --- stdio MCP orphan reaper ------------------------------------------------
 
 def _reset_mcp_ledgers():
-    from tools.mcp_tool_lifecycle import (
-        _orphan_stdio_pid_servers, _orphan_stdio_pids, _stdio_pgids, _stdio_pids, _stdio_starttimes)
     from tools.mcp_tool import _lock
+    from tools.mcp_tool_lifecycle import (
+        _orphan_stdio_pid_servers,
+        _orphan_stdio_pids,
+        _stdio_pgids,
+        _stdio_pids,
+        _stdio_starttimes,
+    )
     with _lock:
         _stdio_pids.clear()
         _orphan_stdio_pids.clear()
@@ -107,8 +112,12 @@ def _reset_mcp_ledgers():
 
 
 def _stage_orphan(fake_pid: int):
-    from tools.mcp_tool_lifecycle import _orphan_stdio_pids, _stdio_pgids, _stdio_starttimes
     from tools.mcp_tool import _lock
+    from tools.mcp_tool_lifecycle import (
+        _orphan_stdio_pids,
+        _stdio_pgids,
+        _stdio_starttimes,
+    )
     _reset_mcp_ledgers()
     with _lock:
         _orphan_stdio_pids.add(fake_pid)

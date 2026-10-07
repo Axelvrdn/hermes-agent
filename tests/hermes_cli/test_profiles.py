@@ -14,36 +14,35 @@ import sys
 import tarfile
 import types
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-import hermes_yaml as yaml
 import pytest
 
+import hermes_yaml as yaml
 from hermes_cli import profiles
+from hermes_cli.config import DEFAULT_CONFIG
 from hermes_cli.profiles import (
+    NO_BUNDLED_SKILLS_MARKER,
     _clone_all_copytree_ignore,
-    normalize_profile_name,
-    validate_profile_name,
-    get_profile_dir,
+    _get_default_hermes_home,
+    backfill_profile_envs,
+    check_alias_collision,
     create_profile,
+    create_wrapper_script,
     delete_profile,
-    list_profiles,
-    set_active_profile,
+    export_profile,
     get_active_profile,
     get_active_profile_name,
-    resolve_profile_env,
-    check_alias_collision,
-    create_wrapper_script,
+    get_profile_dir,
+    list_profiles,
+    normalize_profile_name,
+    profiles_to_serve,
     remove_wrapper_script,
     rename_profile,
-    export_profile,
-    _get_default_hermes_home,
-    NO_BUNDLED_SKILLS_MARKER,
-    backfill_profile_envs,
-    profiles_to_serve,
+    resolve_profile_env,
+    set_active_profile,
+    validate_profile_name,
 )
-from hermes_cli.config import DEFAULT_CONFIG
-
 
 # ---------------------------------------------------------------------------
 # Shared fixture: redirect Path.home() and HERMES_HOME for profile tests
@@ -566,8 +565,9 @@ class TestDeleteProfile:
         enters the routing index, resolves a profile whose directory is gone, and logs
         ``Profile '<name>' does not exist`` on every subsequent event.
         """
-        from hermes_state import SessionDB
         import time
+
+        from hermes_state import SessionDB
 
         tmp_path = profile_env
         create_profile("gone", no_alias=True)
@@ -617,8 +617,8 @@ class TestDeleteProfile:
         would be undone by its next save. When it cannot be reached the delete is NOT a clean
         success: the identity settlement is reported as pending, with the retry named.
         """
-        from hermes_state import SessionDB
         from hermes_cli.profiles import ProfileIdentitySettlementPending
+        from hermes_state import SessionDB
 
         tmp_path = profile_env
         create_profile("gone", no_alias=True)
@@ -860,6 +860,7 @@ class TestListProfiles:
         from one background refresh per profile per recheck window (#114041). Control: the
         synchronous ``list_profiles()`` still walks and reports the fresh number."""
         import threading
+
         import tui_gateway.server as srv
 
         skills = profile_env / ".hermes" / "skills" / "cat"
@@ -896,6 +897,7 @@ class TestListProfiles:
         # ``@<profile>`` completion must be just as walk-free: same spy, still one background walk.
         from fastapi import FastAPI
         from fastapi.testclient import TestClient
+
         from hermes_cli.web_routers import profiles as profiles_router
         from tui_gateway import methods_complete
         app = FastAPI()
@@ -1296,9 +1298,10 @@ class TestRenameProfile:
         """The failed-live-migration end state must be recoverable: `hermes profile
         migrate-identity <old> <new>` rekeys the durable rows once no gateway holds the store, and
         is idempotent (a second run has nothing left to rekey but still succeeds)."""
+        from argparse import Namespace
+
         from hermes_cli.profile_cmd import cmd_profile
         from hermes_state import SessionDB
-        from argparse import Namespace
         tmp_path = profile_env
         create_profile("oldname", no_alias=True)
         old_dir = tmp_path / ".hermes" / "profiles" / "oldname"
@@ -1613,6 +1616,7 @@ class TestEdgeCases:
         unheld runtime lock before it inspects the PID record.
         """
         import os
+
         import gateway.status as gw_status
         from hermes_cli.profiles import _check_gateway_running
 
@@ -1837,6 +1841,7 @@ def _live_bot_desktop_launcher(profile_dir: Path):
     """A synthetic Bot Desktop launcher for ``profile_dir``: its own session (like launcher.sh) with the
     identity file + env runtime.status() reads, so the profile op sees a running screen."""
     import subprocess
+
     from tools.bot_desktop import runtime
 
     proc = subprocess.Popen(["sleep", "60"], start_new_session=True)
@@ -1854,6 +1859,7 @@ def test_profile_delete_and_rename_stop_the_profiles_bot_desktop(profile_env, op
     Xvnc/Xfce session otherwise keeps running against a directory that no longer exists (or now belongs to
     another name), holding its display number and an rfb.sock nobody can reach through status()."""
     import time
+
     from tools.bot_desktop import runtime
 
     profile_dir = create_profile("coder", no_alias=True)

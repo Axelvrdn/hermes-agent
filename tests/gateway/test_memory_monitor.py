@@ -7,7 +7,6 @@ leaks show up as a time series in agent.log / gateway.log.
 
 from __future__ import annotations
 
-
 import pytest
 
 from gateway import memory_monitor as mm

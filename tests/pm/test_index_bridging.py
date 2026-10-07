@@ -54,6 +54,7 @@ def test_pip_conf_is_bridged_only_when_uv_has_no_index(clean_index_env, monkeypa
 
 def test_streamed_runs_do_not_request_uv_debug_output(tmp_path, monkeypatch):
     import io
+
     from pm import environment
 
     monkeypatch.setenv("HERMES_VERBOSE", "1")

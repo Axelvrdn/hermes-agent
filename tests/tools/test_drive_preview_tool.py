@@ -5,8 +5,6 @@ import json
 from tools import drive_preview_tool as ap
 
 
-
-
 def test_requires_callback():
     """Outside the desktop GUI there is no bridge — a clear error, no crash."""
     result = json.loads(ap.drive_preview_tool(action="elements", callback=None))

@@ -20,7 +20,6 @@ from agent.conversation_loop import (
 )
 from agent.prompt_caching import apply_anthropic_cache_control
 
-
 _PROMPT = (
     "You are a helpful assistant.\n"
     "\n"

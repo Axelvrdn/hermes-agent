@@ -7,20 +7,31 @@ original registration point.  Shared helpers are reached via the late-binding
 seam so ``monkeypatch.setattr(<owning module>, ...)`` keeps working.
 """
 
-import logging
 import asyncio
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_profiles import _hub_action_name, _installed_hub_identifiers
 from hermes_cli.web_models import (
-    SkillContentUpdate, SkillCreate, SkillInstallRequest, SkillToggle, SkillUninstallRequest,
-    SkillsUpdateRequest)
+    SkillContentUpdate,
+    SkillCreate,
+    SkillInstallRequest,
+    SkillsUpdateRequest,
+    SkillToggle,
+    SkillUninstallRequest,
+)
 from hermes_cli.web_routers._common import (
-    _profile_scope, config_write_scope, http_failure, log as _log, require, scoped_to_thread,
-    spawn_profile_action)
+    _profile_scope,
+    config_write_scope,
+    http_failure,
+    require,
+    scoped_to_thread,
+    spawn_profile_action,
+)
+from hermes_cli.web_routers._common import log as _log
+from hermes_cli.web_server_profiles import _hub_action_name, _installed_hub_identifiers
 
 hub_router = APIRouter()
 router = APIRouter()
@@ -273,8 +284,8 @@ async def scan_skill_hub(identifier: str = "", profile: Optional[str] = None):
     def _run():
         import shutil as _shutil
 
-        from tools.skills_hub_install import quarantine_bundle
         from tools.skills_guard import scan_skill, should_allow_install
+        from tools.skills_hub_install import quarantine_bundle
 
         meta, bundle = _resolve_hub_skill(ident, profile)
         if not bundle:
@@ -293,7 +304,10 @@ async def scan_skill_hub(identifier: str = "", profile: Optional[str] = None):
             # Advisory SkillEvaluator Tier 1 second opinion: optional binary,
             # never blocks, errors degrade to no data (same as the CLI installer).
             try:
-                from tools.skillevaluator_scan import run_tier1_scan, tier1_advisory_enabled
+                from tools.skillevaluator_scan import (
+                    run_tier1_scan,
+                    tier1_advisory_enabled,
+                )
                 if tier1_advisory_enabled():
                     t1 = run_tier1_scan(q_path)
                     if t1.available:
@@ -343,10 +357,15 @@ async def scan_skill_hub(identifier: str = "", profile: Optional[str] = None):
 
 @router.get("/api/skills")
 async def get_skills(profile: Optional[str] = None):
-    from tools.skills_tool import _find_all_skills
     from hermes_cli.skills_config import get_disabled_skills
     from tools.skill_usage import (
-        _external_skill_names, _read_bundled_names, _read_hub_installed_names, activity_count, load_usage)
+        _external_skill_names,
+        _read_bundled_names,
+        _read_hub_installed_names,
+        activity_count,
+        load_usage,
+    )
+    from tools.skills_tool import _find_all_skills
 
     def _run():
         with _profile_scope(profile):

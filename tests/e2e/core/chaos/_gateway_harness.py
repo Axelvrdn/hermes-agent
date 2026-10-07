@@ -21,7 +21,12 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from tests.e2e.core.chaos import _gateway_fake_platform as fake_platform
-from tests.e2e.core.chaos._helpers import hermetic_env, kill_tagged, python_exe, write_chaos_home
+from tests.e2e.core.chaos._helpers import (
+    hermetic_env,
+    kill_tagged,
+    python_exe,
+    write_chaos_home,
+)
 
 BOOT_DEADLINE_S = 180.0
 SHUTDOWN_DEADLINE_S = 60.0

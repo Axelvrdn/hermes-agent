@@ -16,8 +16,9 @@ fell through to "switch providers manually" advice and never called
 
 from unittest.mock import MagicMock, patch
 
+from agent.error_classifier import FailoverReason, classify_api_error
 from run_agent import AIAgent
-from agent.error_classifier import classify_api_error, FailoverReason
+
 
 def _make_agent(fallback_model=None):
     with (

@@ -24,6 +24,7 @@ from types import SimpleNamespace
 from hermes_state import SessionDB
 from run_agent import AIAgent
 
+
 def _flush_agent(db, session_id):
     """Bind the real flush methods onto a stand-in over a live SessionDB."""
     agent = SimpleNamespace(
@@ -197,7 +198,10 @@ def test_flush_adopts_exactly_once_no_retry_loop(tmp_path: Path, monkeypatch) ->
 
 def test_compression_closed_error_classifies_as_compression_closed() -> None:
     from hermes_state import classify_persistence_error
-    from hermes_state_errors import CompressionSessionClosedError, PERSISTENCE_ERROR_CAUSES
+    from hermes_state_errors import (
+        PERSISTENCE_ERROR_CAUSES,
+        CompressionSessionClosedError,
+    )
 
     cause = classify_persistence_error(CompressionSessionClosedError("session-abc"))
     assert cause == "compression_closed"

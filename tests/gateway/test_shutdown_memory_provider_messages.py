@@ -25,6 +25,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+
 @pytest.fixture(autouse=True)
 def _mock_dotenv(monkeypatch):
     """gateway.run imports dotenv at module load; stub so tests run bare."""

@@ -4,14 +4,15 @@ falls back to latest-session. Gated by ``session.terminal_continue`` (default tr
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import re
 import sys
 import time
 from pathlib import Path
 from typing import Optional
+
 from utils import atomic_json_write
 
 # Multiplexer / terminal-emulator identity env vars, checked in order when no real tty path is

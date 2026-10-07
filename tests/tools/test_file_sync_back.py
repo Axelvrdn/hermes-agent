@@ -14,14 +14,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from tools.environments.file_sync import (
-    FileSyncManager,
-    _cleanup_stale_sync_back_temp,
-    _sha256_file,
     _SYNC_BACK_MAX_RETRIES,
     _SYNC_BACK_STALE_SECONDS,
     _SYNC_BACK_TEMP_PREFIX,
+    FileSyncManager,
+    _cleanup_stale_sync_back_temp,
+    _sha256_file,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

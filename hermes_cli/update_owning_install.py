@@ -13,9 +13,9 @@ install into its venv, which rewrites the editable record to point home again.
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 
 def owning_install_root(project_root: Path) -> Path | None:

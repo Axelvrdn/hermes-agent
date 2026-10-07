@@ -11,7 +11,7 @@ import logging
 import pytest
 
 from agent import agent_runtime_helpers as _helpers
-from agent.agent_runtime_helpers import note_turn_start, note_turn_persisted
+from agent.agent_runtime_helpers import note_turn_persisted, note_turn_start
 
 
 class _FakeAgent:

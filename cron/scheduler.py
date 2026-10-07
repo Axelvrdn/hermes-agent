@@ -36,21 +36,26 @@ from typing import Any, Callable, Dict, List, Optional, Protocol, Union
 # `hermes update`) otherwise fail with ModuleNotFoundError for hermes_time et al.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from cron.worker_bootstrap import WORKER_MARKER, finish_worker_boot
-from hermes_constants import get_hermes_home, hermes_home_key
-from hermes_cli.observability.shared_metrics_gateway import note_cron_execution, note_cron_skipped
-from cron.env_settings import cron_env_setting
-from hermes_cli._subprocess_compat import windows_hide_flags
-from hermes_cli.config import (
-    load_config, load_config_readonly)
-from hermes_cli.fallback_config import get_fallback_chain, scoped_fallback_chain
-from hermes_time import now as _hermes_now, safe_strftime
-from agent.interrupt_compat import request_hard_interrupt
 from agent.delegation_context import (
-    enter_non_dispatcher_owned_context, exit_non_dispatcher_owned_context)
+    enter_non_dispatcher_owned_context,
+    exit_non_dispatcher_owned_context,
+)
+from agent.interrupt_compat import request_hard_interrupt
 from agent.memory_provider import ctx_bound
 from agent.session_activity import AwakeIdleMeter
 from agent.turn_failure_copy import is_max_iteration_handoff
+from cron.env_settings import cron_env_setting
+from cron.worker_bootstrap import WORKER_MARKER, finish_worker_boot
+from hermes_cli._subprocess_compat import windows_hide_flags
+from hermes_cli.config import load_config, load_config_readonly
+from hermes_cli.fallback_config import get_fallback_chain, scoped_fallback_chain
+from hermes_cli.observability.shared_metrics_gateway import (
+    note_cron_execution,
+    note_cron_skipped,
+)
+from hermes_constants import get_hermes_home, hermes_home_key
+from hermes_time import now as _hermes_now
+from hermes_time import safe_strftime
 
 logger = logging.getLogger(__name__)
 
@@ -260,8 +265,12 @@ def _summarize_cron_failure_for_delivery(job: dict, error: str | None) -> str:
     and would otherwise be blamed on the model service); everything else goes through the shared
     ``classify_api_error`` verdict and the copy table in ``scheduler_failure_copy``."""
     from cron.scheduler_failure_copy import (
-        classify_cron_failure_reason, generic_failure_notice, inactivity_notice,
-        provider_failure_notice, script_timeout_notice)
+        classify_cron_failure_reason,
+        generic_failure_notice,
+        inactivity_notice,
+        provider_failure_notice,
+        script_timeout_notice,
+    )
 
     job_name = job.get("name") or job.get("id") or "cron job"
     job_id = job.get("id") or job_name
@@ -478,7 +487,9 @@ def _resolve_cron_enabled_toolsets(job: dict, cfg: dict) -> list[str]:
             return []
         return _merge_mcp_into_per_job_toolsets(list(per_job), cfg or {})
     try:
-        from hermes_cli.tools_config import _get_platform_tools  # lazy: avoid heavy import at cron module load
+        from hermes_cli.tools_config import (
+            _get_platform_tools,  # lazy: avoid heavy import at cron module load
+        )
         return sorted(_get_platform_tools(cfg or {}, "cron"))
     except Exception as exc:
         raise RuntimeError(
@@ -510,16 +521,36 @@ def _resolve_job_reasoning_config(job: dict, cfg: dict, model: str) -> dict | No
     return resolve_reasoning_config(cfg if isinstance(cfg, dict) else {}, str(model))
 
 
-from cron.jobs import (
-    _ensure_cron_dir, advance_next_runs, claim_dispatch, claim_job_for_fire, fire_claim_fence,
-    clear_run_claim, get_due_jobs, heartbeat_fire_claim, heartbeat_run_claim, mark_job_run,
-    save_job_output, self_removal_delivery_allowed, self_removal_delivery_scope, use_cron_store)
 from cron import store_health
 from cron.execution_identity import enter_cron_execution, exit_cron_execution
 from cron.executions import (
-    _TERMINAL_STATES, HANDOFF_ADOPTION_GRACE_SECONDS, create_execution, finish_execution,
-    get_execution, mark_execution_handoff_pending, mark_execution_running,
-    recover_interrupted_executions, settle_unstarted_execution, terminalize_dead_owner)
+    _TERMINAL_STATES,
+    HANDOFF_ADOPTION_GRACE_SECONDS,
+    create_execution,
+    finish_execution,
+    get_execution,
+    mark_execution_handoff_pending,
+    mark_execution_running,
+    recover_interrupted_executions,
+    settle_unstarted_execution,
+    terminalize_dead_owner,
+)
+from cron.jobs import (
+    _ensure_cron_dir,
+    advance_next_runs,
+    claim_dispatch,
+    claim_job_for_fire,
+    clear_run_claim,
+    fire_claim_fence,
+    get_due_jobs,
+    heartbeat_fire_claim,
+    heartbeat_run_claim,
+    mark_job_run,
+    save_job_output,
+    self_removal_delivery_allowed,
+    self_removal_delivery_scope,
+    use_cron_store,
+)
 from cron.scheduler_liveness import ExecutionProgressStamper, _inactivity_watchdog_loop
 
 # Response marker that suppresses delivery (output is still saved locally for audit).
@@ -896,8 +927,9 @@ def _cron_interval_minutes(expr: str) -> Optional[float]:
 
         ok = _ensure_croniter()
         if ok:
-            from cron.jobs import croniter as _croniter
             from datetime import datetime
+
+            from cron.jobs import croniter as _croniter
 
             base = datetime.now()
             it = _croniter(expr, base)
@@ -1758,9 +1790,11 @@ def _resolve_job_runtime(job: dict, job_id: str, jc: _CronJobConfig) -> tuple[di
     a paid primary model). Provider precedence: per-job pin > cron.model_provider > persisted
     global config (None lets resolve_runtime_provider read it). A pinned job has no chain here
     (``_job_fallback_chain``): its resolve failure is the job's failure."""
-    from hermes_cli.runtime_provider import (
-        resolve_runtime_provider, format_runtime_provider_error)
     from hermes_cli.auth import AuthError
+    from hermes_cli.runtime_provider import (
+        format_runtime_provider_error,
+        resolve_runtime_provider,
+    )
 
     model = jc.model
     requested = job.get("provider") or jc.cron_default_provider or None
@@ -1797,7 +1831,10 @@ def _resolve_job_runtime(job: dict, job_id: str, jc: _CronJobConfig) -> tuple[di
             if not fb_provider or not fb_model:
                 continue
             try:
-                from hermes_cli.fallback_config import effective_runtime_provider, resolve_entry_api_key
+                from hermes_cli.fallback_config import (
+                    effective_runtime_provider,
+                    resolve_entry_api_key,
+                )
 
                 fb_kwargs = {"requested": fb_provider, "target_model": fb_model}
                 if entry.get("base_url"):
@@ -2231,7 +2268,10 @@ def _prepare_job_prompt(
     # Fail closed on a corrupt config.yaml: defaults would let auto-detection bill a provider the
     # user never chose. no_agent jobs are exempt. Escape hatch: HERMES_IGNORE_USER_CONFIG=1.
     if not job.get("no_agent"):
-        from hermes_cli.config import InvalidUserConfigError, require_parseable_user_config
+        from hermes_cli.config import (
+            InvalidUserConfigError,
+            require_parseable_user_config,
+        )
 
         try:
             require_parseable_user_config()
@@ -2329,7 +2369,7 @@ class _CronRunScope:
     """
 
     def __init__(self, job: dict, job_id: str, execution_id: Optional[str]):
-        from gateway.session_context import set_session_vars, _VAR_MAP
+        from gateway.session_context import _VAR_MAP, set_session_vars
         from tools.terminal_tool import record_session_cwd
 
         self._var_map = _VAR_MAP
@@ -2392,8 +2432,8 @@ def _reload_dotenv_and_publish_delivery_target(job: dict) -> None:
     """Re-read .env for this run and publish the auto-deliver target into the session ContextVars."""
     # Reset the secret-source cache FIRST or a Bitwarden/BSM-backed secret is never re-resolved
     # (only the placeholder reloads -> 401s).
-    from hermes_cli.env_loader import load_hermes_dotenv, reset_secret_source_cache
     from gateway.session_context import _VAR_MAP
+    from hermes_cli.env_loader import load_hermes_dotenv, reset_secret_source_cache
 
     reset_secret_source_cache(_get_hermes_home())
     load_hermes_dotenv(hermes_home=_get_hermes_home())
@@ -3260,7 +3300,10 @@ def _install_fire_secret_scope() -> "tuple[contextvars.Token, Optional[contextva
     restart-safe handoff in ``run_one_job`` runs before this and keeps today's semantics (#107692).
     """
     from agent.secret_scope import (
-        build_profile_secret_scope, set_multiplex_context, set_secret_scope)
+        build_profile_secret_scope,
+        set_multiplex_context,
+        set_secret_scope,
+    )
     from cron.scheduler_provider import routed_profile_fire
     from hermes_cli.env_loader import hydrate_profile_secret_sources
 
@@ -3355,8 +3398,7 @@ def _run_one_job_body(
         # and bookkeeping (gateway/run.py _profile_runtime_scope does the same per turn) — else the
         # ticker reads process-global TERMINAL_* env another profile pinned (#68559, #98581). A
         # malformed policy installs a refusal scope: terminal execution raises instead.
-        from tools.terminal_scope import (
-            install_profile_terminal_scope)
+        from tools.terminal_scope import install_profile_terminal_scope
 
         _terminal_scope_token = install_profile_terminal_scope(_get_hermes_home())
         # Defer agent teardown until AFTER delivery: closing first races the live send against a
@@ -3551,7 +3593,9 @@ def _wait_for_external_cron_worker_body(
             # cleanup; only a still-live terminal worker needs background reaping.
             returncode = process.poll()
             if returncode is None:
-                from cron.scheduler_detached_worker import reap_terminal_worker_in_background
+                from cron.scheduler_detached_worker import (
+                    reap_terminal_worker_in_background,
+                )
 
                 reap_terminal_worker_in_background(process)
                 return True
@@ -4387,30 +4431,43 @@ def _sweep_mcp_orphans_when_all_done(futures: list) -> None:
         _f.add_done_callback(_on_done)
 
 
-from cron.scheduler_tick import tick  # noqa: E402
-
-
 # ---------------------------------------------------------------------------
 # Split modules. Imported at the bottom (import cycle: they late-bind ``cron.scheduler`` as
 # ``_sched``). Only names this module itself calls; everything else lives in the split module.
 # ---------------------------------------------------------------------------
 from cron.scheduler_delivery import (  # noqa: E402
-    _deliver_result, _delivery_lane_value, _normalize_deliver_value, _resolve_delivery_target,
+    _deliver_result,
+    _delivery_lane_value,
+    _normalize_deliver_value,
+    _resolve_delivery_target,
     _resolve_delivery_targets,
 )
-from cron.scheduler_script import (  # noqa: E402
-    _get_session_db_timeout, _run_job_script_with_claim_heartbeat, _start_heartbeat_thread,
+from cron.scheduler_preflight import (  # noqa: E402
+    BLOCKED_CONFIG_MARKER,
+    BLOCKED_CONFIG_SILENT_MARKER,
+    _cron_preflight_enabled,
+    _empty_requested_mcp_toolsets,
+    _is_transient_provider_resolve_error,
+    _preflight_job_config,
 )
 from cron.scheduler_prompt import (  # noqa: E402
-    _PROMPT_FRAME, _PROMPT_HEADING, _PROMPT_SEPARATOR, _RESPONSE_FRAME, _RESPONSE_HEADING,
-    _RESPONSE_TERMINATOR, _block_and_pause_job, _build_job_prompt, _guard_job_credential_exfil,
+    _PROMPT_FRAME,
+    _PROMPT_HEADING,
+    _PROMPT_SEPARATOR,
+    _RESPONSE_FRAME,
+    _RESPONSE_HEADING,
+    _RESPONSE_TERMINATOR,
+    _block_and_pause_job,
+    _build_job_prompt,
+    _guard_job_credential_exfil,
     _parse_wake_gate,
 )
-from cron.scheduler_preflight import (  # noqa: E402
-    BLOCKED_CONFIG_MARKER, BLOCKED_CONFIG_SILENT_MARKER, _cron_preflight_enabled,
-    _empty_requested_mcp_toolsets, _is_transient_provider_resolve_error, _preflight_job_config,
+from cron.scheduler_script import (  # noqa: E402
+    _get_session_db_timeout,
+    _run_job_script_with_claim_heartbeat,
+    _start_heartbeat_thread,
 )
-
+from cron.scheduler_tick import tick  # noqa: E402
 
 # `python -m cron.scheduler` entry: MUST stay below the split-module imports so the worker /
 # tick paths see every name they need.

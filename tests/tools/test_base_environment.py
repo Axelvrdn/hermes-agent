@@ -178,10 +178,10 @@ class TestSnapshotFileModes:
 
     def test_snapshot_and_cwd_files_are_0600(self, tmp_path):
         import os
-        from pathlib import Path
         import shutil
         import stat
         import subprocess
+        from pathlib import Path
         bash = shutil.which("bash")
         if not bash:
             import pytest

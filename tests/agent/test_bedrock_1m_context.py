@@ -20,8 +20,8 @@ class TestBedrockContext1MBeta:
     def test_common_betas_strips_1m_for_minimax(self):
         """MiniMax bearer-auth endpoints host their own models — strip 1M beta."""
         from agent.anthropic_adapter import (
-            _common_betas_for_base_url,
             _CONTEXT_1M_BETA,
+            _common_betas_for_base_url,
         )
 
         for url in (

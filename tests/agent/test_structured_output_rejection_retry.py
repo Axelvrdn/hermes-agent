@@ -26,17 +26,16 @@ field, retry once without it. These tests lock in that behaviour for both
 sync and async paths.
 """
 
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from agent.auxiliary_client import (
-    call_llm,
-    async_call_llm,
     _is_structured_output_rejection,
     _without_structured_output_format,
+    async_call_llm,
+    call_llm,
 )
-
 
 _TITLE_RESPONSE_FORMAT = {
     "type": "json_schema",

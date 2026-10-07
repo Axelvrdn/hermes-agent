@@ -10,7 +10,6 @@ hard context-overflow error.
 
 from agent.turn_context import _should_run_preflight_estimate
 
-
 # Protected-range counts mirror the compressor defaults. THRESHOLD_TOKENS is an
 # arbitrary test threshold passed explicitly into the helper — it is NOT the
 # live runtime threshold (which is max(0.5*window, MINIMUM_CONTEXT_LENGTH) per

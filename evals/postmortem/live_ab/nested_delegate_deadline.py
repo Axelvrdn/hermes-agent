@@ -2,15 +2,24 @@
 ~460 s task (longer than the 420 s sequential deadline). On main the orchestrator's delegate_task call returns
 'timed out after 420.0s' and the leaf runs on as an orphan; on the branch the call blocks and returns the
 real result. Uses glm-5.3 via Nous for cost. Deadline shortened via config to keep the run short."""
-import os, sys, json, time, re, subprocess
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+
 # Usage: python nested_delegate_deadline.py <repo_root>   (run once per ref; LIVE: a couple of real child calls)
 root = sys.argv[1]; arm = os.path.basename(os.path.normpath(root))
 sys.path.insert(0, root)
 # Temp HERMES_HOME with the real auth + a config that shortens the generic sequential deadline to 40 s, so the
 # run takes ~1.5 min instead of 8. The fix exempts delegate_task from this deadline entirely, so the shortened
 # value is exactly what main will hit.
-import shutil, tempfile
+import shutil
+import tempfile
+
 import hermes_yaml as yaml
+
 home = tempfile.mkdtemp(prefix="dl_home_"); os.environ["HERMES_HOME"] = home
 real_home = os.environ.get("HERMES_HOME_SOURCE", os.path.expanduser("~/.hermes"))  # credentials are copied from here into a temp home
 shutil.copy(f"{real_home}/auth.json", f"{home}/auth.json")
@@ -19,11 +28,14 @@ cfg.setdefault("timeouts", {}).setdefault("tools", {})["sequential_call"] = 40
 cfg.setdefault("delegation", {})["orchestrator_enabled"] = True
 yaml.safe_dump(cfg, open(f"{home}/config.yaml", "w", encoding="utf-8"))
 import agent.tool_executor as te
+
 assert te.__file__.startswith(root)
 from agent.deadline import resolve_timeout
+
 print("effective sequential deadline:", resolve_timeout("tools.sequential_call", default=te._resolve_concurrent_tool_timeout()))
-from run_agent import AIAgent
 from hermes_cli.runtime_provider import resolve_runtime_provider
+from run_agent import AIAgent
+
 MODEL = "z-ai/glm-5.3-flash"
 rt = resolve_runtime_provider(requested="nous", target_model=MODEL)
 sid = f"dl_{arm}_{int(time.time())}"

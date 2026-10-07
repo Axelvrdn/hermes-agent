@@ -140,7 +140,10 @@ class TestGenerateGeminiTts:
 
     def test_default_voice_and_model(self, tmp_path, monkeypatch, mock_gemini_response):
         from tools.tts_tool import _generate_gemini_tts
-        from tools.tts_tool_providers import DEFAULT_GEMINI_TTS_MODEL, DEFAULT_GEMINI_TTS_VOICE
+        from tools.tts_tool_providers import (
+            DEFAULT_GEMINI_TTS_MODEL,
+            DEFAULT_GEMINI_TTS_VOICE,
+        )
 
         monkeypatch.setenv("GEMINI_API_KEY", "test-key")
 

@@ -1,8 +1,9 @@
 from hermes_state import AsyncSessionDB, SessionDB
+
 """Tests for gateway /status behavior and token persistence."""
 
-from datetime import datetime
 import time
+from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -543,10 +544,11 @@ async def test_status_command_bypasses_active_session_guard():
     """When an agent is running, /status must be dispatched immediately via
     base.handle_message — not queued or treated as an interrupt (#5046)."""
     import asyncio
+
+    from gateway.config import Platform, PlatformConfig
     from gateway.platforms.base import BasePlatformAdapter
     from gateway.platforms.event import MessageEvent, MessageType
     from gateway.session import build_session_key
-    from gateway.config import Platform, PlatformConfig
 
     source = _make_source()
     session_key = build_session_key(source)

@@ -5,9 +5,10 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+
 from gateway.config import GatewayConfig, PlatformConfig
-from gateway.run import GatewayRunner
 from gateway.platforms.base import SendResult
+from gateway.run import GatewayRunner
 from hermes_constants import get_hermes_home
 
 

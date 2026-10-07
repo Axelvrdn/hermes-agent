@@ -30,7 +30,8 @@ _lease_listener_installed = threading.Event()
 
 def _display_snapshot() -> dict:
     from hermes_constants import hermes_home_key
-    from tools.bot_desktop import lease as _bd_lease, runtime as _bd_runtime
+    from tools.bot_desktop import lease as _bd_lease
+    from tools.bot_desktop import runtime as _bd_runtime
     st = _bd_runtime.status()
     return {**st.as_dict(), "lease": _bd_lease.public_view(_bd_lease.get()), "profile_key": hermes_home_key()}
 
@@ -95,7 +96,8 @@ def _(rid, params: dict) -> dict:
 def _(rid, params: dict) -> dict:
     """Stopping kills the screen under whoever is on it, so it obeys the same rule as a bare
     display.lease.release: refused while a human holds unless the caller says ``force``."""
-    from tools.bot_desktop import lease as _bd_lease, runtime as _bd_runtime
+    from tools.bot_desktop import lease as _bd_lease
+    from tools.bot_desktop import runtime as _bd_runtime
     force = bool(params.get("force"))
     # Refusal and release are ONE lease transition: a takeover landing between a separate human_holds()
     # check and the release would be acknowledged to the human and then silently revoked here.
@@ -152,8 +154,8 @@ def _(rid, params: dict) -> dict:
     """Mint a single-use, 30 s ticket for ``/api/display/ws``. The ticket carries the profile home so
     the bridge dials THIS profile's RFB socket, and a server-minted viewer id (returned to the caller,
     who passes it to ``display.lease.acquire`` / ``release``) so the lease can name the holder."""
-    from hermes_constants import get_hermes_home
     from hermes_cli.dashboard_auth.ws_tickets import mint_ticket
+    from hermes_constants import get_hermes_home
     from tools.bot_desktop import runtime as _bd_runtime
     try:
         # The bridge dials either the host RFB socket or the sandbox relay; neither exists before start.
@@ -188,7 +190,8 @@ def _(rid, params: dict) -> dict:
     """Start the package install in the background; the renderer follows ``display.install.log`` /
     ``display.install.done``. Refused while one is already running for this profile."""
     from hermes_constants import hermes_home_key
-    from tools.bot_desktop import install as _bd_install, runtime as _bd_runtime
+    from tools.bot_desktop import install as _bd_install
+    from tools.bot_desktop import runtime as _bd_runtime
     if not _bd_runtime.is_supported_host():
         return _err(rid, _DISPLAY_ERR, "Bot Desktop runs on Linux gateway hosts only")
     if _bd_runtime.in_sandbox():

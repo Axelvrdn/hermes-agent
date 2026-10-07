@@ -12,9 +12,9 @@ Salvaged from PR #99183 (@Finn763).
 """
 
 import time
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from gateway.config import (
     GatewayConfig,
@@ -22,7 +22,7 @@ from gateway.config import (
     PlatformConfig,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.run import GatewayRunner, _INTERRUPT_REASON_EVICTED
+from gateway.run import _INTERRUPT_REASON_EVICTED, GatewayRunner
 from gateway.session import SessionSource, SessionStore
 
 

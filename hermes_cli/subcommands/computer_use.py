@@ -10,7 +10,11 @@ from hermes_cli.subcommands._shared import add_json_flag
 def _exit_if_plugin_backend(*, doctor: bool = False) -> None:
     """cua-driver checks do not apply when ``computer_use.backend`` selects another backend: report it
     (running its own ``doctor()`` when asked and it ships one) and exit; return for the built-in."""
-    from plugins.computer_use import DEFAULT_BACKEND, configured_backend_name, get_active_provider
+    from plugins.computer_use import (
+        DEFAULT_BACKEND,
+        configured_backend_name,
+        get_active_provider,
+    )
     if configured_backend_name() == DEFAULT_BACKEND:
         return
     try:
@@ -34,7 +38,11 @@ def _cu_install(args) -> int:
 def _cu_status(args) -> int:
     _exit_if_plugin_backend()
     import os as _os
-    from hermes_cli.tools_config_cua import _cua_driver_contract_status, _cua_version_summary
+
+    from hermes_cli.tools_config_cua import (
+        _cua_driver_contract_status,
+        _cua_version_summary,
+    )
     from tools.computer_use.cua_backend_driver import resolve_cua_driver_cmd
 
     path = resolve_cua_driver_cmd()
@@ -86,7 +94,12 @@ def _cu_perms_status(args) -> None:
     if not getattr(args, "json", False):  # --json: computer_use_status() reports the selected backend itself
         _exit_if_plugin_backend()
     import json as _json
-    from tools.computer_use.permissions import TCC_FIELDS, computer_use_status, stale_tcc_grant_hint
+
+    from tools.computer_use.permissions import (
+        TCC_FIELDS,
+        computer_use_status,
+        stale_tcc_grant_hint,
+    )
     st = computer_use_status()
     if bool(getattr(args, "json", False)):
         print(_json.dumps(st, indent=2, sort_keys=True))

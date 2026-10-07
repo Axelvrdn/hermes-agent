@@ -13,8 +13,8 @@ import asyncio
 import hashlib
 import hmac
 import json
-import re
 import os
+import re
 import socket
 import threading
 import urllib.error
@@ -603,8 +603,8 @@ class TestRegistryDispatchConvention:
 # --------------------------------------------------------------------------
 
 def _bare_adapter():
-    from plugins.platforms.a2a.adapter import A2AAdapter
     from gateway.config import PlatformConfig
+    from plugins.platforms.a2a.adapter import A2AAdapter
     return A2AAdapter(PlatformConfig(enabled=True))
 
 
@@ -870,8 +870,8 @@ def _make_live_adapter(monkeypatch, reply_fn=None):
     ``reply_fn(event) -> Optional[str]`` returns the agent's reply (None =
     never reply). Returns (adapter, base_url).
     """
-    from plugins.platforms.a2a.adapter import A2AAdapter
     from gateway.config import PlatformConfig
+    from plugins.platforms.a2a.adapter import A2AAdapter
 
     port = _free_port()
     monkeypatch.setenv("A2A_PORT", str(port))
@@ -1316,8 +1316,8 @@ class TestPushNotificationEndToEnd:
 
 class TestMultiAgentRouting:
     def test_path_routed_agent_card_uses_prefix_and_canonical_path(self, monkeypatch):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {
@@ -1341,8 +1341,8 @@ class TestMultiAgentRouting:
         assert {s["name"] for s in card["skills"]} == {"research", "web"}
 
     def test_tenant_routing_selects_agent_without_path_prefix(self):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {
@@ -1353,8 +1353,8 @@ class TestMultiAgentRouting:
         assert route["agent"]["slug"] == "dev"
 
     def test_tenant_mismatch_is_rejected(self):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {"dev": {"profile": "dev", "tenant": "dev-team"}}
@@ -1363,8 +1363,8 @@ class TestMultiAgentRouting:
         assert "error" in route
 
     def test_forwarded_profile_task_completes_in_task_store(self, monkeypatch):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {"dev": {"profile": "dev", "tenant": "dev"}}
@@ -1491,8 +1491,8 @@ class TestV1SpecRegressionFixes:
         assert posted["body"]["params"]["tenant"] == "dev-team"
 
     def test_cross_tenant_task_access_is_hidden(self):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {
@@ -1511,8 +1511,8 @@ class TestV1SpecRegressionFixes:
         assert list_resp["result"]["tasks"] == []
 
     def test_push_config_is_tenant_scoped(self):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {
@@ -1562,8 +1562,8 @@ class TestV1SpecRegressionFixes:
         asyncio.run(run())
 
     def test_reserved_paths_and_duplicate_tenants_are_ignored(self):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
             "agents": {
@@ -1578,8 +1578,8 @@ class TestV1SpecRegressionFixes:
 
     @pytest.mark.platforms("linux")
     def test_forward_to_profile_first_contact_creates_then_resumes_fake_hermes(self, monkeypatch, tmp_path):
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         profile_home = tmp_path / "profile"
         profile_home.mkdir()
@@ -1695,8 +1695,8 @@ class TestMultiplexConstructionScope:
         """The secondary profile's own config is authoritative; keys absent
         from it fall to the module defaults, never to the default profile's
         bridged A2A_* env values."""
-        from plugins.platforms.a2a.adapter import A2AAdapter, _DEFAULT_PORT
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import _DEFAULT_PORT, A2AAdapter
 
         multiplex_scope()
         assert A2AAdapter(PlatformConfig(enabled=True, extra={"port": 9222})).port == 9222
@@ -1716,8 +1716,8 @@ class TestMultiplexConstructionScope:
         """Multiplex ON but no scope (the DEFAULT profile constructs
         unscoped): env is its own bridge output and still wins."""
         from agent.secret_scope import set_multiplex_active
-        from plugins.platforms.a2a.adapter import A2AAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.a2a.adapter import A2AAdapter
 
         set_multiplex_active(True)
         try:

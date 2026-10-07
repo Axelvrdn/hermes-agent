@@ -1,9 +1,9 @@
 """A fatal stage under -Stage -Json yields exactly one failure frame carrying the reason."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 

@@ -5,8 +5,6 @@ import json
 from tools import read_preview_tool as rp
 
 
-
-
 def test_requires_callback():
     """Outside the desktop GUI there is no bridge — a clear error, no crash."""
     result = json.loads(rp.read_preview_tool(callback=None))

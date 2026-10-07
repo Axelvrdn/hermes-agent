@@ -10,8 +10,18 @@ import logging
 from typing import Any, Dict, List
 
 from plugins.web._common import (
-    BaseWebSearchProvider, cached_sdk_client, document, keyless_extract, keyless_search, keyless_variant_schema,
-    provider_env, run_extract, run_search, search_ok, use_keyless, web_hit,
+    BaseWebSearchProvider,
+    cached_sdk_client,
+    document,
+    keyless_extract,
+    keyless_search,
+    keyless_variant_schema,
+    provider_env,
+    run_extract,
+    run_search,
+    search_ok,
+    use_keyless,
+    web_hit,
 )
 
 logger = logging.getLogger(__name__)

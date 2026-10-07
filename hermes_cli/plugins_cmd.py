@@ -18,41 +18,77 @@ from typing import Any, NoReturn, Optional
 from hermes_constants import get_hermes_home, hermes_home_key
 from hermes_cli.config import cfg_get
 from hermes_cli.plugin_capabilities import _child_dict
-# Tests patch these two on the facade; the install/remove siblings read them through it.
-from hermes_cli.secret_prompt import masked_secret_prompt  # noqa: F401
-from utils import rmtree_readonly  # noqa: F401
 
 # Topical siblings. The facade re-exports what other modules, tests and the old updater import from
 # ``hermes_cli.plugins_cmd``; sibling bodies read those names back through the facade at call time.
 from hermes_cli.plugins_cmd_capabilities import (  # noqa: F401
-    _declared_capabilities_for_key, _declared_capabilities_from_manifest, _resolve_tool_override_grant,
-    _run_capability_consent, cmd_capabilities,
+    _declared_capabilities_for_key,
+    _declared_capabilities_from_manifest,
+    _resolve_tool_override_grant,
+    _run_capability_consent,
+    cmd_capabilities,
 )
 from hermes_cli.plugins_cmd_git import (  # noqa: F401
-    _EXACT_COMMIT_RE, _canonical_source, _checkout_exact_revision, _clone_plugin_repo, _git_head_revision,
-    _git_or_raise, _git_pull_plugin_dir, _git_resolve_commit, _normalize_exact_revision, _pin_annotation,
-    _read_install_metadata, _run_plugin_git, _safe_git_error, _scrub_cloned_origin, _update_install_record,
-    _write_install_metadata, pinned_revision,
+    _EXACT_COMMIT_RE,
+    _canonical_source,
+    _checkout_exact_revision,
+    _clone_plugin_repo,
+    _git_head_revision,
+    _git_or_raise,
+    _git_pull_plugin_dir,
+    _git_resolve_commit,
+    _normalize_exact_revision,
+    _pin_annotation,
+    _read_install_metadata,
+    _run_plugin_git,
+    _safe_git_error,
+    _scrub_cloned_origin,
+    _update_install_record,
+    _write_install_metadata,
+    pinned_revision,
 )
 from hermes_cli.plugins_cmd_install import (  # noqa: F401
-    _check_manifest_version, _consent_python_deps, _display_after_install, _install_plugin_core,
-    _install_plugin_python_deps, _prompt_plugin_env_vars, _python_dependency_summary,
-    _read_manifest_for_install, cmd_install, dashboard_install_plugin,
+    _check_manifest_version,
+    _consent_python_deps,
+    _display_after_install,
+    _install_plugin_core,
+    _install_plugin_python_deps,
+    _prompt_plugin_env_vars,
+    _python_dependency_summary,
+    _read_manifest_for_install,
+    cmd_install,
+    dashboard_install_plugin,
 )
 from hermes_cli.plugins_cmd_listing import (  # noqa: F401
-    _filter_plugin_entries, cmd_list, cmd_show,
+    _filter_plugin_entries,
+    cmd_list,
+    cmd_show,
 )
 from hermes_cli.plugins_cmd_remove import (  # noqa: F401
-    _remove_plugin_core, cmd_remove, dashboard_remove_user_plugin,
+    _remove_plugin_core,
+    cmd_remove,
+    dashboard_remove_user_plugin,
 )
 from hermes_cli.plugins_cmd_toggle import (  # noqa: F401
-    _discover_context_engines, _persist_plugin_selection, _provider_categories, _run_composite_fallback,
+    _discover_context_engines,
+    _persist_plugin_selection,
+    _provider_categories,
+    _run_composite_fallback,
     cmd_toggle,
 )
 from hermes_cli.plugins_cmd_update import (  # noqa: F401
-    _clear_plugin_bytecode, cmd_adopt, cmd_check_updates, cmd_trust_update_url, cmd_update,
+    _clear_plugin_bytecode,
+    cmd_adopt,
+    cmd_check_updates,
+    cmd_trust_update_url,
+    cmd_update,
     dashboard_update_user_plugin,
 )
+
+# Tests patch these two on the facade; the install/remove siblings read them through it.
+from hermes_cli.secret_prompt import masked_secret_prompt  # noqa: F401
+from hermes_constants import get_hermes_home
+from utils import rmtree_readonly  # noqa: F401
 
 logger = logging.getLogger(__name__)
 _DEFAULT_CLONE_TIMEOUT_SECONDS = 300
@@ -199,7 +235,11 @@ def _scan_plugin_tree(plugin_dir: Path, identifier: str, *, force: bool, scan_de
     """
     if not _scan_on_install_enabled():
         return None
-    from tools.plugin_guard import format_scan_report, scan_plugin, should_allow_plugin_install
+    from tools.plugin_guard import (
+        format_scan_report,
+        scan_plugin,
+        should_allow_plugin_install,
+    )
     result = scan_plugin(plugin_dir, source=identifier)
     allowed, reason = should_allow_plugin_install(result, force=force)
     if allowed is None and reviewed_pin:
@@ -498,7 +538,11 @@ def _admit_and_save_plugin_sets(
     conflict raises its :class:`DependencyConflict` subclass naming *plugin*."""
     from rich.markup import escape
 
-    from hermes_cli.plugins_admission import AdmissionRefused, DependencyConflict, admit_plugin_set_change
+    from hermes_cli.plugins_admission import (
+        AdmissionRefused,
+        DependencyConflict,
+        admit_plugin_set_change,
+    )
 
     try:
         admit_plugin_set_change(
@@ -693,7 +737,10 @@ def cmd_enable(name: str, allow_tool_override: Optional[bool] = None) -> None:
     ``allow_tool_override`` grant changes only with an explicit True/False flag;
     None leaves it unchanged. Bundled plugins are trusted.
     """
-    from hermes_cli.relay_plugin_cutover import LEGACY_RELAY_PLUGIN_KEYS, RELAY_PLUGINS_CONFIG_ENV
+    from hermes_cli.relay_plugin_cutover import (
+        LEGACY_RELAY_PLUGIN_KEYS,
+        RELAY_PLUGINS_CONFIG_ENV,
+    )
     console = _console()
 
     def _refuse_legacy_relay(plugin: str) -> None:
@@ -859,7 +906,10 @@ def _discover_all_plugins() -> list:
     seen: dict = {}
     # memory/, context_engine/, computer_use/ and model-providers/ load through dedicated registries, not the
     # PluginManager opt-in surface, so listing them as toggleable plugins would mislead.
-    from hermes_cli.plugins import discover_entrypoint_manifests, get_bundled_plugins_dir
+    from hermes_cli.plugins import (
+        discover_entrypoint_manifests,
+        get_bundled_plugins_dir,
+    )
     for base, source, skip in (
         (get_bundled_plugins_dir(), "bundled", {"memory", "context_engine", "computer_use", "model-providers"}),
         (_plugins_dir(), "user", set()),

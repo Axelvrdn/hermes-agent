@@ -20,8 +20,11 @@ from typing import Any, Dict, Iterator, List, Optional
 import httpx
 
 from agent.bounded_response import read_streaming_error_body
+from agent.gemini_schema import (
+    prepare_gemini_tool_parameters,
+    sanitize_gemini_tool_parameters,
+)
 from agent.retry_utils import parse_retry_after_seconds
-from agent.gemini_schema import prepare_gemini_tool_parameters, sanitize_gemini_tool_parameters
 
 logger = logging.getLogger(__name__)
 

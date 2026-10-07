@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from tools.mcp_tool import MCPServerTask, _MCP_AVAILABLE
+from tools.mcp_tool import _MCP_AVAILABLE, MCPServerTask
 
 pytestmark = pytest.mark.skipif(not _MCP_AVAILABLE, reason="MCP SDK not installed")
 

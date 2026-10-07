@@ -11,6 +11,7 @@ from tools import mcp_tool
 from tools import mcp_tool_content as _mcp_content
 from tools import mcp_tool_handlers as _mcp_handlers
 
+
 class _FakeContentBlock:
     """Minimal content block with .text and .type attributes."""
 

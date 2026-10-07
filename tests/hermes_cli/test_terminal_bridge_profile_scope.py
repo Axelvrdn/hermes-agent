@@ -21,8 +21,8 @@ import pytest
 
 import hermes_cli.env_loader as env_loader
 from hermes_constants import (
-    set_hermes_home_override,
     reset_hermes_home_override,
+    set_hermes_home_override,
 )
 
 

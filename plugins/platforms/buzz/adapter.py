@@ -30,7 +30,15 @@ from urllib.parse import urlsplit, urlunsplit
 # env, which is that profile's own value.
 from agent.secret_scope import is_multiplex_active as _is_multiplex_active
 from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, get_scoped_secret as _shared_scoped_secret, profile_scoped as _profile_scoped,
+    apply_yaml_bridge as _apply_yaml_bridge,
+)
+from gateway.platforms._shared import (
+    get_scoped_secret as _shared_scoped_secret,
+)
+from gateway.platforms._shared import (
+    profile_scoped as _profile_scoped,
+)
+from gateway.platforms._shared import (
     seed_extra_from_env as _seed_extra_from_env,
 )
 from gateway.platforms._shared import send_error
@@ -61,13 +69,15 @@ def _scoped_platform_setting(env_name, extra, key):
 
 logger = logging.getLogger(__name__)
 
-from gateway.platforms.base import (
-    BasePlatformAdapter, CachedMedia, SendResult, cache_media_bytes_async,
-)
-from gateway.platforms.helpers import cancel_task
-from gateway.platforms.event import MessageEvent, MessageType
 from gateway.config import Platform
-
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    CachedMedia,
+    SendResult,
+    cache_media_bytes_async,
+)
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import cancel_task
 
 _CHAT_KIND = 9  # ``messages get`` also returns housekeeping kinds, never dispatched
 # Chat + forum post/comment; stream kinds wait for confirmed semantics. ``_is_direct_message_event``
@@ -237,7 +247,13 @@ _nostr_auth = _load_nostr_auth()
 
 # bech32 (BIP-173) npub <-> hex so mention detection and allow-lists accept either form.
 from gateway.authz_mixin import (  # noqa: E402
-    _BECH32_CHARSET, _bech32_hrp_expand, _bech32_polymod, _convertbits, _npub_to_hex as npub_to_hex,
+    _BECH32_CHARSET,
+    _bech32_hrp_expand,
+    _bech32_polymod,
+    _convertbits,
+)
+from gateway.authz_mixin import (
+    _npub_to_hex as npub_to_hex,
 )
 
 
@@ -1738,7 +1754,10 @@ class BuzzAdapter(BasePlatformAdapter):
         media_urls: List[str] = []
         media_types: List[str] = []
         media_kinds: List[str] = []
-        from gateway.platforms.base import cache_media_bytes_async, validate_inbound_media_size
+        from gateway.platforms.base import (
+            cache_media_bytes_async,
+            validate_inbound_media_size,
+        )
         for url in urls:
             path_match = _MEDIA_PATH_RE.fullmatch(urlsplit(url).path)
             if path_match is None:
@@ -1825,8 +1844,8 @@ def _profile_buzz_extra() -> dict:
         return {}
     try:
         from gateway.config_loader import platform_section
-        from hermes_constants import get_hermes_home
         from hermes_cli.config import read_user_config_raw
+        from hermes_constants import get_hermes_home
         cfg = read_user_config_raw(Path(get_hermes_home()) / "config.yaml")
     except Exception:
         return {}
@@ -1958,7 +1977,14 @@ async def _standalone_send(
 def interactive_setup() -> None:
     """Interactive ``hermes gateway setup`` flow (lazy CLI imports keep the plugin importable elsewhere)."""
     from hermes_cli.setup import (
-        prompt, prompt_yes_no, save_env_value, get_env_value, print_header, print_info, print_warning, print_success,
+        get_env_value,
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+        prompt_yes_no,
+        save_env_value,
     )
     from hermes_cli.setup_platforms import declines_reconfigure
     def ask(label: str, env: str) -> str:

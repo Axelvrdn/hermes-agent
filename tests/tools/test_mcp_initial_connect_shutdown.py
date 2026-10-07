@@ -6,6 +6,7 @@ import threading
 from types import SimpleNamespace
 
 import pytest
+
 from tools import mcp_tool_discovery as _mcp_discovery
 from tools import mcp_tool_lifecycle as _mcp_lifecycle
 from tools import mcp_tool_loop as _mcp_loop
@@ -112,9 +113,9 @@ def test_initial_connect_failure_revives_same_registered_server(monkeypatch, tmp
     """A cached parked failure must revive through register_mcp_servers()."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
 
+    import tools.registry as registry_module
     from tools import mcp_tool
     from tools.registry import ToolRegistry
-    import tools.registry as registry_module
 
     _reset_mcp_state(mcp_tool)
     created = []

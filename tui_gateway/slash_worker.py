@@ -64,7 +64,10 @@ def _prepare_slash_worker_runtime() -> None:
 
     See #61891.
     """
-    from hermes_cli.mcp_startup import start_background_mcp_discovery, wait_for_mcp_discovery
+    from hermes_cli.mcp_startup import (
+        start_background_mcp_discovery,
+        wait_for_mcp_discovery,
+    )
     start_background_mcp_discovery(logger=logger, thread_name="slash-worker-mcp-discovery")
     wait_for_mcp_discovery()
 
@@ -121,8 +124,9 @@ def _run(cli: "HermesCLI", command: str) -> str:
     worker has no REPL, so the seed is harvested here onto ``cli._harvested_seed``
     and routed back to the gateway, which sends it as the next turn (#107800).
     """
-    import cli as cli_mod
     from rich.console import Console
+
+    import cli as cli_mod
 
     cli._harvested_seed = ""  # one-shot: a fresh run never re-sends a stale seed
     cmd = (command or "").strip()

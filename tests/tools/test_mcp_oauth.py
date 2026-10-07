@@ -1,16 +1,15 @@
 """Tests for tools/mcp_oauth.py — OAuth 2.1 PKCE support for MCP servers."""
 
+import asyncio
 import json
 import stat
 import sys
 import time
 from io import BytesIO
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 from urllib.parse import quote
 
 import pytest
-
-import asyncio
 
 pytest.importorskip(
     "mcp.client.auth.oauth2",
@@ -20,13 +19,13 @@ pytest.importorskip(
 from tools.mcp_oauth import (
     HermesTokenStorage,
     OAuthNonInteractiveError,
-    build_oauth_auth,
-    remove_oauth_tokens,
     _cached_redirect,
     _can_open_browser,
     _is_interactive,
     _make_callback_handler,
     _paste_callback_reader,
+    build_oauth_auth,
+    remove_oauth_tokens,
 )
 
 
@@ -168,7 +167,9 @@ class TestHermesTokenStorage:
 
     def test_corrupt_tokens_returns_none(self, tmp_path, monkeypatch):
         import asyncio
+
         from mcp.shared.auth import OAuthMetadata
+
         from tools.mcp_oauth_device import DeviceOAuthMetadata
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -412,6 +413,7 @@ class TestCallbackPortReservation:
 
     def test_reserved_port_cannot_be_stolen(self):
         import socket as sock
+
         import tools.mcp_oauth as mod
 
         port = mod._reserve_callback_port()
@@ -441,6 +443,7 @@ class TestCallbackPortReservation:
         callback round-trips through it."""
         import asyncio
         import threading
+
         import tools.mcp_oauth as mod
 
         # cimd: false keeps this on the ephemeral branch. A CIMD-eligible
@@ -480,6 +483,7 @@ class TestCallbackPortReservation:
         """
         import asyncio
         import threading
+
         import tools.mcp_oauth as mod
 
         monkeypatch.setattr(mod, "_is_interactive", lambda: False)
@@ -668,7 +672,8 @@ class TestInvalidateTokensOnClientChange:
         client.json — the full config-edit flow drops stale tokens."""
         pytest.importorskip("mcp")
         from tools.mcp_oauth import (
-            _build_client_metadata, _maybe_preregister_client,
+            _build_client_metadata,
+            _maybe_preregister_client,
         )
         storage, d = self._seed(tmp_path, monkeypatch)
         cfg = {"client_id": "client-b", "_resolved_port": 1455}
@@ -709,6 +714,7 @@ class TestIsInteractive:
         (the original fix's defect); a ContextVar does."""
         import asyncio
         import threading
+
         import tools.mcp_oauth as mod
 
         mock_stdin = MagicMock()
@@ -756,8 +762,9 @@ class TestWaitForCallbackNoBlocking:
         Marked interactive so the fail-fast non-interactive guard (#57836)
         does not short-circuit — this test exercises the timeout path.
         """
-        import tools.mcp_oauth as mod
         import asyncio
+
+        import tools.mcp_oauth as mod
 
         mod._oauth_port = _find_free_port()
         monkeypatch.setattr(mod, "_is_interactive", lambda: True)
@@ -802,8 +809,9 @@ class TestNonInteractiveFailFastAtCallbackBoundary:
 
     def test_wait_for_callback_rejects_before_binding_when_noninteractive(self, monkeypatch):
         """No listener bound and no poll loop entered when non-interactive."""
-        import tools.mcp_oauth as mod
         import asyncio
+
+        import tools.mcp_oauth as mod
 
         mod._oauth_port = _find_free_port()
         monkeypatch.setattr(mod, "_is_interactive", lambda: False)
@@ -822,8 +830,9 @@ class TestNonInteractiveFailFastAtCallbackBoundary:
 
     def test_redirect_handler_rejects_and_does_not_open_browser(self, monkeypatch, capsys):
         """Non-interactive redirect must not print an auth URL or open a browser."""
-        import tools.mcp_oauth as mod
         import asyncio
+
+        import tools.mcp_oauth as mod
 
         monkeypatch.setattr(mod, "_is_interactive", lambda: False)
         monkeypatch.setattr(
@@ -845,8 +854,9 @@ class TestNonInteractiveFailFastAtCallbackBoundary:
         interactive path still prints the URL and does not raise, proving the
         guard does not over-fire and swallow legitimate authorization.
         """
-        import tools.mcp_oauth as mod
         import asyncio
+
+        import tools.mcp_oauth as mod
 
         monkeypatch.setattr(mod, "_is_interactive", lambda: True)
         # Local (non-SSH) interactive session with no browser available, so the
@@ -1051,6 +1061,7 @@ def test_cancelled_waiter_releases_pinned_port_for_retry(monkeypatch):
     retry reuses the same port and previously died with EADDRINUSE because the listener thread parked
     in select() kept the closed socket alive (#113771)."""
     import socket
+
     import tools.mcp_oauth as mo
 
     monkeypatch.setattr(mo, "_is_interactive", lambda: False)
@@ -1079,9 +1090,9 @@ def test_cancelled_waiter_releases_pinned_port_for_retry(monkeypatch):
 
 def test_figma_provider_defaults_set_allowlisted_client_name():
     from tools.mcp_oauth import (
-        apply_oauth_provider_defaults,
         _FIGMA_DCR_CLIENT_NAME,
         _FIGMA_DEFAULT_SCOPE,
+        apply_oauth_provider_defaults,
     )
 
     cfg = apply_oauth_provider_defaults(

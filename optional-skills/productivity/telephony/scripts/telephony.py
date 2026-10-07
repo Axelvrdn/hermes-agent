@@ -17,10 +17,10 @@ optional and requires ruamel.yaml (standalone install: ruamel.yaml==0.18.17).
 
 from __future__ import annotations
 
-import logging
 import argparse
 import base64
 import json
+import logging
 import os
 import re
 import sys

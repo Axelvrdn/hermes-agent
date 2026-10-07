@@ -8,10 +8,10 @@ Windows would need a separate ConPTY/``pywinpty`` implementation).
 
 from __future__ import annotations
 
-import logging
 import asyncio
 import errno
 import fcntl  # windows-footgun: ok — POSIX-only module by design (see docstring)
+import logging
 import math
 import os
 import select
@@ -20,7 +20,7 @@ import struct
 import sys
 import termios  # windows-footgun: ok — POSIX-only module by design (see docstring)
 import time
-from typing import Optional, Sequence, Self
+from typing import Optional, Self, Sequence
 
 try:
     import ptyprocess  # type: ignore

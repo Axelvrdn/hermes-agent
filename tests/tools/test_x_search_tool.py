@@ -13,6 +13,7 @@ import json
 
 import requests
 
+
 class _FakeResponse:
     def __init__(self, payload, *, status_code=200, text=None):
         self._payload = payload
@@ -35,8 +36,8 @@ class _FakeResponse:
 # ---------------------------------------------------------------------------
 
 def test_x_search_posts_responses_request(monkeypatch):
-    from tools.x_search_tool import x_search_tool
     from hermes_cli.version_info import get_version_info
+    from tools.x_search_tool import x_search_tool
 
     captured = {}
 

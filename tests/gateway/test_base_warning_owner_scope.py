@@ -160,6 +160,7 @@ async def test_turn_error_preserves_diagnostic_bridge_and_failed_outcome(
         profiles, monkeypatch, setting, diagnostic, caplog):
     import logging
     from types import SimpleNamespace
+
     from agent.monitoring import gateway_health
     root, _ = profiles
     (root / "config.yaml").write_text(

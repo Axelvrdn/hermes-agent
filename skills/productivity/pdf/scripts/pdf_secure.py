@@ -6,9 +6,9 @@ them, but any PDF library can strip them. Only the user password gates content.
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 
 

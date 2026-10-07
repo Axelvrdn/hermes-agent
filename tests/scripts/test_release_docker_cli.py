@@ -2,12 +2,11 @@
 import copy
 import hashlib
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -54,7 +53,11 @@ def test_cli_manifest_and_verify(tmp_path):
 
 
 def test_manifest_admits_the_attempt_ref_image_tag():
-    from scripts.releases.docker import DockerReleaseError, build_manifest, parse_manifest
+    from scripts.releases.docker import (
+        DockerReleaseError,
+        build_manifest,
+        parse_manifest,
+    )
 
     manifest = build_manifest("rc.1-v1.2.3", "a" * 40, {"amd64": "b" * 64, "arm64": "c" * 64})
     assert parse_manifest(json.dumps(manifest).encode())["tag"] == "rc.1-v1.2.3"

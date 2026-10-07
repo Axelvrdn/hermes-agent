@@ -3,10 +3,9 @@ from __future__ import annotations
 import sqlite3
 from unittest.mock import MagicMock
 
-import agent.file_safety as fs
-
 import pytest
 
+import agent.file_safety as fs
 import plugins.memory.retaindb as retaindb
 from plugins.memory.retaindb import RetainDBMemoryProvider
 
@@ -96,7 +95,6 @@ def test_upload_file_allows_regular_file(tmp_path):
 def _capture_initialized_client(monkeypatch, tmp_path):
     """Patch _Client/_WriteQueue/get_hermes_home; return a dict capturing args."""
     import hermes_constants
-
     import plugins.memory.retaindb as retaindb_module
 
     captured: dict = {}

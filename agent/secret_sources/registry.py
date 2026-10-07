@@ -21,8 +21,13 @@ from pathlib import Path
 from typing import Dict, List, MutableMapping, Optional
 
 from agent.secret_sources.base import (
-    SECRET_SOURCE_API_VERSION, ErrorKind, FetchResult, SecretSource, is_valid_env_name,
-    reset_source_environment, set_source_environment,
+    SECRET_SOURCE_API_VERSION,
+    ErrorKind,
+    FetchResult,
+    SecretSource,
+    is_valid_env_name,
+    reset_source_environment,
+    set_source_environment,
 )
 from hermes_constants import hermes_home_key, normalize_scope
 

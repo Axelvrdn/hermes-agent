@@ -9,8 +9,6 @@ from dataclasses import replace
 import pytest
 
 import providers
-from providers.base import ProviderProfile
-
 from agent.credential_pool import (
     AUTH_TYPE_OAUTH,
     STATUS_DEAD,
@@ -22,6 +20,7 @@ from agent.credential_pool import (
 from hermes_cli.auth import read_credential_pool
 from hermes_cli.auth_constants import AuthError
 from hermes_cli.auth_plugin_providers import is_refreshable_oauth_provider
+from providers.base import ProviderProfile
 
 
 def _entry(**over):

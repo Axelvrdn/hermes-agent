@@ -12,9 +12,10 @@ from argparse import Namespace
 
 import pytest
 
-from cron.lifecycle_guard import contains_gateway_lifecycle_command as _contains_gateway_lifecycle_command
+from cron.lifecycle_guard import (
+    contains_gateway_lifecycle_command as _contains_gateway_lifecycle_command,
+)
 from hermes_cli.cron import cron_command
-
 
 # ---------------------------------------------------------------------------
 # Defense 2: _contains_gateway_lifecycle_command pattern tests
@@ -952,13 +953,19 @@ class TestLifecycleGuardModule:
 
 
     def test_prompt_with_command_raises(self):
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         with pytest.raises(GatewayLifecycleBlocked):
             check_gateway_lifecycle("please run hermes gateway restart", None)
 
 
     def test_script_with_command_raises(self, tmp_path, monkeypatch):
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         script = tmp_path / "restart.sh"
         script.write_text("#!/usr/bin/env bash\nhermes gateway restart\n", encoding="utf-8")
         with pytest.raises(GatewayLifecycleBlocked):
@@ -974,7 +981,10 @@ class TestLifecycleGuardModule:
     def test_script_with_neutral_label_submit_or_bootstrap_raises(
         self, tmp_path, line
     ):
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         script = tmp_path / "persistent.sh"
         script.write_text(f"#!/usr/bin/env bash\n{line}\n", encoding="utf-8")
         with pytest.raises(GatewayLifecycleBlocked):
@@ -984,7 +994,10 @@ class TestLifecycleGuardModule:
     def test_binary_script_does_not_silently_bypass(self, tmp_path):
         """Non-UTF-8 bytes used to be swallowed by UnicodeDecodeError; now we
         decode with errors='replace' so the scan always sees the command."""
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         script = tmp_path / "weird.bin"
         script.write_bytes(b"\xfehermes gateway restart\xff")
         with pytest.raises(GatewayLifecycleBlocked):
@@ -995,7 +1008,10 @@ class TestLifecycleGuardModule:
         """A bare/relative script name resolves under HERMES_HOME/scripts (the
         same place the scheduler runs it from) — otherwise the guard would read
         a nonexistent relative path and scan prompt-only content."""
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
         scripts_dir = tmp_path / ".hermes" / "scripts"
         scripts_dir.mkdir(parents=True)
@@ -1032,7 +1048,10 @@ class TestLifecycleGuardModule:
         """#77131: skipping the shell walk for .py must NOT weaken the guard —
         a literal lifecycle command embedded in a .py script is still caught
         by the direct regex scan."""
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         script = tmp_path / "evil.py"
         script.write_text('import os\nos.system("hermes gateway restart")\n', encoding="utf-8")
         with pytest.raises(GatewayLifecycleBlocked):
@@ -1071,7 +1090,10 @@ class TestLifecycleGuardModule:
     def test_shell_script_reference_walk_still_works(self, tmp_path):
         """The referenced-script walk still applies to real shell scripts:
         a .sh script that itself invokes a lifecycle command is caught."""
-        from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
+        from cron.lifecycle_guard import (
+            GatewayLifecycleBlocked,
+            check_gateway_lifecycle,
+        )
         script = tmp_path / "wrapper.sh"
         script.write_text("#!/usr/bin/env bash\n./deploy.sh\n", encoding="utf-8")
         (tmp_path / "deploy.sh").write_text("#!/usr/bin/env bash\nhermes gateway stop\n", encoding="utf-8")

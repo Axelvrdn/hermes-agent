@@ -5,21 +5,26 @@ Handles: hermes gateway [run|start|stop|restart|status|install|uninstall|setup]
 
 import asyncio
 import contextlib
-from hermes_cli.cli_output import line_input  # noqa: F401 — resolved lazily by siblings through the facade
 import json
 import logging
 import os
+import shlex
 import shutil
 import signal
 import socket
-import shlex
 import subprocess
 import sys
 import textwrap
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from hermes_cli import setup_platforms  # noqa: F401 — resolved lazily by siblings through the facade
+
+from hermes_cli import (
+    setup_platforms,  # noqa: F401 — resolved lazily by siblings through the facade
+)
+from hermes_cli.cli_output import (
+    line_input,  # noqa: F401 — resolved lazily by siblings through the facade
+)
 
 # UV's bundled Python ships a minimal PATH; ensure launchctl/systemctl are discoverable.
 if os.name == "posix":
@@ -31,8 +36,10 @@ if os.name == "posix":
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
-from gateway.config import coerce_systemd_watchdog_seconds, load_gateway_config  # noqa: F401 — resolved lazily by siblings through the facade
-from gateway.status import terminate_pid
+from gateway.config import (  # noqa: F401 — resolved lazily by siblings through the facade
+    coerce_systemd_watchdog_seconds,
+    load_gateway_config,
+)
 from gateway.restart import (  # noqa: F401 — resolved lazily by siblings through the facade
     DEFAULT_GATEWAY_RESTART_DRAIN_TIMEOUT,
     EXTERNAL_GATEWAY_SUPERVISOR_ENV,
@@ -45,6 +52,8 @@ from gateway.restart import (  # noqa: F401 — resolved lazily by siblings thro
     resolve_restart_exit_wait_budget,
     resolve_systemd_timeout_stop_sec,
 )
+from gateway.status import terminate_pid
+from hermes_cli.colors import Colors, color
 from hermes_cli.config import (  # noqa: F401 — resolved lazily by siblings through the facade
     get_env_value,
     get_hermes_home,
@@ -57,16 +66,16 @@ from hermes_cli.config import (  # noqa: F401 — resolved lazily by siblings th
 
 # display_hermes_home is imported lazily: hermes_constants may be a cached pre-update version.
 from hermes_cli.setup import (  # noqa: F401 — resolved lazily by siblings through the facade
+    print_error,
     print_header,
     print_info,
     print_success,
     print_warning,
-    print_error,
     prompt,
     prompt_choice,
     prompt_yes_no,
 )
-from hermes_cli.colors import Colors, color
+
 logger = logging.getLogger(__name__)
 
 # Shared ``subprocess.run`` kwargs for text-mode probes (stdout/stderr captured, decode-tolerant).
@@ -573,13 +582,16 @@ def _scan_gateway_pids(
     # Strict matcher shared with gateway.status: requires a real ``gateway run`` argv, so
     # ``gateway status``/``dashboard`` siblings and ``python -m tui_gateway`` don't match.
     from gateway.status import (
+        command_line_names_hermes_home,
+        hermes_home_assignments,
         looks_like_gateway_command_line,
         looks_like_gateway_runtime_command_line,
         profile_flag_value,
-        hermes_home_assignments,
-        command_line_names_hermes_home,
     )
-    from hermes_cli.dashboard_procs import _hermes_home_for_pid, _normalized_home_for_compare
+    from hermes_cli.dashboard_procs import (
+        _hermes_home_for_pid,
+        _normalized_home_for_compare,
+    )
     current_home_path = get_hermes_home().resolve()
     current_home = str(current_home_path)
     # Forward slashes on both sides of the HERMES_HOME= match (mirrors gateway.status), and no
@@ -828,7 +840,10 @@ def find_windows_gateway_services(
             import psutil as psutil_module  # type: ignore[no-redef]  # noqa: PLC0415
         if profile_processes is None:
             profile_processes = find_profile_gateway_processes(strict=True)
-        from hermes_cli.gateway_windows import hermes_owns_windows_service, hermes_service_roots
+        from hermes_cli.gateway_windows import (
+            hermes_owns_windows_service,
+            hermes_service_roots,
+        )
 
         hermes_roots = hermes_service_roots()
         service_names_by_pid: dict[int, set[str]] = {}
@@ -1061,7 +1076,10 @@ def _spawn_gateway_restart_watcher(old_pid: int, run_argv: list[str], *, host: b
     (the watcher would die with the CLI console), so ``windows_detach_popen_kwargs()`` supplies flags."""
     if old_pid <= 0 or not run_argv:
         return False
-    from hermes_cli._subprocess_compat import windows_detach_flags_without_breakaway, windows_detach_popen_kwargs
+    from hermes_cli._subprocess_compat import (
+        windows_detach_flags_without_breakaway,
+        windows_detach_popen_kwargs,
+    )
 
     # Windows: ``run_argv`` leads with the venv's console ``python.exe`` — the interpreter we want:
     # the watcher respawns it under CREATE_NO_WINDOW detach flags so the gateway owns one hidden
@@ -1625,7 +1643,10 @@ def _print_served_ingress_urls(profile: str | None = None) -> None:
     """Callback URLs of inbound-port platforms the live multiplexer serves for secondary profiles
     (the value to paste into the Twilio / LINE / Teams / BlueBubbles console)."""
     try:
-        from hermes_cli.gateway_multiplex_served import format_ingress_url_lines, served_profile_ingress_urls
+        from hermes_cli.gateway_multiplex_served import (
+            format_ingress_url_lines,
+            served_profile_ingress_urls,
+        )
         urls = served_profile_ingress_urls(profile)
     except Exception:
         return
@@ -1642,7 +1663,9 @@ def _print_unserved_shared_ingress(profile: str | None) -> None:
     """Shared-ingress platforms (WhatsApp/Relay) this served profile enabled that the multiplexer runs
     only on the default profile — the ``whatsapp: not served under multiplex`` line."""
     try:
-        from hermes_cli.gateway_multiplex_served import served_profile_unserved_platforms
+        from hermes_cli.gateway_multiplex_served import (
+            served_profile_unserved_platforms,
+        )
         unserved = served_profile_unserved_platforms(profile or "")
     except Exception:
         return
@@ -1685,7 +1708,7 @@ def _print_duplicate_credential_warnings() -> None:
 def _gateway_list() -> None:
     """List every profile and whether its gateway is running."""
     try:
-        from hermes_cli.profiles import list_profiles, get_active_profile_name
+        from hermes_cli.profiles import get_active_profile_name, list_profiles
     except Exception:
         print("Unable to list profiles.")
         return
@@ -1810,14 +1833,20 @@ def _reap_unsupervised_gateway_orphans(
     # (#86098, #87001).
     if is_windows():
         try:
-            from hermes_cli.gateway_windows import get_task_name  # profile-aware task name
+            from hermes_cli.gateway_windows import (
+                get_task_name,  # profile-aware task name
+            )
             _task_name = get_task_name()
         except Exception:
             _task_name = "Hermes_Gateway"
         if _windows_scheduled_task_supervises(_task_name):
             return False
 
-    from gateway.status import _pid_exists, get_process_start_time, write_planned_stop_marker
+    from gateway.status import (
+        _pid_exists,
+        get_process_start_time,
+        write_planned_stop_marker,
+    )
     own = _reaper_exclusion_pids(extra_exclude)
     try:
         # On Windows also drop Task Scheduler-owned candidates (the pidfile-less gap).
@@ -1902,7 +1931,12 @@ def _reaper_exclusion_pids(extra_exclude: set | None) -> set[int]:
     # TerminateProcess, no drain). For a KILL exclusion list a stale PID at worst spares one process;
     # a false negative kills a live gateway. The probe still supplies the runtime-status fallback PID.
     try:
-        from gateway.status import _pid_from_record, _read_gateway_lock_record, _read_pid_record, get_running_pid
+        from gateway.status import (
+            _pid_from_record,
+            _read_gateway_lock_record,
+            _read_pid_record,
+            get_running_pid,
+        )
         recorded_pids = {_pid_from_record(rec) for rec in (_read_pid_record(), _read_gateway_lock_record())}
         recorded_pids.add(get_running_pid(cleanup_stale=False))
         for recorded in recorded_pids:
@@ -2212,7 +2246,10 @@ def _profile_name_from_home(home: Path, default: Path) -> str | None:
 def _native_service_homes() -> set[Path]:
     """This process's native default home plus, when root under sudo, the invoking user's (see
     ``_profile_suffix`` for why sudo matters)."""
-    from hermes_constants import _get_platform_default_hermes_home, sudo_invoker_default_home
+    from hermes_constants import (
+        _get_platform_default_hermes_home,
+        sudo_invoker_default_home,
+    )
 
     homes = {_get_platform_default_hermes_home().resolve()}
     sudo_home = sudo_invoker_default_home()
@@ -2276,6 +2313,7 @@ def _profile_suffix() -> str:
     no native default keeps its own suffix.
     """
     import hashlib
+
     from hermes_constants import get_default_hermes_root
     home = get_hermes_home().resolve()
     if _home_owns_bare_service_name(home):
@@ -2941,6 +2979,7 @@ def launchd_gateway_labels_for_install() -> list[str]:
     the profile layout, NOT by globbing ``~/Library/LaunchAgents``, so a sandboxed HERMES_HOME never
     restarts another install's fleet. Names that can't map to a suffix are skipped."""
     import re as _re
+
     from hermes_cli.profiles import list_profiles
     root_label: list[str] = []
     profile_labels: list[str] = []
@@ -3148,7 +3187,10 @@ def _systemd_watchdog_seconds(hermes_home: str | Path | None = None) -> int:
     """Resolve the managed-overlay-aware watchdog setting for a service home."""
     override_token = reset_home_override = None
     if hermes_home is not None:
-        from hermes_constants import (reset_hermes_home_override, set_hermes_home_override)
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         override_token = set_hermes_home_override(hermes_home)
         reset_home_override = reset_hermes_home_override
     try:
@@ -3201,7 +3243,7 @@ def _append_node_dir_for_service(path_entries: list[str], hermes_root: Path | No
     if managed_dirs:
         return
 
-    from hermes_constants import (hermes_managed_node_tree_present, iter_hermes_node_dirs)
+    from hermes_constants import hermes_managed_node_tree_present, iter_hermes_node_dirs
     managed_node_present = hermes_managed_node_tree_present(hermes_root)
     for directory in iter_hermes_node_dirs(hermes_root) if managed_node_present else ():
         entry = str(directory)
@@ -3221,8 +3263,12 @@ def _systemd_command(argv: list[str]) -> str:
 
 def _prepare_service_launcher(*, system: bool = False, run_as_user: str | None = None) -> None:
     """Publish the source command before a service definition references it."""
-    from hermes_cli._launchers import ENTRY_POINTS, ensure_install_launchers, resolve_store_python
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+    from hermes_cli._launchers import (
+        ENTRY_POINTS,
+        ensure_install_launchers,
+        resolve_store_python,
+    )
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     root, home = PROJECT_ROOT, get_hermes_home()
     owner = None
@@ -3996,49 +4042,48 @@ def systemd_status(deep: bool = False, system: bool = False, full: bool = False)
 
 
 from hermes_cli.gateway_launchd import (  # noqa: E402,F401 — facade re-exports; tests patch here
-    get_launchd_label,
-    _probe_launchd_domain_for_label,
-    _launchd_domain,
-    _LAUNCHD_JOB_UNLOADED_EXIT_CODES,
-    _LAUNCHCTL_DOMAIN_UNSUPPORTED_CODES,
-    _launchd_error_indicates_unloaded,
-    _launchctl_domain_unsupported,
     _LAUNCHCTL_BOOTSTRAP_EIO,
-    _launchctl_bootstrap,
-    _launchd_reload_log_path,
-    _append_launchd_reload_log,
-    _launchd_reload_budget,
-    _launchctl_supervised_pid,
-    _launchctl_label_supervising_process,
-    _retry_launchctl_bootstrap_until_registered,
-    _launchd_unsupported_marker_path,
-    _write_launchd_unsupported_marker,
-    _clear_launchd_unsupported_marker,
-    _launchd_unsupported_marker_exists,
-    _gateway_run_command,
-    _timestamped_stderr_gateway_command,
-    _spawn_detached_gateway,
-    _launchd_fallback_to_detached,
-    _launchd_degrade_or_raise,
-    generate_launchd_plist,
-    launchd_plist_is_current,
-    _spawn_deferred_launchd_reload,
-    refresh_launchd_plist_if_needed,
-    launchd_install,
-    launchd_uninstall,
-    launchd_start,
-    _launchctl_kickstart_current,
-    _launchd_bootstrap_and_kickstart,
-    _launchd_ok,
-    launchd_stop,
-    _launchd_kickstart,
-    _wait_for_launchd_service_pid,
-    launchd_restart,
+    _LAUNCHCTL_DOMAIN_UNSUPPORTED_CODES,
+    _LAUNCHD_JOB_UNLOADED_EXIT_CODES,
     LAUNCHD_SUPERVISION_VERIFY_TIMEOUT,
-    wait_for_launchd_gateway_supervision,
+    _append_launchd_reload_log,
+    _clear_launchd_unsupported_marker,
+    _gateway_run_command,
+    _launchctl_bootstrap,
+    _launchctl_domain_unsupported,
+    _launchctl_kickstart_current,
+    _launchctl_label_supervising_process,
+    _launchctl_supervised_pid,
+    _launchd_bootstrap_and_kickstart,
+    _launchd_degrade_or_raise,
+    _launchd_domain,
+    _launchd_error_indicates_unloaded,
+    _launchd_fallback_to_detached,
+    _launchd_kickstart,
+    _launchd_ok,
+    _launchd_reload_budget,
+    _launchd_reload_log_path,
+    _launchd_unsupported_marker_exists,
+    _launchd_unsupported_marker_path,
+    _probe_launchd_domain_for_label,
+    _retry_launchctl_bootstrap_until_registered,
+    _spawn_deferred_launchd_reload,
+    _spawn_detached_gateway,
+    _timestamped_stderr_gateway_command,
+    _wait_for_launchd_service_pid,
+    _write_launchd_unsupported_marker,
+    generate_launchd_plist,
+    get_launchd_label,
+    launchd_install,
+    launchd_plist_is_current,
+    launchd_restart,
+    launchd_start,
     launchd_status,
+    launchd_stop,
+    launchd_uninstall,
+    refresh_launchd_plist_if_needed,
+    wait_for_launchd_gateway_supervision,
 )
-
 
 # Cached launchd domain — probe once per process invocation.
 _resolved_launchd_domain: str | None = None
@@ -4217,7 +4262,10 @@ def named_profile_served_by_running_multiplexer(profile_name: str | None = None)
         return False
 
     try:
-        from hermes_cli.gateway_multiplex_served import live_default_gateway_pid, recorded_served_profiles
+        from hermes_cli.gateway_multiplex_served import (
+            live_default_gateway_pid,
+            recorded_served_profiles,
+        )
         if live_default_gateway_pid() is None:
             return False
         from hermes_cli.profiles import normalize_profile_name
@@ -4277,8 +4325,8 @@ def _named_profile_refused_under_multiplexer(force: bool = False) -> bool:
         return False
     try:
         suffix = _current_profile_name()
-        from hermes_constants import profile_name_for_home
         from hermes_cli.profiles import profile_is_standalone
+        from hermes_constants import profile_name_for_home
         # A profile that authored gateway.standalone: true opted out of the host multiplexer: it is
         # allowed a gateway of its own without --force. Only a RUNNING host record that still lists
         # it (the host has not rescanned since the key was set) is refused with the rescan remedy.
@@ -4329,8 +4377,8 @@ def _named_profile_refused_under_multiplexer(force: bool = False) -> bool:
     print("  A separate per-profile gateway (for a fleet split across UNIX users or a")
     print(f"  HERMES_HOME outside profiles/) needs --force:  hermes -p {suffix} gateway install --force")
     print()
-    from hermes_constants import display_hermes_home
     from hermes_cli.gateway_multiplex_mode import STANDALONE_DEPRECATION_NOTICE
+    from hermes_constants import display_hermes_home
     print("  Temporary compatibility path while multiplexing gaps are closed: set")
     print(f"  gateway.standalone: true in {display_hermes_home(get_hermes_home())}/config.yaml,")
     print("  then wait for the host gateway to rescan (<=30s) or send its rescan-profiles control verb.")
@@ -4461,7 +4509,10 @@ def _guard_existing_gateway_process_conflict(replace: bool = False) -> None:
         # get_running_pid() filters by the current profile's HERMES_HOME; warn if the PID file
         # belongs to another profile (user switched profiles while the old gateway still runs).
         try:
-            from gateway.status import _read_pid_record, _pid_record_belongs_to_current_profile
+            from gateway.status import (
+                _pid_record_belongs_to_current_profile,
+                _read_pid_record,
+            )
             stale = _read_pid_record()
             if stale is not None and not _pid_record_belongs_to_current_profile(stale):
                 logger.warning(
@@ -4508,8 +4559,11 @@ def _apply_startup_watchdog_config() -> None:
     idempotent, so a config timeout needs disarm+re-arm. GatewayRunner disarms once the loop is live."""
     try:
         from hermes_startup_watchdog import (
-            ENV_STARTUP_WATCHDOG, ENV_STARTUP_WATCHDOG_TIMEOUT_S, arm_startup_watchdog,
-            disarm_startup_watchdog, startup_watchdog_disabled,
+            ENV_STARTUP_WATCHDOG,
+            ENV_STARTUP_WATCHDOG_TIMEOUT_S,
+            arm_startup_watchdog,
+            disarm_startup_watchdog,
+            startup_watchdog_disabled,
         )
         _sw_timeout_bridged = False
         try:
@@ -4553,7 +4607,8 @@ def _absorb_windows_console_controls() -> None:
 def _make_exit_diag():
     """``_exit_diag(tag, **extra)`` recorder writing ``logs/gateway-exit-diag.log`` — captures every way
     ``asyncio.run()`` can return, for chasing silent Windows gateway deaths. HERMES_GATEWAY_EXIT_DIAG=0 opts out."""
-    from datetime import datetime as _dt, timezone as _tz
+    from datetime import datetime as _dt
+    from datetime import timezone as _tz
 
     def _exit_diag(tag: str, **extra: object) -> None:
         if os.environ.get("HERMES_GATEWAY_EXIT_DIAG", "1") != "1":
@@ -4713,40 +4768,39 @@ def run_gateway(verbose: int = 0, quiet: bool = False, replace: bool = False, fo
 
 from hermes_cli.gateway_setup_wizard import (  # noqa: E402,F401 — facade re-exports; tests patch here
     _PLATFORMS,
-    _all_platforms,
-    _platform_status,
-    _set_platform_unauthorized_dm_behavior,
-    _print_setup_header,
-    _confirm_reconfigure,
-    _offer_home_channel,
-    _save_env_values,
-    _prompt_csv,
     _UNAUTHORIZED_ACCESS_CHOICES,
-    _prompt_unauthorized_access,
-    _telegram_auto_setup,
-    _clean_discord_ids,
-    _prompt_allowlist_var,
-    _setup_standard_platform,
     _WEIXIN_DM_POLICIES,
     _WEIXIN_GROUP_NOTE,
-    _setup_weixin,
-    _setup_qqbot,
-    _signal_line_input,
-    _setup_signal,
-    _builtin_setup_fn,
-    _configure_platform,
-    _wizard_offer_service_action,
-    _setup_service_action,
-    _WIZARD_BANNER,
     _WIZARD_BACKEND_LABELS,
+    _WIZARD_BANNER,
     _WIZARD_NO_SERVICE_LINES,
-    _wizard_service_status_block,
-    _wizard_platform_loop,
+    _all_platforms,
+    _builtin_setup_fn,
+    _clean_discord_ids,
+    _configure_platform,
+    _confirm_reconfigure,
+    _offer_home_channel,
+    _platform_status,
+    _print_setup_header,
+    _prompt_allowlist_var,
+    _prompt_csv,
+    _prompt_unauthorized_access,
+    _save_env_values,
+    _set_platform_unauthorized_dm_behavior,
+    _setup_qqbot,
+    _setup_service_action,
+    _setup_signal,
+    _setup_standard_platform,
+    _setup_weixin,
+    _signal_line_input,
+    _telegram_auto_setup,
     _wizard_install_service,
+    _wizard_offer_service_action,
+    _wizard_platform_loop,
     _wizard_post_setup,
+    _wizard_service_status_block,
     gateway_setup,
 )
-
 
 # Operator wording for the out-of-loop watchdog exit reasons stamped by gateway/shutdown_watchdog.py.
 _WATCHDOG_EXIT_REASONS = {
@@ -4762,7 +4816,11 @@ def _runtime_health_lines() -> list[str]:
     """Summarize the latest persisted gateway runtime health state."""
     try:
         from gateway.status import (
-            read_runtime_status, runtime_status_heartbeat_age_s, runtime_status_is_stale, runtime_status_pid_is_live)
+            read_runtime_status,
+            runtime_status_heartbeat_age_s,
+            runtime_status_is_stale,
+            runtime_status_pid_is_live,
+        )
     except Exception:
         return []
 
@@ -4893,7 +4951,9 @@ def _dispatch_via_service_manager_if_s6(action: str, profile: str | None = None)
     """Dispatch start/stop/restart via s6 inside an s6 container; True iff dispatched (caller returns).
     Profile defaults to the current one; missing slot / s6 errors become actionable CLI messages."""
     from hermes_cli.service_manager import (
-        GatewayNotRegisteredError, detect_service_manager, get_service_manager,
+        GatewayNotRegisteredError,
+        detect_service_manager,
+        get_service_manager,
         register_unregistered_profile_gateway,
     )
 
@@ -4926,7 +4986,7 @@ def _dispatch_all_via_service_manager_if_s6(action: str) -> bool:
     """Dispatch ``--all`` stop/restart to every registered profile gateway under s6; True iff dispatched.
     A bare pkill is seen by s6-supervise as a crash and restarted ~1s later; the service manager flips
     ``want up``/``want down`` correctly. ``start --all`` is not a CLI surface."""
-    from hermes_cli.service_manager import (detect_service_manager, get_service_manager)
+    from hermes_cli.service_manager import detect_service_manager, get_service_manager
     if detect_service_manager() != "s6" or action not in ("stop", "restart"):
         return False
     mgr = get_service_manager()
@@ -5336,7 +5396,10 @@ def _print_unfolded_gateway_note(owner) -> None:
 
 
 def _cmd_start(args):
-    from hermes_cli.gateway_profile_lifecycle import host_scope_for_all_verb, profile_lifecycle
+    from hermes_cli.gateway_profile_lifecycle import (
+        host_scope_for_all_verb,
+        profile_lifecycle,
+    )
     if profile_lifecycle("start", args):
         return
     system = getattr(args, "system", False)
@@ -5379,7 +5442,10 @@ def _cmd_start(args):
 
 def _cmd_stop(args):
     _refuse_from_inside_gateway("stop", "restart loops")
-    from hermes_cli.gateway_profile_lifecycle import host_scope_for_all_verb, profile_lifecycle
+    from hermes_cli.gateway_profile_lifecycle import (
+        host_scope_for_all_verb,
+        profile_lifecycle,
+    )
     if profile_lifecycle("stop", args):
         return
     stop_all = getattr(args, "all", False)
@@ -5612,7 +5678,8 @@ def _cmd_restart(args):
     # run below would stamp this CLI's PID as the gateway and wedge every respawn (#110637).
     from gateway.status import get_running_pid
     from hermes_cli.gateway_supervised_restart import (
-        gateway_declares_external_supervisor, restart_externally_supervised_gateway,
+        gateway_declares_external_supervisor,
+        restart_externally_supervised_gateway,
     )
     supervised_pid = get_running_pid()
     if supervised_pid and gateway_declares_external_supervisor(supervised_pid):

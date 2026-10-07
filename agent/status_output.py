@@ -142,7 +142,9 @@ class StatusOutputMixin:
         if getattr(self, "_last_ctx_overflow_warn", None) == _warn_key:
             return
         self._last_ctx_overflow_warn = _warn_key
-        from agent.conversation_compression import CONTEXT_OVERFLOW_BLOCKED_WARNING_TEMPLATE
+        from agent.conversation_compression import (
+            CONTEXT_OVERFLOW_BLOCKED_WARNING_TEMPLATE,
+        )
 
         # cooldown + anti-thrash (ineffective) are both "compression blocked".
         if _warn_kind in ("cooldown", "ineffective"):

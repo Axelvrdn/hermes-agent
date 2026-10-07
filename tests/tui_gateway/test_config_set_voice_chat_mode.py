@@ -6,8 +6,8 @@ never lands on disk.
 """
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from tui_gateway import server
 
 

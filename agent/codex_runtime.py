@@ -15,10 +15,10 @@ from contextlib import suppress
 from types import SimpleNamespace
 from typing import Any, Callable, Dict, List
 
-from agent.stream_single_writer import claim_stream_writer, stream_writer_is_current
-from agent.transports.hermes_tools_mcp_server import HERMES_TOOLS_MCP_SERVER_NAME
 from agent.sdk_transform_bypass import bypass_sdk_request_transform
 from agent.stream_diag import buffer_connect_exhausted_notice
+from agent.stream_single_writer import claim_stream_writer, stream_writer_is_current
+from agent.transports.hermes_tools_mcp_server import HERMES_TOOLS_MCP_SERVER_NAME
 from agent.usage_anchor import set_usage_anchor
 
 logger = logging.getLogger(__name__)
@@ -612,7 +612,10 @@ def _ensure_codex_session(agent, messages: List[Dict[str, Any]] | None = None) -
         _close_codex_session(agent)
     resume_thread_id = None if getattr(agent, "_codex_session_prompt", None) is not None else _stored_codex_thread_id(agent)
     from agent.runtime_cwd import resolve_agent_cwd
-    from agent.transports.codex_app_server_session import CodexAppServerSession, _ServerRequestRouting
+    from agent.transports.codex_app_server_session import (
+        CodexAppServerSession,
+        _ServerRequestRouting,
+    )
     from hermes_cli.codex_runtime_switch import get_configured_codex_binary
     from hermes_cli.config import load_config
     # Approval callback: Hermes' standard prompt flow when a CLI thread installed one. `hermes chat -q`, cron and
@@ -1105,6 +1108,7 @@ def run_codex_stream(agent, api_kwargs: dict, client: Any = None, on_first_delta
     """One streaming Responses API request over raw ``responses.create(stream=True)`` events."""
     import httpx as _httpx
     from openai import APIConnectionError as _APIConnectionError
+
     from agent import relay_llm
     transport_errors = (_httpx.RemoteProtocolError, _httpx.ReadTimeout, _httpx.ReadError, _httpx.ConnectError, ConnectionError)
     active_client = client or agent._ensure_primary_openai_client(reason="codex_stream_direct")

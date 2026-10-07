@@ -1,9 +1,9 @@
 """Tests for Discord ignored_channels and no_thread_channels config."""
 
-from types import SimpleNamespace
-from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock
 import sys
+from datetime import datetime, timezone
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 

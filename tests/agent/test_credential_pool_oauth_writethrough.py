@@ -22,6 +22,7 @@ import time
 
 import pytest
 
+import hermes_cli.auth_codex as auth_codex
 from agent import credential_pool as CP
 from agent.credential_pool import (
     AUTH_TYPE_OAUTH,
@@ -30,7 +31,6 @@ from agent.credential_pool import (
     load_pool,
 )
 from hermes_cli import auth as A
-import hermes_cli.auth_codex as auth_codex
 
 
 def _write_store(path, store):

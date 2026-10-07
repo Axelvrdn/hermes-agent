@@ -13,7 +13,6 @@ and env var when a credential is newly ingested.
 import logging
 
 
-
 class TestAuxiliaryOpenrouterDefaultIsFree:
     def test_builtin_openrouter_default_is_free_sku(self):
         from agent import auxiliary_client as ac

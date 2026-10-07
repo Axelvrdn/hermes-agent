@@ -14,8 +14,19 @@ from typing import Any, Dict, List, Optional
 import httpx
 
 from plugins.web._common import (
-    SEARCH_LIMIT_CAP, BaseWebSearchProvider, document, extract_fail, http_status_detail, provider_env, run_extract,
-    run_search, search_fail, search_ok, setup_schema, title_hit, use_keyless,
+    SEARCH_LIMIT_CAP,
+    BaseWebSearchProvider,
+    document,
+    extract_fail,
+    http_status_detail,
+    provider_env,
+    run_extract,
+    run_search,
+    search_fail,
+    search_ok,
+    setup_schema,
+    title_hit,
+    use_keyless,
 )
 
 logger = logging.getLogger(__name__)

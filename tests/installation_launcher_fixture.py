@@ -1,8 +1,8 @@
 """A real published launcher driving a disposable CLI, without installing deps."""
 
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 from hermes_cli._launchers import mint_launcher
 

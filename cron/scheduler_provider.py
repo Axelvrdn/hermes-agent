@@ -109,7 +109,11 @@ def routed_profile_fire(home=None) -> bool:
     the span the profile's secret scope covers, and the restart-safe handoff marks the worker
     payload with it. The launch identity is ``get_routing_process_hermes_home()`` (gateway/AGENTS.md
     "One launch-home identity")."""
-    from hermes_constants import get_hermes_home, get_routing_process_hermes_home, hermes_home_key
+    from hermes_constants import (
+        get_hermes_home,
+        get_routing_process_hermes_home,
+        hermes_home_key,
+    )
 
     target = home if home is not None else get_hermes_home()
     return hermes_home_key(target) != hermes_home_key(get_routing_process_hermes_home())
@@ -119,7 +123,7 @@ def routed_profile_fire(home=None) -> bool:
 def _profile_cron_scope(home):
     """Scope the calling thread to one profile's home + cron store for the block."""
     from cron.jobs import use_cron_store
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     # Record per-profile heartbeat after each tick cycle. Distinguish a COMPLETED cycle (``_tick_error``
     # unset) — where each profile's beat reflects its own outcome, so a yielding profile does not darken
@@ -200,7 +204,11 @@ class CronScheduler(ABC):
     def claim_fire(self, job_id: str, *, force: bool = False, manual: bool = False) -> dict | None:
         """Durably claim one fire + create its audit attempt. Transports call this synchronously
         before acknowledging, then pass the exact snapshot to ``fire_claimed`` off-thread."""
-        from cron.executions import create_execution, finish_execution, set_execution_occurrence
+        from cron.executions import (
+            create_execution,
+            finish_execution,
+            set_execution_occurrence,
+        )
         from cron.jobs import claim_job_for_fire
 
         execution = create_execution(job_id, source=self.name)
@@ -318,8 +326,12 @@ def fire_overdue_jobs(
         return 0
 
     from cron.jobs import (
-        ONESHOT_GRACE_SECONDS, _elapsed_seconds, _ensure_aware, _hermes_now,
-        is_job_runnable, load_jobs,
+        ONESHOT_GRACE_SECONDS,
+        _elapsed_seconds,
+        _ensure_aware,
+        _hermes_now,
+        is_job_runnable,
+        load_jobs,
     )
 
     if now is None:
@@ -439,9 +451,13 @@ class InProcessCronScheduler(CronScheduler):
         self, stop_event, *, adapters=None, loop=None, interval=60, can_dispatch=None,
         profile_homes=None, profile_adapters=None, default_profile=None, profile_gate=None,
     ):
+        from cron.jobs import (
+            clear_ticker_error,
+            record_ticker_error,
+            record_ticker_heartbeat,
+        )
         from cron.scheduler import CronTickYielded
         from cron.scheduler import tick as cron_tick
-        from cron.jobs import clear_ticker_error, record_ticker_error, record_ticker_heartbeat
         from cron.scheduler_ownership import register_ticked_homes
         from hermes_constants import get_process_hermes_home
 
@@ -538,13 +554,18 @@ class InProcessCronScheduler(CronScheduler):
         """Tick every profile's store, each scoped via ``_profile_cron_scope``. ``profile_gate(name,
         home)``, when given, is consulted every cycle; a rejected profile is neither ticked nor
         heartbeated."""
-        from cron.scheduler import tick as cron_tick
-        from cron.scheduler import CronTickYielded, _is_fd_exhaustion
-        from cron.scheduler_preflight import (
-            SharedRouteAdapters, _primary_profile_routes_for_current_home,
+        from cron.jobs import (
+            clear_ticker_error,
+            record_ticker_error,
+            record_ticker_heartbeat,
         )
-        from cron.jobs import clear_ticker_error, record_ticker_error, record_ticker_heartbeat
+        from cron.scheduler import CronTickYielded, _is_fd_exhaustion
+        from cron.scheduler import tick as cron_tick
         from cron.scheduler_ownership import register_ticked_homes
+        from cron.scheduler_preflight import (
+            SharedRouteAdapters,
+            _primary_profile_routes_for_current_home,
+        )
 
         initial_homes = _existing_profile_homes(profile_homes)
         register_ticked_homes([_profile_entry(entry)[1] for entry in initial_homes])

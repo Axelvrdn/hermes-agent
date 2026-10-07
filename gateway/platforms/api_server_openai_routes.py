@@ -555,7 +555,10 @@ class OpenAICompatRoutesMixin:
         self, body: Dict[str, Any], *, session_id, gateway_session_key, model_alias) -> tuple:
         """Resolve the model_routes alias + per-request overrides ->
         ``(route, agent_overrides, error_response_or_None)``."""
-        from gateway.platforms.api_server import _error_response, _request_agent_overrides
+        from gateway.platforms.api_server import (
+            _error_response,
+            _request_agent_overrides,
+        )
         route = self._resolve_route(model_alias)
         overrides = _request_agent_overrides(
             body, virtual_model=self._model_name, allow_bare_model=self._direct_model_requests)
@@ -636,10 +639,21 @@ class OpenAICompatRoutesMixin:
     async def _handle_chat_completions(self, request: "web.Request") -> "web.Response":
         """POST /v1/chat/completions — OpenAI Chat Completions format."""
         from gateway.platforms.api_server import (
-            ThreadSafeAsyncQueue, _api_request_profile, _chat_usage_payload, _coerce_request_bool,
-            _content_has_visible_payload, _derive_chat_session_id, _error_response, _invalid_request,
-            _multimodal_validation_error, _normalize_chat_content, _normalize_multimodal_content,
-            _openai_error, _redact_api_error_text, _resolve_media_to_data_urls)
+            ThreadSafeAsyncQueue,
+            _api_request_profile,
+            _chat_usage_payload,
+            _coerce_request_bool,
+            _content_has_visible_payload,
+            _derive_chat_session_id,
+            _error_response,
+            _invalid_request,
+            _multimodal_validation_error,
+            _normalize_chat_content,
+            _normalize_multimodal_content,
+            _openai_error,
+            _redact_api_error_text,
+            _resolve_media_to_data_urls,
+        )
         # Bound total in-flight agent runs (configurable; #7483).
         limited = self._concurrency_limited_response()
         if limited is not None:
@@ -707,7 +721,9 @@ class OpenAICompatRoutesMixin:
                     # the wake target bind it, and a detached delegation delivery row persisted
                     # on the tip is what this continuation consumes. Same canonical resolution
                     # the delivery writer (gateway/wake.py) and /v1/runs use; fails open.
-                    from gateway.platforms.api_server_runs import _resolve_live_session_id
+                    from gateway.platforms.api_server_runs import (
+                        _resolve_live_session_id,
+                    )
                     session_id = await _resolve_live_session_id(self, provided_session_id)
                     history = await asyncio.to_thread(db.get_messages_as_conversation, session_id)
             except Exception as e:
@@ -853,7 +869,11 @@ class OpenAICompatRoutesMixin:
         ``route`` is the logical endpoint (``/v1/...`` and its ``/p/<profile>/v1/...`` alias are the same
         route), folded into the key because the store keeps the fingerprint only as the slot's value.
         """
-        from gateway.platforms.api_server import _error_response, _idem_cache, _make_request_fingerprint
+        from gateway.platforms.api_server import (
+            _error_response,
+            _idem_cache,
+            _make_request_fingerprint,
+        )
         idempotency_key = request.headers.get("Idempotency-Key")
         try:
             if idempotency_key:
@@ -890,7 +910,11 @@ class OpenAICompatRoutesMixin:
         """Stream ``chat.completion.chunk`` frames from the agent's delta queue. On client
         disconnect the agent is interrupted (stops LLM calls), then its task wrapper cancelled."""
         from gateway.platforms.api_server import (
-            _abandon_agent_task, _chat_usage_payload, _resolve_media_to_data_urls, _sse_frame)
+            _abandon_agent_task,
+            _chat_usage_payload,
+            _resolve_media_to_data_urls,
+            _sse_frame,
+        )
         response = await self._prepare_sse_response(request, session_id, gateway_session_key)
 
         def _chunk(delta: Dict[str, Any], finish_reason=None, **extra) -> Dict[str, Any]:
@@ -987,7 +1011,10 @@ class OpenAICompatRoutesMixin:
         or ``response.failed``. On disconnect the agent is interrupted and, with ``store=True``,
         an ``incomplete`` snapshot replaces ``in_progress`` so GET / chaining still work.
         """
-        from gateway.platforms.api_server import _abandon_agent_task, _redact_api_error_text
+        from gateway.platforms.api_server import (
+            _abandon_agent_task,
+            _redact_api_error_text,
+        )
         response = await self._prepare_sse_response(request, session_id, gateway_session_key)
         st = _ResponsesStream(
             self, response, response_id=response_id, model=model, created_at=created_at,
@@ -1034,10 +1061,18 @@ class OpenAICompatRoutesMixin:
     async def _handle_responses(self, request: "web.Request") -> "web.Response":
         """POST /v1/responses — OpenAI Responses API format."""
         from gateway.platforms.api_server import (
-            ThreadSafeAsyncQueue, _auto_truncate_response_history, _coerce_request_bool,
-            _content_has_visible_payload, _error_response, _invalid_request,
-            _multimodal_validation_error, _normalize_multimodal_content, _redact_api_error_text,
-            _resolve_media_to_data_urls, _responses_usage_payload)
+            ThreadSafeAsyncQueue,
+            _auto_truncate_response_history,
+            _coerce_request_bool,
+            _content_has_visible_payload,
+            _error_response,
+            _invalid_request,
+            _multimodal_validation_error,
+            _normalize_multimodal_content,
+            _redact_api_error_text,
+            _resolve_media_to_data_urls,
+            _responses_usage_payload,
+        )
         # Bound total in-flight agent runs (configurable; #7483).
         limited = self._concurrency_limited_response()
         if limited is not None:

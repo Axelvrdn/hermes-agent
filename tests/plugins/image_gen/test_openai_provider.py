@@ -10,7 +10,6 @@ import pytest
 
 import plugins.image_gen.openai as openai_plugin
 
-
 # 1×1 transparent PNG — valid bytes for save_b64_image()
 _PNG_HEX = (
     "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4"
@@ -166,6 +165,7 @@ class TestEndpointConfig:
         ``generate()`` must hand ``openai.OpenAI`` a client with no ``HTTPProxy`` mount, while a plain
         ``httpx.Client()`` under the same conditions (control) does pick the proxy up (#64888)."""
         import httpx
+
         import hermes_yaml as yaml
         for key in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY", "https_proxy", "http_proxy", "all_proxy",
                     "NO_PROXY", "no_proxy"):

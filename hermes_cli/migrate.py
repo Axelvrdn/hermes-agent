@@ -30,7 +30,12 @@ def _fail(message: str) -> int:
 def cmd_migrate_xai(args: Any) -> int:
     """Run xAI May-15 model migration in dry-run or apply mode."""
     from hermes_cli.xai_retirement import (
-        MIGRATION_GUIDE_URL, RETIREMENT_DATE, apply_migration, find_retired_xai_refs, format_issue)
+        MIGRATION_GUIDE_URL,
+        RETIREMENT_DATE,
+        apply_migration,
+        find_retired_xai_refs,
+        format_issue,
+    )
 
     apply = bool(getattr(args, "apply", False))
     no_backup = bool(getattr(args, "no_backup", False))

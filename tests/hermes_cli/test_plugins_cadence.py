@@ -91,7 +91,7 @@ def test_auto_apply_selects_only_updateable_git_and_persists_receipt(homed, enab
 @pytest.mark.parametrize('failed', [False, True])
 def test_housekeeping_runs_real_cadence_and_backs_off(homed, monkeypatch, caplog, failed):
     import gateway.run as gateway
-    from hermes_cli import plugins_updates, plugins_cmd
+    from hermes_cli import plugins_cmd, plugins_updates
     from pm import receipt
 
     calls, applied = [], []

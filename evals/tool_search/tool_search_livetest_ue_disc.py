@@ -19,8 +19,13 @@ Scoring per family:
 """
 from __future__ import annotations
 
+import json
 import logging
-import json, os, shutil, sys, time, traceback
+import os
+import shutil
+import sys
+import time
+import traceback
 from pathlib import Path
 from typing import Any, Dict, List
 

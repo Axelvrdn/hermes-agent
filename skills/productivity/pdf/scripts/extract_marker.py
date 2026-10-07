@@ -13,13 +13,14 @@ Usage:
     python extract_marker.py document.pdf --json        # Structured output
     python extract_marker.py document.pdf --use_llm     # LLM-boosted accuracy
 """
-import sys
 import os
+import sys
+
 
 def convert(path, output_dir=None, output_format="markdown", use_llm=False):
+    from marker.config.parser import ConfigParser
     from marker.converters.pdf import PdfConverter
     from marker.models import create_model_dict
-    from marker.config.parser import ConfigParser
 
     config_dict = {}
     if use_llm:

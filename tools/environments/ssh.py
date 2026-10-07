@@ -14,9 +14,20 @@ from typing import Iterable
 from tools.environments.base import BaseEnvironment, EnvironmentConnectionError
 from tools.environments.base_output import _popen_bash
 from tools.environments.file_sync import (
-    FileSyncManager, iter_sync_files, quoted_mkdir_command, quoted_rm_command, unique_parent_dirs)
+    FileSyncManager,
+    iter_sync_files,
+    quoted_mkdir_command,
+    quoted_rm_command,
+    unique_parent_dirs,
+)
 from tools.environments.remote_common import (
-    bash_argv, client_env_with, load_hermes_env_vars, prepend_unset, resolve_passthrough_env, run_capture)
+    bash_argv,
+    client_env_with,
+    load_hermes_env_vars,
+    prepend_unset,
+    resolve_passthrough_env,
+    run_capture,
+)
 
 logger = logging.getLogger(__name__)
 

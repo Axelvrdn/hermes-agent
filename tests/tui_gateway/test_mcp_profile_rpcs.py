@@ -178,13 +178,13 @@ def test_status_does_not_mix_launch_runtime_into_another_profile(hermes_root):
 
 
 def test_status_includes_named_profile_runtime_in_multiplex(hermes_root):
+    import tools.mcp_tool as mcp_tool
     from agent.secret_scope import is_multiplex_active, set_multiplex_active
     from hermes_constants import (
         hermes_home_key,
         reset_hermes_home_override,
         set_hermes_home_override,
     )
-    import tools.mcp_tool as mcp_tool
 
     _result(
         _call(

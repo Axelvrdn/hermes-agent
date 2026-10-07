@@ -24,7 +24,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator
 
-
 logger = logging.getLogger(__name__)
 
 MARKER_DIRNAME = "provider_setup_markers"
@@ -111,7 +110,11 @@ def provider_setup_fields(*, surface: Any, provider: Any, event: Any, failure_cl
 def setup_failure_class(exc: BaseException) -> str:
     """Closed class for an exception that ended a setup flow; inert (type checks only). ``cancelled``
     and ``expired`` (the sign-in code ran out before approval) are recorded ``abandoned``."""
-    from hermes_cli.auth_error_copy import is_cancelled, is_device_code_expired, is_network_error
+    from hermes_cli.auth_error_copy import (
+        is_cancelled,
+        is_device_code_expired,
+        is_network_error,
+    )
 
     names = {cls.__name__ for cls in type(exc).__mro__}
     if isinstance(getattr(exc, "setup_failure_class", None), str):  # classified where it was raised

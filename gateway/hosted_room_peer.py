@@ -21,9 +21,18 @@ from functools import lru_cache, partial
 from pathlib import Path
 from typing import Any, Callable, Iterable, Literal, Mapping
 
-from gateway.hosted_room_execution_policy import RoomExecutionPolicy, execution_policy_mapping
-from gateway.hosted_rooms_common import bounded_int, clock, compact_json, exact_fields, identifier, text
-
+from gateway.hosted_room_execution_policy import (
+    RoomExecutionPolicy,
+    execution_policy_mapping,
+)
+from gateway.hosted_rooms_common import (
+    bounded_int,
+    clock,
+    compact_json,
+    exact_fields,
+    identifier,
+    text,
+)
 
 # v2 adds authority/member lineage to scoped grants and is deliberately not wire-compatible with the
 # unpublished v1 draft; mixed gateways fall back to Desktop-driven rooms rather than accept a weaker token.
@@ -293,7 +302,11 @@ def local_room_link_endpoint(value: Any | None = None) -> dict[str, Any]:
 def _room_link_url_from_config(home: str) -> str | None:
     """Read the restart-scoped user setting without polling config on probes."""
     from gateway.config import load_gateway_config
-    from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
+    from hermes_constants import (
+        get_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
     if str(get_hermes_home()) == home:
         value = load_gateway_config().room_link_url
     else:

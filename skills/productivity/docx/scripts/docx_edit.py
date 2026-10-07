@@ -33,7 +33,6 @@ import json
 import sys
 
 from docx import Document
-
 from docx_common import iter_all_paragraphs, replace_in_paragraph
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"

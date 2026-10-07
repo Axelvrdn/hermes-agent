@@ -22,24 +22,40 @@ from typing import Any, Optional
 from fastapi import APIRouter, HTTPException
 
 from gateway.status import (
-    multiplexer_liveness_for_profile, profile_name_for_home, profile_platforms_from_multiplexer,
-    resolve_gateway_liveness, retained_gateway_state)
+    multiplexer_liveness_for_profile,
+    profile_name_for_home,
+    profile_platforms_from_multiplexer,
+    resolve_gateway_liveness,
+    retained_gateway_state,
+)
 from hermes_cli._subprocess_compat import windows_hide_flags
 from hermes_cli.config import OPTIONAL_ENV_VARS, get_env_path
-from hermes_constants import get_process_hermes_home
 from hermes_cli.web_deps import LateState, late
-from hermes_cli.web_server_gateway import _restart_gateway_after
-from hermes_cli.web_server_messaging import (
-    _TelegramOnboardingPairing, _WhatsAppOnboardingSession, _messaging_platform_catalog, _telegram_onboarding_error_message, _telegram_onboarding_lock, _telegram_onboarding_pairings, _whatsapp_onboarding_payload, _whatsapp_onboarding_sessions,
+from hermes_cli.web_models import (
+    MessagingPlatformUpdate,
+    TelegramOnboardingApply,
+    TelegramOnboardingStart,
+    WhatsAppOnboardingApply,
+    WhatsAppOnboardingStart,
 )
 from hermes_cli.web_routers._common import (
-    REDACTED_CREDENTIAL_WRITE_DETAIL, http_failure, is_redacted_credential_preview,
+    REDACTED_CREDENTIAL_WRITE_DETAIL,
+    http_failure,
+    is_redacted_credential_preview,
     redacted_credential_preview,
 )
-from hermes_cli.web_models import (
-    MessagingPlatformUpdate, TelegramOnboardingApply, TelegramOnboardingStart,
-    WhatsAppOnboardingApply, WhatsAppOnboardingStart,
+from hermes_cli.web_server_gateway import _restart_gateway_after
+from hermes_cli.web_server_messaging import (
+    _messaging_platform_catalog,
+    _telegram_onboarding_error_message,
+    _telegram_onboarding_lock,
+    _telegram_onboarding_pairings,
+    _TelegramOnboardingPairing,
+    _whatsapp_onboarding_payload,
+    _whatsapp_onboarding_sessions,
+    _WhatsAppOnboardingSession,
 )
+from hermes_constants import get_process_hermes_home
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -384,9 +400,9 @@ def _ensure_whatsapp_bridge_dependencies(bridge_dir: Path) -> None:
     if (bridge_dir / "node_modules").exists():
         return
 
+    import pm
     from hermes_constants import find_node_executable, with_hermes_node_path
     from utils import env_int
-    import pm
 
     npm = find_node_executable("npm")
 
@@ -946,7 +962,10 @@ def _notify_multiplexer_hot_serve(profile: Optional[str]) -> bool:
     """True when a live multiplexer serves the written profile and was told to rebuild its adapters.
     Unscoped (no ``?profile=``) means THIS process's profile: Desktop routes a pooled
     ``hermes --profile X serve`` without the query (#109088), so X must resolve here too."""
-    from hermes_cli.gateway import _current_profile_name, named_profile_served_by_running_multiplexer
+    from hermes_cli.gateway import (
+        _current_profile_name,
+        named_profile_served_by_running_multiplexer,
+    )
     from hermes_cli.gateway_multiplex_served import notify_multiplexer_profiles_changed
     name = (profile or "").strip() or _current_profile_name()
     if not name or name == "default" or not named_profile_served_by_running_multiplexer(name):

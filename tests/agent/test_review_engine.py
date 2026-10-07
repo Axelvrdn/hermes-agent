@@ -6,8 +6,8 @@ delegate_task (including the internal per-call ``credentials_cfg``
 override), and the shared dispatch-note formatter.
 """
 
-import logging
 import json
+import logging
 import time
 from unittest.mock import MagicMock
 
@@ -22,6 +22,7 @@ from agent.review_engine import (
 )
 from tools import async_delegation as ad
 from tools.process_registry import process_registry
+
 
 @pytest.fixture(autouse=True)
 def _clean_state():

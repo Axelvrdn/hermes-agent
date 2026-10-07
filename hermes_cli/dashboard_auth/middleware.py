@@ -21,16 +21,29 @@ from hermes_cli.dashboard_auth import list_session_providers
 from hermes_cli.dashboard_auth.audit import AuditEvent, audit_log
 from hermes_cli.dashboard_auth.base import ProviderError
 from hermes_cli.dashboard_auth.cookies import (
-    clear_session_cookies, clear_sso_attempt_cookie, detect_https, read_session_cookies,
-    read_session_provider, read_sso_attempt_cookie, set_session_cookies,
-    set_session_provider_cookie, set_sso_attempt_cookie)
+    clear_session_cookies,
+    clear_sso_attempt_cookie,
+    detect_https,
+    read_session_cookies,
+    read_session_provider,
+    read_sso_attempt_cookie,
+    set_session_cookies,
+    set_session_provider_cookie,
+    set_sso_attempt_cookie,
+)
 from hermes_cli.dashboard_auth.prefix import prefix_from_request
 from hermes_cli.dashboard_auth.public_paths import PUBLIC_API_PATHS
 from hermes_cli.dashboard_auth.refresh_singleflight import refresh_session_coalesced
 from hermes_cli.dashboard_auth.request_utils import (
-    access_token_max_age as _expires_in_seconds, client_ip as _client_ip,
-    extract_bearer as _extract_bearer, is_safe_next_path, scan_session_providers,
-    unreachable_response)
+    access_token_max_age as _expires_in_seconds,
+)
+from hermes_cli.dashboard_auth.request_utils import client_ip as _client_ip
+from hermes_cli.dashboard_auth.request_utils import extract_bearer as _extract_bearer
+from hermes_cli.dashboard_auth.request_utils import (
+    is_safe_next_path,
+    scan_session_providers,
+    unreachable_response,
+)
 
 _log = logging.getLogger(__name__)
 

@@ -35,8 +35,8 @@ from pathlib import Path
 import pytest
 
 import hermes_state
-import hermes_state_repair
 import hermes_state_common
+import hermes_state_repair
 from hermes_state import SessionDB
 from hermes_state_repair import repair_state_db_schema
 

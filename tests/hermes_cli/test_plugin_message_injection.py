@@ -4,12 +4,11 @@ from queue import SimpleQueue
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-import hermes_yaml as yaml
-
 import hermes_cli.plugins as plugins_mod
+import hermes_yaml as yaml
 from agent import secret_scope
-from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
+from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
 
 def _context(name: str = "notify-plugin") -> tuple[PluginContext, PluginManager]:

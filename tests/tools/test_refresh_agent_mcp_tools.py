@@ -206,6 +206,7 @@ def test_refresh_is_thread_safe_under_concurrent_calls(monkeypatch):
 def test_wait_returns_instantly_when_no_discovery_thread(monkeypatch):
     """The common case (no MCP / discovery done) pays ~0s regardless of bound."""
     import time
+
     from hermes_cli import mcp_startup
 
     monkeypatch.setattr(mcp_startup, "_mcp_discovery_thread", {})
@@ -412,8 +413,8 @@ def test_a_pin_never_re_adds_a_tool_this_sessions_config_excludes(monkeypatch):
 
 def test_reprobe_tool_availability_drops_cached_check_fn_verdicts(monkeypatch):
     """/reload-mcp is the explicit hatch: a cached False must be re-probed."""
-    from tools import registry as registry_mod
     import model_tools
+    from tools import registry as registry_mod
 
     verdict = {"ok": False}
 
@@ -486,8 +487,8 @@ def test_authorized_message_agent_survives_every_snapshot_rebuild(
     managed_bot_home, monkeypatch, rebuild
 ):
     """Compaction, live refreshes and eviction/resume all preserve the guarded tool."""
-    from tools.bot_mode_dm import ensure_message_agent_tool
     from tools import registry as registry_mod
+    from tools.bot_mode_dm import ensure_message_agent_tool
 
     agent = _bot_mode_agent(managed_bot_home)
     _serve(monkeypatch, [_tool("read_file")])

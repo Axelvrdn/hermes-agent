@@ -95,16 +95,16 @@ def register_all_web_providers():
     This is the single source of truth for the provider list used by
     test classes that need the registry populated for dispatch checks.
     """
-    from agent.web_search_registry import register_provider, _reset_for_tests
+    from agent.web_search_registry import _reset_for_tests, register_provider
     from plugins.web.brave_free.provider import BraveFreeWebSearchProvider
     from plugins.web.ddgs.provider import DDGSWebSearchProvider
     from plugins.web.exa.provider import ExaWebSearchProvider
     from plugins.web.firecrawl.provider import FirecrawlWebSearchProvider
-    from plugins.web.parallel.provider import ParallelWebSearchProvider
     from plugins.web.keenable.provider import KeenableWebSearchProvider
-    from plugins.web.tavily.provider import TavilyWebSearchProvider
+    from plugins.web.parallel.provider import ParallelWebSearchProvider
     from plugins.web.perplexity.provider import PerplexityWebSearchProvider
     from plugins.web.searxng.provider import SearXNGWebSearchProvider
+    from plugins.web.tavily.provider import TavilyWebSearchProvider
     from plugins.web.xai.provider import XAIWebSearchProvider
 
     _reset_for_tests()

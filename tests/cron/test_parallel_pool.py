@@ -8,6 +8,7 @@ import concurrent.futures
 import threading
 import time
 
+
 class TestRunningJobGuard:
     """_running_job_ids prevents double-dispatch of active jobs."""
 

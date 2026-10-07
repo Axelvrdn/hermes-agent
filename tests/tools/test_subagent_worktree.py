@@ -5,10 +5,10 @@ implementation from documented behavior).
 """
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
-import shutil
 import unittest
 from pathlib import Path
 from unittest import mock

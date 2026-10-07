@@ -7,7 +7,6 @@ and the PINNED_THRESHOLDS escape-hatch for read_file.
 
 from unittest.mock import patch
 
-
 from tools.budget_config import (
     DEFAULT_BUDGET,
     DEFAULT_RESULT_SIZE_CHARS,
@@ -15,7 +14,6 @@ from tools.budget_config import (
     BudgetConfig,
     budget_for_context_window,
 )
-
 
 # ---------------------------------------------------------------------------
 # Module-level constants

@@ -84,6 +84,7 @@ def test_uv_bionic_row_matches_supplier(lock):
 ])
 def test_registered_bionic_stage_preserves_host_facts(tmp_path, monkeypatch, lock, name, main, on_path):
     import hashlib
+
     from pm import paths
     from pm.install import stage_only
     from pm.lock import Lockfile

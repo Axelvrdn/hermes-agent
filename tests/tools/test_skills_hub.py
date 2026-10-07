@@ -4,7 +4,7 @@ import json
 import os
 import time
 from typing import List, Optional
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
@@ -12,12 +12,24 @@ import pytest
 from tools.skills_hub import HubLockFile, TapsManager, append_audit_log
 from tools.skills_hub_github import GitHubAuth, GitHubSource
 from tools.skills_hub_install import (
-    bundle_content_hash, check_for_skill_updates, install_from_quarantine, quarantine_bundle,
+    bundle_content_hash,
+    check_for_skill_updates,
+    install_from_quarantine,
+    quarantine_bundle,
 )
-from tools.skills_hub_models import SkillBundle, SkillMeta, SkillSource, _referenced_support_paths
+from tools.skills_hub_models import (
+    SkillBundle,
+    SkillMeta,
+    SkillSource,
+    _referenced_support_paths,
+)
 from tools.skills_hub_official import OptionalSkillSource
 from tools.skills_hub_search import (
-    HERMES_INDEX_TTL, _load_hermes_index, create_source_router, parallel_search_sources, unified_search,
+    HERMES_INDEX_TTL,
+    _load_hermes_index,
+    create_source_router,
+    parallel_search_sources,
+    unified_search,
 )
 from tools.skills_hub_skillssh import SkillsShSource
 from tools.skills_hub_sources import LobeHubSource, UrlSource, WellKnownSkillSource

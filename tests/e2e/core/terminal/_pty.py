@@ -11,8 +11,8 @@ is a paste and inserts a newline); we wait until the typed text is echoed on scr
 
 from __future__ import annotations
 
-import logging
 import fcntl
+import logging
 import os
 import re
 import signal

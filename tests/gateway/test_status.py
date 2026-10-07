@@ -144,7 +144,10 @@ class TestGatewayPidState:
         for a named profile), gateway identity files should still be written to
         the process-level HERMES_HOME, not the profile's directory.  See #56986.
         """
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         process_home = tmp_path / "default"
         process_home.mkdir()
@@ -1503,7 +1506,10 @@ class TestLaunchdPlistRespawnGovernance:
         """
         import re
 
-        from gateway.restart import LAUNCHD_GUI_EXIT_TIMEOUT_CLAMP_S, LAUNCHD_STOP_CLEANUP_RESERVE_S
+        from gateway.restart import (
+            LAUNCHD_GUI_EXIT_TIMEOUT_CLAMP_S,
+            LAUNCHD_STOP_CLEANUP_RESERVE_S,
+        )
         from hermes_cli.gateway import generate_launchd_plist
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))

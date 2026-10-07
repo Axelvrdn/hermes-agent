@@ -10,40 +10,78 @@ the dispatcher and the cached local model + idle-unload state; backends live in
 """
 
 import contextvars
+import importlib.util as _ilu
 import logging
 import os
 import shutil
 import threading
 import time
-import importlib.util as _ilu
 from contextlib import ExitStack
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-from utils import is_truthy_value
-from tools.transcription_common import (
-    BUILTIN_STT_PROVIDERS, CLOUD_STT_PROVIDERS, DEFAULT_ELEVENLABS_STT_MODEL,
-    DEFAULT_GROQ_STT_MODEL, DEFAULT_LOCAL_MODEL, DEFAULT_MISTRAL_STT_MODEL, DEFAULT_PROVIDER,
-    DEFAULT_STT_MODEL, LOCAL_STT_COMMAND_ENV, LOCAL_STT_LANGUAGE_ENV,
-    normalize_xai_stt_model, _error_result, _get_stt_section, _ok_result)
 from tools.transcription_audio import (
-    _convert_caf_to_wav, _prepare_audio_for_transcription, _trim_silence_for_cloud_stt,
-    _validate_audio_file, _validate_audio_source_file)
-from tools.transcription_chunking import exceeds_upload_limit, transcribe_oversized, upload_limit
-from tools.transcription_local import (
-    _get_idle_unload_seconds, _has_local_command, _join_confident_segments,
-    _load_local_whisper_model, _looks_like_cuda_lib_error, _normalize_local_model,
-    _normalize_local_stt_language, _transcribe_local_command, _try_lazy_install_stt,
-    build_local_transcribe_kwargs)
+    _convert_caf_to_wav,
+    _prepare_audio_for_transcription,
+    _trim_silence_for_cloud_stt,
+    _validate_audio_file,
+    _validate_audio_source_file,
+)
+from tools.transcription_chunking import (
+    exceeds_upload_limit,
+    transcribe_oversized,
+    upload_limit,
+)
+
 # The ``_transcribe_<provider>`` handlers are looked up in this module's globals by _dispatch_stt_provider.
 from tools.transcription_cloud import (  # noqa: F401  (handlers dispatched via globals())
-    _has_xai_stt_credentials, _resolve_openai_audio_client_config, _transcribe_deepinfra,
-    _transcribe_elevenlabs, _transcribe_groq, _transcribe_mistral, _transcribe_openai,
-    _transcribe_xai)
+    _has_xai_stt_credentials,
+    _resolve_openai_audio_client_config,
+    _transcribe_deepinfra,
+    _transcribe_elevenlabs,
+    _transcribe_groq,
+    _transcribe_mistral,
+    _transcribe_openai,
+    _transcribe_xai,
+)
 from tools.transcription_command import (
-    _apply_pre_transcription_hook, _dispatch_to_plugin_provider, _enforce_prompt_length_limit,
-    _resolve_command_stt_provider_config, _transcribe_command_stt, _unregistered_stt_provider_error)
+    _apply_pre_transcription_hook,
+    _dispatch_to_plugin_provider,
+    _enforce_prompt_length_limit,
+    _resolve_command_stt_provider_config,
+    _transcribe_command_stt,
+    _unregistered_stt_provider_error,
+)
+from tools.transcription_common import (
+    BUILTIN_STT_PROVIDERS,
+    CLOUD_STT_PROVIDERS,
+    DEFAULT_ELEVENLABS_STT_MODEL,
+    DEFAULT_GROQ_STT_MODEL,
+    DEFAULT_LOCAL_MODEL,
+    DEFAULT_MISTRAL_STT_MODEL,
+    DEFAULT_PROVIDER,
+    DEFAULT_STT_MODEL,
+    LOCAL_STT_COMMAND_ENV,
+    LOCAL_STT_LANGUAGE_ENV,
+    _error_result,
+    _get_stt_section,
+    _ok_result,
+    normalize_xai_stt_model,
+)
+from tools.transcription_local import (
+    _get_idle_unload_seconds,
+    _has_local_command,
+    _join_confident_segments,
+    _load_local_whisper_model,
+    _looks_like_cuda_lib_error,
+    _normalize_local_model,
+    _normalize_local_stt_language,
+    _transcribe_local_command,
+    _try_lazy_install_stt,
+    build_local_transcribe_kwargs,
+)
+from utils import is_truthy_value
 
 logger = logging.getLogger(__name__)
 

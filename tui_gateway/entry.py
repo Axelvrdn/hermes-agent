@@ -15,10 +15,9 @@ import time
 import traceback
 from contextlib import suppress
 
+from tui_gateway import server
 from tui_gateway._env import env_float
 from tui_gateway._stdin_recovery import handle_spurious_eof
-
-from tui_gateway import server
 from tui_gateway.event_replay import replay_epoch
 from tui_gateway.server import _CRASH_LOG, _err, dispatch, resolve_skin, write_json
 from tui_gateway.transport import TeeTransport

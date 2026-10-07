@@ -34,7 +34,7 @@ def _install_anthropic_adapter_mocks():
 
 def test_custom_endpoint_anthropic_messages_builds_anthropic_wrapper():
     """api_mode=anthropic_messages → returns AnthropicAuxiliaryClient, not OpenAI."""
-    from agent.auxiliary_client import _try_custom_endpoint, AnthropicAuxiliaryClient
+    from agent.auxiliary_client import AnthropicAuxiliaryClient, _try_custom_endpoint
 
     with patch(
         "agent.auxiliary_client._resolve_custom_runtime",
@@ -91,7 +91,7 @@ def test_custom_endpoint_anthropic_messages_falls_back_when_sdk_missing():
 
 def test_custom_endpoint_chat_completions_still_uses_openai_wire():
     """Regression: default path (no api_mode) must remain OpenAI client."""
-    from agent.auxiliary_client import _try_custom_endpoint, AnthropicAuxiliaryClient
+    from agent.auxiliary_client import AnthropicAuxiliaryClient, _try_custom_endpoint
 
     with patch(
         "agent.auxiliary_client._resolve_custom_runtime",

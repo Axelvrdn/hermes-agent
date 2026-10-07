@@ -11,10 +11,9 @@ Build the real image and verify the actual runtime behavior:
 """
 from __future__ import annotations
 
+import subprocess
 import tempfile
 from pathlib import Path
-
-import subprocess
 
 from tests.docker.conftest import (
     docker_exec,
@@ -23,7 +22,6 @@ from tests.docker.conftest import (
     start_container,
     wait_for_container_ready,
 )
-
 
 # The files the stage2 hook should repair (mirrors the allowlist in
 # stage2-hook.sh). We test a representative subset.

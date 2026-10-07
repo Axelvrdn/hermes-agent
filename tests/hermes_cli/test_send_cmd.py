@@ -180,8 +180,8 @@ def test_list_includes_configured_platform_without_discovered_channels(
 ):
     """A configured platform absent from the channel directory must still be
     listed (with a no-channels hint) instead of silently omitted."""
-    import types
     import sys
+    import types
 
     class _FakePlatform:
         def __init__(self, value):
@@ -216,8 +216,8 @@ def test_list_includes_configured_platform_without_discovered_channels(
     assert "no channels discovered yet" in out
 
 def test_list_json_includes_configured_platform(monkeypatch, capsys):
-    import types
     import sys
+    import types
 
     class _FakePlatform:
         def __init__(self, value):
@@ -308,6 +308,7 @@ def test_load_hermes_env_utf8_bom_preserves_first_key(tmp_path, monkeypatch):
     monkeypatch.delenv("SEND_BOM_SECOND", raising=False)
 
     from importlib import reload
+
     import hermes_cli.config as _hc_config
     reload(_hc_config)
 
@@ -329,6 +330,7 @@ def test_load_hermes_env_bomless_utf8_still_loads(tmp_path, monkeypatch):
     monkeypatch.delenv("SEND_PLAIN_TOKEN", raising=False)
 
     from importlib import reload
+
     import hermes_cli.config as _hc_config
     reload(_hc_config)
 
@@ -355,6 +357,7 @@ def test_load_hermes_env_latin1_fallback_still_loads(tmp_path, monkeypatch):
     monkeypatch.delenv("SEND_L1_NOTE", raising=False)
 
     from importlib import reload
+
     import hermes_cli.config as _hc_config
     reload(_hc_config)
 
@@ -379,6 +382,7 @@ def test_load_hermes_env_latin1_fallback_overrides_shell(tmp_path, monkeypatch):
     monkeypatch.setenv("SEND_OVR_LABEL", "stale-shell-value")
 
     from importlib import reload
+
     import hermes_cli.config as _hc_config
     reload(_hc_config)
 
@@ -404,6 +408,7 @@ def test_load_hermes_env_fallback_read_error_is_swallowed(tmp_path, monkeypatch)
     monkeypatch.setattr(Path, "read_bytes", _boom)
 
     from importlib import reload
+
     import hermes_cli.config as _hc_config
     reload(_hc_config)
 
@@ -421,6 +426,7 @@ def test_load_hermes_env_bom_only_env_is_noop(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(hermes_home))
 
     from importlib import reload
+
     import hermes_cli.config as _hc_config
     reload(_hc_config)
 

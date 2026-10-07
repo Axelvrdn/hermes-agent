@@ -17,6 +17,7 @@ import pytest
 
 from agent import secret_scope as ss
 
+
 @pytest.fixture(autouse=True)
 def _reset_multiplex():
     ss.set_multiplex_active(False)

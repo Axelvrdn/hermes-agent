@@ -63,7 +63,9 @@ _UNSET = object()
 
 
 def _resolve_proxy_url(target_hosts=None) -> str | None:
-    from gateway.platforms.base import resolve_proxy_url  # env vars + macOS system proxy
+    from gateway.platforms.base import (
+        resolve_proxy_url,  # env vars + macOS system proxy
+    )
     return resolve_proxy_url("TELEGRAM_PROXY", target_hosts=target_hosts)
 
 

@@ -5,9 +5,9 @@ one stage against real git repositories in ``tmp_path``.
 """
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
+from pathlib import Path
 
 import pytest
 

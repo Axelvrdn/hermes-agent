@@ -11,9 +11,9 @@ Flattening uses pypdf appearance merging; verify visually for exotic widgets.
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 
 

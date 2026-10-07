@@ -27,9 +27,9 @@ Probes:
    client, and the replacement must complete a real HTTP round-trip.
 """
 
-import logging
 import asyncio
 import json
+import logging
 import sys
 import time
 
@@ -158,8 +158,9 @@ def _diag(server, label, extra=""):
 
 async def test_drain_recovers_after_server_half_close_live(monkeypatch):
     """Drain must retire a real CLOSE-WAIT pooled connection within bound."""
-    from telegram.request import HTTPXRequest
     from unittest.mock import MagicMock
+
+    from telegram.request import HTTPXRequest
 
     import plugins.platforms.telegram.adapter as tg_adapter
 
@@ -223,8 +224,9 @@ async def test_drain_bounded_and_functional_when_close_wedges_live(monkeypatch):
     because initialize() would otherwise no-op on is_closed=False, and
     (c) leave the polling request able to complete a REAL round-trip.
     """
-    from telegram.request import HTTPXRequest
     from unittest.mock import MagicMock
+
+    from telegram.request import HTTPXRequest
 
     import plugins.platforms.telegram.adapter as tg_adapter
 

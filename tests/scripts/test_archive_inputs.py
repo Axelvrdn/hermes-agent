@@ -2,9 +2,9 @@
 import hashlib
 import importlib
 import json
-from pathlib import Path
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import pytest
 
@@ -13,7 +13,7 @@ from pm.downloader import HashError
 from scripts.ci import archive_inputs as inputs
 from scripts.releases import r2
 from tests.scripts.test_release_r2 import r2_server  # noqa: F401
-from tests.scripts.test_termux_runtime_libs import _Server, _build_deb
+from tests.scripts.test_termux_runtime_libs import _build_deb, _Server
 
 
 def write_pins(repo, packages, libs=None):
@@ -156,6 +156,7 @@ def test_racing_misses_verify_the_immutable_winner(tmp_path, upstream, r2_server
 
 def test_all_digests_start_together_and_seed_every_reference(tmp_path, upstream, r2_server, monkeypatch):
     from collections import Counter
+
     from pm.store import Store
     from scripts.termux.stage_runtime_libs import download_path
 
@@ -252,9 +253,10 @@ def test_committed_inventory_matches_every_http_pin():
 
 def test_ci_toolchain_seed_runs_before_the_tool_installer(tmp_path, upstream, r2_server, monkeypatch):
     from types import SimpleNamespace
-    from scripts.ci import setup_toolchain
+
     from pm import paths
     from pm.store import Store, current_target
+    from scripts.ci import setup_toolchain
 
     server, root = upstream
     body = (root / "lib.deb").read_bytes()

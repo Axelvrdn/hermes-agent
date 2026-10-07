@@ -778,6 +778,7 @@ def _run_long_preview_helper(monkeypatch, tmp_path, preview_length=0):
     that _run_agent reads — so the gateway picks it up the same way production does.
     """
     import asyncio
+
     import hermes_yaml as yaml
 
     monkeypatch.setenv("HERMES_TOOL_PROGRESS_MODE", "all")

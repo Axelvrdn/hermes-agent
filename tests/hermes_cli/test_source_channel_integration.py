@@ -1,17 +1,17 @@
 """Source channel tracers through real HTTP, Git, and completion boundaries."""
 import argparse
-from copy import deepcopy
 import json
-from pathlib import Path
 import subprocess
+from copy import deepcopy
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from hermes_cli import main, source_releases, update_cmd
+from hermes_cli.config import require_readable_config_before_write
 from hermes_cli.subcommands.update import build_update_parser
 from hermes_cli.update_channel import channel_record, set_install_channel
-from hermes_cli.config import require_readable_config_before_write
 
 # These tests model channel archives and the reader's own transport.
 pytestmark = pytest.mark.real_release_channels
@@ -171,7 +171,7 @@ def test_unpublished_main_record_keeps_following_the_git_branch(source, monkeypa
 
 
 def test_passive_check_reports_retirement_without_adopting_it(source, monkeypatch):
-    from hermes_cli import source_check, banner
+    from hermes_cli import banner, source_check
 
     name = "preview-retiring"
     set_install_channel(name, source.root)
@@ -225,6 +225,7 @@ def channel_archive(source, monkeypatch):
 
 def publish_channel_build(channel_archive, name, build_id, commit, *, sequence=1, stable=False):
     from hashlib import sha256
+
     from hermes_cli.release_channels import canonical_json
 
     archive, base = channel_archive
@@ -366,6 +367,7 @@ def test_retirement_refuses_to_downgrade_newer_source(
 @pytest.mark.parametrize("dirty", [False, True])
 def test_tagless_zip_apply_uses_pinned_source_archive(source, monkeypatch, dirty):
     import urllib.request
+
     from hermes_cli import update_cmd_zip
 
     name = "zip-preview"

@@ -30,8 +30,8 @@ from typing import Any, Dict
 
 import pytest
 
-from tests.e2e.core.delivery._fake_platform import GatewayProcess, wait_until
 from tests.e2e.core._pending_fixes import known_gate
+from tests.e2e.core.delivery._fake_platform import GatewayProcess, wait_until
 from tests.e2e.core.security._helpers import BoundaryBreach, run_hermes, write_home
 from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall
 

@@ -15,7 +15,7 @@ import tempfile
 import threading
 import time
 
-from tools.budget_config import DEFAULT_PREVIEW_SIZE_CHARS, BudgetConfig, DEFAULT_BUDGET
+from tools.budget_config import DEFAULT_BUDGET, DEFAULT_PREVIEW_SIZE_CHARS, BudgetConfig
 
 logger = logging.getLogger(__name__)
 PERSISTED_OUTPUT_TAG = "<persisted-output>"

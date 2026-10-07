@@ -5,6 +5,7 @@ from __future__ import annotations
 import textwrap
 
 import pytest
+
 from hermes_cli import main_install_repair
 
 pytestmark = pytest.mark.platforms("windows")

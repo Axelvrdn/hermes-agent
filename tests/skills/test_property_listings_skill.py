@@ -4,7 +4,6 @@ from pathlib import Path
 
 from tools.skills_hub_official import OptionalSkillSource
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 

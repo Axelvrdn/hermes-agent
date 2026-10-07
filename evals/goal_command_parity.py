@@ -7,9 +7,9 @@ Compare state and queued prompts; output includes presentation differences.
 import importlib
 import json
 import os
-from pathlib import Path
 import queue
 import sys
+from pathlib import Path
 
 root, home, out = map(Path, sys.argv[1:4])
 home.mkdir(parents=True, exist_ok=False)

@@ -21,7 +21,6 @@ from agent.context_compressor import (
     _strip_images_from_content,
 )
 
-
 IMG_URL = {
     "type": "image_url",
     "image_url": {"url": "data:image/png;base64," + ("A" * 1024)},

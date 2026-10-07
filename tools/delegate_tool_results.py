@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import threading
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlsplit, urlunsplit
@@ -170,8 +170,9 @@ def _spill_summary_to_file(task_index: int, summary: str) -> Optional[str]:
     ``credential_files._CACHE_DIRS``, so the parent's terminal/``read_file`` can page it on any backend). Absolute
     path, or None on failure — the trimmed head+tail is still returned regardless."""
     try:
-        from hermes_constants import get_hermes_dir
         import datetime as _dt
+
+        from hermes_constants import get_hermes_dir
         cache_dir = get_hermes_dir("cache/delegation", "delegation_cache")
         cache_dir.mkdir(parents=True, exist_ok=True)
         path = cache_dir / f"subagent-summary-{task_index}-{_dt.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.txt"
@@ -299,8 +300,8 @@ _CHILD_CONSTRUCTION_LOCK = threading.RLock()
 
 def _build_child_preserving_parent_tools(**kwargs):
     """Build a child without leaking its resolved toolset into the parent."""
-    from tools.delegate_tool import _build_child_agent
     import model_tools
+    from tools.delegate_tool import _build_child_agent
     with _CHILD_CONSTRUCTION_LOCK:
         parent_tool_names = list(model_tools._last_resolved_tool_names)
         try:

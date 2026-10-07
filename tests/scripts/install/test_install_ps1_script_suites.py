@@ -7,9 +7,9 @@ so each suite runs under both: a construct that only parses under 7 is a broken
 installer for most of the people hitting it.
 """
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 

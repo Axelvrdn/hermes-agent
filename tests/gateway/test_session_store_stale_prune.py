@@ -14,7 +14,6 @@ from unittest.mock import MagicMock, patch
 from gateway.config import GatewayConfig, Platform
 from gateway.session import SessionEntry, SessionSource, SessionStore
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

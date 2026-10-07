@@ -810,8 +810,8 @@ def _park_metric_receipt(data: dict[str, Any], enabled: Optional[bool]) -> None:
     """Keep the bounded fields for the next Hermes start (stdlib only): ``report_pending_updates``
     records them when collection is on, ``begin_process`` purges them when it is off. Collection
     known off: park nothing and purge what an earlier run parked."""
-    from hermes_constants import get_hermes_home
     from hermes_cli.runtime_state import _atomic_bytes
+    from hermes_constants import get_hermes_home
 
     pending = get_hermes_home() / "telemetry" / "shared_metrics" / "pending_updates"  # = PENDING_DIRNAME
     if enabled is False:
@@ -1005,7 +1005,11 @@ def read_receipt_for_action(action_id: str) -> Optional[dict[str, Any]]:
 
 def _profile_homes() -> list[tuple[str, Path]]:
     """``(profile, home)`` for the default home plus every valid named profile dir, sorted."""
-    from hermes_cli.profiles import _get_default_hermes_home, _get_profiles_root, _PROFILE_ID_RE
+    from hermes_cli.profiles import (
+        _PROFILE_ID_RE,
+        _get_default_hermes_home,
+        _get_profiles_root,
+    )
 
     homes: list[tuple[str, Path]] = []
     default_home = _get_default_hermes_home()

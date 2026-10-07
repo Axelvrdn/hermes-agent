@@ -125,7 +125,7 @@ def test_billing_rotation_marks_all_entries_sharing_failed_key(tmp_path, monkeyp
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_EXHAUSTED
+    from agent.credential_pool import STATUS_EXHAUSTED, load_pool
 
     pool = load_pool("custom")
 
@@ -180,7 +180,7 @@ def test_stale_credential_id_prefers_api_key_hint(tmp_path, monkeypatch):
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_EXHAUSTED
+    from agent.credential_pool import STATUS_EXHAUSTED, load_pool
 
     pool = load_pool("anthropic")
     next_entry = pool.mark_exhausted_and_rotate(
@@ -239,7 +239,7 @@ def test_unmatched_api_key_hint_rotates_without_benching_innocent_key(tmp_path, 
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_DEAD, STATUS_EXHAUSTED
+    from agent.credential_pool import STATUS_DEAD, STATUS_EXHAUSTED, load_pool
 
     # Freshly loaded pool: current() is None, exactly the shape of the bug.
     pool = load_pool("anthropic")
@@ -302,7 +302,7 @@ def test_token_invalidated_marks_credential_dead(tmp_path, monkeypatch):
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_DEAD
+    from agent.credential_pool import STATUS_DEAD, load_pool
 
     pool = load_pool("openai-codex")
     assert pool.select().id == "cred-dead"
@@ -374,7 +374,7 @@ def test_dead_credential_never_re_enters_rotation_after_ttl(tmp_path, monkeypatc
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_DEAD
+    from agent.credential_pool import STATUS_DEAD, load_pool
 
     pool = load_pool("openai-codex")
     selected = pool.select()
@@ -427,7 +427,7 @@ def test_429_rate_limit_still_uses_exhausted_not_dead(tmp_path, monkeypatch):
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_EXHAUSTED
+    from agent.credential_pool import STATUS_EXHAUSTED, load_pool
 
     pool = load_pool("openai-codex")
     assert pool.select().id == "cred-1"
@@ -483,7 +483,7 @@ def test_generic_401_without_terminal_reason_still_uses_exhausted(tmp_path, monk
         },
     )
 
-    from agent.credential_pool import load_pool, STATUS_EXHAUSTED
+    from agent.credential_pool import STATUS_EXHAUSTED, load_pool
 
     pool = load_pool("openai-codex")
     pool.select()
@@ -1873,6 +1873,7 @@ def test_sync_anthropic_entry_clears_all_error_fields(tmp_path, monkeypatch):
     fresh tokens arrived from the credentials file.
     """
     from dataclasses import replace as dc_replace
+
     from agent.credential_pool import STATUS_EXHAUSTED
 
     pool, entry = _make_anthropic_claude_code_pool(

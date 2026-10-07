@@ -3,12 +3,10 @@
 import json
 from unittest.mock import patch
 
-
 from model_tools import (
-    handle_function_call,
     _AGENT_LOOP_TOOLS,
+    handle_function_call,
 )
-
 
 # =========================================================================
 # handle_function_call

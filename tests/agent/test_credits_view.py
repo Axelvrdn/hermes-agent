@@ -12,7 +12,8 @@ from __future__ import annotations
 import pytest
 
 from agent.account_usage import build_credits_view
-from hermes_cli.nous_account import NousPortalAccountInfo, NousPaidServiceAccessInfo
+from hermes_cli.nous_account import NousPaidServiceAccessInfo, NousPortalAccountInfo
+
 
 def _account(**kwargs) -> NousPortalAccountInfo:
     kwargs.setdefault("logged_in", True)

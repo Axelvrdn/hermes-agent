@@ -14,7 +14,9 @@ startup offer and the Screen pane call:
 import os
 import stat
 from pathlib import Path
+
 import pytest
+
 import hermes_yaml as yaml
 
 
@@ -65,8 +67,8 @@ def test_bridge_treats_a_preset_env_image_as_pinned_and_keeps_a_launcher_verdict
 # ── pin verdict, routed profile scope ───────────────────────────────────────────────────────────
 
 def test_terminal_scope_recomputes_the_pin_per_profile(home, tmp_path):
-    from tools.terminal_scope import build_profile_terminal_scope
     from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE
+    from tools.terminal_scope import build_profile_terminal_scope
 
     _write(home, {"backend": "docker"})
     scope = build_profile_terminal_scope(home, env_overlay={"TERMINAL_DOCKER_IMAGE_PINNED": "1"})
@@ -89,8 +91,8 @@ def test_terminal_scope_recomputes_the_pin_per_profile(home, tmp_path):
 def test_terminal_scope_pins_an_image_written_in_the_profile_env_even_when_it_spells_the_default(home):
     """Provenance, not value: the approval writes the default's exact tag, and a profile whose .env carries
     TERMINAL_DOCKER_IMAGE chose it. The scope must agree with the bridge's verdict for the same input."""
-    from tools.terminal_scope import build_profile_terminal_scope
     from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE
+    from tools.terminal_scope import build_profile_terminal_scope
 
     _write(home, {"backend": "docker"})
     (home / ".env").write_text(f"TERMINAL_DOCKER_IMAGE={DEFAULT_SANDBOX_IMAGE}\n", encoding="utf-8")

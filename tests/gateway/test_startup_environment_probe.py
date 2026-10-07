@@ -2,8 +2,8 @@
 
 import pytest
 
-from agent import prompt_builder
 import model_tools
+from agent import prompt_builder
 from gateway import run as gateway_run
 from tools import env_probe
 from tools.terminal_scope import reset_terminal_scope, set_terminal_scope

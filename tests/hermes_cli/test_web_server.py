@@ -1,24 +1,18 @@
 """Tests for hermes_cli.web_server and related config utilities."""
 
 import asyncio
-import os
 import json
+import os
 import re
 import shutil
 import sys
 import threading
 import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
-import hermes_yaml as yaml
 
-from hermes_cli.config import (
-    reload_env,
-    redact_key,
-    OPTIONAL_ENV_VARS,
-)
 import gateway.status as _gw_status
 import hermes_cli.config as _cfg_mod
 import hermes_cli.web_routers.chat_ws as _rt_chat_ws
@@ -31,7 +25,12 @@ import hermes_cli.web_server_lifecycle as _web_server_lifecycle
 import hermes_cli.web_server_memory as _web_server_memory
 import hermes_cli.web_server_messaging as _web_server_messaging
 import hermes_cli.web_server_sessions as _web_server_sessions
-
+import hermes_yaml as yaml
+from hermes_cli.config import (
+    OPTIONAL_ENV_VARS,
+    redact_key,
+    reload_env,
+)
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
@@ -69,8 +68,8 @@ def _install_example_plugin(_isolate_hermes_home):
     all). User plugins are first in the discovery search order, so
     laying down the fixture here is enough.
     """
-    from hermes_constants import get_hermes_home
     from hermes_cli import web_server
+    from hermes_constants import get_hermes_home
 
     user_plugins_dir = get_hermes_home() / "plugins"
     user_plugins_dir.mkdir(parents=True, exist_ok=True)
@@ -211,8 +210,9 @@ class TestSessionTokenInjection:
 
 
     def test_session_token_resolution_preserves_loaded_app_auth(self, monkeypatch):
-        import hermes_cli.web_server as ws
         from starlette.testclient import TestClient
+
+        import hermes_cli.web_server as ws
 
         original_app = ws.app
         original_header_name = ws._SESSION_HEADER_NAME
@@ -248,8 +248,8 @@ class TestWebServerEndpoints:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
 
@@ -820,8 +820,8 @@ CONFIG_SCHEMA = ProviderConfigSchema(
         return plugin_dir
 
     def test_declared_surface_put_writes_config_and_secret(self):
-        from hermes_constants import get_hermes_home
         from hermes_cli.config import load_env
+        from hermes_constants import get_hermes_home
 
         self._install_flatprov()
         resp = self.client.put(
@@ -884,8 +884,8 @@ CONFIG_SCHEMA = ProviderConfigSchema(
 
 
     def test_put_memory_provider_config_writes_config_and_secret(self):
-        from hermes_constants import get_hermes_home
         from hermes_cli.config import load_config, load_env
+        from hermes_constants import get_hermes_home
 
         self._install_flatprov()
         resp = self.client.put(
@@ -1672,6 +1672,7 @@ CONFIG_SCHEMA = ProviderConfigSchema(
     def test_unauthenticated_api_blocked(self):
         """API requests without the session token should be rejected."""
         from starlette.testclient import TestClient
+
         from hermes_cli.web_server import app
         # Create a client WITHOUT the dashboard session header
         unauth_client = TestClient(app)
@@ -1768,7 +1769,11 @@ CONFIG_SCHEMA = ProviderConfigSchema(
         authenticating to the deleted host, and the credential the operator
         just removed through the dashboard survives the delete.
         """
-        from hermes_cli.config import custom_endpoint_key_env, get_env_value, load_config
+        from hermes_cli.config import (
+            custom_endpoint_key_env,
+            get_env_value,
+            load_config,
+        )
 
         self.client.post(
             "/api/providers/custom-endpoints",
@@ -1992,7 +1997,11 @@ CONFIG_SCHEMA = ProviderConfigSchema(
 
     def test_custom_endpoint_save_keeps_the_api_key_out_of_config(self):
         """The key belongs in .env behind key_env, never in config.yaml (#69449)."""
-        from hermes_cli.config import custom_endpoint_key_env, get_env_value, load_config
+        from hermes_cli.config import (
+            custom_endpoint_key_env,
+            get_env_value,
+            load_config,
+        )
 
         self.client.post(
             "/api/providers/custom-endpoints",
@@ -2164,8 +2173,11 @@ CONFIG_SCHEMA = ProviderConfigSchema(
         user's secret into a second env var they never asked for.
         """
         import hermes_yaml as yaml
-
-        from hermes_cli.config import custom_endpoint_key_env, get_config_path, get_env_value
+        from hermes_cli.config import (
+            custom_endpoint_key_env,
+            get_config_path,
+            get_env_value,
+        )
 
         monkeypatch.setenv("MY_PROXY_KEY", "sk-user-managed")
         get_config_path().write_text(
@@ -2607,11 +2619,11 @@ CONFIG_SCHEMA = ProviderConfigSchema(
 
     def test_get_session_messages_projects_and_dedupes_composite_carrier(self):
         from agent.context_compressor import (
-            HISTORICAL_TASK_HEADING,
-            SUMMARY_PREFIX,
             _MERGED_PRIOR_CONTEXT_HEADER,
             _MERGED_SUMMARY_DELIMITER,
             _SUMMARY_END_MARKER,
+            HISTORICAL_TASK_HEADING,
+            SUMMARY_PREFIX,
         )
         from hermes_state import SessionDB
 
@@ -2898,7 +2910,7 @@ class TestConfigRoundTrip:
             from starlette.testclient import TestClient
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
 
@@ -3005,8 +3017,8 @@ class TestNewEndpoints:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
 
@@ -3023,8 +3035,8 @@ class TestNewEndpoints:
     def test_profiles_create_builder_mcp_auth_is_profile_scoped(
         self, monkeypatch
     ):
-        from hermes_constants import get_hermes_home
         import hermes_cli.profiles as profiles_mod
+        from hermes_constants import get_hermes_home
 
         monkeypatch.setattr(profiles_mod, "create_wrapper_script", lambda name: None)
 
@@ -3498,8 +3510,9 @@ class TestDesktopHostRendezvousIsolation:
         it publishes under its OWN role, which the attach ladder never reads."""
         import io
         import urllib.request
-        from gateway import host_rendezvous as hr
+
         import hermes_cli.web_server as web_server
+        from gateway import host_rendezvous as hr
         from hermes_cli.main_dashboard import _host_backend_attachment
         from hermes_cli.plugins_activation import notify_serve_backend
 
@@ -3539,8 +3552,8 @@ class TestDesktopHostRendezvousIsolation:
     def test_standalone_backend_still_claims_the_host_serve_record(self, monkeypatch):
         """The Desktop exclusion must not alter standalone dashboard discovery — including a
         supervised service whose shell merely inherited HERMES_DESKTOP=1 without the token."""
-        from gateway import host_rendezvous as hr
         import hermes_cli.web_server as web_server
+        from gateway import host_rendezvous as hr
 
         monkeypatch.setenv("HERMES_DESKTOP", "1")
         monkeypatch.delenv("HERMES_DASHBOARD_SESSION_TOKEN", raising=False)
@@ -3578,8 +3591,9 @@ class TestOrphanedOwnerReclaim:
             updated_at="2026-09-24T00:00:00+00:00")
 
     def _owner_entry(self, pid=555, create_time=55.0, spawner_pid=700, spawner_create=7.0):
-        from hermes_cli import process_identity as pi
         from pathlib import Path as _Path
+
+        from hermes_cli import process_identity as pi
 
         return {
             "pid": pid, "create_time": create_time, "purpose": "serve",
@@ -3595,8 +3609,9 @@ class TestOrphanedOwnerReclaim:
         ``(claimed, published, fake_procs)``.
         """
         import types
-        from gateway import host_rendezvous as hr
+
         import hermes_cli.web_server as web_server
+        from gateway import host_rendezvous as hr
         from hermes_cli import process_identity as pi
 
         monkeypatch.setenv("HERMES_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
@@ -3703,8 +3718,8 @@ class TestModelContextLength:
 
     def test_denormalize_writes_context_length_into_model_dict(self):
         """denormalize should write model_context_length back into model dict."""
-        from hermes_cli.web_server_config import _denormalize_config_from_web
         from hermes_cli.config import save_config
+        from hermes_cli.web_server_config import _denormalize_config_from_web
 
         # Set up disk config with model as a dict
         save_config({
@@ -3723,8 +3738,8 @@ class TestModelContextLength:
         """The Settings autosave now sends a diff, not the full draft: editing
         only the Context Window control must not omit ``model`` and thereby
         drop the context_length edit on the floor (#89597 review)."""
-        from hermes_cli.web_server_config import _denormalize_config_from_web
         from hermes_cli.config import save_config
+        from hermes_cli.web_server_config import _denormalize_config_from_web
 
         save_config({
             "model": {"default": "anthropic/claude-sonnet-4", "provider": "anthropic",
@@ -3745,8 +3760,8 @@ class TestModelContextLength:
         to the diff-omission bug rather than the separate, pre-existing (and
         intentional, see ``_apply_main_model_assignment``) behavior where a
         real provider switch drops the context_length override."""
-        from hermes_cli.web_server_config import _denormalize_config_from_web
         from hermes_cli.config import save_config
+        from hermes_cli.web_server_config import _denormalize_config_from_web
 
         save_config({
             "model": {"default": "anthropic/claude-sonnet-4", "context_length": 150000}
@@ -3765,9 +3780,10 @@ class TestDenormalizeProviderSwitch:
     def test_vendor_slug_switches_off_non_aggregator_provider(self):
         """ollama-local + a vendor/model slug → switch to openrouter and drop
         the stale local base_url (the issue's exact repro)."""
-        from hermes_cli.web_server_config import _denormalize_config_from_web
         from unittest.mock import patch as _patch
+
         from hermes_cli.config import save_config
+        from hermes_cli.web_server_config import _denormalize_config_from_web
 
         save_config({
             "model": {
@@ -3791,9 +3807,10 @@ class TestDenormalizeProviderSwitch:
     def test_context_length_override_survives_provider_switch(self):
         """An explicit context-length override must persist alongside a
         provider switch."""
-        from hermes_cli.web_server_config import _denormalize_config_from_web
         from unittest.mock import patch as _patch
+
         from hermes_cli.config import save_config
+        from hermes_cli.web_server_config import _denormalize_config_from_web
 
         save_config({"model": {"default": "llama3.2", "provider": "ollama-local"}})
 
@@ -3811,9 +3828,10 @@ class TestDenormalizeProviderSwitch:
         ``PUT /api/config`` — not fall back to the flat string, which the deep-merge would
         write OVER the on-disk ``model:`` dict (provider/base_url/api_mode/slots destroyed)."""
         from starlette.testclient import TestClient
-        from hermes_constants import get_hermes_home
+
         from hermes_cli.model_switch import ModelSwitchResult
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
+        from hermes_constants import get_hermes_home
 
         cfg_path = get_hermes_home() / "config.yaml"
         cfg_path.write_text(
@@ -3903,7 +3921,7 @@ class TestStatusRemoteGateway:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
 
@@ -3967,7 +3985,7 @@ class TestStatusInstallId:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_cli.web_server as ws
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
 
         # Fresh process cache per test: the cache is process-global by design
         # (stability), so tests must not observe a previous test's id.
@@ -4056,7 +4074,7 @@ class TestGatewayBusyReadout:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
 
@@ -4104,7 +4122,7 @@ class TestStatusMemoryBlock:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
 
@@ -4153,7 +4171,7 @@ class TestGatewayUpdatedAtContract:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
 
@@ -4328,6 +4346,7 @@ class TestThemeBootstrapCSS:
     def _mount_spa_client(tmp_path, monkeypatch):
         from fastapi import FastAPI
         from starlette.testclient import TestClient
+
         import hermes_cli.web_server as ws
 
         dist = tmp_path / "web_dist"
@@ -4420,8 +4439,8 @@ class TestDeleteSessionEndpoint:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
             hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
@@ -4533,8 +4552,8 @@ class TestBulkDeleteSessionsEndpoint:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
             hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
@@ -4600,8 +4619,8 @@ class TestDeleteEmptySessionsEndpoint:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         # Pin the SessionDB to the isolated HERMES_HOME so each test
         # starts with a clean state.db.
@@ -4716,8 +4735,8 @@ class TestPluginAPIAuth:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
 
@@ -4799,9 +4818,9 @@ class TestPluginAPISecretScopeProductionMount:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
-        from hermes_constants import get_hermes_home
         from hermes_cli import profiles
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
+        from hermes_constants import get_hermes_home
 
         default_home = get_hermes_home()
         monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", default_home / "state.db")
@@ -5017,7 +5036,6 @@ class TestDashboardPluginManifestExtensions:
 
 from hermes_cli import main_tui_launch
 
-
 skip_on_windows = pytest.mark.skipif(
     sys.platform.startswith("win"), reason="PTY bridge is POSIX-only"
 )
@@ -5105,6 +5123,7 @@ class TestPtyWebSocket:
         asserting the exact fan-out contract.
         """
         import asyncio
+
         from hermes_cli import web_server as ws_mod
 
         class _FakeSub:
@@ -5272,7 +5291,7 @@ class TestValidateProviderCredential:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
 
         self.client = TestClient(app)
         self.client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
@@ -5473,6 +5492,7 @@ class TestServeIndexMissingIndex:
     def _client_with_dist(tmp_path, monkeypatch, *, write_index: bool):
         from fastapi import FastAPI
         from starlette.testclient import TestClient
+
         import hermes_cli.web_server as ws
 
         dist = tmp_path / "web_dist"
@@ -5546,6 +5566,7 @@ class TestHeadlessServeTokenPage:
     def _headless_client(monkeypatch, *, gated: bool):
         from fastapi import FastAPI
         from starlette.testclient import TestClient
+
         import hermes_cli.web_server as ws
 
         monkeypatch.setenv("HERMES_SERVE_HEADLESS", "1")
@@ -5618,6 +5639,7 @@ class TestHashedAssetCacheHeaders:
     def _client(tmp_path, monkeypatch):
         from fastapi import FastAPI
         from starlette.testclient import TestClient
+
         import hermes_cli.web_server as ws
 
         dist = tmp_path / "web_dist"
@@ -5692,9 +5714,9 @@ class TestDashboardComponentHealth:
         except ImportError:
             pytest.skip("fastapi/starlette not installed")
 
+        import hermes_cli.web_server as ws
         import hermes_state
         from hermes_constants import get_hermes_home
-        import hermes_cli.web_server as ws
 
         monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
         # Fresh state holder per test so counters don't leak across tests.
@@ -5760,8 +5782,8 @@ class TestSessionPatchUnread:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
             hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
@@ -5824,6 +5846,7 @@ class TestSessionPatchUnread:
 def test_mount_spa_dynamic_web_dist_recheck(tmp_path, monkeypatch):
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
+
     from hermes_cli import web_server
 
     app = FastAPI()
@@ -5853,7 +5876,10 @@ class TestSubmittedCustomEndpointSurvivesAssignment:
     replace what the user typed and had persisted."""
 
     def test_submitted_custom_endpoint_wins_over_an_env_endpoint(self, monkeypatch):
-        from hermes_cli.web_server_config import _apply_main_model_assignment, _validated_main_model_selection
+        from hermes_cli.web_server_config import (
+            _apply_main_model_assignment,
+            _validated_main_model_selection,
+        )
 
         monkeypatch.setenv("CUSTOM_BASE_URL", "http://127.0.0.1:9999/v1")
         monkeypatch.setattr(

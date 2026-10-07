@@ -21,7 +21,14 @@ from functools import lru_cache
 from itertools import groupby, takewhile
 from pathlib import Path
 
-from agent.pet.constants import DEFAULT_SCALE, FRAME_H, FRAME_W, FRAMES_PER_STATE, PetState, state_row_index
+from agent.pet.constants import (
+    DEFAULT_SCALE,
+    FRAME_H,
+    FRAME_W,
+    FRAMES_PER_STATE,
+    PetState,
+    state_row_index,
+)
 
 logger = logging.getLogger(__name__)
 

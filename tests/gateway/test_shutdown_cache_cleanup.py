@@ -9,8 +9,8 @@ The fix adds an explicit sweep of ``_agent_cache`` after
 ``_finalize_shutdown_agents`` in the ``_stop_impl`` coroutine.
 """
 
-import logging
 import asyncio
+import logging
 import threading
 from collections import OrderedDict
 from unittest.mock import MagicMock
@@ -19,7 +19,6 @@ import pytest
 
 # Import the module (not the class) to reach stop() and helpers
 import gateway.run as gw_mod
-
 
 # ---------------------------------------------------------------------------
 # Helpers

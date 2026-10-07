@@ -30,9 +30,8 @@ sys.modules.setdefault("fire", types.SimpleNamespace(Fire=lambda *a, **k: None))
 sys.modules.setdefault("firecrawl", types.SimpleNamespace(Firecrawl=object))
 sys.modules.setdefault("fal_client", types.SimpleNamespace())
 
-import run_agent
-
 import agent.chat_completion_helpers as chat_completion_helpers
+import run_agent
 from agent.chat_completion_helpers import direct_api_call
 
 
@@ -89,7 +88,10 @@ def test_inline_cron_openai_codex_keeps_large_context_stale_floor(monkeypatch):
     """#69734: cron Codex runs inline, so the inline stale budget must keep the
     openai-codex large-context floor the worker path applied — else a healthy
     >10k-token cron turn is killed at the 90s default."""
-    from agent.chat_completion_helpers import _resolve_direct_stale_timeout, should_use_direct_api_call
+    from agent.chat_completion_helpers import (
+        _resolve_direct_stale_timeout,
+        should_use_direct_api_call,
+    )
 
     for key in ("HERMES_API_CALL_STALE_TIMEOUT", "HERMES_STREAM_STALE_TIMEOUT", "HERMES_CODEX_HARD_TIMEOUT_SECONDS"):
         monkeypatch.delenv(key, raising=False)

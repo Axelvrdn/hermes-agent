@@ -17,9 +17,12 @@ from typing import Any, Mapping
 
 from gateway import hosted_rooms
 from gateway.hosted_room_peer import (
-    GatewayRoomCatalog, HostedRoomPeerError, TransportSecurity, validate_room_link_url)
+    GatewayRoomCatalog,
+    HostedRoomPeerError,
+    TransportSecurity,
+    validate_room_link_url,
+)
 from gateway.hosted_rooms_common import DbPath, compact_json, exact_fields, identifier
-
 
 MAX_LINKS = 512
 MAX_GRANT_CHARS = 16 * 1024

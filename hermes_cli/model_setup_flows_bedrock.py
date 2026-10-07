@@ -8,8 +8,13 @@ Prompt strings and config write order are behavior.
 from __future__ import annotations
 
 from hermes_cli.model_setup_flows_common import (
-    _ask, _ensure_dict_section, _finish_model, _note_setup_failure, _pick_model_or_prompt, _say)
-
+    _ask,
+    _ensure_dict_section,
+    _finish_model,
+    _note_setup_failure,
+    _pick_model_or_prompt,
+    _say,
+)
 
 # AWS cross-region inference profile prefixes. A geo-prefixed profile only routes
 # from endpoints in its own geography (us.* from eu-central-2 is rejected by AWS
@@ -47,7 +52,7 @@ def bedrock_model_routable_from_region(model_id: str, region_name: str) -> bool:
 def _model_flow_bedrock_api_key(config, region, current_model=""):
     """Bedrock API Key mode on the OpenAI-compatible bedrock-mantle endpoint — for developers
     without an AWS account who received a Bedrock API Key from their AWS admin."""
-    from hermes_cli.auth import _resolve_api_key_provider_secret, ProviderConfig
+    from hermes_cli.auth import ProviderConfig, _resolve_api_key_provider_secret
     from hermes_cli.config import save_env_value
     from hermes_cli.models import _PROVIDER_MODELS
     mantle_base_url = f"https://bedrock-mantle.{region}.api.aws/v1"
@@ -152,7 +157,12 @@ def _model_flow_bedrock(config, current_model=""):
 
     # 1. Check for AWS credentials
     try:
-        from agent.bedrock_adapter import has_aws_credentials, resolve_aws_auth_env_var, resolve_bedrock_region, discover_bedrock_models
+        from agent.bedrock_adapter import (
+            discover_bedrock_models,
+            has_aws_credentials,
+            resolve_aws_auth_env_var,
+            resolve_bedrock_region,
+        )
     except ImportError:
         _say("  ✗ Could not load the Bedrock adapter.", "  Run hermes pm repair, then restart Hermes.", "")
         return

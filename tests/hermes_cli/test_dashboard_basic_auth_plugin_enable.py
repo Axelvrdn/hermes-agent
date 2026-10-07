@@ -10,12 +10,12 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
+import plugins.dashboard_auth.basic as basic_plugin
 from hermes_cli.dashboard_auth import clear_providers, list_providers
 from hermes_cli.plugins import PluginManager, discover_plugins
 from hermes_cli.plugins_cmd import ensure_basic_auth_plugin_enabled_in_config
-import plugins.dashboard_auth.basic as basic_plugin
 
 
 @pytest.fixture(autouse=True)

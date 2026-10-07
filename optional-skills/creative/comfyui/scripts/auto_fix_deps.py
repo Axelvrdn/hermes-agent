@@ -32,10 +32,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import (  # noqa: E402
-    DEFAULT_LOCAL_HOST, ENV_API_KEY, emit_json, log, resolve_api_key,
+    DEFAULT_LOCAL_HOST,
+    ENV_API_KEY,
+    emit_json,
+    log,
+    resolve_api_key,
+    unwrap_workflow,  # noqa: E402
 )
 from check_deps import check_deps  # noqa: E402
-from _common import unwrap_workflow  # noqa: E402
 
 
 def comfy_cli_available() -> str | None:

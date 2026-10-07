@@ -197,7 +197,11 @@ def test_bitwarden_multi_uri_item_binds_every_saved_web_origin():
 def test_onepassword_multi_url_item_binds_every_saved_web_origin():
     """A 1Password login with several websites binds all of them; the app URI is kept
     out of the fill set and a single-URL item is unchanged."""
-    from agent.vault_backends.onepassword import OnePasswordLoginBackend, _all_origins, _web_origins
+    from agent.vault_backends.onepassword import (
+        OnePasswordLoginBackend,
+        _all_origins,
+        _web_origins,
+    )
 
     backend = OnePasswordLoginBackend({"enabled": True})
     items_json = json.dumps([{

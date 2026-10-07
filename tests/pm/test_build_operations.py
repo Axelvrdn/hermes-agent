@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -12,15 +12,24 @@ from pm.package import InstallError
 from tests.pm._fixtures import (
     _run,
     _wheel,
+)
+from tests.pm._fixtures import (
     build_worker as build_worker,
+)
+from tests.pm._fixtures import (
     client as client,
+)
+from tests.pm._fixtures import (
     isolated_python as isolated_python,
+)
+from tests.pm._fixtures import (
     served as served,
 )
 
 
 def test_stage_tools_copies_verified_closure_without_acquiring_or_live_state(tmp_path, client, monkeypatch, served):
     import importlib.util
+
     import pm
     from pm.lock import Facts, Lockfile
     from pm.registry import _packages
@@ -53,8 +62,9 @@ def test_stage_tools_copies_verified_closure_without_acquiring_or_live_state(tmp
         facts.record(package.name, "1.0", entry.name, package.env(entry, target), source,
                      target=target, artifacts=["a" * 64], digest=tree_digest(entry))
     lock.save()
-    from tests.pm._fixtures import make_tar
     import shutil
+
+    from tests.pm._fixtures import make_tar
     directory, base = served
     for name in ("copy-leaf", "copy-tool"):
         archive, sha = make_tar(directory, name + ".tgz", {"data": name})
@@ -119,6 +129,7 @@ def test_stage_tools_copies_verified_closure_without_acquiring_or_live_state(tmp
 @pytest.mark.parametrize("damage", [None, "entry", "env", "bytes", "pin", "binary"])
 def test_verified_tools_admits_only_locked_entries_without_execution(tmp_path, monkeypatch, damage):
     import subprocess
+
     from pm import build_operations
     from pm.lock import Facts, Lockfile
     from pm.registry import get_package
@@ -222,6 +233,7 @@ def test_check_lock_never_changes_source(locked_source, tmp_path, build_tools, l
 
 def test_frozen_export_keeps_markers_and_excludes_build_metadata(locked_source, tmp_path, build_tools):
     from packaging.requirements import Requirement
+
     from pm import export_requirements
 
     source = locked_source
@@ -247,6 +259,7 @@ def test_frozen_export_keeps_markers_and_excludes_build_metadata(locked_source, 
 
 def test_frozen_export_preserves_git_commit_pin(locked_source, tmp_path, build_tools):
     from packaging.requirements import Requirement
+
     from pm import export_requirements, lock_project
 
     dependency = tmp_path / "git-dependency"
@@ -310,6 +323,7 @@ def test_requirements_build_installs_offline_markers_and_seals_only_build_pth(tm
 @pytest.mark.parametrize("failure", ["create", "install", "check"])
 def test_failed_requirement_build_removes_only_its_candidate(tmp_path, build_tools, failure):
     import zipfile
+
     from pm import build_requirements_environment
 
     wheels = tmp_path / "wheels"
@@ -348,6 +362,7 @@ def test_wheelhouse_cannot_fall_back_to_index_or_build_source(tmp_path, build_to
     import base64
     import io
     import tarfile
+
     from pm import build_requirements_environment
 
     index = tmp_path / "index" / "leaf-dep"
@@ -393,7 +408,12 @@ def test_wheelhouse_cannot_fall_back_to_index_or_build_source(tmp_path, build_to
 @pytest.mark.parametrize("operation", ["check", "export", "build"])
 def test_ready_tools_do_not_bypass_disabled_lazy_operations(locked_source, tmp_path, build_tools, monkeypatch, operation):
     import importlib
-    from pm import build_requirements_environment, check_project_lock, export_requirements
+
+    from pm import (
+        build_requirements_environment,
+        check_project_lock,
+        export_requirements,
+    )
 
     monkeypatch.setattr(importlib.import_module("pm.install"), "lazy_installs_allowed", lambda: False)
     out = tmp_path / "blocked-output"
@@ -414,6 +434,7 @@ def test_ready_tools_do_not_bypass_disabled_lazy_operations(locked_source, tmp_p
 
 def test_prune_cache_does_not_acquire_a_missing_toolchain(tmp_path, monkeypatch):
     import importlib
+
     import pm.paths
     from pm import prune_cache
 
@@ -431,9 +452,10 @@ def test_prune_cache_does_not_acquire_a_missing_toolchain(tmp_path, monkeypatch)
 
 @pytest.mark.parametrize("ci", [False, True])
 def test_prune_cache_preserves_downloaded_wheels_unless_ci(tmp_path, build_tools, ci):
+    import threading
     from functools import partial
     from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-    import threading
+
     from pm import build_requirements_environment, prune_cache
 
     wheels = tmp_path / "wheels"

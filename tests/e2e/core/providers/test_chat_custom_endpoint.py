@@ -25,15 +25,20 @@ from tests.e2e.core.providers._openai_helpers import (
     READ_TOOL,
     HarnessError,
     Home,
+    bounded_turn,
     bug_assertions,
     chat_messages,
     custom_chat_config,
-    db_tool_calls,
     db_messages,
-    bounded_turn,
+    db_tool_calls,
     oneshot,
 )
-from tests.fakes.providers.chat_variants import CDropToolCall, CText, CTools, FakeChatVariantServer
+from tests.fakes.providers.chat_variants import (
+    CDropToolCall,
+    CText,
+    CTools,
+    FakeChatVariantServer,
+)
 
 pytestmark = pytest.mark.skipif(not sys.platform.startswith("linux"), reason="subprocess harness is Linux-gated")
 

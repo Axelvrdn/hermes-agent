@@ -10,10 +10,9 @@ re-triggered compression every turn.
 """
 
 import copy
+import os
 from pathlib import Path
 from unittest.mock import patch
-
-import os
 
 from agent.conversation_compression import (
     _claim_compressor_attempt,

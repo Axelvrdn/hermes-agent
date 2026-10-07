@@ -12,9 +12,9 @@ from __future__ import annotations
 import ctypes
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 # enum ggml_backend_dev_type (ggml-backend.h): CPU, GPU, IGPU, ACCEL.
 GGML_DEVICE_GPU = 1

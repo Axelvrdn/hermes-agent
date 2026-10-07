@@ -6,11 +6,13 @@ Telegram and Slack on the next gateway restart. Drives the real ``cmd_toggle`` (
 real admission.
 """
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
+from tests.hermes_cli.plugin_worker_support import (
+    isolated_python as isolated_python,
+)
 from tests.hermes_cli.plugin_worker_support import (
     plugin_world as plugin_world,
-    isolated_python as isolated_python,
 )
 
 

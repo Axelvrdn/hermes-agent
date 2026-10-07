@@ -5,11 +5,9 @@ import threading
 import uuid
 from dataclasses import dataclass, field
 
-from tools.connectors import live
-from tools.connectors import managed
+from tools.connectors import live, managed
 from tools.connectors.operation import ConnectionOperation, Target
 from tools.connectors.run import drive_operation
-
 
 _PREPARE_WAIT_SECONDS = 31.0
 _start_lock = threading.Lock()

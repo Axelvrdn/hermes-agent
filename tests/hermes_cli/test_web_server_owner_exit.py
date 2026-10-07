@@ -9,8 +9,15 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from hermes_cli.dashboard_procs import _REAP_MIN_AGE_SECONDS, _lock_owned_serve_pids, read_valid_backend_lock
-from hermes_cli.web_server_owner_exit import should_retire_superseded, start_owner_watchdog
+from hermes_cli.dashboard_procs import (
+    _REAP_MIN_AGE_SECONDS,
+    _lock_owned_serve_pids,
+    read_valid_backend_lock,
+)
+from hermes_cli.web_server_owner_exit import (
+    should_retire_superseded,
+    start_owner_watchdog,
+)
 
 OID, ME, NEW = "f" * 32, "a" * 16, "b" * 16
 

@@ -19,10 +19,9 @@ import pytest
 
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
-from hermes_cli import kanban_db_notify as kbn
 from hermes_cli import kanban_db_dispatch as kbd
+from hermes_cli import kanban_db_notify as kbn
 from hermes_cli import kanban_db_workspace as kbw
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -953,9 +952,9 @@ def test_gateway_dispatcher_disables_corrupt_board_without_traceback(
     import logging
     import sqlite3
 
-    from gateway.run import GatewayRunner
     import hermes_cli.config as _cfg_mod
     import hermes_cli.kanban_db as _kb
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as _kbc
 
     runner = object.__new__(GatewayRunner)
@@ -1118,9 +1117,10 @@ def test_complete_can_retry_after_phantom_rejection(kanban_home):
 def test_reclaim_task_resets_running_to_ready(kanban_home, monkeypatch):
     """Manual reclaim releases the claim, resets status, and emits a
     ``reclaimed`` event even when claim_expires has not passed."""
+    import secrets
     import signal
     import time
-    import secrets
+
     import hermes_cli.kanban_db as _kb
     conn = kbc.connect()
     try:

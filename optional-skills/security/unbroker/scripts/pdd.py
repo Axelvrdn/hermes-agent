@@ -29,21 +29,21 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import autopilot                   # noqa: E402
-import badbool                      # noqa: E402
-import cdp                          # noqa: E402
-import brokers as brokers_mod      # noqa: E402
-import config as config_mod        # noqa: E402
-import crypto                       # noqa: E402
-import dossier as dossier_mod      # noqa: E402
-import email_modes                 # noqa: E402
-import emailer                     # noqa: E402
-import ledger as ledger_mod        # noqa: E402
-import legal                       # noqa: E402
-import paths as paths_mod          # noqa: E402
-import registry                    # noqa: E402
-import report as report_mod        # noqa: E402
-import tiers                       # noqa: E402
+import autopilot  # noqa: E402
+import badbool  # noqa: E402
+import brokers as brokers_mod  # noqa: E402
+import cdp  # noqa: E402
+import config as config_mod  # noqa: E402
+import crypto  # noqa: E402
+import dossier as dossier_mod  # noqa: E402
+import email_modes  # noqa: E402
+import emailer  # noqa: E402
+import ledger as ledger_mod  # noqa: E402
+import legal  # noqa: E402
+import paths as paths_mod  # noqa: E402
+import registry  # noqa: E402
+import report as report_mod  # noqa: E402
+import tiers  # noqa: E402
 
 
 def _out(obj) -> None:

@@ -77,8 +77,8 @@ def test_picker_never_synthesizes_900k_for_pro_or_unknown_slugs():
 
 
 def test_catalog_identity_stays_stable_for_rotation_but_changes_with_route(monkeypatch):
-    from hermes_cli import auth, codex_models
     import agent.credential_pool as pool
+    from hermes_cli import auth, codex_models
 
     credentials = {"api_key": "first-token", "base_url": "https://first.example/codex/"}
     monkeypatch.setattr(auth, "resolve_codex_runtime_credentials", lambda **_: dict(credentials))
@@ -108,6 +108,7 @@ def test_fetch_from_api_keeps_supported_in_api_false_models(monkeypatch):
     the separate signal that *should* still filter entries out.
     """
     import sys
+
     from hermes_cli import codex_models
 
     class _FakeResp:
@@ -347,6 +348,7 @@ def test_gateway_key_is_never_sent_to_the_direct_catalog(monkeypatch):
     send it to chatgpt.com (a service it does not belong to, #121486). Discovery declines
     and falls back to the offline sources instead of firing a doomed request."""
     import sys
+
     from hermes_cli import codex_models
 
     calls = {"n": 0}
@@ -383,7 +385,10 @@ def test_picker_catalog_honours_the_custom_codex_base(monkeypatch):
 def test_catalog_falls_back_to_the_ungated_sentinel_when_newest_client_is_rejected():
     """If the backend goes back to rejecting out-of-sequence versions (empty list or non-200), the
     ``0.0.0`` sentinel is tried next; a sentinel that is itself empty yields no entries."""
-    from agent.model_metadata import CODEX_UNGATED_CLIENT_VERSION, fetch_codex_catalog_entries
+    from agent.model_metadata import (
+        CODEX_UNGATED_CLIENT_VERSION,
+        fetch_codex_catalog_entries,
+    )
 
     class _Resp:
         def __init__(self, status, models):

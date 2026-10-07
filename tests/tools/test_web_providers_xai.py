@@ -291,6 +291,7 @@ class TestXAIProviderSearchErrors:
         ``httpx.post`` to be called twice with two different Bearer tokens.
         """
         import httpx
+
         from plugins.web.xai import provider as xai_provider
 
         bad = MagicMock()
@@ -333,6 +334,7 @@ class TestXAIProviderSearchErrors:
     def test_401_on_env_var_path_does_not_retry(self):
         """Env-var (XAI_API_KEY) creds can't be refreshed — must not retry."""
         import httpx
+
         from plugins.web.xai import provider as xai_provider
 
         bad = MagicMock()

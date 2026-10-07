@@ -134,16 +134,22 @@ class DiscordMediaMixin:
     ) -> SendResult:
         """Send images as one Discord message (<=10 attachments): URLs are downloaded and uploaded
         inline (bare links don't render); on chunk failure the remainder uses the per-image loop."""
-        from plugins.platforms.discord.adapter import _prompt_target_id, _image_ext_from_content_type, _read_url_image_with_redirect_guard, is_safe_url
+        from plugins.platforms.discord.adapter import (
+            _image_ext_from_content_type,
+            _prompt_target_id,
+            _read_url_image_with_redirect_guard,
+            is_safe_url,
+        )
 
         if not self._client:
             return SendResult(success=False, error="Not connected")
         if not images:
             return SendResult(success=False, error="no images to send")
         try:
-            import discord as _discord_mod
             import io as _io
             from urllib.parse import unquote as _unquote
+
+            import discord as _discord_mod
         except Exception:  # pragma: no cover
             return await super().send_multiple_images(chat_id, images, metadata, human_delay)
         try:
@@ -205,7 +211,11 @@ class DiscordMediaMixin:
                         # Download to BytesIO so it renders inline
                         try:
                             import aiohttp as _aiohttp
-                            from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+
+                            from gateway.platforms.base import (
+                                proxy_kwargs_for_aiohttp,
+                                resolve_proxy_url,
+                            )
                             _proxy = resolve_proxy_url(platform_env_var="DISCORD_PROXY")
                             _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(_proxy)
                             if aiohttp_session is None:
@@ -374,7 +384,12 @@ class DiscordMediaMixin:
     ) -> SendResult:
         """Download ``url`` and post it as a native attachment (Discord renders those inline).
         ``fallback(metadata)`` is the base-adapter URL send (``error_metadata`` after download failure)."""
-        from plugins.platforms.discord.adapter import _prompt_target_id, _read_url_image_with_redirect_guard, discord, is_safe_url
+        from plugins.platforms.discord.adapter import (
+            _prompt_target_id,
+            _read_url_image_with_redirect_guard,
+            discord,
+            is_safe_url,
+        )
 
         if not self._client:
             return SendResult(success=False, error="Not connected")
@@ -386,7 +401,10 @@ class DiscordMediaMixin:
             channel = await self._resolve_channel(_prompt_target_id(chat_id, metadata))
             if not channel:
                 return SendResult(success=False, error=f"Channel {chat_id} not found")
-            from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+            from gateway.platforms.base import (
+                proxy_kwargs_for_aiohttp,
+                resolve_proxy_url,
+            )
             _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(resolve_proxy_url(platform_env_var="DISCORD_PROXY"))
             async with aiohttp.ClientSession(**_sess_kw) as session:
                 status, data, headers = await _read_url_image_with_redirect_guard(
@@ -413,7 +431,10 @@ class DiscordMediaMixin:
         reply_to: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None,
     ) -> SendResult:
         """Send an image natively as a Discord file attachment."""
-        from plugins.platforms.discord.adapter import _prompt_target_id, _image_ext_from_content_type
+        from plugins.platforms.discord.adapter import (
+            _image_ext_from_content_type,
+            _prompt_target_id,
+        )
 
         return await self._send_url_media(
             chat_id, image_url, caption, kind="image",

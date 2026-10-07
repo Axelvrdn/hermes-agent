@@ -11,7 +11,6 @@ Covers:
 
 from __future__ import annotations
 
-
 import pytest
 
 
@@ -27,6 +26,7 @@ def hermes_env(tmp_path, monkeypatch):
 
     # Reload modules that cache get_hermes_home() at import time.
     import importlib
+
     import hermes_constants
     importlib.reload(hermes_constants)
     import cron.jobs
@@ -50,7 +50,7 @@ def test_create_job_no_agent_requires_script(hermes_env):
 
 
 def test_update_job_roundtrips_no_agent_flag(hermes_env):
-    from cron.jobs import create_job, update_job, get_job
+    from cron.jobs import create_job, get_job, update_job
 
     script_path = hermes_env / "scripts" / "w.sh"
     script_path.write_text("echo hi\n")
@@ -138,7 +138,11 @@ def test_no_agent_script_gets_owning_profiles_declared_secret_never_launch_resid
     its own .env (never in the process env); the launch profile A's .env credential is in the
     process env. B's script sees its own secret and not A's (#114209)."""
     from agent.secret_scope import (
-        build_profile_secret_scope, reset_secret_scope, set_multiplex_active, set_secret_scope)
+        build_profile_secret_scope,
+        reset_secret_scope,
+        set_multiplex_active,
+        set_secret_scope,
+    )
     from cron.scheduler_script import _run_job_script
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
@@ -336,7 +340,11 @@ def test_a_routed_profile_script_never_receives_a_launch_only_name(hermes_env, m
     from agent.secret_sources.registry import ApplyReport, SourceReport
     from cron.scheduler_script import _run_job_script
     from hermes_cli import env_loader
-    from hermes_constants import get_process_hermes_home, reset_hermes_home_override, set_hermes_home_override
+    from hermes_constants import (
+        get_process_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
 
     launch = get_process_hermes_home()
     (launch / ".env").write_text("LAUNCH_ONLY_VALUE=launch-only\nCUSTOM_CRON_VALUE=launch\n", encoding="utf-8")
@@ -390,7 +398,11 @@ def test_a_routed_profile_script_keeps_administrator_managed_values_over_its_own
     from agent import secret_scope
     from cron.scheduler_script import _run_job_script
     from hermes_cli import env_loader, managed_scope
-    from hermes_constants import get_process_hermes_home, reset_hermes_home_override, set_hermes_home_override
+    from hermes_constants import (
+        get_process_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
 
     launch = get_process_hermes_home()
     managed = launch / "managed"

@@ -193,6 +193,7 @@ class TestQuotaExhaustedIsNotAnAuthFailure:
         """Production entry: TurnRunner.run_sync with credential resolution raising the quota
         RuntimeError the gateway wraps around a ``codex_rate_limited`` AuthError."""
         from types import SimpleNamespace
+
         import gateway.run as gateway_run
         from gateway.config import Platform
         from gateway.run_turn_runner import TurnRunner

@@ -46,6 +46,7 @@ from unittest.mock import MagicMock, patch
 from agent.error_classifier import FailoverReason, classify_api_error
 from agent.message_sanitization import _strip_images_from_messages
 
+
 class _FakeApiError(Exception):
     """Stand-in for an openai.BadRequestError with status_code + body."""
 

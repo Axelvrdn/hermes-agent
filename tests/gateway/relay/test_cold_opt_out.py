@@ -1,12 +1,13 @@
 """Standalone relay routing must not bootstrap the gateway or reload secrets."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 
 import pytest
+
 import hermes_yaml as yaml
 
 

@@ -40,7 +40,11 @@ from typing import Any, Callable
 
 import pytest
 
-from tests.e2e.core.chaos._gateway_harness import SHUTDOWN_DEADLINE_S, Event, GatewayProc
+from tests.e2e.core.chaos._gateway_harness import (
+    SHUTDOWN_DEADLINE_S,
+    Event,
+    GatewayProc,
+)
 from tests.e2e.core.chaos._helpers import (
     INTERRUPT_DEADLINE_S,
     LONG_TIMEOUT_S,

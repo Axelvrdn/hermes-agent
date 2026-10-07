@@ -33,7 +33,11 @@ from pathlib import Path
 import psutil
 import pytest
 
-from tests.e2e.core.windows_update._machine import REQUIRES_OPT_IN, fail_with, new_machine
+from tests.e2e.core.windows_update._machine import (
+    REQUIRES_OPT_IN,
+    fail_with,
+    new_machine,
+)
 from tests.fakes.fake_llm_provider import FakeLLMServer
 
 pytestmark = [pytest.mark.platforms("windows"), pytest.mark.integration,

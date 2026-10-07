@@ -136,6 +136,7 @@ class TestJwtDiskStoreBounds:
         re-serializing the oversized content back out."""
         import json as _json
         import time as _time
+
         import hermes_cli.copilot_auth as mod
 
         path = self._store_path(tmp_path, monkeypatch)
@@ -188,7 +189,7 @@ class TestExchangeFailureFastPath:
     @patch("urllib.request.urlopen")
     def test_transient_failure_still_retries_then_caches(self, mock_urlopen, mock_sleep):
         import hermes_cli.copilot_auth as mod
-        from hermes_cli.copilot_auth import exchange_copilot_token, _token_fingerprint
+        from hermes_cli.copilot_auth import _token_fingerprint, exchange_copilot_token
 
         mock_urlopen.side_effect = OSError("network unreachable")
         with pytest.raises(ValueError):
@@ -203,7 +204,7 @@ class TestExchangeFailureFastPath:
     @patch("urllib.request.urlopen")
     def test_success_clears_negative_cache(self, mock_urlopen, mock_sleep):
         import hermes_cli.copilot_auth as mod
-        from hermes_cli.copilot_auth import exchange_copilot_token, _token_fingerprint
+        from hermes_cli.copilot_auth import _token_fingerprint, exchange_copilot_token
 
         fp = _token_fingerprint("gho_recovering")
         # Simulate an expired negative-cache entry so the call proceeds.
@@ -224,7 +225,10 @@ class TestExchangeFailureFastPath:
 
     def test_evict_clears_negative_cache(self):
         import hermes_cli.copilot_auth as mod
-        from hermes_cli.copilot_auth import evict_cached_exchanged_token, _token_fingerprint
+        from hermes_cli.copilot_auth import (
+            _token_fingerprint,
+            evict_cached_exchanged_token,
+        )
 
         fp = _token_fingerprint("gho_stale")
         mod._exchange_failure_cache[fp] = time.time() + 999

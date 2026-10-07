@@ -146,7 +146,10 @@ def recover_empty_response(
     """Recover from a final response with no visible content (see module docstring for
     the ladder). Role alternation is preserved: the post-tool nudge appends the empty
     assistant row BEFORE the user-level hint (APIs reject tool→user)."""
-    from agent.conversation_loop import _EMPTY_TOOL_RESPONSE_NUDGE, _sync_failover_system_message
+    from agent.conversation_loop import (
+        _EMPTY_TOOL_RESPONSE_NUDGE,
+        _sync_failover_system_message,
+    )
 
     _turn_exit_reason = turn_exit_reason
     _preflight_compression_blocked = preflight_compression_blocked

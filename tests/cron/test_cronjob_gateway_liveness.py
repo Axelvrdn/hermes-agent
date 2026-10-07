@@ -22,6 +22,7 @@ import json
 
 import pytest
 
+
 @pytest.fixture
 def hermes_env(tmp_path, monkeypatch):
     """Isolate HERMES_HOME for each test so jobs don't leak."""
@@ -144,6 +145,7 @@ class TestListSurfacesGatewayLiveness:
 # ---------------------------------------------------------------------------
 
 from contextlib import ExitStack
+
 
 class _LivenessPatches:
     """Context manager patching the provider/gateway-pid probes.
@@ -275,8 +277,8 @@ class TestRuntimeLockFirstLiveness:
         """A satellite needs its own fresh heartbeat as well as a live multiplexer."""
         from unittest.mock import patch
 
-        from cron.jobs import record_ticker_heartbeat
         import hermes_cli.cron as cron_cli
+        from cron.jobs import record_ticker_heartbeat
 
         record_ticker_heartbeat(success=True)
         with (

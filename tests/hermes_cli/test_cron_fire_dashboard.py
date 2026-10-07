@@ -16,9 +16,9 @@ hosted agents don't expose). It must:
 
 from starlette.testclient import TestClient
 
-from hermes_cli import web_server
 import hermes_cli.config as _cfg_mod
 import hermes_cli.web_server_cron as _web_server_cron
+from hermes_cli import web_server
 
 
 def _client(auth_required: bool):

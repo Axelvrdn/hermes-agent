@@ -1,11 +1,10 @@
 """Release-tag policy accepts only the current stable and canary grammars."""
 
 import importlib.util
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
-
 
 _RELEASE_PATH = Path(__file__).resolve().parents[2] / "scripts" / "release.py"
 _SPEC = importlib.util.spec_from_file_location("hermes_release", _RELEASE_PATH)

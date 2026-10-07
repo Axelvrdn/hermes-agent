@@ -14,6 +14,7 @@ from agent.verification_stop import (
     verify_on_stop_enabled,
 )
 
+
 def _node_project(root: Path) -> None:
     (root / "package.json").write_text(
         json.dumps({"scripts": {"test": "vitest", "lint": "eslint ."}}),

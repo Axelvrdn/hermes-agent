@@ -17,6 +17,7 @@ import os
 import threading
 import time
 from typing import Optional
+
 from utils import atomic_json_write
 
 _MAX_ENTRIES = 1000

@@ -26,7 +26,6 @@ import threading
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-
 import tools.delegate_tool as dt
 
 

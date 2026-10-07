@@ -9,7 +9,8 @@ import pytest
 
 from pm import paths
 from pm.lock import Facts
-from tests.pm._fixtures import client as client, isolated_python as isolated_python
+from tests.pm._fixtures import client as client
+from tests.pm._fixtures import isolated_python as isolated_python
 from tests.pm._range_server import dl_server as dl_server
 from tests.pm.test_worker import _node_archive
 

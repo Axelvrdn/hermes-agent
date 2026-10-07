@@ -9,10 +9,16 @@ Inspired by Mercury Agent's permission-hardened blocklist.
 
 import pytest
 
-from tools.approval import check_all_command_guards, check_dangerous_command, detect_dangerous_command, detect_hardline_command, disable_session_yolo, enable_session_yolo
-from tools.approval_context import reset_current_session_key, set_current_session_key
 from tools import approval_context
-
+from tools.approval import (
+    check_all_command_guards,
+    check_dangerous_command,
+    detect_dangerous_command,
+    detect_hardline_command,
+    disable_session_yolo,
+    enable_session_yolo,
+)
+from tools.approval_context import reset_current_session_key, set_current_session_key
 
 # -------------------------------------------------------------------------
 # Pattern detection

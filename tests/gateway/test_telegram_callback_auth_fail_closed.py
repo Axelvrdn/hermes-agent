@@ -10,8 +10,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from gateway.config import PlatformConfig, Platform
-
+from gateway.config import Platform, PlatformConfig
 
 # -- Fake telegram modules (minimal stubs) --------------------------------
 

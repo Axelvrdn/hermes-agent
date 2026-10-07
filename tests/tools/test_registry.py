@@ -8,9 +8,9 @@ from unittest.mock import patch
 import pytest
 
 from tools.registry import (
-    ToolRegistry,
     _MAX_LOGGED_ERROR_CHARS,
     _MAX_TOOL_ERROR_CHARS,
+    ToolRegistry,
     discover_builtin_tools,
     tool_error,
 )

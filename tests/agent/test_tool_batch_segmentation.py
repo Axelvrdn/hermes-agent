@@ -19,12 +19,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from run_agent import AIAgent
+from agent.prompt_builder import STEER_MARKER_OPEN
 from agent.tool_dispatch_helpers import (
     _plan_tool_batch_segments,
     _should_parallelize_tool_batch,
 )
-from agent.prompt_builder import STEER_MARKER_OPEN
+from run_agent import AIAgent
 from tools.budget_config import BudgetConfig
 from tools.tool_result_storage import PERSISTED_OUTPUT_TAG
 

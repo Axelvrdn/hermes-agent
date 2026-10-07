@@ -28,7 +28,6 @@ from hermes_cli.approvals_suggest import (
     suggest_command,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixture helpers: synthetic session DB
 # ---------------------------------------------------------------------------

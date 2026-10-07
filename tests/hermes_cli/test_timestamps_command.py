@@ -13,7 +13,6 @@ import time
 from datetime import datetime
 
 import hermes_yaml as yaml
-
 from hermes_cli.cli_commands_mixin import CLICommandsMixin
 
 

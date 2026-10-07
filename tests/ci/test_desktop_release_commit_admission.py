@@ -1,15 +1,21 @@
 """Commit-build admission rejects mixed inputs before repository code runs."""
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 from scripts.releases.commit_build import publish_receipt, receipt_tag
 from scripts.releases.versioning import tag_record
-from tests.ci.test_desktop_release_tag_admission import _child_env, _git, _seed_repo, _workflow, _BASH
+from tests.ci.test_desktop_release_tag_admission import (
+    _BASH,
+    _child_env,
+    _git,
+    _seed_repo,
+    _workflow,
+)
 
 
 def _admission_script():

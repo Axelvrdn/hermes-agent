@@ -29,7 +29,6 @@ from gateway.run import (
     _reconnect_needs_attention,
 )
 
-
 # ── Telegram: type-based auth classification ───────────────────────────
 
 

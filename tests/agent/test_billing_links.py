@@ -11,6 +11,7 @@ from agent.billing_links import (
     is_nous_inference_route,
 )
 
+
 def test_is_nous_inference_route_helper():
     assert is_nous_inference_route("nous", "") is True
     assert is_nous_inference_route("", "https://inference-api.nousresearch.com/v1") is True

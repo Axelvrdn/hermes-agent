@@ -13,8 +13,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from hermes_state_common import (
-    _RECOVERABLE_END_REASONS_SQL, _RESET_CHILD_SQL, _RESET_END_REASONS_SQL, _sql_json_extract,
-    _sql_session_last_active)
+    _RECOVERABLE_END_REASONS_SQL,
+    _RESET_CHILD_SQL,
+    _RESET_END_REASONS_SQL,
+    _sql_json_extract,
+    _sql_session_last_active,
+)
 
 # Log-record parity with the origin module (caplog tests pin "hermes_state").
 logger = logging.getLogger("hermes_state")
@@ -184,7 +188,10 @@ class SessionGatewayMixin:
         Fails closed: anything whose parent, age, argv, or network connections
         cannot be proved safe remains a repair-blocking holder."""
         from hermes_state import psutil
-        from hermes_state_dbfile import _concrete_state_db_holder_pids, _is_inactive_orphan_desktop_holder
+        from hermes_state_dbfile import (
+            _concrete_state_db_holder_pids,
+            _is_inactive_orphan_desktop_holder,
+        )
         if not sys.platform.startswith("linux") or psutil is None:
             return []
         try:

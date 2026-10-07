@@ -6,7 +6,6 @@ from dataclasses import dataclass, field, fields
 from datetime import datetime, timezone
 from typing import Any, Callable, ClassVar, Literal
 
-
 ArtifactType = Literal["transcript", "recording", "call_record"]
 
 

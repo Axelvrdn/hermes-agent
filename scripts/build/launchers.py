@@ -4,9 +4,9 @@ from __future__ import annotations
 import json
 import os
 import re
-from pathlib import Path
 import subprocess
 import tempfile
+from pathlib import Path
 
 
 def render_wrapper(entry: str, repo: str, site: str) -> str:

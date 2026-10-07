@@ -20,7 +20,7 @@ from unittest.mock import patch
 import pytest
 
 from gateway.config import GatewayConfig
-from gateway.run import GatewayRunner, _SESSION_DB_UNPINNED
+from gateway.run import _SESSION_DB_UNPINNED, GatewayRunner
 from gateway.session import SessionStore
 from gateway.session_db_recovery import RecoverableHandleCache
 

@@ -1,14 +1,13 @@
 """Cold setup consumes lock values before executing any downloaded tool."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 
 from pm.store import current_target
-
 
 ROOT = Path(__file__).resolve().parents[2]
 

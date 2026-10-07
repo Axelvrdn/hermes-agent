@@ -13,11 +13,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from gateway.config import PlatformConfig, Platform
+from gateway.config import Platform, PlatformConfig
 from plugins.platforms.telegram.telegram_ids import (
     normalize_telegram_chat_id,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helper-level behavior (no telegram import needed)

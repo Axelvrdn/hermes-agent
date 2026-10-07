@@ -2,12 +2,12 @@
 import argparse
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import time
 import urllib.request
+from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--repo', required=True)
@@ -21,8 +21,9 @@ out.mkdir(parents=True, exist_ok=False)
 home = Path(tempfile.mkdtemp(prefix='history-'+tag+'-', dir=out))
 os.environ['HOME'] = str(home)
 os.environ['HERMES_HOME'] = str(home)
-from hermes_state import SessionDB
 from websockets.sync.client import connect
+
+from hermes_state import SessionDB
 
 items = [{'type': 'message', 'role': 'assistant', 'phase': 'final_answer', 'content': [{'type': 'output_text', 'text': 'HISTORY_SIDECAR_REPLY'}]}]
 with SessionDB(db_path=home/'state.db') as db:

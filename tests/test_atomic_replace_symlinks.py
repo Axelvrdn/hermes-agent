@@ -20,6 +20,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+
 import hermes_yaml as yaml
 
 # Ensure the repo root is importable when running via `pytest tests/...`.
@@ -34,7 +35,6 @@ from utils import (
     atomic_roundtrip_yaml_update,
     atomic_yaml_write,
 )
-
 
 # ─── Direct helper ────────────────────────────────────────────────────────────
 

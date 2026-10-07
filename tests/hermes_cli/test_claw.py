@@ -1,14 +1,13 @@
 """Tests for hermes claw commands."""
 
-from argparse import Namespace
 import subprocess
+from argparse import Namespace
 from types import ModuleType
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from hermes_cli import claw as claw_mod
-
 
 # ---------------------------------------------------------------------------
 # _find_migration_script
@@ -297,8 +296,8 @@ class TestDetectOpenclawProcesses:
     def test_live_pgrep_ignores_argv_mentions_but_finds_node_openclaw(self, tmp_path):
         """A process that merely mentions "openclaw" in argv (the #12648 false positive) is not
         OpenClaw; a node interpreter running an openclaw script is."""
-        from pathlib import Path
         import time
+        from pathlib import Path
 
         # Nix's sys.executable can be a launcher that re-execs Python,
         # discarding both exec -a's argv[0] and the copied binary's comm.

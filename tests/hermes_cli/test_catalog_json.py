@@ -109,10 +109,10 @@ def test_loader_ignores_unknown_fields():
 
 
 def test_min_engine_gate(monkeypatch):
-    from hermes_cli.web_routers.local_models import _engine_too_old
+    from pathlib import Path
 
     from hermes_cli.local_runtime.binaries import Engine
-    from pathlib import Path
+    from hermes_cli.web_routers.local_models import _engine_too_old
 
     monkeypatch.setattr("hermes_cli.local_runtime.binaries.installed_engine",
                         lambda *args, **kwargs: Engine("cpu", "b10362", Path("unused")))

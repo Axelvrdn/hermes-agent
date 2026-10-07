@@ -16,9 +16,9 @@ Covers LINE adapter behavior from the PR review:
 from __future__ import annotations
 
 import asyncio
+import base64
 import hashlib
 import hmac
-import base64
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
 

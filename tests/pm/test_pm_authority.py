@@ -19,8 +19,10 @@ import pm.paths as paths
 import pm.registry as registry
 from pm.lock import Facts, Lockfile
 from pm.store import Store, current_target, tree_digest
-from tests.pm._fixtures import make_tar, served as served
-from tests.pm.test_pm_core import FakeTool, pm_env as core_env  # noqa: F401
+from tests.pm._fixtures import make_tar
+from tests.pm._fixtures import served as served
+from tests.pm.test_pm_core import FakeTool  # noqa: F401
+from tests.pm.test_pm_core import pm_env as core_env
 
 
 @pytest.fixture
@@ -125,6 +127,7 @@ def test_install_repairs_corrupt_entry_from_verified_archive(pm_env, matching_fa
 @pytest.mark.parametrize("initial", [False, True], ids=["replacement", "first-install"])
 def test_failed_replacement_preserves_entry_and_facts(pm_env, monkeypatch, route, initial, failure):
     from functools import partial
+
     from pm.install import ensure, stage_only
     from pm.package import InstallError
 

@@ -26,6 +26,7 @@ import pytest
 
 from tools.skills_guard import scan_skill
 
+
 def _scan(tmp_path: Path, content: str):
     skill_dir = tmp_path / "skill"
     skill_dir.mkdir(exist_ok=True)

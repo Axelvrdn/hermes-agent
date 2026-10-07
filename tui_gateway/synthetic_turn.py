@@ -15,8 +15,8 @@ import threading
 import time
 from typing import Any, Callable, Optional
 
-from tui_gateway._env import env_float as _env_float, env_int as _env_int
-
+from tui_gateway._env import env_float as _env_float
+from tui_gateway._env import env_int as _env_int
 
 # Per-turn intensity spec: (key, caster, default source). ``chunk`` = pure-Python ops per interrupt
 # check (ms-level interrupt latency, still hot on the GIL); ``delta_interval_s`` = streamed-delta

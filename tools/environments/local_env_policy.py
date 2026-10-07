@@ -2,8 +2,8 @@
 names are Hermes-managed credentials. The env *builders* applying it (``_make_run_env``,
 ``_sanitize_subprocess_env``, ``hermes_subprocess_env``) live in ``tools.environments.local``."""
 
-import logging
 import functools
+import logging
 import os
 from typing import Optional
 
@@ -108,7 +108,11 @@ def _build_adapter_secret_env() -> frozenset:
     Nothing here fails soft: an unreadable bundled manifest or env table fails the import rather
     than dropping its secrets from the policy."""
     from hermes_cli.config import (
-        CORE_DECLARED_ENV_NAMES, OPTIONAL_ENV_VARS, PLATFORM_SECRET_ENV_SUFFIXES, platform_manifest_secret_envs)
+        CORE_DECLARED_ENV_NAMES,
+        OPTIONAL_ENV_VARS,
+        PLATFORM_SECRET_ENV_SUFFIXES,
+        platform_manifest_secret_envs,
+    )
     from hermes_cli.profile_channels import config_env_table_keys
     # Read in code only, declared nowhere else: the Microsoft Graph app secret and webhook
     # clientState, and the QQ bot's speech-to-text key.

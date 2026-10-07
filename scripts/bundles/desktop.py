@@ -74,8 +74,8 @@ def build(repo: Path, tag: str | None, variant: str, builder_args: list[str],
 
 
 def build_prepared(path: Path, builder_args: list[str], variant: str | None = None) -> None:
-    from scripts.bundles.desktop_prepare import PreparedDesktop
     from scripts.bundles.desktop_inputs import build_lock
+    from scripts.bundles.desktop_prepare import PreparedDesktop
     prepared = PreparedDesktop.load(path)
     with build_lock(prepared.request.source):
         _build_prepared(prepared, builder_args, variant)
@@ -83,7 +83,12 @@ def build_prepared(path: Path, builder_args: list[str], variant: str | None = No
 
 def _build_prepared(prepared, builder_args: list[str], variant: str | None) -> None:
     prepared.validate()
-    from scripts.bundles.desktop_inputs import build_environment, packaging_environment, select_variant, validate_builder_identity
+    from scripts.bundles.desktop_inputs import (
+        build_environment,
+        packaging_environment,
+        select_variant,
+        validate_builder_identity,
+    )
     from scripts.bundles.native import finish_native
 
     request = prepared.request

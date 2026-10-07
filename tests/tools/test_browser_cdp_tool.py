@@ -12,16 +12,14 @@ import threading
 from typing import Any, Dict, List
 
 import pytest
-
+import requests
 import websockets
 from websockets.asyncio.server import serve
 
 from tools import browser_cdp_tool
-import requests
+from tools import browser_tool_cdp as bt_cdp
 from tools import browser_tool_eval_policy as bt_eval_policy
 from tools import browser_tool_install as bt_install
-from tools import browser_tool_cdp as bt_cdp
-
 
 # ---------------------------------------------------------------------------
 # In-process CDP mock server

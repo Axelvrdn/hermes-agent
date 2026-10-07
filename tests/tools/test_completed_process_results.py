@@ -1,16 +1,16 @@
 """Completed work remains retrievable when its finite CLI owner exits."""
 
-from collections import Counter
 import http.server
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
 import textwrap
 import threading
 import time
+from collections import Counter
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -202,10 +202,10 @@ def test_headless_terminal_result_survives_cli_exit(tmp_path):
 
 def test_receipts_are_bounded_redacted_and_session_scoped(tmp_path, monkeypatch):
     import time
-    from tools import process_registry_results as receipts
-    from tools.process_registry import MAX_OUTPUT_CHARS, ProcessRegistry, ProcessSession
 
     from agent import redact
+    from tools import process_registry_results as receipts
+    from tools.process_registry import MAX_OUTPUT_CHARS, ProcessRegistry, ProcessSession
     monkeypatch.setattr(redact, "_REDACT_ENABLED", False)
     monkeypatch.setattr(receipts, "MAX_RETAINED_RESULTS", 2)
     secret = "sk-" + "aB2cD3eF4gH5iJ6kL7mN8pQ9rS0tU1vW2xY3zA4bC5dE6fG7"
@@ -270,7 +270,7 @@ def test_receipts_are_bounded_redacted_and_session_scoped(tmp_path, monkeypatch)
     assert fresh.get(recovered.id) is None
 
     # Multiplex readers must keep the producer's profile on native threads.
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     profile = tmp_path / "thread-profile"
     token = set_hermes_home_override(profile)
     try:

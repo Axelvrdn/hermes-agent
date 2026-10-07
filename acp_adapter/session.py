@@ -6,8 +6,6 @@ survive process restarts and appear in ``session_search``; ``load_session`` /
 """
 from __future__ import annotations
 
-from hermes_constants import get_hermes_home, translate_cwd_for_wsl_backend, windows_path_to_wsl
-
 import copy
 import json
 import logging
@@ -17,9 +15,15 @@ import sys
 import threading
 import time
 import uuid
-from datetime import datetime, timezone
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
+from hermes_constants import (
+    get_hermes_home,
+    translate_cwd_for_wsl_backend,
+    windows_path_to_wsl,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -500,12 +504,15 @@ class SessionManager:
         if self._agent_factory is not None:
             return self._agent_factory()
 
-        from run_agent import AIAgent
         from agent.skill_utils import parse_config_string_list
         from hermes_cli.config import load_config
         from hermes_cli.runtime_provider import resolve_runtime_provider
-        from hermes_cli.tools_config import _get_platform_tools, enabled_mcp_server_names
+        from hermes_cli.tools_config import (
+            _get_platform_tools,
+            enabled_mcp_server_names,
+        )
         from hermes_constants import resolve_reasoning_config
+        from run_agent import AIAgent
 
         config = load_config()
         model_cfg = config.get("model")

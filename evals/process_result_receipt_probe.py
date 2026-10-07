@@ -1,9 +1,9 @@
 """Live process I/O proof, without model calls: python probe.py REPO OUT_DIR."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 repo, out = map(Path, sys.argv[1:3])
 out.mkdir(parents=True, exist_ok=True)

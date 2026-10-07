@@ -33,6 +33,7 @@ def test_boot_uses_one_selected_dependency_tree_in_fresh_process(tmp_path, monke
     import os
     import subprocess
     import sys
+
     from pm import environments as runtime_paths
 
     root = tmp_path / "repo"
@@ -71,6 +72,7 @@ def test_boot_puts_the_checkout_launcher_ahead_of_the_venvs_own_console_script(t
     import os
     import subprocess
     import sys
+
     from pm import environments as runtime_paths
 
     root = tmp_path / "repo"
@@ -107,6 +109,7 @@ def test_broken_environment_keeps_explicit_repair_entry_reachable(tmp_path, monk
     import os
     import subprocess
     import sys
+
     from pm.environments import runtime_facts_path
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "home"))
@@ -127,6 +130,7 @@ def test_manual_repair_bypasses_damaged_generation_activation(tmp_path, monkeypa
     import os
     import subprocess
     import sys
+
     from pm.environments import install_state_dir, runtime_facts_path, site_packages
 
     repo = Path(__file__).resolve().parents[2]
@@ -155,6 +159,7 @@ def test_boot_never_activates_the_pre_pm_venv(tmp_path, monkeypatch, interpreter
     import os
     import subprocess
     import sys
+
     from pm import environments as runtime_paths
 
     base_python = getattr(sys, "_base_executable", sys.executable)

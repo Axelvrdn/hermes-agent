@@ -238,9 +238,8 @@ class TestSkillManageBatch(unittest.TestCase):
         locked file) the except only appended a note and the finally then
         deleted the snapshot too: nothing survived. The broken state must
         be moved aside and only deleted once the restore succeeded."""
-        from unittest.mock import patch as _patch
-
         import shutil as _shutil
+        from unittest.mock import patch as _patch
 
         self._call("probe", [{"action": "create", "content": SK.format(n="probe")}])
         state = {"n": 0}

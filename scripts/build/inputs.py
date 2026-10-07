@@ -1,12 +1,11 @@
 """Build-time paths, not a second runtime configuration or dependency resolver."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field, fields
-from pathlib import Path
 import json
 import re
 import tomllib
-
+from dataclasses import dataclass, field, fields
+from pathlib import Path
 
 RESOURCE_ENV = {
     "skills": "HERMES_BUNDLED_SKILLS",

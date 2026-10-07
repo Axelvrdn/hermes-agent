@@ -4,16 +4,16 @@ Split out of ``hermes_cli/main.py``. Names that still live in main (``PROJECT_RO
 are imported lazily inside the functions that use them (avoids an import cycle).
 """
 
-import logging
 import contextlib
 import json
+import logging
 import os
 import shutil
 import subprocess
 import sys
-
 from pathlib import Path
 from typing import Optional
+
 from agent.i18n import t
 
 # Log-record parity with the origin module.
@@ -201,7 +201,11 @@ def _make_tui_argv(tui_dir: Path, tui_dev: bool) -> tuple[list[str], Path]:
     if not tui_dev and not _tui_need_rebuild(tui_dir):
         return [_tui_node_bin("node"), "--expose-gc", str(tui_dir / "dist/entry.js")], tui_dir
 
-    from hermes_cli.source_build import build_source_tui, prepare_launch_dependencies, source_build_env
+    from hermes_cli.source_build import (
+        build_source_tui,
+        prepare_launch_dependencies,
+        source_build_env,
+    )
 
     project_root = tui_dir.parent
     env = source_build_env()
@@ -329,7 +333,12 @@ def _setup_tui_worktree() -> dict:
     """Create the ``--worktree`` checkout for a TUI launch (prune + async pack maintenance); exits on failure."""
     wt_info = None
     try:
-        from cli import _git_repo_root, _maintain_pack_health, _prune_stale_worktrees, _setup_worktree
+        from cli import (
+            _git_repo_root,
+            _maintain_pack_health,
+            _prune_stale_worktrees,
+            _setup_worktree,
+        )
         repo = _git_repo_root()
         if repo:
             _prune_stale_worktrees(repo)
@@ -359,6 +368,7 @@ def _launch_tui(
     tui_dir = PROJECT_ROOT / "ui-tui"
 
     import tempfile
+
     # TUI child is a hermes process: propagate the profile-home contract via
     # the single factory; keep secrets (the TUI/agent needs provider creds).
     from tools.environments.local import build_subprocess_env

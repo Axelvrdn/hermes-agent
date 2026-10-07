@@ -47,6 +47,7 @@ from unittest.mock import patch
 
 import pytest
 
+
 @pytest.fixture()
 def compressor():
     """ContextCompressor with mocked deps and a tight tail budget so
@@ -283,8 +284,8 @@ class TestCompactionRollupReproduction:
 
     def test_compress_keeps_visible_reply_text(self, compressor):
         from agent.context_compressor import (
-            SUMMARY_PREFIX,
             COMPRESSED_SUMMARY_METADATA_KEY,
+            SUMMARY_PREFIX,
         )
         c = compressor
         c.tail_token_budget = 10
@@ -350,8 +351,8 @@ class TestCompactionRollupReproduction:
         This is the common case; the merge-into-tail path is the
         edge case for double-collision."""
         from agent.context_compressor import (
-            SUMMARY_PREFIX,
             COMPRESSED_SUMMARY_METADATA_KEY,
+            SUMMARY_PREFIX,
         )
         c = compressor
         c.tail_token_budget = 10

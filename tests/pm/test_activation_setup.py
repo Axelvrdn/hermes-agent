@@ -9,19 +9,22 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import stat
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 from pm.lock import Lockfile
 from pm.store import current_target
-from tests.pm._fixtures import _wheel, make_tar, served  # noqa: F401 -- shared HTTP fixture
-
+from tests.pm._fixtures import (  # noqa: F401 -- shared HTTP fixture
+    _wheel,
+    make_tar,
+    served,
+)
 
 pytestmark = pytest.mark.platforms("posix")
 REPO = Path(__file__).resolve().parents[2]

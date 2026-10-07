@@ -5,7 +5,6 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-
 mcp = FastMCP("__SERVER_NAME__")
 
 

@@ -6,7 +6,6 @@ from typing import Any, Dict, Optional
 
 from agent.context_compressor import ContextCompressor, is_compaction_summary_message
 
-
 _COMPACTION_INTERNAL_FIELDS = (
     "tool_calls",
     "finish_reason",

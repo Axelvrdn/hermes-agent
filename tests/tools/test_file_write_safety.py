@@ -462,6 +462,7 @@ class TestBomHandling:
     def _env_without(*missing: str):
         """A real shell where only the named BINARIES are absent (busybox, distroless)."""
         import re as _re
+
         from tools.environments.local import LocalEnvironment
         stub = "( echo 'sh: not found' >&2; exit 127 )"  # a SUBSHELL: `exit` must not kill the shell
 
@@ -569,8 +570,9 @@ class TestBomHandling:
         # to take a FIFO; the native path must hand it over instead of opening it. Stubbing the
         # shell read keeps this about the native branch: if it opens the FIFO the test hangs.
         import signal
-        from tools.file_operations import ExecuteResult, ShellFileOperations
+
         from tools.environments.local import LocalEnvironment
+        from tools.file_operations import ExecuteResult, ShellFileOperations
         fifo = tmp_path / "pipe"
         os.mkfifo(fifo)  # no writer: a blocking open never returns
         ops = ShellFileOperations(LocalEnvironment(cwd=str(tmp_path)), cwd=str(tmp_path))
@@ -593,8 +595,9 @@ class TestBomHandling:
         # A user rc / BASH_ENV with `set -x` must not break byte-exact reads, or every edit fails
         # its read. (The post-write sha256 check under noisy stdout is a separate issue.)
         import shutil
-        from tools.file_operations import ShellFileOperations
+
         from tools.environments.local import LocalEnvironment
+        from tools.file_operations import ShellFileOperations
         if not shutil.which("bash"):
             pytest.skip("bash not installed")
         monkeypatch.setenv("HERMES_NATIVE_FILE_READ", "0")
@@ -648,6 +651,7 @@ class TestProtectedInstructionFiles:
 
     def _write(self, path, content="injected"):
         import json
+
         from tools.file_tools import write_file_tool
         return json.loads(write_file_tool(str(path), content))
 
@@ -804,8 +808,9 @@ class TestProtectedInstructionFiles:
     # ---- patch tool -----------------------------------------------------
 
     def test_patch_replace_mode_is_gated(self, tmp_path, approvals):
-        from tools.file_tools import patch_tool
         import json
+
+        from tools.file_tools import patch_tool
         target = tmp_path / "SOUL.md"
         target.write_text("be kind\n", encoding="utf-8")
         approvals["answer"] = "deny"
@@ -821,8 +826,9 @@ class TestProtectedInstructionFiles:
     ):
         """Policy: one protected file gates the ENTIRE patch (deny = nothing
         applies, including the innocent file)."""
-        from tools.file_tools import patch_tool
         import json
+
+        from tools.file_tools import patch_tool
         agents = tmp_path / "AGENTS.md"
         agents.write_text("rules\n", encoding="utf-8")
         plain = tmp_path / "plain.txt"
@@ -847,8 +853,9 @@ class TestProtectedInstructionFiles:
         assert len(approvals["calls"]) == 1
 
     def test_patch_v4a_approved_applies(self, tmp_path, approvals):
-        from tools.file_tools import patch_tool
         import json
+
+        from tools.file_tools import patch_tool
         agents = tmp_path / "AGENTS.md"
         agents.write_text("rules\n", encoding="utf-8")
         patch = (
@@ -954,6 +961,7 @@ class TestProfileHomeExemptsHermesRoot:
 
     def _write(self, path, content="injected"):
         import json
+
         from tools.file_tools import write_file_tool
         return json.loads(write_file_tool(str(path), content))
 
@@ -969,7 +977,10 @@ class TestProfileHomeExemptsHermesRoot:
         """Under a named profile bound by the per-turn scope (multiplex path), the ROOT's own store is
         not project-local ``.hermes`` config: the write lands with no approval prompt."""
         import tools.file_tools_write_guards as ft
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         root, profile = self._profile_layout(tmp_path)
         monkeypatch.delenv("HERMES_HOME", raising=False)
@@ -990,7 +1001,10 @@ class TestProfileHomeExemptsHermesRoot:
         protected basenames stay gated (fail-closed, unwritten), and a coincidental
         ``.../profiles/<name>`` tree that is NOT a Hermes root never exempts its parent."""
         import tools.file_tools_write_guards as ft
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         root, profile = self._profile_layout(tmp_path)
         repo = tmp_path / "repo"

@@ -24,7 +24,6 @@ import pytest
 from gateway.config import Platform
 from gateway.platforms.base import SendResult
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

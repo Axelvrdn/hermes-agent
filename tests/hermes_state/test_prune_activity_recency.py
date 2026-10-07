@@ -1,6 +1,8 @@
 import time
 from contextlib import closing
+
 import pytest
+
 from hermes_cli.sessions_cmd import _note_pinned_skipped
 from hermes_state import SessionDB
 

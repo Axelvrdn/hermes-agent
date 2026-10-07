@@ -52,15 +52,16 @@ def _cap_retaindb_sleeps(monkeypatch):
 
 # We need the repo root on sys.path so the plugin can import agent.memory_provider
 import sys
+
 _repo_root = str(Path(__file__).resolve().parents[2])
 if _repo_root not in sys.path:
     sys.path.insert(0, _repo_root)
 
 from plugins.memory.retaindb import (
+    RetainDBMemoryProvider,
+    _build_overlay,
     _Client,
     _WriteQueue,
-    _build_overlay,
-    RetainDBMemoryProvider,
 )
 
 # ===========================================================================

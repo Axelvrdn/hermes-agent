@@ -3,7 +3,11 @@ window, and a ``(pinned)`` label wherever the window is rendered (#66168)."""
 import logging
 
 from agent import context_pin
-from agent.context_pin import context_pin_suffix, is_context_pinned, warn_once_on_pin_disagreement
+from agent.context_pin import (
+    context_pin_suffix,
+    is_context_pinned,
+    warn_once_on_pin_disagreement,
+)
 
 
 def test_pin_disagreement_warns_once_and_keeps_pin(monkeypatch, caplog):

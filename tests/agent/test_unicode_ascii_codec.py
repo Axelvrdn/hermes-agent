@@ -5,7 +5,14 @@ that can't encode non-ASCII characters in API request payloads.
 """
 
 
-from agent.message_sanitization import _strip_non_ascii, _sanitize_messages_non_ascii, _sanitize_structure_non_ascii, _sanitize_tools_non_ascii, _sanitize_messages_surrogates, sanitize_outbound_kwargs
+from agent.message_sanitization import (
+    _sanitize_messages_non_ascii,
+    _sanitize_messages_surrogates,
+    _sanitize_structure_non_ascii,
+    _sanitize_tools_non_ascii,
+    _strip_non_ascii,
+    sanitize_outbound_kwargs,
+)
 
 
 class TestStripNonAscii:

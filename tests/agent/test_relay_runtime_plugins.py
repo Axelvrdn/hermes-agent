@@ -13,7 +13,6 @@ import pytest
 
 from agent import relay_runtime
 
-
 HOST_CONFLICT = RuntimeError(
     "conflict: a static plugin configuration is already active; to combine static and dynamic plugins, "
     "provide the static components as the base configuration to dynamic plugin activation before calling "

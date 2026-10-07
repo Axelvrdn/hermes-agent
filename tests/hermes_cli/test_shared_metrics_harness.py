@@ -163,7 +163,10 @@ def test_loop_guards_count_once_per_turn_per_signal_and_detector(direct_runtime,
 
 
 def test_real_guardrail_halt_reaches_the_metric(direct_runtime, tmp_path):
-    from agent.tool_guardrails import ToolCallGuardrailConfig, ToolCallGuardrailController
+    from agent.tool_guardrails import (
+        ToolCallGuardrailConfig,
+        ToolCallGuardrailController,
+    )
     from run_agent import AIAgent
 
     agent = _agent()

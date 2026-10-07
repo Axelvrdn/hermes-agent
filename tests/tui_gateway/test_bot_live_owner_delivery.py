@@ -2,10 +2,10 @@
 import threading
 from types import SimpleNamespace
 
+from tui_gateway import session_auto_continue, session_notifications
 from tui_gateway.method_ctx import rebind
 from tui_gateway.session_lifecycle import _session_turn_admission
-from tui_gateway import session_notifications, session_auto_continue
-from tui_gateway.turn_marker import record_turn_start, read_turn_marker
+from tui_gateway.turn_marker import read_turn_marker, record_turn_start
 
 
 def test_refused_input_commits_failed_mailbox_receipt(tmp_path):
@@ -13,9 +13,10 @@ def test_refused_input_commits_failed_mailbox_receipt(tmp_path):
     import contextvars
     import logging
     import time
+
+    from tools import bot_live_delivery as mailbox
     from tui_gateway import prompt_turn
     from tui_gateway.session_lifecycle import _start_session_work
-    from tools import bot_live_delivery as mailbox
 
     owner = dict(profile_home=str(tmp_path.resolve()), session_id="chat",
                  lease_id="lease", live_session_id="live")

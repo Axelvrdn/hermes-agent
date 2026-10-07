@@ -12,8 +12,8 @@ the operator (``alerted_at`` = when the latest one did; the scheduler withholds 
 
 from __future__ import annotations
 
-import logging
 import hashlib
+import logging
 import re
 import sqlite3
 import threading

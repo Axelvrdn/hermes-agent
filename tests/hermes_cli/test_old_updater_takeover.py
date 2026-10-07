@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -635,7 +635,10 @@ def test_a_historical_updater_arms_the_host_record_under_the_current_mutex(tmp_p
     ``update_host_obligation``: the arm must still write the record, under the same sidecar lock
     current processes hold, instead of crashing the update on the missing ``marker_mutex``."""
     from hermes_cli import update_lock
-    from hermes_cli.update_host_obligation import read_host_obligation, write_host_obligation
+    from hermes_cli.update_host_obligation import (
+        read_host_obligation,
+        write_host_obligation,
+    )
 
     monkeypatch.setenv("HERMES_GATEWAY_LOCK_DIR", str(tmp_path / "gateway-locks"))
     monkeypatch.delattr(update_lock, "marker_mutex")  # N-1's in-memory update_lock had no such name

@@ -1,6 +1,6 @@
 """Phase 3: secondary-profile adapter registry + same-token conflict detection."""
-import logging
 import asyncio
+import logging
 import threading
 import time
 import types
@@ -834,6 +834,7 @@ class TestSecondaryProfileConfigHandling:
     @pytest.mark.asyncio
     async def test_multiplexer_skips_bad_profile_and_continues(self, monkeypatch, caplog):
         from pathlib import Path
+
         from gateway.config import GatewayConfig
 
         runner = GatewayRunner.__new__(GatewayRunner)
@@ -891,6 +892,7 @@ class TestSecondaryProfileConfigHandling:
         ``served_profiles`` survived into a later single-profile run and every `hermes -p X` surface
         kept treating X as served (exit 78 on start, "running via multiplexer" on status)."""
         import json
+
         from gateway.status import read_runtime_status
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -906,6 +908,7 @@ class TestSecondaryProfileConfigHandling:
     @pytest.mark.asyncio
     async def test_multiplexer_propagates_security_config_error(self, monkeypatch):
         from pathlib import Path
+
         from gateway.config import GatewayConfig
         from gateway.run import MultiplexConfigError
 
@@ -1159,8 +1162,8 @@ class TestFeishuPortBindingConditional:
     @pytest.mark.asyncio
     async def test_feishu_websocket_mode_not_rejected(self, monkeypatch):
         """Feishu in websocket mode (the default) should NOT raise MultiplexConfigError."""
-        from gateway.run import MultiplexConfigError
         from gateway.config import GatewayConfig, Platform, PlatformConfig
+        from gateway.run import MultiplexConfigError
 
         runner = GatewayRunner.__new__(GatewayRunner)
         runner.config = GatewayConfig(multiplex_profiles=True)

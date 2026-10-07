@@ -15,6 +15,7 @@ from pm.lock import Facts
 from pm.registry import get_package, walk
 from pm.store import current_target
 
+
 def _bundle_package_names() -> list[str]:
     names = [
         n
@@ -267,7 +268,7 @@ def _prepare_native(*, out: Path, ref: str, source: Path, cache: Path,
     from scripts.bundles.payload import record_tools
     recorded = {name: fact["entry"] for name in names if (fact := facts.get(name)) and "entry" in fact}
     record_tools(out, paths.lockfile_path(), current_target(), recorded)
-    from scripts.build.inputs import AgentInputs, RESOURCE_ENV, dependency_site
+    from scripts.build.inputs import RESOURCE_ENV, AgentInputs, dependency_site
     from scripts.bundles.native_prepared import publish_prepared
 
     site = dependency_site(venv_dir, python_fact["version"], current_target())

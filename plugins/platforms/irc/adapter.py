@@ -7,23 +7,22 @@ IRC_SERVER_PASSWORD, IRC_NICKSERV_PASSWORD.
 """
 
 import asyncio
-import datetime
 import contextlib
+import datetime
 import logging
 import re
 import ssl
 import time
 from typing import Any, Dict, List, Optional
 
-from gateway.platforms._shared import (
-    coerce_port, get_scoped_secret as _get_scoped_secret, seed_extra_from_env as _seed_extra_from_env, send_error
-)
 from agent.i18n import t
-from gateway.platforms.base import BasePlatformAdapter, SendResult
-from gateway.platforms.helpers import cancel_task
-from gateway.platforms.event import MessageEvent, MessageType
 from gateway.config import Platform
-
+from gateway.platforms._shared import coerce_port, send_error
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms.base import BasePlatformAdapter, SendResult
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import cancel_task
 
 logger = logging.getLogger(__name__)
 
@@ -340,7 +339,15 @@ def validate_config(config) -> bool:
 def interactive_setup() -> None:
     """`hermes gateway setup` flow (lazy hermes_cli imports keep the plugin importable outside the CLI)."""
     from hermes_cli.setup import (
-        prompt, prompt_yes_no, save_env_value, get_env_value, print_header, print_info, print_warning, print_success)
+        get_env_value,
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+        prompt_yes_no,
+        save_env_value,
+    )
     from hermes_cli.setup_platforms import declines_reconfigure
 
     def info(*lines: str) -> None:

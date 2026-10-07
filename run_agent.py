@@ -25,16 +25,17 @@ if "hermes_cli.main" not in sys.modules:
 
 import json
 import logging
+
 logger = logging.getLogger(__name__)
 import os
 import re
-import time
 import threading
+import time
 import uuid
 import warnings
-from typing import List, Dict, Any, Optional, Callable
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
 
 from agent.session_source import CLI_FAMILY_SOURCES, session_source_for
 from hermes_constants import get_hermes_home
@@ -100,44 +101,63 @@ if not _loaded_env_paths:
     logger.info("No .env file found. Using system environment variables.")
 
 
-from model_tools import get_toolset_for_tool
-from tools.terminal_tool_lifecycle import cleanup_vm, get_active_env
-from tools.interrupt import set_interrupt as _set_interrupt
-from tools.browser_tool_lifecycle import cleanup_browser
-from tools.connectors.turn import agent_connection_surface, scoped_connection_surface
-
-from agent.memory_provider import is_trivial_prompt
-from agent.client_lifecycle import ClientLifecycleMixin
-from agent.stream_delivery import StreamDeliveryMixin
-from agent.status_output import StatusOutputMixin
-from agent.api_request_hooks import ApiRequestHooksMixin
-from agent.api_error_summary import ApiErrorSummaryMixin, is_provider_stream_parse_error
-from agent.interrupt_control import InterruptControlMixin
-from agent.turn_explainers import TurnExplainersMixin
 from agent.activity_tracking import ActivityTrackingMixin
-from agent.rate_limit_credits import RateLimitCreditsMixin
-from agent.session_persistence import SessionPersistenceMixin
-from agent.compression_facade import CompressionFacadeMixin
-from agent.turn_facade import TurnFacadeMixin
-from agent.vision_message_prep import VisionMessagePrepMixin
-from agent.reasoning_params import ReasoningParamsMixin
-from agent.lazy_forward import forward as _forward, forward_static as _forward_static
-from agent.session_activity import ActivityProvenance
-from agent.model_metadata import is_local_endpoint
-from agent.message_sanitization import (
-    coalesce_tool_call_id as _sanitize_coalesce_tool_call_id,
-    deterministic_call_id as _codex_deterministic_call_id,
-    uniquify_tool_call_ids as _sanitize_uniquify_tool_call_ids,
-)
+from agent.api_error_summary import ApiErrorSummaryMixin, is_provider_stream_parse_error
+from agent.api_request_hooks import ApiRequestHooksMixin
+from agent.client_lifecycle import ClientLifecycleMixin
 from agent.codex_responses_adapter import (
     _derive_responses_function_call_id as _codex_derive_responses_function_call_id,
+)
+from agent.codex_responses_adapter import (
     _split_responses_tool_id as _codex_split_responses_tool_id,
+)
+from agent.codex_responses_adapter import (
     _summarize_user_message_for_log,
 )
-from agent.tool_guardrails import ToolGuardrailDecision, append_toolguard_guidance, toolguard_synthetic_result
-from hermes_cli.observability.shared_metrics_harness import record_guardrail_decision, record_guardrail_warnings
-from utils import base_url_host_matches, base_url_hostname, env_float, model_forces_max_completion_tokens
-
+from agent.compression_facade import CompressionFacadeMixin
+from agent.interrupt_control import InterruptControlMixin
+from agent.lazy_forward import forward as _forward
+from agent.lazy_forward import forward_static as _forward_static
+from agent.memory_provider import is_trivial_prompt
+from agent.message_sanitization import (
+    coalesce_tool_call_id as _sanitize_coalesce_tool_call_id,
+)
+from agent.message_sanitization import (
+    deterministic_call_id as _codex_deterministic_call_id,
+)
+from agent.message_sanitization import (
+    uniquify_tool_call_ids as _sanitize_uniquify_tool_call_ids,
+)
+from agent.model_metadata import is_local_endpoint
+from agent.rate_limit_credits import RateLimitCreditsMixin
+from agent.reasoning_params import ReasoningParamsMixin
+from agent.session_activity import ActivityProvenance
+from agent.session_persistence import SessionPersistenceMixin
+from agent.status_output import StatusOutputMixin
+from agent.stream_delivery import StreamDeliveryMixin
+from agent.tool_guardrails import (
+    ToolGuardrailDecision,
+    append_toolguard_guidance,
+    toolguard_synthetic_result,
+)
+from agent.turn_explainers import TurnExplainersMixin
+from agent.turn_facade import TurnFacadeMixin
+from agent.vision_message_prep import VisionMessagePrepMixin
+from hermes_cli.observability.shared_metrics_harness import (
+    record_guardrail_decision,
+    record_guardrail_warnings,
+)
+from model_tools import get_toolset_for_tool
+from tools.browser_tool_lifecycle import cleanup_browser
+from tools.connectors.turn import agent_connection_surface, scoped_connection_surface
+from tools.interrupt import set_interrupt as _set_interrupt
+from tools.terminal_tool_lifecycle import cleanup_vm, get_active_env
+from utils import (
+    base_url_host_matches,
+    base_url_hostname,
+    env_float,
+    model_forces_max_completion_tokens,
+)
 
 _MAX_TOOL_WORKERS = 8
 
@@ -566,7 +586,11 @@ class AIAgent(
         if uses_implicit_default and base_url and is_local_endpoint(base_url):
             return float("inf")
 
-        from agent.chat_completion_helpers import _high_effort_silence_floor, cap_to_run_budget, estimate_request_context_tokens
+        from agent.chat_completion_helpers import (
+            _high_effort_silence_floor,
+            cap_to_run_budget,
+            estimate_request_context_tokens,
+        )
         est_tokens = estimate_request_context_tokens(api_payload)
         timeout = max(stale_base, 240.0) if est_tokens > 100_000 else max(stale_base, 150.0) if est_tokens > 50_000 else stale_base
         explicit = self._stale_timeout_is_explicit()
@@ -746,7 +770,11 @@ class AIAgent(
     _cleanup_task_resources = _forward("agent.chat_completion_helpers", "cleanup_task_resources")
 
     # Background memory/skill review — prompts live in agent.background_review.
-    from agent.background_review import _MEMORY_REVIEW_PROMPT, _SKILL_REVIEW_PROMPT, _COMBINED_REVIEW_PROMPT
+    from agent.background_review import (
+        _COMBINED_REVIEW_PROMPT,
+        _MEMORY_REVIEW_PROMPT,
+        _SKILL_REVIEW_PROMPT,
+    )
     _summarize_background_review_actions = _forward_static("agent.background_review", "summarize_background_review_actions")
 
     def _spawn_background_review(self, messages_snapshot: List[Dict], review_memory: bool = False,
@@ -794,7 +822,9 @@ class AIAgent(
         rather than lost.
         """
         from agent.background_review import (
-            finish_background_review_run, prepare_background_review_run, spawn_background_review_thread,
+            finish_background_review_run,
+            prepare_background_review_run,
+            spawn_background_review_thread,
         )
         from tools.thread_context import propagate_context_to_thread
 
@@ -1329,7 +1359,8 @@ class AIAgent(
 
     def _dispatch_delegate_task(self, function_args: dict) -> str:
         """Single call site for delegate_task dispatch; new DELEGATE_TASK_SCHEMA fields are added only here."""
-        from tools.delegate_tool import _strip_model_hidden_task_fields, delegate_task as _delegate_task
+        from tools.delegate_tool import _strip_model_hidden_task_fields
+        from tools.delegate_tool import delegate_task as _delegate_task
         # Top-level MODEL delegations always run in the background (handle returned, results re-enter as
         # messages). An ORCHESTRATOR SUBAGENT (depth > 0) stays synchronous — it needs results in-turn and
         # owns no gateway session. The schema-level `background` param is intentionally ignored.
@@ -1348,7 +1379,8 @@ class AIAgent(
     def _wrap_verbose(label: str, text: str, indent: str = "     ") -> str:
         """Word-wrap verbose tool output to the terminal width (each existing line separately), continuation
         lines indented."""
-        import shutil, textwrap
+        import shutil
+        import textwrap
         wrap_width = max(40, shutil.get_terminal_size((120, 24)).columns - len(indent))
         out_lines: list[str] = []
         for raw_line in text.split("\n"):

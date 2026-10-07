@@ -17,11 +17,10 @@ Run with:  python -m pytest tests/tools/test_read_loop_detection.py -v
 
 import json
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from tools.file_tools import read_file_tool, search_tool
-from tools.file_tools_read_tracking import _read_tracker
-from tools.file_tools_read_tracking import notify_other_tool_call
+from tools.file_tools_read_tracking import _read_tracker, notify_other_tool_call
 
 
 class _FakeReadResult:

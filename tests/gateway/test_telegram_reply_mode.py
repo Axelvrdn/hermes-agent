@@ -6,11 +6,17 @@ Covers the threading behavior control for multi-chunk replies:
 - "all": All chunks thread to original message
 """
 import os
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from gateway.config import PlatformConfig, GatewayConfig, Platform, _apply_env_overrides, load_gateway_config
+from gateway.config import (
+    GatewayConfig,
+    Platform,
+    PlatformConfig,
+    _apply_env_overrides,
+    load_gateway_config,
+)
 from plugins.platforms.telegram.adapter import TelegramAdapter  # noqa: E402
 
 

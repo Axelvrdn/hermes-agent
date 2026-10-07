@@ -10,9 +10,9 @@ image-only (scanned) pages for hand-off to the references/ocr-extraction.md in t
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 

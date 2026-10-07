@@ -17,8 +17,8 @@ Run: pytest tests/hermes_cli/test_dashboard_auth_native_flow.py
 
 from __future__ import annotations
 
-import hashlib
 import base64
+import hashlib
 import html
 import re
 import time
@@ -30,12 +30,11 @@ from fastapi.testclient import TestClient
 from hermes_cli import web_server
 from hermes_cli.dashboard_auth import (
     clear_providers,
+    native_flow,
     register_provider,
 )
-from hermes_cli.dashboard_auth import native_flow
 from hermes_cli.dashboard_auth.base import Session
 from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
-
 
 # ---------------------------------------------------------------------------
 # PKCE helpers (desktop side)

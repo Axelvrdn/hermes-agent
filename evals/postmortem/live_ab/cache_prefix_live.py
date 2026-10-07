@@ -2,12 +2,20 @@
 Fable 5.1 via Nous and prints per-call cache hit ratios from agent.log. ~10 calls, well under $1.
 Arm A = current code. Arm B = HERMES_KEEP_ALL_THINKING=1 monkeypatch of _manage_thinking_signatures
 that passes thinking blocks back unchanged for the Nous/Anthropic route."""
-import os, sys, re, tempfile, time, subprocess, json
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+
 # LIVE: real provider calls (cents). Usage: python cache_prefix_live.py <repo_root> <A|B>
 os.environ.setdefault("HERMES_HOME", os.path.expanduser("~/.hermes"))
 sys.path.insert(0, sys.argv[1])
 arm = sys.argv[2] if len(sys.argv) > 2 else "A"
 import agent.anthropic_message_convert as amc
+
 if arm == "B":
     _orig = amc._manage_thinking_signatures
     def _keep_all(result, base_url, model):
@@ -23,8 +31,9 @@ if arm == "B":
     import agent.anthropic_adapter as ad
     if hasattr(ad, "_manage_thinking_signatures"):
         ad._manage_thinking_signatures = _keep_all
-from run_agent import AIAgent
 from hermes_cli.runtime_provider import resolve_runtime_provider
+from run_agent import AIAgent
+
 rt = resolve_runtime_provider(requested="nous", target_model="anthropic/claude-fable-5.1")
 sid = f"f0ab_{arm}_{int(time.time())}"
 ag = AIAgent(model="anthropic/claude-fable-5.1", provider="nous", base_url=rt.get("base_url"), api_key=rt.get("api_key"),

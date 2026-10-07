@@ -16,7 +16,8 @@ import pytest
 
 from hermes_cli import anon_auth
 from hermes_cli.auth import _load_auth_store, resolve_provider
-from tests.hermes_cli.anon_portal import PORTAL, WELCOME, install_portal, make_jwt as _jwt  # noqa: F401
+from tests.hermes_cli.anon_portal import PORTAL, WELCOME, install_portal  # noqa: F401
+from tests.hermes_cli.anon_portal import make_jwt as _jwt
 
 
 @pytest.fixture
@@ -236,7 +237,11 @@ class TestTokenAcquisitionSeam:
 
     def test_tool_gateway_token_path_reexchanges(self, portal):
         anon_auth.ensure_portal_identity(explicit=True)
-        from hermes_cli.auth import _auth_store_lock, _save_auth_store, resolve_nous_access_token
+        from hermes_cli.auth import (
+            _auth_store_lock,
+            _save_auth_store,
+            resolve_nous_access_token,
+        )
         with _auth_store_lock():
             store = _load_auth_store()
             store["providers"]["nous"]["expires_at"] = "2000-01-01T00:00:00+00:00"
@@ -271,6 +276,7 @@ class TestModelPin:
 class TestLogout:
     def test_logout_with_only_free_tier_is_a_true_noop(self, portal):
         from types import SimpleNamespace
+
         from hermes_cli.auth import _auth_file_path, logout_command
         anon_auth.ensure_portal_identity(explicit=True)
         before = _auth_file_path().read_bytes()
@@ -279,6 +285,7 @@ class TestLogout:
 
     def test_logout_of_real_account_clears_shared_store(self, portal, tmp_path):
         from types import SimpleNamespace
+
         from hermes_cli.auth import logout_command
         from hermes_cli.auth_nous import persist_nous_credentials
         persist_nous_credentials({"access_token": _jwt(client_id="hermes-cli", account_tier="free"),
@@ -313,6 +320,7 @@ class TestRotationNeverRewritesTheConversationModel:
 
     def test_paid_conversation_refuses_a_welcome_route_on_every_wire_mode(self, portal):
         from types import SimpleNamespace
+
         from agent.client_lifecycle import ClientLifecycleMixin
         for mode, model in (("chat_completions", "nous/paid-model"), ("anthropic_messages", "anthropic/claude-sonnet")):
             agent = self._agent(mode, model)
@@ -322,6 +330,7 @@ class TestRotationNeverRewritesTheConversationModel:
 
     def test_welcome_conversation_may_move_to_the_portal_host(self, portal):
         from types import SimpleNamespace
+
         from agent.client_lifecycle import ClientLifecycleMixin
         agent = self._agent(model=anon_auth.GUEST_MODEL); agent.base_url = WELCOME
         ok = ClientLifecycleMixin._swap_credential(agent, SimpleNamespace(id="p2", runtime_api_key="key", runtime_base_url="https://inference-api.nousresearch.com/v1"))
@@ -419,7 +428,8 @@ class TestIdentityOfRecordIsTheSharedStore:
 
     def test_lock_order_is_profile_then_shared(self, portal, monkeypatch):
         order = []
-        from hermes_cli import auth as auth_mod, auth_nous
+        from hermes_cli import auth as auth_mod
+        from hermes_cli import auth_nous
         real_profile, real_shared = auth_mod._auth_store_lock, auth_nous._nous_shared_store_lock
         from contextlib import contextmanager
 

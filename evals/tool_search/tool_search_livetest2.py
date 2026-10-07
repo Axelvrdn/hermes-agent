@@ -11,8 +11,14 @@ Runs each scenario N_REPS times in each mode (on/off). Output:
 """
 from __future__ import annotations
 
+import json
 import logging
-import json, os, shutil, sys, tempfile, time, traceback
+import os
+import shutil
+import sys
+import tempfile
+import time
+import traceback
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -104,7 +110,7 @@ def run_one(scenario: Dict[str, Any], mode: str, rep: int, out_dir: Path) -> Dic
             skip_context_files=True, skip_memory=True,
             platform="cli", max_iterations=15,
         )
-        from hermes_cli.plugins import get_plugin_manager, discover_plugins
+        from hermes_cli.plugins import discover_plugins, get_plugin_manager
         discover_plugins()  # idempotent; ensures no later clear wipes our hook
         pm = get_plugin_manager()
         pm._hooks.setdefault("post_api_request", []).append(usage_hook)

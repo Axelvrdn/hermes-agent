@@ -5,11 +5,11 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tarfile
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -150,8 +150,8 @@ def test_signature_rejection_preserves_previous_selection(consumer_store, tmp_pa
 
 @pytest.mark.platforms("posix")
 def test_managed_consumers_run_their_business_protocol(consumer_store, monkeypatch):
-    from agent.secret_sources.bitwarden import fetch_bitwarden_secrets, install_bws
     from agent.proxy_sources.iron_proxy import install_iron_proxy, iron_proxy_version
+    from agent.secret_sources.bitwarden import fetch_bitwarden_secrets, install_bws
 
     monkeypatch.setenv("PATH", "")
     monkeypatch.setenv("MY_PRIVATE_TOKEN", "not-for-proxy")

@@ -14,7 +14,7 @@ _registry = HandlerRegistry()
 
 def resolve_skin() -> dict:
     try:
-        from hermes_cli.skin_engine import init_skin_from_config, get_active_skin
+        from hermes_cli.skin_engine import get_active_skin, init_skin_from_config
         init_skin_from_config(_load_cfg())
         skin = get_active_skin()
         # light/dark are paired palettes: the TUI prefers the block matching terminal polarity.
@@ -158,6 +158,7 @@ def _session_db_content_sig(db_path: Path):
     conn = None
     try:
         import hashlib
+
         from hermes_state import _connect_tracked_db
         from hermes_state_holders import read_only_db_uri
 

@@ -7,8 +7,6 @@ A negative before/after delta means the DB grew — printing
 from hermes_cli.sessions_cmd import _size_delta_label
 
 
-
-
 def test_growth_reports_grew_by_not_negative_reclaimed():
     label = _size_delta_label(-163.0)
     assert "163.0" in label

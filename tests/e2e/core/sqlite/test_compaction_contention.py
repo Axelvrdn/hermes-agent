@@ -56,7 +56,12 @@ from tests.e2e.core.sqlite._helpers import (
     skip_unless_deployable,
     token_flags,
 )
-from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall, write_hermes_home
+from tests.fakes.fake_llm_provider import (
+    FakeLLMServer,
+    Text,
+    ToolCall,
+    write_hermes_home,
+)
 
 pytestmark = [
     pytest.mark.skipif(not sys.platform.startswith("linux"), reason="/proc fd scan and POSIX lock semantics"),

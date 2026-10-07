@@ -24,19 +24,31 @@ from pathlib import Path
 from typing import Any, Callable, Iterator, Optional
 
 from fastapi import (
-    APIRouter, File, Form, HTTPException, Query, UploadFile, WebSocket, WebSocketDisconnect, status as http_status)
+    APIRouter,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    UploadFile,
+    WebSocket,
+    WebSocketDisconnect,
+)
+from fastapi import status as http_status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from hermes_cli import kanban_db
-from hermes_cli import kanban_workflow
-from hermes_cli.web_read_coalescing import coalesced_read
+from hermes_cli import kanban_db, kanban_workflow
 from hermes_cli import kanban_db_connect as kbc
-from hermes_cli import kanban_db_notify as kbn
 from hermes_cli import kanban_db_dispatch as kbd
+from hermes_cli import kanban_db_notify as kbn
 from hermes_cli import kanban_db_workspace as kbw
 from hermes_cli import kanban_diagnostics as kd
-from hermes_cli.kanban_db import KANBAN_ATTACHMENT_MAX_BYTES, _collision_free_path, _safe_attachment_name
+from hermes_cli.kanban_db import (
+    KANBAN_ATTACHMENT_MAX_BYTES,
+    _collision_free_path,
+    _safe_attachment_name,
+)
+from hermes_cli.web_read_coalescing import coalesced_read
 
 log = logging.getLogger(__name__)
 
@@ -1099,7 +1111,11 @@ def _run_estimate(title: str, body: Optional[str], *, task_id: Optional[str]) ->
     # Headless like specify/decompose's _call_aux: without a bound affinity scope the relay-affinity
     # headers are omitted and the OpenCode Go relay answers 400 MissingSessionID (#112043). The
     # create dialog has no task yet, so it shares one stable key.
-    from agent.portal_tags import get_affinity_scope, reset_affinity_scope, set_affinity_scope
+    from agent.portal_tags import (
+        get_affinity_scope,
+        reset_affinity_scope,
+        set_affinity_scope,
+    )
     affinity_token = None if get_affinity_scope() else set_affinity_scope(f"kanban:{task_id or 'estimate'}")
     try:
         resp = call_llm(

@@ -36,7 +36,6 @@ from typing import Iterator, Optional
 
 from pm.network import retry_network
 
-
 # The context holds no data outside a resolve/pin call, including failed calls.
 # Keep the Package hooks unchanged while sharing their nested index requests.
 _index_responses: ContextVar[dict | None] = ContextVar("pm_index_responses", default=None)

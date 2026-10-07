@@ -7,8 +7,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+from tests.agent.test_tool_call_incremental_persistence import (
+    _make_agent,
+    _mock_tool_call,
+)
 from tools.tool_result_storage import PERSISTED_OUTPUT_TAG
-from tests.agent.test_tool_call_incremental_persistence import _make_agent, _mock_tool_call
 
 
 def _run_sequential(agent, function_result):

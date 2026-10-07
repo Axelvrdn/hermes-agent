@@ -6,6 +6,7 @@ import time
 from unittest.mock import patch
 
 import pytest
+
 from tools import browser_tool_lifecycle as bt_lifecycle
 
 
@@ -234,6 +235,7 @@ class TestReaperIdentityGuard:
     def _run(self, fake_proc, socket_dir, session_name="h_sess123456",
              daemon_pid=12345, no_such=False, access_denied=False):
         import psutil
+
         from tools.browser_tool_lifecycle import _verify_reapable_browser_daemon
 
         def _factory(pid):

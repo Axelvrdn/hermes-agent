@@ -16,9 +16,10 @@ initialize — #87015), then fall through to the dual-stack hostname last,
 and "stick" to whichever path works.
 """
 
+import socket
+
 import httpx
 import pytest
-import socket
 
 import plugins.platforms.telegram.telegram_network as tnet
 
@@ -298,7 +299,12 @@ class TestFallbackTransportClose:
 
 class TestConfigFallbackIps:
     def test_env_var_populates_config_extra(self, monkeypatch):
-        from gateway.config import GatewayConfig, Platform, PlatformConfig, _apply_env_overrides
+        from gateway.config import (
+            GatewayConfig,
+            Platform,
+            PlatformConfig,
+            _apply_env_overrides,
+        )
 
         monkeypatch.setenv("TELEGRAM_FALLBACK_IPS", "149.154.167.220,149.154.167.221")
         config = GatewayConfig(platforms={Platform.TELEGRAM: PlatformConfig(enabled=True, token="tok")})

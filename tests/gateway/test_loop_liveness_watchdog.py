@@ -13,6 +13,7 @@ from gateway.shutdown_watchdog import (
     start_loop_liveness_watchdog,
 )
 
+
 def test_loop_liveness_watchdog_stop_during_dump_disarms_hard_exit():
     loop = MagicMock(spec=asyncio.AbstractEventLoop)
     handle_ready = threading.Event()

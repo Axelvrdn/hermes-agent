@@ -1,6 +1,6 @@
 """Test that call_llm vision path passes resolved provider args, not raw ones."""
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 def test_vision_call_uses_resolved_provider_args():

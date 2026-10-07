@@ -1,12 +1,11 @@
 """Exercise the build mount's real Linux UID permissions, not Android binaries."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[2]
 # Only the stdlib facts publisher runs here; the bionic tool bytes are never

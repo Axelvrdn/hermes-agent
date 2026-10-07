@@ -208,8 +208,8 @@ class TestDesktopShellLane:
 class TestNoteInSummary:
     def test_capture_response_appends_note_line(self, tmp_path, monkeypatch):
         import hermes_constants
-        from tools.computer_use.backend import CaptureResult
         from tools.computer_use import tool as cu_tool
+        from tools.computer_use.backend import CaptureResult
 
         monkeypatch.setattr(hermes_constants, "get_hermes_dir",
                             lambda *a, **k: tmp_path)

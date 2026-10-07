@@ -3,12 +3,13 @@
 import json
 import threading
 import time
-import pytest
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from agent.memory_provider import MemoryProvider
+import pytest
+
 from agent.memory_manager import MemoryManager, inject_memory_provider_tools
+from agent.memory_provider import MemoryProvider
 
 # ---------------------------------------------------------------------------
 # Concrete test provider
@@ -425,7 +426,7 @@ class TestUserInstalledProviderDiscovery:
 
     def test_bundled_takes_precedence(self, tmp_path, monkeypatch):
         """Bundled provider wins when user plugin has the same name."""
-        from plugins.memory import load_memory_provider, discover_memory_providers
+        from plugins.memory import discover_memory_providers, load_memory_provider
         # Create user plugin named "holographic" (same as bundled)
         plugin_dir = tmp_path / "plugins" / "holographic"
         plugin_dir.mkdir(parents=True)
@@ -591,8 +592,8 @@ class TestEntryPointMemoryProviderDiscovery:
         return module_name, exposure
 
     def test_discover_finds_entry_point_provider(self, tmp_path, monkeypatch):
-        from plugins.memory import discover_memory_providers
         import plugins.memory as memory_plugins
+        from plugins.memory import discover_memory_providers
 
         module_name, exposure = self._make_entrypoint_module(tmp_path)
         monkeypatch.syspath_prepend(str(tmp_path))
@@ -611,8 +612,8 @@ class TestEntryPointMemoryProviderDiscovery:
 
     @pytest.mark.parametrize("exposure", ["register", "Provider", "make_provider"])
     def test_load_entry_point_provider(self, tmp_path, monkeypatch, exposure):
-        from plugins.memory import load_memory_provider
         import plugins.memory as memory_plugins
+        from plugins.memory import load_memory_provider
 
         module_name, exposure = self._make_entrypoint_module(tmp_path, exposure=exposure)
         monkeypatch.syspath_prepend(str(tmp_path))
@@ -632,8 +633,8 @@ class TestEntryPointMemoryProviderDiscovery:
         assert provider.is_available()
 
     def test_active_entry_point_provider_registers_skill(self, tmp_path, monkeypatch):
-        from tools.skills_tool import skill_view
         import plugins.memory as memory_plugins
+        from tools.skills_tool import skill_view
 
         module_name, exposure = self._make_entrypoint_module(
             tmp_path,
@@ -664,9 +665,9 @@ class TestEntryPointMemoryProviderDiscovery:
     def test_inactive_entry_point_load_does_not_register_skill(
         self, tmp_path, monkeypatch
     ):
+        import plugins.memory as memory_plugins
         from hermes_cli.plugins import get_plugin_manager
         from plugins.memory import load_memory_provider
-        import plugins.memory as memory_plugins
 
         module_name, exposure = self._make_entrypoint_module(
             tmp_path,
@@ -696,9 +697,9 @@ class TestEntryPointMemoryProviderDiscovery:
     def test_switching_provider_prunes_registered_entry_point_skill(
         self, tmp_path, monkeypatch
     ):
+        import plugins.memory as memory_plugins
         from hermes_cli.plugins import get_plugin_manager
         from tools.skills_tool import skill_view
-        import plugins.memory as memory_plugins
 
         module_name, exposure = self._make_entrypoint_module(
             tmp_path,
@@ -1153,7 +1154,10 @@ class TestSystemPromptGateParity:
         """``inject_memory_provider_tools`` and ``memory_provider_tools_exposed``
         must agree — both determine whether provider tools are presented to
         the model (#81014)."""
-        from agent.memory_manager import inject_memory_provider_tools, memory_provider_tools_exposed
+        from agent.memory_manager import (
+            inject_memory_provider_tools,
+            memory_provider_tools_exposed,
+        )
 
         # Disabled toolsets — neither path should add or advertise provider tools.
         agent, _mgr, _p = self._agent_with_provider(disabled_toolsets=["memory"])

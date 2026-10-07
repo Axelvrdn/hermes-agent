@@ -479,8 +479,8 @@ def _gc_store(store, facts) -> tuple[int, int]:
     facts) and partials an in-flight download still owns. Returns
     (removed, kept).
     """
-    from pm.download_state import collect_partials
     from pm import paths
+    from pm.download_state import collect_partials
 
     partials_dir = paths.partials_root()
     if not store.root.is_dir() and not partials_dir.is_dir():
@@ -509,8 +509,8 @@ def _gc_store(store, facts) -> tuple[int, int]:
 
 
 def cmd_gc(args) -> int:
-    from pm.paths import writable_store_root
     from pm.lock import Facts
+    from pm.paths import writable_store_root
     from pm.store import Store
     store = Store(writable_store_root())
     facts = _facts() if store.root == _store().root else Facts(store.root / "facts.json")

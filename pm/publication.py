@@ -14,8 +14,7 @@ from pathlib import Path
 
 from pm.environments import dependency_home_root, install_state_dir, runtime_facts_path
 from pm.filesystem import durable_write_bytes, file_digest, read_bytes_or_none
-from pm.workspace import enabled_plugin_dirs, _is_member_candidate
-
+from pm.workspace import _is_member_candidate, enabled_plugin_dirs
 
 _METADATA_LOCK_HOLDER = threading.local()
 
@@ -50,7 +49,7 @@ def selection_snapshot() -> dict[Path, bytes | None]:
 
 
 def validate_manifest(source: Path) -> dict:
-    from pm.plugin_declarations import read_python_declaration, manifest_version_error
+    from pm.plugin_declarations import manifest_version_error, read_python_declaration
 
     manifest = read_python_declaration(source).manifest
     reason = manifest_version_error(manifest, source.name)
@@ -142,6 +141,7 @@ class StagedPlugin:
     def publish(self, project: Path) -> None:
         import os
         import uuid
+
         from hermes_cli.auth import _file_lock
         from pm.store import tree_digest
 

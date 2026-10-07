@@ -4,8 +4,11 @@ ro5_screen.py — Batch Lipinski Ro5 + Veber screening via PubChem API.
 Usage: python3 ro5_screen.py aspirin ibuprofen paracetamol
 No external dependencies beyond stdlib.
 """
-import sys, json, time
-import urllib.request, urllib.parse
+import json
+import sys
+import time
+import urllib.parse
+import urllib.request
 
 BASE = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name"
 PROPS = "MolecularWeight,XLogP,HBondDonorCount,HBondAcceptorCount,RotatableBondCount,TPSA"

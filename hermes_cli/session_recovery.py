@@ -21,7 +21,6 @@ from hermes_state import SessionDB
 from hermes_state_common import FTS_STORAGE_VERSION, SCHEMA_VERSION
 from hermes_state_repair import _db_opens_cleanly
 
-
 ProgressCallback = Callable[[dict[str, Any]], None]
 _CANONICAL_TABLES = (
     "system_prompts", "sessions", "messages", "session_model_usage", "compression_locks", "gateway_routing",
@@ -1058,8 +1057,14 @@ def _recover_via_lost_and_found(
     (shell-only, not in Python's ``sqlite3``) rebuilds rows into a scratch lost_and_found database which
     is then heuristically mapped into a fresh current-schema database."""
     from hermes_cli.session_lost_and_found import (
-        SQLITE3_CLI_GUIDANCE, LostAndFoundError, find_sqlite3_cli, find_sqlite3_cli_refusal, map_lost_and_found_rows,
-        rebuild_fts_indexes, run_cli_lost_and_found_recover, stub_missing_parent_sessions,
+        SQLITE3_CLI_GUIDANCE,
+        LostAndFoundError,
+        find_sqlite3_cli,
+        find_sqlite3_cli_refusal,
+        map_lost_and_found_rows,
+        rebuild_fts_indexes,
+        run_cli_lost_and_found_recover,
+        stub_missing_parent_sessions,
     )
     missing = ", ".join(missing_required)
     sqlite3_bin = find_sqlite3_cli()

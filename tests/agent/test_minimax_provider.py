@@ -3,8 +3,6 @@
 from unittest.mock import patch
 
 
-
-
 class TestMinimaxM3StaleCacheGuard:
     """Pre-catalog builds resolved M3 via the generic 'minimax' catch-all
     (204,800) and persisted it before the 'minimax-m3' (1M) catalog entry
@@ -18,6 +16,7 @@ class TestMinimaxM3StaleCacheGuard:
     def test_m2_cache_not_clobbered(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
         import importlib
+
         import agent.model_metadata as mm
         importlib.reload(mm)
         base = "https://api.minimaxi.com/anthropic"
@@ -169,7 +168,7 @@ class TestMinimaxSwitchModelCredentialGuard:
 
     def test_switch_to_minimax_does_not_resolve_anthropic_token(self):
         """switch_model() should NOT call resolve_anthropic_token() for MiniMax."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         with patch("run_agent.AIAgent.__init__", return_value=None):
             from run_agent import AIAgent

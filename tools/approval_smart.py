@@ -10,6 +10,7 @@ Inspired by OpenAI Codex's Smart Approvals guardian subagent.
 
 import logging
 import time
+
 from tools import approval_context as _ctx
 
 logger = logging.getLogger("tools.approval")

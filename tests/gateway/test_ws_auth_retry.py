@@ -11,7 +11,6 @@ tests/gateway/test_matrix.py::TestMatrixSyncLoop.
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
 
-
 # ---------------------------------------------------------------------------
 # Mattermost: _ws_loop auth-aware retry
 # ---------------------------------------------------------------------------
@@ -25,6 +24,7 @@ class TestMattermostWSAuthRetry:
         AND escalate through the fatal-error hook (a bare return used to
         leave _running True: dead listener, healthy-looking adapter)."""
         import aiohttp
+
         from gateway.config import Platform
 
         exc = aiohttp.WSServerHandshakeError(

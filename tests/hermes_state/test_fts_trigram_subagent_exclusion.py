@@ -12,6 +12,7 @@ import pytest
 from hermes_state import SessionDB
 from hermes_state_common import SCHEMA_VERSION
 
+
 @pytest.fixture
 def db(tmp_path):
     session_db = SessionDB(db_path=tmp_path / "state.db")

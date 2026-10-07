@@ -2,6 +2,7 @@
 
 from unittest.mock import patch
 
+
 def _build_agent(model_cfg, custom_providers=None, model=None):
     """Build an AIAgent with the given model config."""
     cfg = {"model": model_cfg}

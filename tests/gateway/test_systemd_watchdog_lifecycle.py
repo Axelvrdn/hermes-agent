@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-
-
 from gateway.config import GatewayConfig
 from gateway.run import GatewayRunner
 

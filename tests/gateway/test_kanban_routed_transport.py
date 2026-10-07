@@ -6,7 +6,9 @@ from gateway.config import GatewayConfig, Platform
 from gateway.kanban_watchers_notifier import _KanbanNotification, _notifier_collect
 from gateway.profile_routing import parse_profile_routes
 from gateway.run import GatewayRunner
-from hermes_cli import kanban_db as kb, kanban_db_connect as kbc, kanban_db_notify as kbn
+from hermes_cli import kanban_db as kb
+from hermes_cli import kanban_db_connect as kbc
+from hermes_cli import kanban_db_notify as kbn
 
 
 class RecordingAdapter:
@@ -219,6 +221,7 @@ def test_anchorless_thread_subscription_warns_once_instead_of_silent_skip(tmp_pa
     route and is skipped fail-closed — that skip must be visible ONCE at WARNING, not buried at
     DEBUG on every tick forever (#110919)."""
     import logging
+
     from gateway import kanban_watchers_notifier as notifier
 
     runner = setup_runner(tmp_path, monkeypatch)
@@ -239,6 +242,7 @@ def test_pinned_profile_without_this_platform_delivers_via_primary(tmp_path, mon
     chat, for inbound turns too — delivers, exactly as for a route-only profile (#115460, option 1).
     A sub stamped with a profile other than the route's still warns ONCE instead of rewinding silently."""
     import logging
+
     from gateway import kanban_watchers_notifier as notifier
 
     runner = setup_runner(tmp_path, monkeypatch)

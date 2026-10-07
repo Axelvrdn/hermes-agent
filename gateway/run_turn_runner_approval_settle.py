@@ -15,7 +15,10 @@ import logging
 from typing import Any, Callable, Optional
 
 from agent.i18n import t
-from gateway.platforms.base_exec_approval import approval_timeout_seconds, format_approval_timed_out_notice
+from gateway.platforms.base_exec_approval import (
+    approval_timeout_seconds,
+    format_approval_timed_out_notice,
+)
 
 logger = logging.getLogger(__name__)
 

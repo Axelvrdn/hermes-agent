@@ -4,8 +4,10 @@
 import logging
 import os
 from dataclasses import replace
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+
 from fastapi import HTTPException
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+
 from agent.model_metadata import is_local_endpoint
 from hermes_cli.config import (
     DEFAULT_CONFIG,
@@ -308,7 +310,9 @@ def _custom_provider_options(kind: str, builtin_names: List[str], cfg: Dict[str,
     if kind == "tts":
         from tools.tts_tool import BUILTIN_TTS_PROVIDERS as _runtime_builtins
     else:
-        from tools.transcription_common import BUILTIN_STT_PROVIDERS as _runtime_builtins
+        from tools.transcription_common import (
+            BUILTIN_STT_PROVIDERS as _runtime_builtins,
+        )
 
     def _add(name: Any) -> None:
         stripped = name.strip() if isinstance(name, str) else ""
@@ -335,7 +339,9 @@ def _custom_provider_options(kind: str, builtin_names: List[str], cfg: Dict[str,
         if kind == "tts":
             from agent.tts_registry import list_providers as _list_voice_providers
         else:
-            from agent.transcription_registry import list_providers as _list_voice_providers
+            from agent.transcription_registry import (
+                list_providers as _list_voice_providers,
+            )
         for _p in _list_voice_providers():
             _add(getattr(_p, "name", None))
     except Exception as _exc:  # pragma: no cover - registry import should not break schema
@@ -372,8 +378,8 @@ def _schema_with_dynamic_provider_options() -> Dict[str, Dict[str, Any]]:
     that reads the schema. ``CONFIG_SCHEMA`` is never mutated; changed entries are
     shallow-copied onto a copied mapping.
     """
-    from hermes_cli.web_server_profiles import _plugin_terminal_backend_rows
     from hermes_cli.config import load_config
+    from hermes_cli.web_server_profiles import _plugin_terminal_backend_rows
     try:
         cfg = load_config()
     except Exception:  # pragma: no cover - schema must survive config errors
@@ -423,10 +429,13 @@ def _normalize_main_model_assignment(provider: str, model: str) -> tuple[str, st
     2. Model-format normalization for the resolved provider via
        ``normalize_model_for_provider`` (custom/user providers keep the model verbatim).
     """
-    from hermes_cli.config import load_config
-    from hermes_cli.config import get_compatible_custom_providers
-    from hermes_cli.models import _AGGREGATOR_PROVIDERS, _KNOWN_PROVIDER_NAMES, normalize_provider
+    from hermes_cli.config import get_compatible_custom_providers, load_config
     from hermes_cli.model_normalize import normalize_model_for_provider
+    from hermes_cli.models import (
+        _AGGREGATOR_PROVIDERS,
+        _KNOWN_PROVIDER_NAMES,
+        normalize_provider,
+    )
     from hermes_cli.providers import resolve_custom_provider, resolve_user_provider
 
     prov_in = (provider or "").strip()
@@ -697,7 +706,10 @@ def _register_custom_endpoint(base_url: str, api_key: str, model: str) -> None:
     GENUINELY new endpoint gets a named row.
     """
     try:
-        from hermes_cli.main_provider_setup import _auto_provider_name, _save_custom_provider
+        from hermes_cli.main_provider_setup import (
+            _auto_provider_name,
+            _save_custom_provider,
+        )
 
         _save_custom_provider(base_url, api_key, model, name=_auto_provider_name(base_url))
     except Exception:
@@ -916,7 +928,11 @@ def _infer_provider_on_model_change(model_val: str, prev_provider: str) -> tuple
     if not name:
         return "", name
     try:
-        from hermes_cli.models import _AGGREGATOR_PROVIDERS, detect_provider_for_model, normalize_provider
+        from hermes_cli.models import (
+            _AGGREGATOR_PROVIDERS,
+            detect_provider_for_model,
+            normalize_provider,
+        )
     except Exception:
         return "", name
 

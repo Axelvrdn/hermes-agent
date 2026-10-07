@@ -285,7 +285,9 @@ def _launch_elevated_install(force: bool = False, *, start_now: bool | None = No
 def get_task_name() -> str:
     """Scheduled Task name, scoped per profile."""
     _assert_windows()
-    from hermes_cli.gateway import _profile_suffix  # local: avoids circular init during boot
+    from hermes_cli.gateway import (
+        _profile_suffix,  # local: avoids circular init during boot
+    )
 
     suffix = _profile_suffix()
     return f"{_TASK_NAME_DEFAULT}_{suffix}" if suffix else _TASK_NAME_DEFAULT
@@ -358,7 +360,11 @@ def _gateway_run_argv(python_exe: str, profile_arg: str) -> list[str]:
 def _launcher_settings(home: Path | None = None) -> tuple[str, str, str, str]:
     """Return (python_path, working_dir, hermes_home, profile_arg) for generated launchers.
     ``home`` targets another profile's HERMES_HOME (per-profile cold-start, #110959)."""
-    from hermes_cli.gateway import PROJECT_ROOT, _profile_arg, get_python_path  # avoid circular init
+    from hermes_cli.gateway import (  # avoid circular init
+        PROJECT_ROOT,
+        _profile_arg,
+        get_python_path,
+    )
 
     hermes_home = str(home if home is not None else _hermes_home())
     return (
@@ -1668,7 +1674,11 @@ def start() -> None:
         # non-TTY default (#113977). Declining still starts the gateway; the command is ``start``.
         start_on_login = _install_choice_from_env("HERMES_GATEWAY_INSTALL_START_ON_LOGIN")
         if start_on_login is None:
-            from hermes_cli.setup import is_interactive_stdin, is_noninteractive, prompt_yes_no
+            from hermes_cli.setup import (
+                is_interactive_stdin,
+                is_noninteractive,
+                prompt_yes_no,
+            )
 
             print("✗ Gateway service is not installed")
             if is_noninteractive() or not _stdout_isatty() or not _stdin_is_interactive(
@@ -1698,7 +1708,7 @@ def _drain_gateway_pid(pid: int, drain_timeout: float) -> bool:
     if pid <= 0:
         return False
     try:
-        from gateway.status import write_planned_stop_marker, _pid_exists
+        from gateway.status import _pid_exists, write_planned_stop_marker
     except ImportError:
         return False
 

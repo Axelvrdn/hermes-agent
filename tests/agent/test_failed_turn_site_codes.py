@@ -11,7 +11,9 @@ import pytest
 from agent.error_surface import build_error_surface_from_result
 from agent.turn_explainers import EMPTY_RESPONSE_EXPLANATION, TurnExplainersMixin
 from agent.turn_failure_copy import (
-    SITE_FAILURE_CODES, exit_reason_failure, failure_cause_gloss,
+    SITE_FAILURE_CODES,
+    exit_reason_failure,
+    failure_cause_gloss,
 )
 from agent.turn_overflow import _Recovery
 

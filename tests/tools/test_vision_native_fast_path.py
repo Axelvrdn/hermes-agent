@@ -14,14 +14,12 @@ import json
 from io import BytesIO
 from unittest.mock import patch
 
-
 from tools.vision_tools import (
     _build_native_vision_tool_result,
     _handle_vision_analyze,
     _supports_media_in_tool_results,
     _vision_analyze_native,
 )
-
 
 # Minimal valid 1x1 PNG bytes.
 _TINY_PNG = base64.b64decode(
@@ -99,9 +97,9 @@ class TestSupportsMediaInToolResults:
     def test_profile_veto_applies_even_when_vision_capable_lookup_agrees(self):
         """A capability source marking the model vision-capable must not
         re-open the native fast path for a provider that rejects it."""
-        from tools.vision_tools import _should_use_native_vision_fast_path
-        from agent.auxiliary_client import set_runtime_main, clear_runtime_main
         from agent import image_routing
+        from agent.auxiliary_client import clear_runtime_main, set_runtime_main
+        from tools.vision_tools import _should_use_native_vision_fast_path
 
         set_runtime_main("xiaomi", "mimo-v2.5")
         try:
@@ -116,9 +114,9 @@ class TestSupportsMediaInToolResults:
 
     def test_openrouter_xiaomi_route_vetoes_native_fast_path(self):
         """A vision-capable catalog entry cannot override a routed Xiaomi veto."""
-        from tools.vision_tools import _should_use_native_vision_fast_path
-        from agent.auxiliary_client import set_runtime_main, clear_runtime_main
         from agent import image_routing
+        from agent.auxiliary_client import clear_runtime_main, set_runtime_main
+        from tools.vision_tools import _should_use_native_vision_fast_path
 
         set_runtime_main("openrouter", "xiaomi/mimo-v2.5")
         try:
@@ -329,7 +327,9 @@ class TestVisionAnalyzeNative:
         except ImportError:
             pytest.skip("Pillow not installed — proactive resize is a no-op")
 
-        from tools.vision_tools_history_budget import _DEFAULT_EMBED_TARGET_BYTES as _EMBED_TARGET_BYTES
+        from tools.vision_tools_history_budget import (
+            _DEFAULT_EMBED_TARGET_BYTES as _EMBED_TARGET_BYTES,
+        )
 
         # Noisy PNG that base64-encodes to well over 5 MB (won't compress much).
         big = tmp_path / "big.png"
@@ -354,7 +354,9 @@ class TestVisionAnalyzeNative:
         """Native embeds ride every later turn, so caps must stay well below
         the Anthropic 5 MB / 8000px reject limits (#92699)."""
         from tools.vision_tools import _EMBED_MAX_DIMENSION
-        from tools.vision_tools_history_budget import _DEFAULT_EMBED_TARGET_BYTES as _EMBED_TARGET_BYTES
+        from tools.vision_tools_history_budget import (
+            _DEFAULT_EMBED_TARGET_BYTES as _EMBED_TARGET_BYTES,
+        )
 
         assert _EMBED_TARGET_BYTES <= 512 * 1024
         assert _EMBED_MAX_DIMENSION <= 2048
@@ -372,7 +374,7 @@ class TestHandleVisionAnalyzeFastPath:
         img.write_bytes(_TINY_PNG)
 
         # Set runtime override so the handler thinks we're on opus@openrouter
-        from agent.auxiliary_client import set_runtime_main, clear_runtime_main
+        from agent.auxiliary_client import clear_runtime_main, set_runtime_main
         set_runtime_main("openrouter", "anthropic/claude-opus-4.6")
         try:
             # Mock decide_image_input_mode to always return "native" so the
@@ -399,7 +401,7 @@ class TestHandleVisionAnalyzeFastPath:
         async def _aux_sentinel(*args, **kwargs):
             return '{"sentinel": "aux-path"}'
 
-        from agent.auxiliary_client import set_runtime_main, clear_runtime_main
+        from agent.auxiliary_client import clear_runtime_main, set_runtime_main
         set_runtime_main("brand-new-provider", "anthropic/claude-opus-4.6")
         try:
             with patch("tools.vision_tools.vision_analyze_tool", side_effect=_aux_sentinel):
@@ -419,7 +421,7 @@ class TestHandleVisionAnalyzeFastPath:
         async def _aux_sentinel(*args, **kwargs):
             return '{"sentinel": "aux-path"}'
 
-        from agent.auxiliary_client import set_runtime_main, clear_runtime_main
+        from agent.auxiliary_client import clear_runtime_main, set_runtime_main
         set_runtime_main("brand-new-provider", "llava-v1.6")
         try:
             with patch(
@@ -444,7 +446,7 @@ class TestHandleVisionAnalyzeFastPath:
         async def _aux_sentinel(*args, **kwargs):
             return '{"sentinel": "aux-path"}'
 
-        from agent.auxiliary_client import set_runtime_main, clear_runtime_main
+        from agent.auxiliary_client import clear_runtime_main, set_runtime_main
         set_runtime_main("brand-new-provider", "llava-v1.6")
         try:
             with patch(

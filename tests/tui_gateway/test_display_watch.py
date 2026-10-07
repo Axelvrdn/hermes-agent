@@ -108,6 +108,7 @@ def test_launcher_dying_without_touching_its_files_is_broadcast_as_stopped(tmp_p
     """Xvnc/the launcher crashing leaves env and launcher.pid exactly as they were, so a watcher keyed
     on mtimes alone never told the Desktop the screen was gone. The mark must include liveness."""
     import psutil
+
     import tui_gateway.server as server
 
     home = tmp_path / "home"
@@ -140,6 +141,7 @@ def test_screen_start_and_stop_reach_the_models_turn_notes(tmp_path, monkeypatch
     live session of THAT profile. The staged note is consumed on the next turn
     (``agent/turn_context.py``), so only its presence here is asserted."""
     import psutil
+
     import tui_gateway.server as server
 
     home = tmp_path / "home"

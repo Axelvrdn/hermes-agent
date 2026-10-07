@@ -128,8 +128,15 @@ def _(rid, params: dict, _root=_relay_root, _run=_run_delivery,
                 record, _session_lookup_key(record, fallback=live_sid)) == BOT_CHAT_TITLE), "")
         # The sender fields are whatever the relaying client says. The author labels memory only and grants nothing.
         from tools.bot_relay import (
-            DeliveryAuthor, delivery_env, delivery_turn_author, relaying_principal_author)
-        from tui_gateway.methods_browser_control import _is_authenticated_identity, _principal_digest
+            DeliveryAuthor,
+            delivery_env,
+            delivery_turn_author,
+            relaying_principal_author,
+        )
+        from tui_gateway.methods_browser_control import (
+            _is_authenticated_identity,
+            _principal_digest,
+        )
         sender_fields = ("from_profile", "from_handle", "from_connection")
         identity = getattr(current_transport(), "auth_identity", None)
         if _is_authenticated_identity(identity):
@@ -157,7 +164,11 @@ def _(rid, params: dict, _root=_relay_root, _run=_run_delivery,
         # the next idle boundary and settles a receipt carrying the reply. Local DMs wait on that
         # receipt (_wait_live_dm); so does this relay, on the same budget, so the sender gets the
         # target's answer rather than a receipt when its Bot Chat happens to be open.
-        from tools.bot_live_delivery import await_delivery, deliver_to_live_owner, find_canonical_live_owner
+        from tools.bot_live_delivery import (
+            await_delivery,
+            deliver_to_live_owner,
+            find_canonical_live_owner,
+        )
         from tools.bot_mode_dm import _LIVE_WAIT_SECONDS
         owner_home = live_home if live_home is not None else Path(_hermes_home)
         owner = find_canonical_live_owner(owner_home)
@@ -215,7 +226,10 @@ def _(rid, params: dict, _root=_relay_root, _run=_run_delivery,
                     # transcript first (no fresh session is minted). Auth/quota/config never retry.
                     # See #93091.
                     from tools.bot_failure_reasons import (
-                        RETRY_NONE, classify_agent_error, retry_action)
+                        RETRY_NONE,
+                        classify_agent_error,
+                        retry_action,
+                    )
                     if retry_action(classify_agent_error(_detail(proc))) != RETRY_NONE:
                         # The failed attempt already persisted the DM; the re-run resumes that row.
                         from tools.bot_relay import retry_turn_env

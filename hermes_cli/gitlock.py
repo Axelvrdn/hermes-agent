@@ -125,7 +125,11 @@ def release_dead_index_lock(repo_root: Path) -> bool:
     with psutil (:func:`_windows_git_in_checkout`). Whatever cannot be read keeps the lock. An
     interrupted tree move owns its own lock judgement, so its marker defers to that repair.
     """
-    from hermes_cli._early_recovery import _git_dir, _release_dead_index_lock, interrupted_pull_marker
+    from hermes_cli._early_recovery import (
+        _git_dir,
+        _release_dead_index_lock,
+        interrupted_pull_marker,
+    )
 
     root = Path(repo_root)
     git_dir = _git_dir(root)
@@ -204,8 +208,14 @@ def _windows_git_in_checkout(root: Path) -> "bool | None":
     the checkout: a system-wide check would keep the lock whenever any editor or terminal elsewhere
     runs git, which on Windows is most of the time. A git whose cwd cannot be read keeps the lock.
     """
-    from hermes_cli._early_recovery import _NEVER_LOCKS, _checkout_places, _git_dir, _git_program, \
-        _git_subcommand_of, git_works_in
+    from hermes_cli._early_recovery import (
+        _NEVER_LOCKS,
+        _checkout_places,
+        _git_dir,
+        _git_program,
+        _git_subcommand_of,
+        git_works_in,
+    )
 
     try:
         import psutil

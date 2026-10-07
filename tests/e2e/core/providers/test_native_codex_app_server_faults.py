@@ -15,7 +15,11 @@ import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core.providers._native_helpers import KnownSymptom, messages, wait_until
-from tests.fakes.providers.codex_app_server import CodexRun, pid_alive, run_codex_scenario
+from tests.fakes.providers.codex_app_server import (
+    CodexRun,
+    pid_alive,
+    run_codex_scenario,
+)
 
 pytestmark = [
     pytest.mark.skipif(sys.platform == "win32", reason="POSIX sh wrapper + /proc PID checks"),

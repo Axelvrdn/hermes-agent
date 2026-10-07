@@ -17,7 +17,7 @@ import logging
 import sys
 from pathlib import Path
 from types import SimpleNamespace
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from hermes_cli.config import cfg_get
 from plugins import plugin_loader as _loader
@@ -486,7 +486,11 @@ class _ProviderCollector:
         """A real ``PluginContext``, built once on demand: the common provider that only
         calls ``register_memory_provider`` must not pay for importing the plugin manager."""
         if self._context is None:
-            from hermes_cli.plugins import PluginContext, PluginManifest, get_plugin_manager
+            from hermes_cli.plugins import (
+                PluginContext,
+                PluginManifest,
+                get_plugin_manager,
+            )
 
             manifest = PluginManifest(name=self.name, key=self.name)
             self._context = PluginContext(manifest, get_plugin_manager())

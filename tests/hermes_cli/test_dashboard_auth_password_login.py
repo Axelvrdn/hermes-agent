@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-
 from fastapi.testclient import TestClient
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
@@ -40,7 +39,6 @@ from hermes_cli.dashboard_auth.routes import (
 )
 from hermes_cli.web_server_lifecycle import _dashboard_forwarded_allow_ips
 from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
-
 
 # ---------------------------------------------------------------------------
 # Test password provider — minimal, in-memory, signed tokens.

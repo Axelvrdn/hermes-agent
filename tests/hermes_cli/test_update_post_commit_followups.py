@@ -129,7 +129,8 @@ def test_failed_web_build_does_not_skip_the_tui(tmp_path, monkeypatch, capsys):
 
 
 def test_failed_config_migration_is_owed_and_later_maintenance_runs(tmp_path, monkeypatch, capsys):
-    from hermes_cli import update_cmd, update_cmd_maint as maint
+    from hermes_cli import update_cmd
+    from hermes_cli import update_cmd_maint as maint
 
     calls = []
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -224,6 +225,7 @@ def test_interrupt_after_the_run_closed_as_success_never_tells_the_gateway_1(tmp
     """Review regression 3, the ``cmd_update`` boundary: once this run's receipt says ``success``,
     an interrupt escaping afterwards must not write 1 to the gateway /update status."""
     from types import SimpleNamespace
+
     from hermes_cli import main, update_cmd, update_owning_install
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -246,6 +248,7 @@ def test_interrupt_after_the_run_closed_as_success_never_tells_the_gateway_1(tmp
 
 def test_a_failure_before_the_run_closed_still_tells_the_gateway_1(tmp_path, monkeypatch):
     from types import SimpleNamespace
+
     from hermes_cli import main, update_cmd, update_owning_install
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -292,8 +295,8 @@ def test_both_completion_children_run_in_utf8_mode(tmp_path, monkeypatch):
     """-I drops PYTHONIOENCODING, and both completion children print the ✓/⚠ follow-up protocol
     into a pipe: each argv carries -X utf8 (win-utf8 review; the bootstrap child got it first)."""
     import pm
-    from pm import client, environments, receipt
     from hermes_cli import gitlock, update_completion, venv_sync
+    from pm import client, environments, receipt
 
     calls = []
 

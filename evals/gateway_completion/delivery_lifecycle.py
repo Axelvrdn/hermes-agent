@@ -1,4 +1,9 @@
-import os, sys, asyncio, json, tempfile, types
+import asyncio
+import json
+import os
+import sys
+import tempfile
+import types
 from pathlib import Path
 
 ROOT = os.environ.get("HERMES_EVAL_REPO", str(Path(__file__).resolve().parents[2]))
@@ -8,14 +13,14 @@ HOME.mkdir(parents=True, exist_ok=True)
 (HOME / "config.yaml").write_text(
     "display:\n  background_process_notifications: concise\n"
 )
-from gateway.run import GatewayRunner
-from gateway.config import GatewayConfig, Platform, PlatformConfig
-from plugins.platforms.discord.adapter import DiscordAdapter
-from gateway.platforms.base import SendResult
-from gateway.session_context import set_session_vars, clear_session_vars
-from tools.terminal_tool_background import spawn_background_process
-from tools.process_registry import process_registry as pr
 import gateway.run_notifications as rn
+from gateway.config import GatewayConfig, Platform, PlatformConfig
+from gateway.platforms.base import SendResult
+from gateway.run import GatewayRunner
+from gateway.session_context import clear_session_vars, set_session_vars
+from plugins.platforms.discord.adapter import DiscordAdapter
+from tools.process_registry import process_registry as pr
+from tools.terminal_tool_background import spawn_background_process
 
 print("SOURCE", rn.__file__, "HOME", HOME)
 
@@ -135,8 +140,9 @@ async def main():
     )
     assert not turns and len(sends) == 1
     # Real async executor/ledger/queue; only child model replaced by a local subprocess.
-    from tools.async_delegation import dispatch_async_delegation, get_durable_delegation
     import subprocess
+
+    from tools.async_delegation import dispatch_async_delegation, get_durable_delegation
 
     def local_child():
         output = subprocess.check_output(

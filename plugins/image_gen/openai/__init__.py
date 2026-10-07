@@ -12,13 +12,28 @@ import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
+from agent.image_gen_provider import (
+    DEFAULT_ASPECT_RATIO,
+    resolve_aspect_ratio,
+    success_response,
+)
 from agent.secret_scope import get_secret, get_secret_str
-from agent.image_gen_provider import DEFAULT_ASPECT_RATIO, resolve_aspect_ratio, success_response
+from plugins.image_gen._common import GPT_IMAGE_2_API_MODEL as API_MODEL
+from plugins.image_gen._common import GPT_IMAGE_2_DEFAULT as DEFAULT_MODEL
 from plugins.image_gen._common import (
-    GPT_IMAGE_2_API_MODEL as API_MODEL, GPT_IMAGE_2_DEFAULT as DEFAULT_MODEL, GPT_IMAGE_2_TIERS,
-    StaticImageGenProvider, collect_source_images, error_factory, import_openai, load_image_gen_config,
-    materialize_image, openai_importable, prompt_required_error, record_token_usage, resolve_static_model,
-    size_for)
+    GPT_IMAGE_2_TIERS,
+    StaticImageGenProvider,
+    collect_source_images,
+    error_factory,
+    import_openai,
+    load_image_gen_config,
+    materialize_image,
+    openai_importable,
+    prompt_required_error,
+    record_token_usage,
+    resolve_static_model,
+    size_for,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +127,9 @@ def _load_image_bytes(ref: str) -> Tuple[bytes, str]:
         header, _, b64 = ref.partition(",")
         ext = (header.split("image/", 1)[1].split(";", 1)[0] if "image/" in header else "") or "png"
         return base64.b64decode(b64), f"image.{ext}"
-    from agent.file_safety import raise_if_read_blocked  # credential-read guard before local bytes
+    from agent.file_safety import (
+        raise_if_read_blocked,  # credential-read guard before local bytes
+    )
 
     raise_if_read_blocked(ref)
     with open(ref, "rb") as fh:

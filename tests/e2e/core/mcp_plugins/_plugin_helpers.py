@@ -13,7 +13,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator
 
-from tests.e2e.core.mcp_plugins._helpers import FIXTURE_SERVER, TURN_TIMEOUT, E2EHome, tagged_pids
+from tests.e2e.core.mcp_plugins._helpers import (
+    FIXTURE_SERVER,
+    TURN_TIMEOUT,
+    E2EHome,
+    tagged_pids,
+)
 from tests.e2e.core.parity._drive_rpc import READY_TIMEOUT, RpcClient, StreamCapture
 from tests.e2e.core.parity._helpers import terminate
 

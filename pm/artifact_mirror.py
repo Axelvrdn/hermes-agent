@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import re
+from pathlib import Path
 
 from pm.downloader import Source
 from pm.index_config import npm_registry_url

@@ -5,10 +5,10 @@ base/head. The executable named sudo is an owned temporary marker script.
 """
 import json
 import os
-from pathlib import Path
 import shlex
 import sys
 import tempfile
+from pathlib import Path
 
 source = Path(sys.argv[1]).resolve()
 with tempfile.TemporaryDirectory(prefix="hermes-deny-dispatch-") as directory:
@@ -27,9 +27,11 @@ with tempfile.TemporaryDirectory(prefix="hermes-deny-dispatch-") as directory:
     if Path("/usr/bin/gnuenv").exists():
         (home / "env").symlink_to("/usr/bin/gnuenv")
     sys.path.insert(0, str(source))
-    from tools import terminal_tool  # noqa: F401
+    from tools import (
+        approval_context,
+        terminal_tool,  # noqa: F401
+    )
     from tools.registry import registry
-    from tools import approval_context
 
     binary = shlex.quote(str(executable))
     cases = [binary + " -n id -u", "env -i " + binary + " -n id -u",

@@ -1,10 +1,10 @@
 """Source launch/update composition over the shared JavaScript builders."""
 
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 
 def source_product_current(project_root: Path, product: str, out: Path) -> bool:
@@ -27,10 +27,10 @@ def source_product_current(project_root: Path, product: str, out: Path) -> bool:
 
 
 def source_build_env(base_env: dict | None = None, *, explicit: bool = False) -> dict[str, str]:
+    from hermes_constants import get_hermes_home
     from pm import ensure
     from pm.environments import project_python, running_from_selected_environment
     from pm.paths import repo_root
-    from hermes_constants import get_hermes_home
 
     # The historical update runs on store Python with the selected environment
     # activated in-process. Icon generation starts an isolated child, which needs
@@ -52,8 +52,8 @@ def run_in_custody(project_root: Path, command: list, label: str, **kwargs):
     caller's process group, and every descendant killed when it exits; Windows: the owner's
     kill-on-close job), so the checkout is never handed to a contender while one of them still
     writes. Outside an update it is ``run_contained`` as is."""
-    from pm.progress import run_contained
     from hermes_cli.update_custody import contained_command
+    from pm.progress import run_contained
 
     with contained_command(command, root=project_root) as (argv, custody):
         return run_contained(argv, label, **kwargs, **custody)
@@ -81,7 +81,10 @@ def prepare_source_dependencies(project_root: Path, workspaces: tuple[str, ...],
 
 def prepare_launch_dependencies(project_root: Path, *, env: dict) -> None:
     """A launch rebuild must not prune another installed source frontend."""
-    from hermes_cli.main_desktop import _desktop_dist_exists, _desktop_packaged_executable
+    from hermes_cli.main_desktop import (
+        _desktop_dist_exists,
+        _desktop_packaged_executable,
+    )
 
     desktop_dir = project_root / "apps/desktop"
     desktop = _desktop_dist_exists(desktop_dir) or _desktop_packaged_executable(desktop_dir) is not None
@@ -199,7 +202,9 @@ def build_update_products(project_root: Path, *, desktop: bool) -> None:
     # Same for a gateway platform / toolset that left core (Home Assistant): every home that used
     # it gets its catalog plugin (hermes_cli/left_core_migration.py).
     try:
-        from hermes_cli.left_core_migration import migrate_all_homes as migrate_left_core
+        from hermes_cli.left_core_migration import (
+            migrate_all_homes as migrate_left_core,
+        )
 
         migrate_left_core()
     except Exception as exc:  # health: allow BLE001 -- post-commit boundary: printed as ⚠, never fails the committed update; every later update/tail re-runs it
@@ -210,7 +215,10 @@ def build_update_products(project_root: Path, *, desktop: bool) -> None:
 
 def _build_desktop_product(project_root: Path, env: dict, publish_stage) -> None:
     from hermes_cli.main_desktop import (
-        _packaged_desktop_current_for_head, _refresh_installed_desktop_apps, build_prepared_desktop)
+        _packaged_desktop_current_for_head,
+        _refresh_installed_desktop_apps,
+        build_prepared_desktop,
+    )
 
     desktop_dir = project_root / "apps/desktop"
     if _packaged_desktop_current_for_head(desktop_dir, project_root):

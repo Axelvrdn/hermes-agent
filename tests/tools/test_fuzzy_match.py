@@ -676,6 +676,7 @@ class TestContextAwareCorrectness:
     def test_no_match_on_large_file_is_fast(self):
         """The anchor pre-filter keeps a no-match scan from being O(file×pattern)."""
         import time
+
         from tools.fuzzy_match import _strategy_context_aware
 
         big = "\n".join(f"line {i} content here" for i in range(10000))

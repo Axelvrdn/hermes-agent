@@ -1,12 +1,13 @@
 """Public Codex commentary is a display projection, never a replay mutation."""
 
-from hermes_cli.web_routers.sessions import _project_for_display
-from tui_gateway.server import _history_to_messages
-from agent.history_commentary import visible_commentary
-from hermes_constants import get_hermes_home_override
-
 import asyncio
+
 import pytest
+
+from agent.history_commentary import visible_commentary
+from hermes_cli.web_routers.sessions import _project_for_display
+from hermes_constants import get_hermes_home_override
+from tui_gateway.server import _history_to_messages
 
 
 def _row(text="I will inspect the files."):
@@ -129,9 +130,9 @@ def test_owner_profile_settings_apply_to_rest_and_rpc(monkeypatch, tmp_path, dis
 def test_rest_pages_bind_the_history_owner_for_messages_and_around(
     monkeypatch, tmp_path
 ):
+    import hermes_state_timeline
     from hermes_cli import config as config_mod
     from hermes_cli.web_routers import sessions
-    import hermes_state_timeline
 
     row = _row()
     homes = {name: tmp_path / name for name in ("visible", "hidden")}
@@ -193,10 +194,10 @@ def test_rest_pages_bind_the_history_owner_for_messages_and_around(
 
 
 def test_unscoped_rest_history_uses_custom_home_of_its_database(monkeypatch, tmp_path):
+    import hermes_state_timeline
     from hermes_cli import config as config_mod
     from hermes_cli.web_routers import sessions
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-    import hermes_state_timeline
 
     custom, default = tmp_path / "custom", tmp_path / "default"
     monkeypatch.setattr(
@@ -346,6 +347,7 @@ def test_stream_recovered_final_without_final_sidecar_is_authoritative(
     monkeypatch, final
 ):
     from types import SimpleNamespace
+
     from agent.turn_finalizer import _close_transcript_tail
     from hermes_cli import config as config_mod
 

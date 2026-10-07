@@ -6,19 +6,18 @@ the production parser, command, pool refresh, HTTP client, and persistence execu
 """
 import argparse
 import base64
+import errno
 import json
 import os
-from pathlib import Path
+import pty
+import subprocess
 import sys
 import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import parse_qs
-
-import errno
-import pty
-import subprocess
 
 
 def main():

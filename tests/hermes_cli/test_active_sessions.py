@@ -10,7 +10,6 @@ import pytest
 from hermes_cli import active_sessions
 
 
-
 def _backdate_leases(*homes, age_seconds=600.0):
     """Age every lease in the given registries past the self-orphan grace."""
     for home in homes:

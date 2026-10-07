@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+
 from agent.session_persistence import _db_flush_collect
 from gateway.run import _build_gateway_agent_history
 

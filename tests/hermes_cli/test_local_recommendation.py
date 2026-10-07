@@ -167,9 +167,9 @@ def test_measured_n1x_profile_changes_speed_eligibility_not_fit_or_quality(monke
 ])
 def test_unmatched_or_spilled_profiles_keep_the_existing_estimate(
         monkeypatch, budget_changes, entry_changes, quant, backend, spilled):
-    from dataclasses import replace
     import subprocess
     import urllib.request
+    from dataclasses import replace
 
     budget = replace(_unified(48), gpu_name="NVIDIA RTX Spark N1X (5120-core Blackwell RTX GPU)",
                      platform="win32")

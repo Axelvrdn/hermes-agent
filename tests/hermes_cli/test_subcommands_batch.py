@@ -11,10 +11,8 @@ from __future__ import annotations
 
 import argparse
 
-
 from hermes_cli.subcommands.config import build_config_parser
 from hermes_cli.subcommands.login import build_login_parser
-
 
 
 def _h(name):

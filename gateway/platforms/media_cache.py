@@ -77,7 +77,10 @@ def cache_media_bytes(data: bytes, mime: str, *, filename_hint: str = "",
     """
     # Local import: base is heavyweight and some adapters import this module very early.
     from gateway.platforms.base import (
-        cache_audio_from_bytes, cache_document_from_bytes, cache_image_from_bytes)
+        cache_audio_from_bytes,
+        cache_document_from_bytes,
+        cache_image_from_bytes,
+    )
     primary = _normalize_mime(mime)
     kind = kind_hint
     if kind is None:

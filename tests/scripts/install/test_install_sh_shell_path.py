@@ -6,10 +6,10 @@ existing setup. The appended line must also be a no-op when PATH already has the
 entry, because Fedora's ~/.bash_profile sources ~/.bashrc in every login shell.
 """
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 

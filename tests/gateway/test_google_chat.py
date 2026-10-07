@@ -11,9 +11,9 @@ Note: the Google libraries may not be installed in the test environment.
 We shim the imports at module load so collection doesn't fail.
 """
 
-import logging
 import asyncio
 import json
+import logging
 import os
 import sys
 import types
@@ -22,7 +22,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from agent.i18n import t
-
 from gateway.config import Platform, PlatformConfig, load_gateway_config
 
 # Platform uses _missing_() for dynamic members, so "google_chat" is
@@ -132,14 +131,17 @@ import plugins.platforms.google_chat.adapter as _gc_mod  # noqa: E402
 
 _gc_mod.GOOGLE_CHAT_AVAILABLE = True
 
-from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome  # noqa: E402
+from gateway.platforms.event import (  # noqa: E402
+    MessageEvent,
+    MessageType,
+    ProcessingOutcome,
+)
 from plugins.platforms.google_chat.adapter import (  # noqa: E402
     GoogleChatAdapter,
     _is_google_owned_host,
     _mime_for_message_type,
     _redact_sensitive,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers / fixtures

@@ -6,9 +6,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import hermes_yaml as yaml
 import pytest
 
+import hermes_yaml as yaml
 from agent import i18n, i18n_layers
 
 LOCALES_DIR = Path(__file__).resolve().parents[2] / "locales"

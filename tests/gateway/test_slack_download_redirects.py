@@ -8,7 +8,6 @@ from unittest.mock import AsyncMock, MagicMock
 import httpx
 import pytest
 
-
 if "slack_bolt" not in sys.modules:
     for name in (
         "slack_bolt", "slack_bolt.adapter", "slack_bolt.adapter.socket_mode",
@@ -21,7 +20,6 @@ if "aiohttp" not in sys.modules:
 
 from gateway.config import PlatformConfig  # noqa: E402
 from plugins.platforms.slack.adapter import SlackAdapter  # noqa: E402
-
 
 START = "https://files.slack.com/files-pri/TSECOND-F123/image.png"
 ORIGIN = "https://files-origin.slack.com/files-pri/TSECOND-F123/image.png"

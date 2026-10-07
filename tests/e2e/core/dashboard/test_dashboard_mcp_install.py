@@ -25,10 +25,10 @@ import time
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
-from tests.e2e.core.dashboard._helpers import Sandbox, make_sandbox
+import hermes_yaml as yaml
 from tests.e2e.core._pending_fixes import known_gate
+from tests.e2e.core.dashboard._helpers import Sandbox, make_sandbox
 from tests.e2e.core.dashboard._issue_helpers import Issue120527, PtyDashboard
 
 pytestmark = pytest.mark.skipif(not sys.platform.startswith("linux"), reason="pty stdin + /proc reaper")

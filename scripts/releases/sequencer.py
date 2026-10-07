@@ -16,8 +16,12 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from scripts.releases.versioning import (
-    marker_ref, outstanding_attempts, parse_attempt_ref, parse_marker_ref,
-    tag_record, version_from_tag,
+    marker_ref,
+    outstanding_attempts,
+    parse_attempt_ref,
+    parse_marker_ref,
+    tag_record,
+    version_from_tag,
 )
 
 MAX_ATTEMPTS = 3

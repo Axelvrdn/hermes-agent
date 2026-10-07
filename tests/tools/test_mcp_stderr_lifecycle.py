@@ -3,13 +3,17 @@
 import io
 from pathlib import Path
 
+from hermes_cli.logs import _parse_line_timestamp
 from hermes_constants import (
     hermes_home_key,
     reset_hermes_home_override,
     set_hermes_home_override,
 )
-from hermes_cli.logs import _parse_line_timestamp
-from tools.mcp_tool_config import _StderrTee, _get_mcp_stderr_log, _write_stderr_log_header
+from tools.mcp_tool_config import (
+    _get_mcp_stderr_log,
+    _StderrTee,
+    _write_stderr_log_header,
+)
 from tools.mcp_tool_lifecycle import shutdown_mcp_servers
 
 

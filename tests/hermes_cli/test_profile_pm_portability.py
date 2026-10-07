@@ -1,8 +1,8 @@
 """Portable transfers keep user files, not machine-specific PM state."""
-from argparse import Namespace
-from pathlib import Path
 import tarfile
 import zipfile
+from argparse import Namespace
+from pathlib import Path
 
 import pytest
 
@@ -37,7 +37,9 @@ def test_transfers_preserve_user_files_without_porting_pm_state(
 ):
     from hermes_cli.backup import run_backup, run_import
     from hermes_cli.profile_distribution import (
-        DistributionManifest, install_distribution, write_manifest,
+        DistributionManifest,
+        install_distribution,
+        write_manifest,
     )
     from hermes_cli.profiles import export_profile, get_profile_dir, import_profile
 
@@ -102,7 +104,9 @@ def test_incoming_runtime_state_never_replaces_target_runtime(
 ):
     from hermes_cli.backup import run_import
     from hermes_cli.profile_distribution import (
-        DistributionManifest, install_distribution, write_manifest,
+        DistributionManifest,
+        install_distribution,
+        write_manifest,
     )
     from hermes_cli.profiles import get_profile_dir, import_profile
 

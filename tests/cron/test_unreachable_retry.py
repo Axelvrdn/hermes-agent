@@ -12,7 +12,14 @@ import pytest
 
 import cron.scheduler as sched
 from cron import unreachable_retry as ur
-from cron.jobs import create_job, get_due_jobs, get_job, load_jobs, mark_job_run, save_jobs
+from cron.jobs import (
+    create_job,
+    get_due_jobs,
+    get_job,
+    load_jobs,
+    mark_job_run,
+    save_jobs,
+)
 
 
 @pytest.fixture

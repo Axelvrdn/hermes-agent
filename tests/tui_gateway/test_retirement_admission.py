@@ -1,16 +1,16 @@
 """Every admission source participates in the same process retirement fence."""
 
-from concurrent.futures import ThreadPoolExecutor
 import queue
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
 
 @pytest.fixture
 def runtime(monkeypatch):
-    from tui_gateway import server
     from hermes_cli import backend_retirement
+    from tui_gateway import server
 
     fence = backend_retirement.RetirementFence()
     monkeypatch.setattr(backend_retirement, "retirement", fence)
@@ -81,6 +81,7 @@ def test_prompt_claim_and_automatic_continuations_cannot_cross_prepare(runtime, 
     assert goal_session["running"] is False
     assert not dispatched
     from types import SimpleNamespace
+
     from tools import bot_live_delivery
 
     monkeypatch.setattr(bot_live_delivery, "has_mailbox", lambda home: True)

@@ -2,23 +2,23 @@
 
 import base64
 import os
-import pytest
 import shutil
 import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from tests.tools.file_ops_fakes import READ_SENTINEL_RE, compound_read_output
-from tools.environments.local import _find_bash, LocalEnvironment
+import pytest
+
 from agent.file_safety import is_write_denied as _is_write_denied
-from tools.file_operations_common import SearchMatch
+from tests.tools.file_ops_fakes import READ_SENTINEL_RE, compound_read_output
+from tools.environments.local import LocalEnvironment, _find_bash
 from tools.file_operations import (
     ReadResult,
     SearchResult,
     ShellFileOperations,
     normalize_read_pagination,
 )
-
+from tools.file_operations_common import SearchMatch
 
 # =========================================================================
 # Write deny list

@@ -2,34 +2,37 @@
 
 from __future__ import annotations
 
-from agent.credential_pool_admin import CredentialPoolAdminMixin
-from agent.credential_pool_model_cooldowns import CredentialPoolModelCooldownMixin, model_cooldown_until
-
 import logging
 import os
 import random
+import re
 import threading
 import time
 import uuid
-import re
 from dataclasses import dataclass, fields, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple
 
-from hermes_constants import OPENROUTER_BASE_URL
-from hermes_cli.config import load_env
-from agent.secret_scope import get_secret as _get_secret, get_secret_str
-from agent.retry_utils import reset_delay_from_message
-from hermes_cli.auth_plugin_providers import plugin_refresh_hook
-from agent.credential_pool_plugin import apply_plugin_refresh_result, plugin_row_is_expiring, recover_failed_plugin_refresh
+import hermes_cli.auth as auth_mod
 from agent.credential_persistence import (
     fingerprint_secret_value,
     is_borrowed_credential_source,
     sanitize_borrowed_credential_payload,
 )
-import hermes_cli.auth as auth_mod
-from hermes_cli.auth_oauth_grants import owned_profile_reads_root_state
+from agent.credential_pool_admin import CredentialPoolAdminMixin
+from agent.credential_pool_model_cooldowns import (
+    CredentialPoolModelCooldownMixin,
+    model_cooldown_until,
+)
+from agent.credential_pool_plugin import (
+    apply_plugin_refresh_result,
+    plugin_row_is_expiring,
+    recover_failed_plugin_refresh,
+)
+from agent.retry_utils import reset_delay_from_message
+from agent.secret_scope import get_secret as _get_secret
+from agent.secret_scope import get_secret_str
 from hermes_cli.auth import (
     CODEX_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
     PROVIDER_REGISTRY,
@@ -50,6 +53,10 @@ from hermes_cli.auth import (
     read_credential_pool,
     write_credential_pool,
 )
+from hermes_cli.auth_oauth_grants import owned_profile_reads_root_state
+from hermes_cli.auth_plugin_providers import plugin_refresh_hook
+from hermes_cli.config import load_env
+from hermes_constants import OPENROUTER_BASE_URL
 
 logger = logging.getLogger(__name__)
 
@@ -1778,7 +1785,9 @@ class CredentialPool(CredentialPoolAdminMixin, CredentialPoolModelCooldownMixin)
                 if synced.refresh_token != entry.refresh_token:
                     logger.debug("Retrying refresh with synced token from credentials file")
                     try:
-                        from agent.anthropic_credentials import refresh_anthropic_oauth_pure
+                        from agent.anthropic_credentials import (
+                            refresh_anthropic_oauth_pure,
+                        )
                         refreshed = refresh_anthropic_oauth_pure(
                             synced.refresh_token, use_json=synced.source.endswith("hermes_pkce"),
                         )
@@ -2703,8 +2712,8 @@ def _seed_copilot_singleton(seed: _Seeder) -> None:
     try:
         from hermes_cli.copilot_auth import (
             COPILOT_ENV_VARS,
-            resolve_copilot_token,
             get_copilot_api_token,
+            resolve_copilot_token,
         )
         # All-sources gate BEFORE any work: resolve_copilot_token() shells out
         # and the exchange retries 3x with backoff (~35s worst case); a user

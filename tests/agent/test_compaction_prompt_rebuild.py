@@ -88,8 +88,11 @@ class TestWorkspaceSnapshotPinnedAcrossCompaction(unittest.TestCase):
     """Compaction rebuilds must not invalidate the prefix at the workspace snapshot (#103326)."""
 
     def test_workspace_snapshot_replayed_across_rebuilds_when_repo_mutates(self):
-        import tempfile, shutil, subprocess
+        import shutil
+        import subprocess
+        import tempfile
         from pathlib import Path
+
         from agent.system_prompt import build_system_prompt, invalidate_system_prompt
 
         tmp = Path(tempfile.mkdtemp(prefix="test-pinned-ws-"))
@@ -142,8 +145,10 @@ class TestWorkspaceSnapshotPinnedAcrossCompaction(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
     def test_workspace_snapshot_reprobes_when_cwd_changes(self):
-        import tempfile, shutil
+        import shutil
+        import tempfile
         from pathlib import Path
+
         from agent.system_prompt import build_system_prompt
 
         tmp = Path(tempfile.mkdtemp(prefix="test-pinned-cwd-"))
@@ -188,8 +193,11 @@ class TestWorkspaceSnapshotPinnedAcrossCompaction(unittest.TestCase):
 
     def test_session_boundary_drops_the_pin_so_a_new_session_resnapshots(self):
         """A /new, /resume or /branch reuses the AIAgent; the next session must see the live repo."""
-        import tempfile, shutil, subprocess
+        import shutil
+        import subprocess
+        import tempfile
         from pathlib import Path
+
         from agent.system_prompt import build_system_prompt, invalidate_system_prompt
         from run_agent import AIAgent
 
@@ -229,8 +237,11 @@ class TestWorkspaceSnapshotPinnedAcrossCompaction(unittest.TestCase):
     def test_binding_the_launch_dir_explicitly_replays_the_pin(self):
         """CLI-shaped first build (no cwd bound -> launch dir), then TUI /compress binds that same dir:
         one workspace, so the rebuild replays the session-start snapshot."""
-        import os, tempfile, shutil
+        import os
+        import shutil
+        import tempfile
         from pathlib import Path
+
         from agent.system_prompt import build_system_prompt, invalidate_system_prompt
 
         tmp = Path(tempfile.mkdtemp(prefix="test-pinned-bind-"))
@@ -256,8 +267,10 @@ class TestWorkspaceSnapshotPinnedAcrossCompaction(unittest.TestCase):
         """Resume / gateway / TUI shape: a fresh agent rebuilds (compaction, a first /compress) after
         the repo moved and replays the snapshot its session row already holds — unless that prompt
         was taken in another cwd."""
-        import tempfile, shutil
+        import shutil
+        import tempfile
         from pathlib import Path
+
         from agent.system_prompt import build_system_prompt
 
         tmp = Path(tempfile.mkdtemp(prefix="test-pinned-resume-"))
@@ -286,8 +299,10 @@ class TestWorkspaceSnapshotPinnedAcrossCompaction(unittest.TestCase):
     def test_persisted_prompt_without_a_snapshot_does_not_pin_an_empty_one(self):
         """A session row built where no workspace block was emitted (a messaging surface) and
         resumed in the same repo must capture a real snapshot, not pin "no workspace" for good."""
-        import tempfile, shutil
+        import shutil
+        import tempfile
         from pathlib import Path
+
         from agent.system_prompt import build_system_prompt
 
         tmp = Path(tempfile.mkdtemp(prefix="test-pinned-empty-"))

@@ -10,9 +10,9 @@ Tests run through the real ``ensure_and_bind`` boundary with the install seam
 """
 import sys
 import types
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch
 
 import pm.extras as pm_extras
 from plugins.platforms.matrix import adapter as matrix_adapter

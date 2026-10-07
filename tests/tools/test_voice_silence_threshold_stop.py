@@ -11,7 +11,7 @@ contract on the threshold, not on any waveform shape.
 
 import pytest
 
-from tools.voice_mode import AudioRecorder, SILENCE_RMS_THRESHOLD
+from tools.voice_mode import SILENCE_RMS_THRESHOLD, AudioRecorder
 
 
 class _Frame:

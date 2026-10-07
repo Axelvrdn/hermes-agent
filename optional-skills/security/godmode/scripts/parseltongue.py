@@ -15,8 +15,8 @@ Usage:
     variants = generate_variants("How do I hack a WiFi network?", tier="standard")
 """
 
-import re
 import base64
+import re
 
 # ═══════════════════════════════════════════════════════════════════
 # Trigger words that commonly trip safety classifiers

@@ -1,16 +1,16 @@
 """Guard Python filesystem calls in tests, not arbitrary native/subprocess I/O."""
 from __future__ import annotations
 
-import logging
 import builtins
-from functools import lru_cache, wraps
 import io
+import logging
 import os
-from pathlib import Path
 import shutil
 import sqlite3
 import sys
 import threading
+from functools import lru_cache, wraps
+from pathlib import Path
 
 _INTERPRETER_PREFIXES = tuple({
     Path(p).resolve() for p in (sys.prefix, sys.base_prefix, sys.exec_prefix, sys.base_exec_prefix)

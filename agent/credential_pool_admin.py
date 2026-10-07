@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import replace
-from typing import Any, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional, Tuple
 
 if TYPE_CHECKING:
     from agent.credential_pool import PooledCredential
@@ -113,7 +113,9 @@ class CredentialPoolAdminMixin:
 
     def add_entry(self, entry: PooledCredential) -> PooledCredential:
         from agent.credential_pool import (
-            _borrowed_single_use_pool_root, _next_priority, _profile_owns_pool_provider,
+            _borrowed_single_use_pool_root,
+            _next_priority,
+            _profile_owns_pool_provider,
             write_credential_pool,
         )
         from hermes_cli import auth as auth_mod

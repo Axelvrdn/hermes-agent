@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 import ctypes
-from ctypes import wintypes
 import subprocess
 import sys
 import threading
+from collections.abc import Mapping
+from ctypes import wintypes
 
 import psutil
 

@@ -59,7 +59,10 @@ def test_completion_display_keeps_payload_separate_across_surfaces(monkeypatch, 
         assert core_message is staged
         assert core_message["display_metadata"]["display_text"] == expected
         assert copy.deepcopy(staged) == staged
-        from agent.prompt_caching import build_prompt_cache_plan, strip_anthropic_cache_control
+        from agent.prompt_caching import (
+            build_prompt_cache_plan,
+            strip_anthropic_cache_control,
+        )
         plan = build_prompt_cache_plan([core_message], tools=None)
         assert strip_anthropic_cache_control(plan.messages)[0]["content"] == payload
         from hermes_cli.cli_agent_setup_mixin import _collect_resume_entries

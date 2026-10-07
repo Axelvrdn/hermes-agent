@@ -11,8 +11,8 @@ to the python process, sleep 300 survived with PPID=1 for the full 300 s
 because _wait_for_process never got to call _kill_process before python
 died.  See commit message for full context.
 """
-import logging
 import contextlib
+import logging
 import os
 import signal
 import subprocess

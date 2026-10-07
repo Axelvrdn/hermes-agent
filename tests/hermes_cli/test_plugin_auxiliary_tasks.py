@@ -10,7 +10,6 @@ from hermes_cli.plugins import (
     PluginManifest,
 )
 
-
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
 
@@ -69,6 +68,7 @@ def test_all_aux_tasks_includes_plugin_registered(patched_manager):
 def test_reset_aux_to_auto_resets_plugin_tasks(tmp_path, monkeypatch, patched_manager):
     """Plugin task with non-auto config gets reset alongside built-ins."""
     from pathlib import Path
+
     from hermes_cli.config import load_config, save_config
     from hermes_cli.main_provider_setup import _reset_aux_to_auto
 

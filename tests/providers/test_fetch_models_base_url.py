@@ -1,9 +1,9 @@
 """Tests for ProviderProfile.fetch_models base_url override (issue #47009)."""
 
 import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from providers.base import ProviderProfile
 

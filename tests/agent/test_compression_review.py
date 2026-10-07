@@ -381,9 +381,9 @@ class TestF6ExecutorSaturation:
         not run and the transcript must come back unchanged.
         """
         import os
+        import tempfile
         from pathlib import Path
         from unittest.mock import MagicMock, patch
-        import tempfile
 
         from hermes_state import SessionDB
 

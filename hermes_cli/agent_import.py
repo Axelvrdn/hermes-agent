@@ -18,7 +18,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import hermes_yaml as yaml
-
 from utils import atomic_write_text, atomic_yaml_write
 
 logger = logging.getLogger(__name__)
@@ -524,9 +523,16 @@ class AgentImporter:
 def import_agent_command(args) -> None:
     """Handle ``hermes import-agent`` (invoked from hermes_cli.main)."""
     from hermes_cli.config import get_config_path, load_config, save_config
+    from hermes_cli.setup import (
+        Colors,
+        color,
+        print_error,
+        print_header,
+        print_info,
+        print_success,
+        prompt_yes_no,
+    )
     from hermes_constants import get_hermes_home
-    from hermes_cli.setup import (Colors, color, print_header, print_info, print_success,
-                                  print_error, prompt_yes_no)
 
     if getattr(args, "sync", False):
         from hermes_cli.agent_import_sync import sync_imported_agents

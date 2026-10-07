@@ -6,8 +6,8 @@ Cold scans run on a background thread; ``/achievements`` serves the last snapsho
 """
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import math
 import re
 import threading

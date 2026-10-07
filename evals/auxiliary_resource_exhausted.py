@@ -8,11 +8,11 @@ import argparse
 import asyncio
 import json
 import os
-from pathlib import Path
 import sys
 import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 
 def main():

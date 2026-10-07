@@ -32,8 +32,8 @@ class TestApprovalInterrupt:
     SESSION_KEY = "interrupt-test-session"
 
     def setup_method(self):
-        from tools.interrupt import set_interrupt
         from tools import interrupt as _interrupt_mod
+        from tools.interrupt import set_interrupt
 
         _clear_approval_state()
         # Wipe ALL per-thread interrupt bits — thread idents are recycled by
@@ -52,8 +52,8 @@ class TestApprovalInterrupt:
         os.environ["HERMES_SESSION_KEY"] = self.SESSION_KEY
 
     def teardown_method(self):
-        from tools.interrupt import set_interrupt
         from tools import interrupt as _interrupt_mod
+        from tools.interrupt import set_interrupt
 
         with _interrupt_mod._lock:
             _interrupt_mod._interrupted_threads.clear()

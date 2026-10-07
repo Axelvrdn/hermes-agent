@@ -7,7 +7,6 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-
 mcp = FastMCP("__SERVER_NAME__")
 
 DATABASE_PATH = os.getenv("SQLITE_PATH", "./app.db")

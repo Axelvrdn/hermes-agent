@@ -6,16 +6,15 @@ Pure leaf: imports nothing from ``hermes_cli.auth`` so the per-provider modules
 from __future__ import annotations
 
 import base64
-import json
-from typing import Any, Callable, Dict, Optional
-
-from hermes_cli.version_info import get_version_info
 
 # httpx is imported lazily (~30ms) because hermes_cli.auth is on the interactive-CLI startup path
 # (credential_pool -> auxiliary_client -> cli_commands_mixin). The proxy resolves on first attribute
 # access; ``from __future__ import annotations`` keeps ``httpx.Client`` annotations unevaluated.
 import importlib as _importlib
-from typing import TYPE_CHECKING
+import json
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+
+from hermes_cli.version_info import get_version_info
 
 if TYPE_CHECKING:
     import httpx

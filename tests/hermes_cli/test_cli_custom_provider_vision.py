@@ -11,7 +11,6 @@ from types import SimpleNamespace
 
 from hermes_cli.cli_agent_setup_mixin import CLIAgentSetupMixin
 
-
 MODEL = "qwen3.8-max-preview"
 REQUESTED_PROVIDER = "custom:qwen-token-plan"
 

@@ -100,9 +100,9 @@ def _counts(db, sid):
 class TestInPlaceCommitFailureRollback:
     def test_failed_commit_does_not_reinsert_the_transcript(self):
         """archive_and_compact raises → live list must return to the snapshot."""
-        from hermes_state import SessionDB
         from agent.context_compressor import _DB_PERSISTED_MARKER
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with _session_db("rollback.db") as db:
             sid = "20260831_120000_rollback"
@@ -152,9 +152,9 @@ class TestInPlaceCommitFailureRollback:
 
     def test_successful_commit_still_compacts_in_place(self):
         """The rollback must not fire when the commit landed (#98450 guard)."""
-        from hermes_state import SessionDB
         from agent.context_compressor import _DB_PERSISTED_MARKER
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with _session_db("committed.db") as db:
             sid = "20260831_120001_committed"

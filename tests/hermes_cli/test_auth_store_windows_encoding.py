@@ -22,7 +22,6 @@ import pytest
 
 import hermes_cli.auth as auth
 
-
 # --- helpers ---------------------------------------------------------------
 
 @pytest.fixture

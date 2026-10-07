@@ -19,7 +19,8 @@ from pm.lock import Facts, Lockfile
 from pm.package import InstallError, compose_env
 from pm.packages import BinaryPackage, Venv
 from pm.store import Store, current_target
-from tests.pm._fixtures import make_tar, served as served
+from tests.pm._fixtures import make_tar
+from tests.pm._fixtures import served as served
 
 
 class FakeTool(BinaryPackage):
@@ -190,6 +191,7 @@ def test_deps_compose_dependents_win(pm_env):
 def test_cli_env_reports_only_package_exports(pm_env, monkeypatch, capsys):
     import json
     from argparse import Namespace
+
     from pm.cli import cmd_env
     from pm.install import ensure
 
@@ -215,6 +217,7 @@ def test_activation_trusts_a_recorded_entry_a_deliberate_install_repairs(pm_env,
     corruption, installed without the flag, is still detected and rewritten.
     """
     import importlib
+
     from pm.cli import _install_names
 
     ensure = importlib.import_module("pm.install")
@@ -249,8 +252,9 @@ def test_warm_install_verifies_shared_dependencies_once_under_lock(pm_env, monke
     import importlib
     import os
     from collections import Counter
-    from pm.filesystem import lock_fd
+
     from pm.cli import _install_names
+    from pm.filesystem import lock_fd
 
     ensure = importlib.import_module("pm.install")
     lockfile_path, runtime, docroot, _ = pm_env
@@ -288,6 +292,7 @@ def test_warm_install_verifies_shared_dependencies_once_under_lock(pm_env, monke
 
 def test_standalone_warm_ensure_does_not_wait_for_unrelated_writer(pm_env):
     from concurrent.futures import ThreadPoolExecutor
+
     from pm.install import ensure
 
     _, runtime, _, _ = pm_env
@@ -304,8 +309,9 @@ def test_standalone_warm_ensure_does_not_wait_for_unrelated_writer(pm_env):
 def test_install_forgets_verification_when_state_operation_releases_lock(pm_env, monkeypatch):
     import importlib
     import os
-    from pm.filesystem import lock_fd
+
     from pm.cli import _install_names
+    from pm.filesystem import lock_fd
 
     ensure = importlib.import_module("pm.install")
     lockfile_path, runtime, docroot, _ = pm_env
@@ -409,6 +415,7 @@ def test_single_flight_one_store_entry(pm_env, monkeypatch):
     from concurrent.futures import ThreadPoolExecutor
     from contextlib import contextmanager
     from http.server import SimpleHTTPRequestHandler
+
     from pm.install import ensure
 
     _, runtime, *_ = pm_env
@@ -638,6 +645,7 @@ def test_python_package_stably_signs_macos_runtime(tmp_path):
     import shutil
     import subprocess
     import sys
+
     from pm.registry import get_package
 
     python = get_package("python")
@@ -709,9 +717,9 @@ def test_machine_matches_binary_elf(tmp_path):
 def test_bundle_closure_uv_stays_internal_node_npm_ship(monkeypatch, tmp_path):
     """Locks the semantics split: uv is pm's install machinery and never
     ships by closure, node/npm are runtime tools and always do."""
-    from scripts.bundles.native import _bundle_package_names
     from pm.lock import Lockfile
     from pm.registry import get_package
+    from scripts.bundles.native import _bundle_package_names
 
     lock = Lockfile(tmp_path / "lock.json")
     for name in ("uv", "node", "npm"):
@@ -731,9 +739,9 @@ def test_bundle_closure_uv_stays_internal_node_npm_ship(monkeypatch, tmp_path):
 def test_arch_guard_allows_emulated_x64_on_win32_arm64(monkeypatch, tmp_path):
     """agent-browser on win32-arm64 ships the x64 PE (emulated). The guard
     must not reject it when the package declares the target emulated."""
-    from scripts.bundles import native as cli
     from pm.lock import Facts, Lockfile
     from pm.registry import get_package
+    from scripts.bundles import native as cli
 
     store = tmp_path / "store"
     entry = store / "agent-browser-0.35.1"

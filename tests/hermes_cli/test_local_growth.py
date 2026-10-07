@@ -121,7 +121,6 @@ def test_preset_generation_for_catalog_model_with_mmproj(hermes_home, tmp_path, 
     the branch once treated the (entry, variant) tuple as the entry and
     crashed every real boot into the stock-fit fallback."""
     import hermes_cli.local_runtime.presets as presets_mod
-
     from hermes_cli.local_runtime.catalog import CATALOG
     from hermes_cli.local_runtime.estimator import HardwareBudget
 
@@ -150,7 +149,6 @@ def test_preset_restores_grown_window_capped_at_native(hermes_home, tmp_path, mo
     capped at native. GGUF parsing is stubbed — the contract under test is
     the override plumbing, not the reader."""
     import hermes_cli.local_runtime.presets as presets_mod
-
     from hermes_cli.local_runtime.estimator import HardwareBudget
     from hermes_cli.local_runtime.growth import save_window_override
 
@@ -179,7 +177,6 @@ def test_preset_ignores_override_below_launch_window(hermes_home, tmp_path, monk
     """Overrides only ever RAISE the window (growth is monotone); a stale
     smaller override never shrinks a launch decision."""
     import hermes_cli.local_runtime.presets as presets_mod
-
     from hermes_cli.local_runtime.estimator import HardwareBudget
     from hermes_cli.local_runtime.growth import save_window_override
 
@@ -202,8 +199,11 @@ def test_preset_restores_grown_window_midladder(hermes_home, tmp_path, monkeypat
     """The real growth shape: launch at a lower rung, override to a middle
     rung -> the preset window follows the override."""
     import hermes_cli.local_runtime.presets as presets_mod
-
-    from hermes_cli.local_runtime.estimator import HardwareBudget, LayerKind, ModelProfile
+    from hermes_cli.local_runtime.estimator import (
+        HardwareBudget,
+        LayerKind,
+        ModelProfile,
+    )
     from hermes_cli.local_runtime.growth import save_window_override
 
     gib = 1 << 30
@@ -235,8 +235,17 @@ def test_mtp_plan_matches_cost_at_initial_and_restored_windows(hermes_home, tmp_
     from types import SimpleNamespace
 
     from hermes_cli.local_runtime import presets
-    from hermes_cli.local_runtime.context_policy import FLOOR, RUNTIME_OVERHEAD_BYTES, ub_logits_bytes
-    from hermes_cli.local_runtime.estimator import HardwareBudget, LayerKind, ModelProfile, ctx_bytes
+    from hermes_cli.local_runtime.context_policy import (
+        FLOOR,
+        RUNTIME_OVERHEAD_BYTES,
+        ub_logits_bytes,
+    )
+    from hermes_cli.local_runtime.estimator import (
+        HardwareBudget,
+        LayerKind,
+        ModelProfile,
+        ctx_bytes,
+    )
     from hermes_cli.local_runtime.growth import save_window_override
 
     gib = 1 << 30
@@ -295,7 +304,11 @@ def test_growth_requires_an_admissible_materialized_preset(hermes_home, tmp_path
     from types import SimpleNamespace
 
     from hermes_cli.local_runtime import bootstrap, catalog, growth, hardware, presets
-    from hermes_cli.local_runtime.context_policy import FLOOR, RUNTIME_OVERHEAD_BYTES, ub_logits_bytes
+    from hermes_cli.local_runtime.context_policy import (
+        FLOOR,
+        RUNTIME_OVERHEAD_BYTES,
+        ub_logits_bytes,
+    )
     from hermes_cli.local_runtime.estimator import HardwareBudget, ctx_bytes
 
     entry = next(e for e in catalog.CATALOG if e.mtp and e.mmproj)
@@ -306,7 +319,7 @@ def test_growth_requires_an_admissible_materialized_preset(hermes_home, tmp_path
     monkeypatch.setattr(bootstrap, "staged_models", lambda: list(mdir.glob("*.gguf")))
     monkeypatch.setattr(bootstrap, "get_supervisor", lambda: SimpleNamespace(is_idle=lambda m: True))
     monkeypatch.setattr(growth, "is_managed_endpoint", lambda url: True)
-    from hermes_cli.local_runtime import gguf, estimator
+    from hermes_cli.local_runtime import estimator, gguf
     monkeypatch.setattr(gguf, "read_gguf_header", lambda p: _header_stub())
     monkeypatch.setattr(estimator, "profile_from_gguf", lambda h: profile)
     monkeypatch.setattr(presets, "read_gguf_header", lambda p: _header_stub())

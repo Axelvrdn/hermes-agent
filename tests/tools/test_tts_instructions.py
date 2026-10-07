@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+
 @pytest.fixture(autouse=True)
 def clean_env(monkeypatch):
     for key in ("OPENAI_API_KEY", "HERMES_SESSION_PLATFORM"):

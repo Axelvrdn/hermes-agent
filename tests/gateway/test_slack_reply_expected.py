@@ -11,7 +11,11 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from tests.gateway.test_slack_ignore_other_user_mentions import (  # noqa: F401 - fixtures
-    BOT_USER_ID, CHANNEL_ID, OTHER_USER_ID, _redirect_cache, adapter,
+    BOT_USER_ID,
+    CHANNEL_ID,
+    OTHER_USER_ID,
+    _redirect_cache,
+    adapter,
 )
 
 THREAD = "1700000000.000010"

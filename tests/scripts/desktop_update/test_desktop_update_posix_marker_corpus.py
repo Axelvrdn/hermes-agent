@@ -10,9 +10,9 @@ marker_now) -- the parsing, identity and release logic are the shipped code.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import shlex
 import subprocess
+from pathlib import Path
 
 import pytest
 

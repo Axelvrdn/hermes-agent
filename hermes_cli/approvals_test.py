@@ -12,8 +12,8 @@ rules (fire before yolo/off), 5. yolo / ``approvals.mode: off`` bypass, 6. perma
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 
 EXIT_ALLOW = 0
 EXIT_USAGE = 1

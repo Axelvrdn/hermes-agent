@@ -133,7 +133,7 @@ def render_qr_to_terminal(url: str) -> bool:
 
 def dingtalk_qr_auth() -> Optional[Tuple[str, str]]:
     """Run the interactive QR-code device-flow authorization (setup wizard entry point)."""
-    from hermes_cli.setup import print_info, print_success, print_warning, print_error
+    from hermes_cli.setup import print_error, print_info, print_success, print_warning
     print()
     print_info("  Initializing DingTalk device authorization...")
     print_info("  Note: the scan page is branded 'OpenClaw' — DingTalk's")

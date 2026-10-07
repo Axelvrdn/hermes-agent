@@ -3,9 +3,10 @@
 Regression test for: cron jobs computing next_run_at from _hermes_now()
 instead of from last_run_at, making them inconsistent with interval jobs.
 """
-import pytest
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
+import pytest
 
 pytest.importorskip("croniter")
 

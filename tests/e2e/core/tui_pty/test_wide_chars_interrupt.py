@@ -18,7 +18,13 @@ import sys
 import pytest
 
 from tests.e2e.core.tui_pty._helpers import (
-    TmuxTui, cell_params, display_width, ledger_problems, paragraph, require_tui, run_cells,
+    TmuxTui,
+    cell_params,
+    display_width,
+    ledger_problems,
+    paragraph,
+    require_tui,
+    run_cells,
     words,
 )
 from tests.fakes.fake_llm_provider import FakeLLMServer, Text

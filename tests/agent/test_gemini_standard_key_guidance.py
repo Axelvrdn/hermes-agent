@@ -24,7 +24,6 @@ from agent.gemini_native_adapter import (
     is_standard_key_auth_error,
 )
 
-
 GOOGLE_AUTH_MESSAGE = (
     "Request had invalid authentication credentials. Expected OAuth 2 access "
     "token, login cookie or other valid authentication credential. See "

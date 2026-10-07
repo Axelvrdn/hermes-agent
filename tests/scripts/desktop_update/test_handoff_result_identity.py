@@ -3,12 +3,11 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[3]
 POWERSHELL = shutil.which("powershell") or shutil.which("pwsh")

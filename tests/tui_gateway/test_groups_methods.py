@@ -6,8 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from gateway.hosted_rooms import default_db_path as hosted_rooms_default_db_path
 import tui_gateway.server as srv
+from gateway.hosted_rooms import default_db_path as hosted_rooms_default_db_path
 from tui_gateway import methods_groups
 
 

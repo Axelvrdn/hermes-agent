@@ -12,9 +12,12 @@ from unittest.mock import patch
 import pytest
 
 import tools.approval as approval_module
-from tools import approval_context
-from tools import approval_smart
-from tools.approval import check_all_command_guards, check_execute_code_guard, clear_session
+from tools import approval_context, approval_smart
+from tools.approval import (
+    check_all_command_guards,
+    check_execute_code_guard,
+    clear_session,
+)
 from tools.approval_context import set_current_session_key
 from tools.approval_prompt import request_elicitation_consent
 from tools.file_tools_write_guards import _request_protected_instruction_approval

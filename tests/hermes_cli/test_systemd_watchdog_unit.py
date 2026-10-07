@@ -6,8 +6,6 @@ from gateway.config import GatewayConfig
 from hermes_cli import gateway as gateway_cli
 
 
-
-
 def test_positive_watchdog_config_generates_notify_unit(monkeypatch):
     monkeypatch.setattr(
         gateway_cli,

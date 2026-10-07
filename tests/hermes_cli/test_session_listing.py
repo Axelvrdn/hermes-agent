@@ -8,10 +8,6 @@ from hermes_cli.session_listing import (
 )
 
 
-
-
-
-
 class TestQuerySessionListingSearch:
     @pytest.fixture
     def db(self, tmp_path):

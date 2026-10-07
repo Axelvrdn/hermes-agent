@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import importlib.util
 import logging
-from dataclasses import dataclass, field as dataclass_field
+from dataclasses import dataclass
+from dataclasses import field as dataclass_field
 
 _log = logging.getLogger(__name__)
 
@@ -101,8 +102,8 @@ def get_provider_config_schema(name: str) -> ProviderConfigSchema | None:
         return _SCHEMA_CACHE[key]
 
     try:
-        from plugins.memory import _is_bundled
         from hermes_cli.plugin_isolation import user_plugin_host
+        from plugins.memory import _is_bundled
         host = None if _is_bundled(provider_dir) else user_plugin_host()
         if host is not None:  # plugins.isolation: host — a user schema file is user code too
             schema = _schema_from_record(host.config_schema(path))

@@ -209,6 +209,7 @@ class HermesProviderMixin:
         if not info:
             return
         from mcp.shared.auth import OAuthClientInformationFull
+
         from tools.mcp_oauth import HermesTokenStorage
         data = info.model_dump(mode="json", exclude_none=True)
         if HermesTokenStorage._coerce_secret_auth_method(data):

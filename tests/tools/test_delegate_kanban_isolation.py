@@ -100,8 +100,8 @@ def test_build_child_agent_strips_kanban_toolset_even_when_parent_is_worker(monk
             self.session_id = "child-session"
 
     import run_agent
-    from tools import delegate_tool
     import tools.delegate_tool_config as delegate_tool_config
+    from tools import delegate_tool
 
     monkeypatch.setattr(run_agent, "AIAgent", FakeAgent)
     monkeypatch.setattr(delegate_tool, "_load_config", dict)
@@ -260,9 +260,8 @@ def test_delegate_child_kanban_cli_cannot_delete_parent_board(
 
 def test_delegate_child_attach_url_guard_leaves_no_row_or_file(monkeypatch, tmp_path):
     kb, tid, _workspace, attachments_root = _make_running_kanban_task(monkeypatch, tmp_path)
-    from hermes_cli import kanban_db_connect as kbc
-
     from agent.delegation_context import delegated_child_context
+    from hermes_cli import kanban_db_connect as kbc
     from tools import kanban_tools
 
     def forbidden_download(*_args, **_kwargs):
@@ -296,8 +295,7 @@ def test_child_attempting_default_complete_does_not_finish_parent_or_delete_work
     """Deterministic E2E: a delegated child cannot complete its parent task."""
     kb, tid, workspace, _attachments_root = _make_running_kanban_task(monkeypatch, tmp_path)
     from hermes_cli import kanban_db_connect as kbc
-    from tools import delegate_tool
-    from tools import kanban_tools
+    from tools import delegate_tool, kanban_tools
 
     class Parent:
         _current_task_id = tid

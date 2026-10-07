@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-
 from agent.gemini_native_adapter import (
     gemini_http_error,
     is_free_tier_quota_error,

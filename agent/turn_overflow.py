@@ -16,14 +16,19 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
 from agent.conversation_compression import (
-    COMPRESSION_RETRY_MESSAGES_STATUS_TEMPLATE, COMPRESSION_RETRY_TOKENS_STATUS_TEMPLATE,
-    COMPRESSION_RETRY_TOO_LARGE_STATUS_TEMPLATE, compression_blocked_transiently,
-    compression_skipped_due_to_lock, context_compression_timed_out,
+    COMPRESSION_RETRY_MESSAGES_STATUS_TEMPLATE,
+    COMPRESSION_RETRY_TOKENS_STATUS_TEMPLATE,
+    COMPRESSION_RETRY_TOO_LARGE_STATUS_TEMPLATE,
+    compression_blocked_transiently,
+    compression_skipped_due_to_lock,
+    context_compression_timed_out,
 )
 from agent.error_classifier import FailoverReason
 from agent.message_sanitization import serialized_messages_bytes
 from agent.model_metadata import (
-    get_context_length_from_provider_error, is_local_endpoint, is_output_cap_error,
+    get_context_length_from_provider_error,
+    is_local_endpoint,
+    is_output_cap_error,
     parse_available_output_tokens_from_error,
 )
 from agent.turn_failure_copy import site_copy, stamp_failure
@@ -154,8 +159,13 @@ class _Recovery(OverflowVerdict):
         ``fail_on_timeout`` a host timeout (recovery spent its wait budget with no
         committed summary) ends the turn via the typed contract, since re-sending would
         hit the same overflow."""
-        from agent.conversation_compression import conversation_history_after_compression
-        from agent.conversation_loop import _COMPRESSION_TIMEOUT_FINAL_RESPONSE, _compression_deferred_result
+        from agent.conversation_compression import (
+            conversation_history_after_compression,
+        )
+        from agent.conversation_loop import (
+            _COMPRESSION_TIMEOUT_FINAL_RESPONSE,
+            _compression_deferred_result,
+        )
 
         agent = self.agent
         before = self.messages

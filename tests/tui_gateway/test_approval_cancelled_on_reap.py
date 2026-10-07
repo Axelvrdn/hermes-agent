@@ -17,10 +17,13 @@ from __future__ import annotations
 
 import pytest
 
-from tui_gateway import server
-from tools.approval import _gateway_queues, list_gateway_approvals, resolve_gateway_approval
+from tools.approval import (
+    _gateway_queues,
+    list_gateway_approvals,
+    resolve_gateway_approval,
+)
 from tools.approval_gateway_wait import _ApprovalEntry
-
+from tui_gateway import server
 
 SESSION_KEY = "20260909_120000_aaaaaa"
 SID = "live-loud-deny"

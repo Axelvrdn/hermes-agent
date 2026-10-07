@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 from typing import List, Optional
 
-from toolsets import TOOLSETS, resolve_toolset
 from tools.delegate_tool_config import _get_inherit_mcp_toolsets
+from toolsets import TOOLSETS, resolve_toolset
 
 logger = logging.getLogger("tools.delegate_tool")  # log-record parity with the origin module
 

@@ -20,7 +20,6 @@ from gateway.config import GatewayConfig, Platform
 from gateway.run import GatewayRunner
 from gateway.session import SessionEntry, SessionSource, SessionStore
 
-
 ACTIVE_TURN_MAX_AGE_SECONDS = 60 * 60
 
 

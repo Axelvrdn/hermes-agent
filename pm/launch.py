@@ -1,6 +1,6 @@
 """CLI entry after the isolated interpreter has been selected."""
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import truststore
 

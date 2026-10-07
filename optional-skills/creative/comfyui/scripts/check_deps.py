@@ -24,20 +24,28 @@ Stdlib-only. Python 3.10+.
 
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import (  # noqa: E402
-    DEFAULT_LOCAL_HOST, ENV_API_KEY,
-    emit_json, folder_aliases_for, http_get, is_cloud_host,
-    iter_embedding_refs, iter_model_deps, iter_nodes, parse_model_list,
-    resolve_api_key, resolve_url, unwrap_workflow,
+    DEFAULT_LOCAL_HOST,
+    ENV_API_KEY,
+    emit_json,
+    folder_aliases_for,
+    http_get,
+    is_cloud_host,
+    iter_embedding_refs,
+    iter_model_deps,
+    iter_nodes,
+    parse_model_list,
+    resolve_api_key,
+    resolve_url,
+    unwrap_workflow,
 )
-
 
 # Known node → custom-node-package map. When a workflow needs a node we don't
 # recognize, suggesting the right `comfy node install ...` makes the difference

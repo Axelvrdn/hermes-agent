@@ -12,7 +12,6 @@ import json
 
 import hermes_yaml as yaml
 
-
 POOL_KEY = "sk-real-b-ai-pool-key-12345"
 LEGACY_KEY = "sk-legacy-custom-b-ai-pool-key"
 ENDPOINT = "https://api.b.ai/v1"

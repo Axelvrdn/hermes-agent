@@ -42,7 +42,6 @@ from gateway.browser_control_broker import (
 from gateway.config import PlatformConfig
 from gateway.platforms.api_server import APIServerAdapter
 
-
 API_KEY = "-".join(("fixture", "neutral", "api", "key", "123"))
 PNG_BYTES = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489")
 TEXT_BYTES = b"fixture artifact payload\n"

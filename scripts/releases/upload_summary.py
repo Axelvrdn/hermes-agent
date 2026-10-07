@@ -11,7 +11,6 @@ import json
 import os
 from pathlib import Path
 
-
 _KEYS: list[str] = []
 _REGISTERED = False
 

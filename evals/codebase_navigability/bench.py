@@ -21,10 +21,10 @@ Compare two labels with: python evals/codebase_navigability/compare.py base.json
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import ast
 import json
+import logging
 import os
 import statistics
 import sys

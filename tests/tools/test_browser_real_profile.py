@@ -11,12 +11,13 @@ import os
 from unittest.mock import Mock, patch
 
 import pytest
+
 from tools import browser_tool_cdp as bt_cdp
 from tools import browser_tool_cloud as bt_cloud
+from tools import browser_tool_install as bt_install
 from tools import browser_tool_lightpanda_fallback as bt_lightpanda_fallback
 from tools import browser_tool_real_profile as bt_real_profile
 from tools import browser_tool_session as bt_session
-from tools import browser_tool_install as bt_install
 
 
 def _auth_db(path, value=None):
@@ -653,8 +654,8 @@ class TestChannelIdentity:
 
     def test_channel_sentinel_fails_closed_in_cdp(self):
         """A channel default → _real_profile_cdp fails closed, never launches."""
-        import tools.browser_tool as bt
         import hermes_cli.browser_connect as bc
+        import tools.browser_tool as bt
         bt._real_profile_cdp_cache.clear()
         with patch.object(bt_cloud, "_use_real_profile", return_value=True), \
              patch("hermes_cli.browser_connect.detect_default_chromium",
@@ -1004,8 +1005,10 @@ class TestWindowsLockedProfileCopy:
         return root, con  # caller keeps con open to simulate the live lock
 
     def test_locked_cookie_db_copied_via_backup(self, tmp_path, monkeypatch):
+        import shutil
+        import sqlite3
+
         import hermes_cli.browser_connect as bc
-        import sqlite3, shutil
         src, con = self._locked_src(tmp_path / "real")
         con.execute("BEGIN"); con.execute("insert into cookies values('u','uncommitted')")
         home = tmp_path / "hh"
@@ -1023,8 +1026,9 @@ class TestWindowsLockedProfileCopy:
         assert not (home / "browser-profile" / "chrome" / "Default" / "Cookies-journal").exists()
 
     def test_copy_auth_file_backs_up_db(self, tmp_path):
-        import hermes_cli.browser_connect as bc
         import sqlite3
+
+        import hermes_cli.browser_connect as bc
         src = str(tmp_path / "Cookies")
         con = sqlite3.connect(src); con.execute("create table cookies(x)"); con.execute("insert into cookies values(1)"); con.commit(); con.close()
         dst = str(tmp_path / "out" / "Cookies")
@@ -1036,6 +1040,7 @@ class TestWindowsLockedProfileCopy:
         import sqlite3
         import subprocess
         import sys
+
         import hermes_cli.browser_connect as bc
 
         src, dst = tmp_path / "Cookies", tmp_path / "out" / "Cookies"
@@ -1071,6 +1076,7 @@ class TestWindowsLockedProfileCopy:
         import sqlite3
         import subprocess
         import sys
+
         import hermes_cli.browser_connect as bc
 
         src, dst = tmp_path / "Cookies", tmp_path / "out" / "Cookies"
@@ -1102,6 +1108,7 @@ class TestWindowsLockedProfileCopy:
         """A large DB on a slow disk that is still copying pages past the deadline must not
         get the lock wording (whose all-locked message tells the user to quit the browser)."""
         import sqlite3
+
         import hermes_cli.browser_connect as bc
         src = str(tmp_path / "Web Data")
         con = sqlite3.connect(src)

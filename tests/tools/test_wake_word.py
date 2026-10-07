@@ -6,6 +6,7 @@ dispatch, the requirements probe, the detector fire/cooldown loop, and the
 process-wide singleton lifecycle.
 """
 
+import importlib
 import multiprocessing
 import os
 import sys
@@ -17,11 +18,9 @@ from pathlib import Path
 import pytest
 
 import pm
-import importlib
 
 pm_ensure = importlib.import_module("pm.install")
 import tools.wake_word as ww
-
 
 # ── Config helpers ───────────────────────────────────────────────────────
 

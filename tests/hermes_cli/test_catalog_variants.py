@@ -4,7 +4,6 @@ synthetic budgets."""
 
 from __future__ import annotations
 
-
 from hermes_cli.local_runtime.catalog import (
     CATALOG,
     catalog_by_id,
@@ -144,7 +143,10 @@ def test_catalog_and_preset_agree_on_identical_model_facts(tmp_path, monkeypatch
 
     from hermes_cli.local_runtime import bootstrap, catalog, presets
     from hermes_cli.local_runtime.context_policy import (
-        RUNTIME_OVERHEAD_BYTES, posture_profile, ub_logits_bytes)
+        RUNTIME_OVERHEAD_BYTES,
+        posture_profile,
+        ub_logits_bytes,
+    )
     from hermes_cli.local_runtime.estimator import ctx_bytes
     from hermes_cli.web_routers.local_models import _catalog_row
 
@@ -189,9 +191,7 @@ def test_hybrid_long_context_stays_cheap():
     """The reason Nemotron/Qwen3.6 headline the catalog: their priced
     64K-floor KV must be a small fraction of a dense model's."""
     from hermes_cli.local_runtime.catalog import FLOOR
-    from hermes_cli.local_runtime.estimator import ctx_bytes
-
-    from hermes_cli.local_runtime.estimator import LayerKind, ModelProfile
+    from hermes_cli.local_runtime.estimator import LayerKind, ModelProfile, ctx_bytes
 
     hybrid = catalog_by_id()["qwen3.6-35b-a3b"]
     hybrid_profile = hybrid.profile(hybrid.variants[-1])

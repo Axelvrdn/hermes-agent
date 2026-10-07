@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import Optional
 
-
 # Transport-layer failure signatures: the classifier's server-disconnect set plus the OS-level
 # ``broken pipe`` / ``errno 32`` the upstream kill surfaces through the OpenAI SDK wrapper.
 _THINKING_TIMEOUT_SUBSTRINGS: tuple[str, ...] = (

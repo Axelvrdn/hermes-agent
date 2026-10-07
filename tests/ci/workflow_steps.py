@@ -16,7 +16,6 @@ from pathlib import Path
 from hermes_platform.resolver import LookupContext, locate_command
 from tests.ci import _gha_expr as gha
 
-
 # Intercept launch/activation boundaries, not selection logic. The unit lane
 # need not have the upgrade job's venv; the Desktop monitor must not outlive us.
 _RECEIPTS = r'''

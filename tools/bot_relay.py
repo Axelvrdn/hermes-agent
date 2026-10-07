@@ -590,7 +590,10 @@ def delivery_env(author: Optional[dict], profile_home: "str | Path | None" = Non
     home."""
     from agent.secret_scope import current_secret_scope, is_multiplex_active
     from agent.turn_author import TURN_AUTHOR_ENV, turn_author_env
-    from hermes_constants import get_hermes_home_override, get_routing_process_hermes_home
+    from hermes_constants import (
+        get_hermes_home_override,
+        get_routing_process_hermes_home,
+    )
     from tools.environments.local import served_profile_child_env
 
     # ``_profile_home`` answers None for the launch profile by design and a relay RPC binds no scope,

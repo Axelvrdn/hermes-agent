@@ -31,8 +31,8 @@ first wins; the other fails with ``ImportError``, and the polluted
 incident.
 """
 
-import logging
 import ast
+import logging
 import os
 import sys
 from pathlib import Path

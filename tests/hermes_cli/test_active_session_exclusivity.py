@@ -30,6 +30,7 @@ from hermes_cli.active_sessions import (
     try_acquire_active_session,
 )
 
+
 @pytest.fixture(autouse=True)
 def _isolated_registry(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))

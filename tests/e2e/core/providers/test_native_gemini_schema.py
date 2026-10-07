@@ -25,7 +25,15 @@ import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core.providers import _native_helpers as nh
-from tests.fakes.providers.gemini_native import HERMES_ENV, Call, Calls, GeminiFake, Recorded, Text, hermes_model
+from tests.fakes.providers.gemini_native import (
+    HERMES_ENV,
+    Call,
+    Calls,
+    GeminiFake,
+    Recorded,
+    Text,
+    hermes_model,
+)
 
 KNOWN: dict[str, tuple[str, str]] = {
     "ref_dropped_v1": (r"\$ref-typed parameter lost its shape on the v1 wire",

@@ -30,9 +30,9 @@ Invariants pinned here:
    request-client identity rather than masking the signal used to poison the
    slot.
 """
-from contextlib import contextmanager
 import threading
 import time
+from contextlib import contextmanager
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 

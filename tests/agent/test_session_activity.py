@@ -13,6 +13,7 @@ from agent.session_activity import (
     normalize_activity_provenance,
 )
 
+
 @pytest.mark.parametrize(
     "max_iterations, expected",
     [

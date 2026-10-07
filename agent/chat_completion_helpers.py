@@ -24,34 +24,52 @@ from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any, Dict, Optional
 
-from hermes_cli.timeouts import get_provider_request_timeout, get_provider_stale_timeout
-from hermes_constants import PARTIAL_STREAM_STUB_ID, FINISH_REASON_LENGTH
-from agent.error_classifier import (
-    FailoverReason, PROVIDER_STREAM_EMPTY_FRAME_ERROR_CODE, PROVIDER_STREAM_NON_JSON_ERROR_CODE,
-    _extract_status_code)
-from agent.sdk_transform_bypass import bypass_chat_sdk_request_transform
-from agent.errors import EmptyStreamError
 from agent.chat_completion_stream_monitor import StreamingWaitMonitor
-from agent.transports.chat_completions import is_router_timeout_shim, router_timeout_shim_may_follow
+from agent.error_classifier import (
+    PROVIDER_STREAM_EMPTY_FRAME_ERROR_CODE,
+    PROVIDER_STREAM_NON_JSON_ERROR_CODE,
+    FailoverReason,
+    _extract_status_code,
+)
+from agent.errors import EmptyStreamError
 from agent.fast_mode import effective_request_overrides
-from agent.turn_context import substitute_api_content
 from agent.gemini_native_adapter import is_native_gemini_base_url
+from agent.message_content import flatten_message_text
+from agent.message_metadata import (
+    PERSISTENCE_ONLY_MESSAGE_FIELDS,
+    append_message,
+    stamp_message_timestamp,
+)
+from agent.message_sanitization import (
+    _repair_tool_call_arguments,
+    _sanitize_messages_surrogates,
+    _sanitize_surrogates,
+    sanitize_outbound_kwargs,
+    strip_images_for_rejecting_model,
+)
+from agent.message_sanitization import (
+    normalize_finish_reason as _normalize_finish_reason,
+)
+
 # Remote endpoints must never be fingerprinted: the probe waterfall is only valid for local/LM-Studio/Ollama
 # boxes. Non-Ollama remotes (sglang, vLLM, OpenAI-compat) expose Ollama-compat endpoints that can
 # misidentify and, without an api_key, return 401 on every leg (issue #89863).
 from agent.model_metadata import is_local_endpoint
-from agent.message_content import flatten_message_text
-from agent.message_metadata import PERSISTENCE_ONLY_MESSAGE_FIELDS, append_message, stamp_message_timestamp
-from agent.message_sanitization import (
-    _sanitize_messages_surrogates, _sanitize_surrogates, _repair_tool_call_arguments,
-    normalize_finish_reason as _normalize_finish_reason, sanitize_outbound_kwargs, strip_images_for_rejecting_model,
-)
 from agent.reasoning_summaries import (
-    append_streamed_reasoning_detail, separate_glued_reasoning_blocks,
+    append_streamed_reasoning_detail,
+    separate_glued_reasoning_blocks,
     streamed_reasoning_detail_text,
 )
 from agent.repetition_guard import RunawayStreamWatch, is_repetition_dominated
+from agent.sdk_transform_bypass import bypass_chat_sdk_request_transform
 from agent.stream_single_writer import claim_stream_writer, stream_writer_is_current
+from agent.transports.chat_completions import (
+    is_router_timeout_shim,
+    router_timeout_shim_may_follow,
+)
+from agent.turn_context import substitute_api_content
+from hermes_cli.timeouts import get_provider_request_timeout, get_provider_stale_timeout
+from hermes_constants import FINISH_REASON_LENGTH, PARTIAL_STREAM_STUB_ID
 from tools.terminal_tool_lifecycle import is_persistent_env
 from utils import base_url_host_matches, base_url_hostname, env_float, env_int
 
@@ -736,9 +754,14 @@ def _bedrock_converse_call(api_kwargs: dict, *, stream: bool, on_stream_denied=N
     denial hands off to ``on_stream_denied(client, kwargs, exc)``; a stale connection
     evicts the cached client so the outer retry builds a fresh pool. Streaming returns the
     event stream; non-streaming an OpenAI-shaped SimpleNamespace."""
-    from agent.bedrock_adapter import (_get_bedrock_runtime_client, invalidate_runtime_client,
-        is_stale_connection_error, is_streaming_access_denied_error, normalize_converse_response,
-        recover_from_cache_point_rejection)
+    from agent.bedrock_adapter import (
+        _get_bedrock_runtime_client,
+        invalidate_runtime_client,
+        is_stale_connection_error,
+        is_streaming_access_denied_error,
+        normalize_converse_response,
+        recover_from_cache_point_rejection,
+    )
     region = api_kwargs.pop("__bedrock_region__", "us-east-1")
     api_kwargs.pop("__bedrock_converse__", None)
     client = _get_bedrock_runtime_client(region)
@@ -841,7 +864,11 @@ def _managed_local_load_notice(agent, api_kwargs: dict) -> "Optional[str]":
         if not base:
             return None
         from urllib.parse import urlparse
-        from hermes_cli.local_runtime.load_progress import get_loading_progress, get_prefill_progress
+
+        from hermes_cli.local_runtime.load_progress import (
+            get_loading_progress,
+            get_prefill_progress,
+        )
         from hermes_cli.local_runtime.supervisor import state_path
         state = json.loads(state_path().read_text(encoding="utf-8-sig"))
         managed = urlparse(str(state.get("base_url", ""))).netloc.lower()
@@ -1386,6 +1413,7 @@ def _alias_tool_search_bridge_for_xai(agent, transport, tools_for_api):
         return tools_for_api
     try:
         import copy as _copy_xai
+
         from agent.transports.chat_completions import _rename_tool_search_bridge_for_xai
         has_bridge = any(
             (t.get("function") or {}).get("name") == "tool_search" for t in tools_for_api if isinstance(t, dict)
@@ -1446,7 +1474,11 @@ def _build_codex_kwargs(agent, api_messages, tools_for_api, reasoning_config, re
     if is_xai_responses:
         try:
             import copy as _copy
-            from tools.schema_sanitizer import strip_pattern_and_format, strip_slash_enum
+
+            from tools.schema_sanitizer import (
+                strip_pattern_and_format,
+                strip_slash_enum,
+            )
             tools_for_api = _copy.deepcopy(tools_for_api)
             tools_for_api, _ = strip_pattern_and_format(tools_for_api)
             tools_for_api, _ = strip_slash_enum(tools_for_api)
@@ -1481,7 +1513,10 @@ def _build_chat_completions_kwargs(agent, api_messages, tools_for_api, reasoning
     # (temperature omitted entirely), a numeric override, or None.
     _omit_temp, _fixed_temp = False, None
     with contextlib.suppress(Exception):
-        from agent.auxiliary_client import _fixed_temperature_for_model, OMIT_TEMPERATURE
+        from agent.auxiliary_client import (
+            OMIT_TEMPERATURE,
+            _fixed_temperature_for_model,
+        )
         _ft = _fixed_temperature_for_model(agent.model, agent.base_url)
         _omit_temp = _ft is OMIT_TEMPERATURE
         _fixed_temp = None if _omit_temp else _ft
@@ -1751,7 +1786,9 @@ def build_assistant_message(agent, assistant_message, finish_reason: str) -> dic
                     # read must serve content again, not an "unchanged" stub (#32106).
                     # Without a task id the reset would clear every task's caches.
                     if task_id := getattr(agent, "_current_task_id", None):
-                        from agent.conversation_compression import _reset_read_dedup_caches
+                        from agent.conversation_compression import (
+                            _reset_read_dedup_caches,
+                        )
 
                         _reset_read_dedup_caches(task_id, session_id=getattr(agent, "session_id", None) or "")
 
@@ -2041,7 +2078,10 @@ def _rescope_fallback_extra_body(agent, old_model: str, old_provider: str, old_b
     config injected — a caller override of the same key won at init and differs, so it survives;
     keys the new provider redefines are re-added by the merge."""
     try:
-        from agent.agent_init import _custom_provider_extra_body_for_agent, _merge_custom_provider_extra_body
+        from agent.agent_init import (
+            _custom_provider_extra_body_for_agent,
+            _merge_custom_provider_extra_body,
+        )
         custom_providers = getattr(agent, "_custom_providers", None) or []
         old_provider_eb = _custom_provider_extra_body_for_agent(provider=old_provider, model=old_model, base_url=old_base_url, custom_providers=custom_providers) or {}
         overrides = dict(getattr(agent, "request_overrides", {}) or {})
@@ -2074,7 +2114,10 @@ def try_activate_fallback(agent, reason: "FailoverReason | None" = None, reset_a
     """Switch to the next fallback model/provider in the chain; False when exhausted. Swaps client,
     model slug and provider in place so the retry loop continues on the new backend; client
     construction goes through resolve_provider_client (no duplicated provider→key mappings)."""
-    from agent.fallback_cooldown import _arm_rate_limit_cooldown, switch_deferred_by_reset
+    from agent.fallback_cooldown import (
+        _arm_rate_limit_cooldown,
+        switch_deferred_by_reset,
+    )
     if switch_deferred_by_reset(agent, reason, reset_at):
         return False
     cooldown_seconds = _arm_rate_limit_cooldown(agent, reason, reset_at=reset_at)
@@ -2208,7 +2251,10 @@ def _iteration_summary_api_messages(agent, messages: list) -> list:
     for api_msg in api_messages:
         if isinstance(api_msg.get("content"), str):
             api_msg["content"] = api_msg["content"].strip()
-    from agent.conversation_loop import _canonicalize_api_tool_calls, _clone_message_for_send
+    from agent.conversation_loop import (
+        _canonicalize_api_tool_calls,
+        _clone_message_for_send,
+    )
     _canonicalize_api_tool_calls(api_messages)
     # Third closing pass of the main path: lone surrogates -> U+FFFD (else the SDK's utf-8
     # wire encode raises and burns the summary retries). The sanitizer is in-place and these
@@ -2623,7 +2669,9 @@ class _BedrockStream:
                 self.last_event = time.time()
 
             try:
-                from agent.plugin_stream_hooks import has_reasoning_stream_observer_hooks
+                from agent.plugin_stream_hooks import (
+                    has_reasoning_stream_observer_hooks,
+                )
                 plugin_reasoning_observer = has_reasoning_stream_observer_hooks()
             except Exception:
                 logger.debug("plugin reasoning stream observer check failed", exc_info=True)
@@ -3447,7 +3495,10 @@ class _StreamingCall(StreamingWaitMonitor):
         runaway = None
 
         from agent import relay_llm
-        from agent.anthropic_adapter import normalize_stream_usage, sanitize_anthropic_kwargs
+        from agent.anthropic_adapter import (
+            normalize_stream_usage,
+            sanitize_anthropic_kwargs,
+        )
         accumulator = relay_llm.AnthropicStreamAccumulator()
 
         def _open_anthropic_stream(next_api_kwargs: dict[str, Any]):
@@ -3841,7 +3892,10 @@ class _StreamingCall(StreamingWaitMonitor):
         if response is None or response is not self._attempt_stream_response:
             return
         try:
-            from agent.agent_runtime_helpers import _shutdown_socket, _socket_from_response
+            from agent.agent_runtime_helpers import (
+                _shutdown_socket,
+                _socket_from_response,
+            )
             sock = _socket_from_response(response)
             if sock is not None:
                 _shutdown_socket(sock)

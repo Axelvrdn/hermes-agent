@@ -36,17 +36,21 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 from urllib.parse import quote as _urlquote
 
 from agent.i18n import t
-from gateway.platforms._shared import (
-    get_scoped_secret as _get_scoped_secret, seed_extra_from_env as _seed_extra_from_env, send_error
-)
-from gateway.platforms.base import (
-    gateway_trust_env, BasePlatformAdapter, SendResult,
-    cache_audio_from_bytes_async, cache_document_from_bytes_async, cache_image_from_bytes_async,
-    cache_video_from_bytes_async,
-)
-from gateway.platforms.helpers import MessageDeduplicator, cancel_task
-from gateway.platforms.event import MessageEvent, MessageType
 from gateway.config import Platform
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms._shared import send_error
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    SendResult,
+    cache_audio_from_bytes_async,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+    cache_video_from_bytes_async,
+    gateway_trust_env,
+)
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import MessageDeduplicator, cancel_task
 
 logger = logging.getLogger(__name__)
 
@@ -960,8 +964,8 @@ _SETUP_PROMPTS = (  # (env var, prompt, masked)
 
 def interactive_setup() -> None:
     """``hermes setup line`` wizard (writes ``~/.hermes/.env``); CLI helpers are lazy-imported."""
-    from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli.cli_output import print_header, print_info, prompt
+    from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli.setup_platforms import declines_reconfigure
     print_header("LINE Messaging API")
     if declines_reconfigure("LINE", "Reconfigure LINE?", "LINE_CHANNEL_ACCESS_TOKEN"):

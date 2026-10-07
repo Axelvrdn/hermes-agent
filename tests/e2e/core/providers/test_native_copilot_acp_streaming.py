@@ -34,7 +34,12 @@ from typing import Any, Callable
 import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
-from tests.e2e.core.providers._native_helpers import TURN_TIMEOUT, KnownSymptom, NativeHome, make_home
+from tests.e2e.core.providers._native_helpers import (
+    TURN_TIMEOUT,
+    KnownSymptom,
+    NativeHome,
+    make_home,
+)
 from tests.fakes.providers import copilot_acp as acp
 
 pytest.importorskip("acp.schema", reason="the fake validates against the agent-client-protocol package (acp extra)")

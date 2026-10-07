@@ -4,15 +4,14 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 from tests.installation_launcher_fixture import publish_fixture_launcher
-
 
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts" / "desktop-update"
 FAKE_CLI = """

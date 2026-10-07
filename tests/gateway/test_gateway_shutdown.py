@@ -7,7 +7,10 @@ import pytest
 import gateway.run as gateway_run
 from gateway.config import HomeChannel, Platform
 from gateway.platforms.event import MessageEvent
-from gateway.restart import DEFAULT_GATEWAY_POST_INTERRUPT_GRACE_TIMEOUT, GATEWAY_SERVICE_RESTART_EXIT_CODE
+from gateway.restart import (
+    DEFAULT_GATEWAY_POST_INTERRUPT_GRACE_TIMEOUT,
+    GATEWAY_SERVICE_RESTART_EXIT_CODE,
+)
 from gateway.session import build_session_key
 from tests.gateway.restart_test_helpers import make_restart_runner, make_restart_source
 from tools import browser_tool_lifecycle as bt_lifecycle

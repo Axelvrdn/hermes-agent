@@ -4,17 +4,20 @@ Run: python evals/kanban_pr_acceptance_live.py ROOT
 import importlib.util
 import json
 import os
-from pathlib import Path
 import sys
 import tempfile
+from pathlib import Path
 
 root = Path(sys.argv[1]).resolve()
 sys.path.insert(0, str(root))
 os.environ.pop('HERMES_DELEGATED_CHILD_CONTEXT', None)
+import inspect
+
 import pytest
+
 from hermes_cli import kanban_db as kb
 from hermes_cli.kanban_db_connect import connect
-import inspect
+
 
 def create(conn, title):
     if 'completion_contract' in inspect.signature(kb.create_task).parameters:

@@ -16,10 +16,10 @@ Prints one JSON line; append several and compare with --compare a.json b.json.
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import http.server
 import json
+import logging
 import os
 import shutil
 import socket
@@ -165,10 +165,9 @@ def main() -> None:
 
     srv = _serve()
     port = srv.server_address[1]
+    from hermes_state import SessionDB
     from run_agent import AIAgent
     from tools import delegate_tool
-
-    from hermes_state import SessionDB
     db_path = os.path.join(home, "state.db")
     from pathlib import Path
     session_db = SessionDB(db_path=Path(db_path))

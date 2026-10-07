@@ -9,15 +9,19 @@ import logging
 import os
 import subprocess
 import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 from urllib.parse import quote
-import urllib.error
-import urllib.request
 
+from hermes_cli.source_releases import (
+    _GITHUB_ORIGIN,
+    OFFICIAL_REPOSITORY,
+    resolve_source_target,
+)
 from hermes_constants import get_hermes_home
-from hermes_cli.source_releases import OFFICIAL_REPOSITORY, _GITHUB_ORIGIN, resolve_source_target
 
 logger = logging.getLogger(__name__)
 UPDATE_AVAILABLE_NO_COUNT = -1
@@ -381,9 +385,9 @@ def check_for_updates(*, install_root: Path | None = None, home: Path | None = N
     target must never inherit the host process's embedded revision or stamp.
     """
     from hermes_cli.config import get_project_root, require_readable_config_before_write
+    from hermes_cli.release_channels import validate_name
     from hermes_cli.steward import read_install_stamp
     from hermes_cli.update_channel import install_id, resolve_update_channel
-    from hermes_cli.release_channels import validate_name
 
     embedded = (os.environ.get("HERMES_REVISION") or None) if install_root is None else None
     root = Path(install_root if install_root is not None else get_project_root()).resolve()

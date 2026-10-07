@@ -13,7 +13,6 @@ import sys
 import textwrap
 from pathlib import Path
 
-
 REPO = Path(__file__).resolve().parent.parent.parent
 SCRIPTS = REPO / "optional-skills" / "creative" / "comfyui" / "scripts"
 

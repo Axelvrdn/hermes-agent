@@ -33,7 +33,6 @@ from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.session import SessionSource
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
-
 # ---------------------------------------------------------------------------
 # Boundary-test fakes
 # ---------------------------------------------------------------------------

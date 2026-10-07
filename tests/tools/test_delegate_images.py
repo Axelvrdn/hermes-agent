@@ -5,7 +5,12 @@ vision-capable child as native ``image_url`` content parts on its goal turn; non
 import base64
 from unittest.mock import patch
 
-from tools.delegate_tool import DELEGATE_TASK_SCHEMA, _MAX_TASK_IMAGES, _build_child_goal_message, _normalize_task_images
+from tools.delegate_tool import (
+    _MAX_TASK_IMAGES,
+    DELEGATE_TASK_SCHEMA,
+    _build_child_goal_message,
+    _normalize_task_images,
+)
 from tools.delegate_tool_child_run import _ChildRun
 
 _PNG = base64.b64decode(

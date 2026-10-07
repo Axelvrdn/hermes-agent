@@ -1,8 +1,8 @@
 """Mechanical salvage for compression candidates that would grow."""
 
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_METADATA_KEY,
     _SUMMARY_END_MARKER,
+    COMPRESSED_SUMMARY_METADATA_KEY,
     salvage_grown_transcript,
 )
 from agent.model_metadata import estimate_messages_tokens_rough

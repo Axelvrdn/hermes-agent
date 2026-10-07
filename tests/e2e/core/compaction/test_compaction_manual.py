@@ -21,13 +21,13 @@ from tests.e2e.core.compaction._helpers import (
     GOOD_SUMMARY_TOKEN,
     MARKER_RE,
     Scenario,
+    _row_msg,
     active_rows,
     assert_db_matches_history,
     assert_db_recoverable,
     db_rows,
     generate_transcript,
     norm_list,
-    _row_msg,
 )
 
 # Manual tests keep the automatic trigger out of the way so only the command under test compacts.

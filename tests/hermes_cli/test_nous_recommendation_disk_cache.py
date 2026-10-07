@@ -2,12 +2,12 @@
 import gzip
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 import pytest
 
@@ -110,8 +110,8 @@ def test_disk_cache_is_scoped_to_home_and_portal(tmp_path, portal):
     assert len(requests) == 3
 
     # The same process can switch profiles under the multiplex gateway too.
-    from hermes_cli.models import fetch_nous_recommended_models, _nous_recommended_cache
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+    from hermes_cli.models import _nous_recommended_cache, fetch_nous_recommended_models
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     _nous_recommended_cache.clear()
     for home, expected in [(a, first), (b, {"paidRecommendedModels": [{"modelName": "model-2"}]}), (a, first)]:
         token = set_hermes_home_override(home)

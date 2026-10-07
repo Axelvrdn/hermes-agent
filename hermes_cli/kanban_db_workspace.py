@@ -7,6 +7,7 @@ late-bound via ``_kb`` (import-cycle breaking) so monkeypatching
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import shutil
@@ -15,9 +16,7 @@ import subprocess
 import time
 import unicodedata
 from pathlib import Path
-from typing import Optional
-from typing import TYPE_CHECKING
-import contextlib
+from typing import TYPE_CHECKING, Optional
 
 from hermes_cli.worktree_ops import release_lsp_clients
 
@@ -59,7 +58,10 @@ def _git(repo_root: Path, *args: str, timeout: int) -> subprocess.CompletedProce
     :func:`noninteractive_repo_git_env` (GHSA-7x36-8jrh-v4pw): the dispatcher runs ``worktree add``
     unattended, which executes the repo's hooks, ``core.fsmonitor`` and smudge filters.
     """
-    from hermes_cli._subprocess_compat import FILTER_DISCOVERY_FAILED, noninteractive_repo_git_env
+    from hermes_cli._subprocess_compat import (
+        FILTER_DISCOVERY_FAILED,
+        noninteractive_repo_git_env,
+    )
     env = noninteractive_repo_git_env(repo_root)
     if env is None:
         return subprocess.CompletedProcess(["git", "-C", str(repo_root), *args], 1, "", FILTER_DISCOVERY_FAILED)
@@ -434,7 +436,10 @@ def _cleanup_worktree_workspace(
     it. The auto-generated ``wt/<task-id>`` branch is deleted with it; custom
     branches are kept. Best-effort."""
     try:
-        from hermes_cli.worktree_ops import _worktree_has_unpushed_commits, _worktree_is_dirty
+        from hermes_cli.worktree_ops import (
+            _worktree_has_unpushed_commits,
+            _worktree_is_dirty,
+        )
     except Exception:
         return  # CLI safety predicates unavailable — preserve
     try:

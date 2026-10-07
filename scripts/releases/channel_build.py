@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 from hermes_cli.release_channels import (
     ChannelError,

@@ -19,9 +19,8 @@ import io
 
 import pytest
 
-from hermes_state import SessionDB
 from hermes_cli import model_switch_providers
-
+from hermes_state import SessionDB
 
 IDLE_S = 6 * 3600
 
@@ -120,7 +119,8 @@ class TestEntryAndWsWiring:
     def test_handle_ws_starts_heartbeat_refresher(self, monkeypatch):
         import asyncio
 
-        from tui_gateway import server, ws as ws_mod
+        from tui_gateway import server
+        from tui_gateway import ws as ws_mod
 
         started = {"n": 0}
         monkeypatch.setattr(

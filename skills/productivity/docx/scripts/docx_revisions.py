@@ -31,7 +31,6 @@ import json
 import sys
 
 from docx import Document
-
 from docx_common import iter_part_roots
 
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"

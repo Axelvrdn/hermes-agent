@@ -10,7 +10,7 @@ so it can run without optional dependencies like firecrawl.
 
 import asyncio
 import threading
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 

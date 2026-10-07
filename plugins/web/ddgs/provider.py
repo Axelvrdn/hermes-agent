@@ -16,7 +16,13 @@ import sys
 import time
 from typing import Any, Dict, Optional
 
-from plugins.web._common import BaseWebSearchProvider, search_fail, search_ok, setup_schema, title_hit
+from plugins.web._common import (
+    BaseWebSearchProvider,
+    search_fail,
+    search_ok,
+    setup_schema,
+    title_hit,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -143,8 +149,8 @@ def _run_ddgs_search_bounded(query: str, safe_limit: int) -> list[dict[str, Any]
     never joins a child that may be in native code holding *its* GIL — it polls a
     communicator thread and, on timeout/interrupt, kills the OS process.
     Raises ``TimeoutError``, ``_SearchInterrupted``, or ``RuntimeError``."""
-    from tools.interrupt import is_interrupted  # lazy: keep plugin import light
     from tools.environments.local import _sanitize_subprocess_env
+    from tools.interrupt import is_interrupted  # lazy: keep plugin import light
     global _last_worker_proc
     request: dict[str, Any] = {"query": query, "safe_limit": safe_limit}
     env = _sanitize_subprocess_env(dict(os.environ))

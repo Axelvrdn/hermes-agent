@@ -2,12 +2,7 @@
 
 from __future__ import annotations
 
-
-
 import pm.packages as pkgs
-
-
-
 
 
 def test_uv_cache_dir_seeds_from_payload(monkeypatch, tmp_path):
@@ -52,6 +47,7 @@ def test_uv_cache_dir_cold_machine_no_payload(monkeypatch, tmp_path):
 
 def test_bundle_uses_shipped_environment_until_an_extension_is_committed(monkeypatch, tmp_path):
     import json
+
     import pm.paths as paths
 
     home = tmp_path / "home"

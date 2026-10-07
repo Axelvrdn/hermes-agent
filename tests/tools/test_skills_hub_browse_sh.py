@@ -6,7 +6,6 @@ from unittest.mock import patch
 from tools.skills_hub_models import SkillMeta
 from tools.skills_hub_sources import BrowseShSource
 
-
 # Catalog shape mirrors the real ``GET https://browse.sh/api/skills`` response:
 # ``slug`` is ``<hostname>/<task-id>`` and ``name`` is the task name.
 SAMPLE_CATALOG = [

@@ -17,19 +17,19 @@ from typing import Any, Optional
 
 from gateway.kanban_watchers_common import (
     _acquire_singleton_lock,
+    _gc_retention_days,
     _kanban_dispatch_allowed,
     _release_singleton_lock,
     _resolve_auto_decompose_settings,
-    _gc_retention_days,
     _to_thread_process_service,
     logger,
 )
-from gateway.kanban_watchers_notifier import _KanbanNotification, _notifier_collect
 from gateway.kanban_watchers_dispatcher import (
     _KanbanDispatcher,
     _log_spawn_results,
     _resolve_dispatcher_settings,
 )
+from gateway.kanban_watchers_notifier import _KanbanNotification, _notifier_collect
 
 _IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 _VIDEO_EXTS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".3gp"}

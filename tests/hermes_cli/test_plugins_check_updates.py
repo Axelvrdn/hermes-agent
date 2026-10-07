@@ -474,6 +474,7 @@ def test_default_fetch_refuses_non_https_feeds_before_any_request(monkeypatch, u
     """Rows saved before the https rule (or hand-edited) still reach the real fetcher from the
     gateway tick; the sink refuses them instead of opening the URL."""
     import urllib.request
+
     from hermes_cli.plugins_updates import default_fetch
 
     def never(*a, **k):

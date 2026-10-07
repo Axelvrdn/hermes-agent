@@ -60,7 +60,9 @@ def _emit_compression_attempt_telemetry(
         logger.info(
             "context compression attempt telemetry: %s", json.dumps(payload, sort_keys=True, separators=(",", ":"))
         )
-        from hermes_cli.observability.shared_metrics_events import finish_compression_attempt
+        from hermes_cli.observability.shared_metrics_events import (
+            finish_compression_attempt,
+        )
 
         finish_compression_attempt(
             commit_status, payload.get("failure_class"), getattr(agent.context_compressor, "context_length", None), agent=agent,

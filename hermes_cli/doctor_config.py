@@ -5,8 +5,17 @@ from __future__ import annotations
 
 import logging
 import os
+
 from hermes_cli.doctor_report import (
-    Finding, _fail_and_issue, _section, check_bool, check_fail, check_info, check_ok, check_warn, doctor_check,
+    Finding,
+    _fail_and_issue,
+    _section,
+    check_bool,
+    check_fail,
+    check_info,
+    check_ok,
+    check_warn,
+    doctor_check,
     warn_on_error,
 )
 
@@ -57,8 +66,12 @@ def collect_deprecated_env_vars(env_map: dict | None) -> list[tuple[str, str]]:
 
 def collect_relay_plugin_cutover_findings(raw_config: dict | None, env_map: dict | None) -> list[tuple[str, str]]:
     """Return actionable findings for the removed Hermes Relay plugin."""
-    from hermes_cli.relay_plugin_cutover import (LEGACY_RELAY_EXPORT_ENV_VARS, RELAY_PLUGINS_CONFIG_ENV,
-                                                 configured_legacy_relay_env_vars, legacy_relay_plugin_keys)
+    from hermes_cli.relay_plugin_cutover import (
+        LEGACY_RELAY_EXPORT_ENV_VARS,
+        RELAY_PLUGINS_CONFIG_ENV,
+        configured_legacy_relay_env_vars,
+        legacy_relay_plugin_keys,
+    )
     findings: list[tuple[str, str]] = []
     plugins = raw_config.get("plugins") if isinstance(raw_config, dict) else None
     if isinstance(plugins, dict):
@@ -171,7 +184,7 @@ def _check_mcp_security(should_fix: bool, f: Finding) -> None:
 @doctor_check()
 def _check_env_file(should_fix: bool, f: Finding) -> None:
     """Managed scope plus ~/.hermes/.env presence and provider credentials."""
-    from hermes_cli.doctor import HERMES_HOME, PROJECT_ROOT, _DHH
+    from hermes_cli.doctor import _DHH, HERMES_HOME, PROJECT_ROOT
     managed_scope_check()
     env_path = HERMES_HOME / '.env'
     if env_path.exists():
@@ -208,11 +221,14 @@ def _known_provider_ids(cfg: dict) -> tuple[set, list, object, object, object]:
     resolve_auth = normalize = resolve_full = aliases = None
     custom_providers: list = []
     with warn_on_error(""):
-        from hermes_cli.auth import PROVIDER_REGISTRY, resolve_provider as resolve_auth
+        from hermes_cli.auth import PROVIDER_REGISTRY
+        from hermes_cli.auth import resolve_provider as resolve_auth
         known = set(PROVIDER_REGISTRY.keys()) | {"openrouter", "custom", "auto", "moa"}
     with warn_on_error(""):
         from hermes_cli.config import get_compatible_custom_providers
-        from hermes_cli.providers import custom_provider_aliases as aliases, normalize_provider as normalize, resolve_provider_full as resolve_full
+        from hermes_cli.providers import custom_provider_aliases as aliases
+        from hermes_cli.providers import normalize_provider as normalize
+        from hermes_cli.providers import resolve_provider_full as resolve_full
         with warn_on_error(""):
             custom_providers = get_compatible_custom_providers(cfg)
     user_providers = cfg.get("providers")
@@ -337,7 +353,7 @@ def _validate_auxiliary_config(config_path, issues: list) -> None:
 @doctor_check()
 def _check_config_file(should_fix: bool, f: Finding) -> None:
     """config.yaml presence (project cli-config.yaml as fallback); model/provider validation."""
-    from hermes_cli.doctor import HERMES_HOME, PROJECT_ROOT, _DHH
+    from hermes_cli.doctor import _DHH, HERMES_HOME, PROJECT_ROOT
     config_path = HERMES_HOME / 'config.yaml'
     if config_path.exists():
         check_ok(f"{_DHH}/config.yaml exists")
@@ -405,7 +421,6 @@ def _drift_max_iterations_ghost(f: Finding, should_fix: bool, config_path) -> No
     agent.max_turns, but if it bails on an earlier config-parse error the .env value silently wins. Read the
     .env FILE (load_env), not get_env_value/os.environ, which the bridge may have overridden already.
     """
-    from hermes_cli.doctor import _DHH
     # Detect stale HERMES_MAX_ITERATIONS ghost in .env shadowing agent.max_turns in config.yaml (issue
     # #17534). The setup wizard used to dual-write the iteration budget to both stores; users who later edit
     # only config.yaml are left with a .env ghost. The gateway bridge normally derives HERMES_MAX_ITERATIONS
@@ -413,6 +428,7 @@ def _drift_max_iterations_ghost(f: Finding, should_fix: bool, config_path) -> No
     # .env value silently wins and the agent runs at the wrong budget — e.g. config says 400 but the
     # activity line reads N/90.
     from hermes_cli.config import load_env, read_user_config_raw, remove_env_value
+    from hermes_cli.doctor import _DHH
     raw_config = read_user_config_raw(config_path)
     agent_cfg = raw_config.get("agent")
     cfg_max_turns = agent_cfg.get("max_turns") if isinstance(agent_cfg, dict) else None
@@ -546,7 +562,11 @@ def _check_config_drift(should_fix: bool, f: Finding) -> None:
 @doctor_check("xAI retirement check skipped", "({e})")
 def _check_xai_retirement(should_fix: bool, f: Finding) -> None:
     from hermes_cli.config import load_config
-    from hermes_cli.xai_retirement import MIGRATION_GUIDE_URL, find_retired_xai_refs, format_issue
+    from hermes_cli.xai_retirement import (
+        MIGRATION_GUIDE_URL,
+        find_retired_xai_refs,
+        format_issue,
+    )
     retired_refs = find_retired_xai_refs(load_config())
     if not retired_refs:
         check_ok("No retired xAI models in config")
@@ -560,7 +580,11 @@ def _check_xai_retirement(should_fix: bool, f: Finding) -> None:
 @doctor_check("Session reset check skipped", "({e})")
 def _check_retired_session_reset(should_fix: bool, f: Finding) -> None:
     from hermes_cli.config_effective import load_user_config_effective
-    from hermes_cli.session_reset_retirement import format_notice, reset_plugin_enabled, retired_reset_policy
+    from hermes_cli.session_reset_retirement import (
+        format_notice,
+        reset_plugin_enabled,
+        retired_reset_policy,
+    )
     found = retired_reset_policy(load_user_config_effective())
     if found is None:
         check_ok("No idle/daily session_reset policy configured")

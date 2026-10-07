@@ -19,7 +19,6 @@ from gateway.config import GatewayConfig, Platform
 from gateway.run import GatewayRunner, _parse_session_key
 from gateway.run_notifications import INTERNAL_NOTIFICATION_FOOTER
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -765,6 +764,7 @@ def test_gateway_drain_retains_and_formats_overflow_events():
     their summary — previously they were discarded at the drain (only
     watch_match/watch_disabled were retained) and had no formatter branch."""
     import asyncio
+
     from gateway.run import (
         _drain_gateway_watch_events,
         _format_gateway_process_notification,

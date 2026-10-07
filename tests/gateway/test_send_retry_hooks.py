@@ -6,8 +6,8 @@ It now overrides two hooks. Slack and Discord parsed ``Retry-After`` by hand and
 the numeric form; both now go through ``agent.retry_utils.parse_retry_after_seconds``.
 """
 
-from email.utils import format_datetime
 from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime
 from types import SimpleNamespace
 from typing import Any, Dict
 

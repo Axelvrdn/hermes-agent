@@ -3,7 +3,7 @@
 import json
 import os
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -248,7 +248,9 @@ class TestBrowserVisionConfig:
         from agent.auxiliary_client import clear_runtime_main, set_runtime_main
         from tools.browser_tool import browser_vision
         from tools.vision_tools import _EMBED_MAX_DIMENSION
-        from tools.vision_tools_history_budget import _DEFAULT_EMBED_TARGET_BYTES as _EMBED_TARGET_BYTES
+        from tools.vision_tools_history_budget import (
+            _DEFAULT_EMBED_TARGET_BYTES as _EMBED_TARGET_BYTES,
+        )
 
         shots_dir = tmp_path / "browser_screenshots"
         shots_dir.mkdir()

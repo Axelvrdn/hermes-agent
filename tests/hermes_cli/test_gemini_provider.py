@@ -1,13 +1,13 @@
 """Tests for Google AI Studio (Gemini) provider integration."""
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
-from hermes_cli.auth import resolve_provider, resolve_api_key_provider_credentials
-from hermes_cli.models import normalize_provider
-from hermes_cli.model_normalize import normalize_model_for_provider, detect_vendor
 from agent.models_dev import list_agentic_models
-
+from hermes_cli.auth import resolve_api_key_provider_credentials, resolve_provider
+from hermes_cli.model_normalize import detect_vendor, normalize_model_for_provider
+from hermes_cli.models import normalize_provider
 
 # ── Provider Registry ──
 

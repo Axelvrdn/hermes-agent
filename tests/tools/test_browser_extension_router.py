@@ -1,7 +1,7 @@
 import pytest
 
-from tools.browser_extension_router import route_browser_tool, routed_browser_handler
 from tools import browser_tool_install as bt_install
+from tools.browser_extension_router import route_browser_tool, routed_browser_handler
 
 
 class FakeBroker:

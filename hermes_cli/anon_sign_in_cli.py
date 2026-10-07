@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 from typing import Iterator, Optional
 
-from hermes_cli.anon_sign_in import Code, SignInState, UPGRADE_CANCELLED, UPGRADE_START
+from hermes_cli.anon_sign_in import UPGRADE_CANCELLED, UPGRADE_START, Code, SignInState
 
 
 def render_sign_in_cli_code(

@@ -44,7 +44,12 @@ from typing import Any, Callable, Dict, Optional, TypeVar
 from urllib.parse import urlparse
 
 from hermes_cli.anon_auth import (
-    ANON_CHALLENGE_REQUIRED, ANON_FAILURE_COPY, ANON_SIGNIN_REQUIRED, _anon_headers, _mint_memo_key)
+    ANON_CHALLENGE_REQUIRED,
+    ANON_FAILURE_COPY,
+    ANON_SIGNIN_REQUIRED,
+    _anon_headers,
+    _mint_memo_key,
+)
 from hermes_cli.auth_constants import AuthError, httpx
 
 logger = logging.getLogger("hermes_cli.auth")
@@ -335,7 +340,10 @@ def _announce(challenge: BrowserChallenge) -> bool:
 
 
 def _present_in_terminal(challenge: BrowserChallenge) -> None:
-    from hermes_cli.auth_device_flow import _can_open_graphical_browser, _is_remote_session
+    from hermes_cli.auth_device_flow import (
+        _can_open_graphical_browser,
+        _is_remote_session,
+    )
     opened = False
     # One tab per ticket, however many attempts resume it: a user who has not got to it yet is
     # not helped by a second copy. A gateway has no console of its own: it logs the link only.

@@ -14,8 +14,9 @@ import os
 import threading
 import time
 from typing import Any, Coroutine, Optional
-from tools.mcp_tool_common import _core
+
 from tools import mcp_tool_lifecycle as _lifecycle
+from tools.mcp_tool_common import _core
 
 logger = logging.getLogger("tools.mcp_tool")
 
@@ -104,7 +105,11 @@ def _wrap_with_home_override(coro: "Coroutine") -> "Coroutine":
     """Carry the caller's context-local HERMES_HOME override into ``coro`` (task-local on the MCP
     loop, so concurrent scopes don't interfere)."""
     try:
-        from hermes_constants import get_hermes_home_override, reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            get_hermes_home_override,
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         home_override = get_hermes_home_override()
     except Exception:
         home_override = None
@@ -124,7 +129,10 @@ def _wrap_with_home_override(coro: "Coroutine") -> "Coroutine":
 def _wrap_with_dashboard_oauth_flow(coro):
     """Propagate a dashboard OAuth flow onto the dedicated MCP loop task."""
     try:
-        from tools.mcp_dashboard_oauth import dashboard_oauth_flow, get_dashboard_oauth_flow
+        from tools.mcp_dashboard_oauth import (
+            dashboard_oauth_flow,
+            get_dashboard_oauth_flow,
+        )
         flow = get_dashboard_oauth_flow()
     except Exception:
         flow = None
@@ -148,8 +156,8 @@ def _running_loop() -> Optional[asyncio.AbstractEventLoop]:
 def _run_on_mcp_loop(coro_or_factory, timeout: float = 30):
     """Schedule a coroutine (or zero-arg factory — avoids leaking a never-awaited coroutine when the
     loop is down) on the MCP loop and block until done, polling so user interrupts are honored."""
-    from tools.interrupt import is_interrupted
     from agent.async_utils import safe_schedule_threadsafe
+    from tools.interrupt import is_interrupted
 
     loop = _running_loop()
     if loop is None:

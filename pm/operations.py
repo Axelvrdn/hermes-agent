@@ -5,15 +5,15 @@ Only the private environment engine knows how to obtain or invoke uv.
 """
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import sys
 import uuid
+from collections.abc import Callable, Mapping, Sequence
+from pathlib import Path
 
 from pm.package import InstallError
 
@@ -254,11 +254,11 @@ def _ensure_generation(
     Build at the final path: Windows launchers and scripts embed that path.
     The prior generation survives both successful replacement and failed builds.
     """
-    from pm.filesystem import lock_fd, native
+    from pm import paths
     from pm._uv import _toolchain
+    from pm.filesystem import lock_fd, native
     from pm.install import _refuse_lazy, lazy_installs_allowed
     from pm.lock import Lockfile, _write
-    from pm import paths
     from pm.store import current_target
 
     lock = Lockfile(paths.lockfile_path())

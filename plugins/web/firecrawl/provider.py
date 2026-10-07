@@ -12,10 +12,18 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-from plugins.web._common import BaseWebSearchProvider, keyless_extract, keyless_search, search_fail, search_ok, setup_schema
+from plugins.web._common import (
+    BaseWebSearchProvider,
+    keyless_extract,
+    keyless_search,
+    search_fail,
+    search_ok,
+    setup_schema,
+)
 from tools import managed_tool_gateway as _gateway
 from tools import tool_backend_helpers as _backend_helpers
 from tools.url_safety import is_safe_url
+
 # Module-level (cheap import) so tests can monkeypatch the policy gate on this module.
 from tools.website_policy import check_website_access
 
@@ -96,8 +104,11 @@ def _use_keyless_ring(capability: Optional[str] = None) -> bool:
     gateway isn't the selected path for *capability*, and the keyless tier isn't disabled or pinned paid."""
     if _env("FIRECRAWL_API_KEY") or _env("FIRECRAWL_API_URL"):
         return False
-    from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, read_web_capability_selection
     from plugins.web.keyless_mcp import use_keyless
+    from tools.tool_backend_helpers import (
+        NOUS_MANAGED_PROVIDER,
+        read_web_capability_selection,
+    )
     # Both probes are optional layers: a failing probe never blocks the ring.
     for probe in (lambda: read_web_capability_selection(capability) == NOUS_MANAGED_PROVIDER,
                   lambda: _is_tool_gateway_ready() and not _is_explicit_firecrawl_selection()):
@@ -146,7 +157,10 @@ def _is_tool_gateway_ready() -> bool:
 def check_firecrawl_api_key() -> bool:
     """True when the route selected via ``hermes tools`` (or, on a never-configured
     install, either route) is usable."""
-    from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, read_web_capability_selection
+    from tools.tool_backend_helpers import (
+        NOUS_MANAGED_PROVIDER,
+        read_web_capability_selection,
+    )
 
     def _usable(selected) -> bool:
         if selected == NOUS_MANAGED_PROVIDER:
@@ -160,7 +174,10 @@ def check_firecrawl_api_key() -> bool:
 def is_managed_route(capability: Optional[str] = None) -> bool:
     """True when Firecrawl calls for *capability* go through the Nous Tool Gateway rather than the user's
     own key / instance — the same decision :func:`_get_firecrawl_client` makes, without building a client."""
-    from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, read_web_capability_selection
+    from tools.tool_backend_helpers import (
+        NOUS_MANAGED_PROVIDER,
+        read_web_capability_selection,
+    )
     selected = read_web_capability_selection(capability)
     if selected is not None or _is_explicit_firecrawl_selection():
         return selected == NOUS_MANAGED_PROVIDER
@@ -178,7 +195,11 @@ def _get_firecrawl_client(capability: Optional[str] = None) -> Any:
     Nous); never-configured → direct when present, else managed. Raises ValueError when the resolved path is
     unusable."""
     wt = _wt()
-    from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, read_web_capability_selection, selection_error
+    from tools.tool_backend_helpers import (
+        NOUS_MANAGED_PROVIDER,
+        read_web_capability_selection,
+        selection_error,
+    )
     selected = read_web_capability_selection(capability)
     direct_config = _get_direct_firecrawl_config()
 

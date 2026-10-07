@@ -4,9 +4,9 @@ This covers importability and client routing, not the paid evolution loop or a
 live vector service. Document policy belongs to test_skill_document_contracts.
 """
 import pickle
-from pathlib import Path
 import runpy
 import sys
+from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock
 

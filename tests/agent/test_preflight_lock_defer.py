@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tests.agent.test_turn_context import _FakeAgent, _build
+from tests.agent.test_turn_context import _build, _FakeAgent
 
 
 @pytest.fixture(autouse=True)

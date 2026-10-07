@@ -25,8 +25,8 @@ def isolated_home(tmp_path, monkeypatch):
     from agent import skill_utils as su
     su._external_dirs_cache_clear()
 
-    import tools.skills_tool as skills_tool
     import tools.skill_manager_tool as smt
+    import tools.skills_tool as skills_tool
     monkeypatch.setattr(skills_tool, "SKILLS_DIR", home / "skills")
     monkeypatch.setattr(smt, "SKILLS_DIR", home / "skills")
     yield home
@@ -97,8 +97,8 @@ class TestDisplaySkillCreateDir:
 
 
 def test_tool_schema_stays_stable_when_skill_creation_home_changes(isolated_home, tmp_path):
-    from tools.skill_manager_tool import SKILL_MANAGE_SCHEMA
     from tools.registry import registry
+    from tools.skill_manager_tool import SKILL_MANAGE_SCHEMA
 
     _write_config(isolated_home, f"skills:\n  create_dir: {tmp_path / 'first-brain'}\n")
     first = registry.get_definitions({"skill_manage"})[0]
@@ -178,7 +178,7 @@ class TestCreateRouting:
         assert (isolated_home / "skills" / "local-skill" / "SKILL.md").exists()
 
     def test_created_skill_is_findable_and_patchable(self, isolated_home, tmp_path):
-        from tools.skill_manager_tool import skill_manage, _find_skill
+        from tools.skill_manager_tool import _find_skill, skill_manage
         brain = tmp_path / "brain-skills"
         _write_config(isolated_home, f"skills:\n  create_dir: {brain}\n")
         json.loads(skill_manage("", "", operations=[{

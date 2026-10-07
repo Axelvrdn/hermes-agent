@@ -655,10 +655,10 @@ def test_provider_overlay_switches_profiles_and_reveals_fresh_global_fallback(
     monkeypatch,
 ):
     """Provider consumers see A→B→A, and unload never pins a stale base."""
-    from agent.image_gen_provider import ImageGenProvider
     import agent.image_gen_registry as image_registry
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+    from agent.image_gen_provider import ImageGenProvider
     from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     class Provider(ImageGenProvider):
         def __init__(self, marker):
@@ -864,8 +864,8 @@ def test_provider_cleanup_uses_the_captured_normalized_name():
 
 def test_registration_transaction_excludes_concurrent_disposal(monkeypatch):
     """A lease cannot be retired between another generation's write/acquire."""
-    from agent.image_gen_provider import ImageGenProvider
     import agent.image_gen_registry as image_registry
+    from agent.image_gen_provider import ImageGenProvider
     from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
 
     class Provider(ImageGenProvider):
@@ -1171,8 +1171,8 @@ def test_same_name_tool_and_platform_are_isolated_by_hermes_home(
     """Real A→B→A profile switching keeps dispatch and adapters isolated."""
     import hermes_cli.plugins as plugins_mod
     from gateway.platform_registry import platform_registry
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from hermes_cli.plugins import PluginManager
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.registry import registry
 
     home_a = tmp_path / "profile-a"
@@ -1233,8 +1233,8 @@ def test_manager_discovery_uses_its_home_not_the_ambient_profile(
     """A retained manager cannot scan another concurrently active profile."""
     import hermes_cli.plugins as plugins_mod
     from gateway.platform_registry import platform_registry
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from hermes_cli.plugins import PluginManager
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.registry import registry
 
     home_a = tmp_path / "retained-a"

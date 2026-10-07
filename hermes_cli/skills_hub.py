@@ -600,7 +600,11 @@ def _announce_blueprint(c: Console, skill_name: str) -> None:
     """Offer an installed skill's ``metadata.hermes.blueprint`` via /suggestions — never
     auto-scheduled (installing must not silently create a recurring job). Never raises."""
     try:
-        from tools.blueprints import BlueprintError, blueprint_spec_for_installed, register_blueprint_suggestion
+        from tools.blueprints import (
+            BlueprintError,
+            blueprint_spec_for_installed,
+            register_blueprint_suggestion,
+        )
         try:
             spec = blueprint_spec_for_installed(skill_name)
         except BlueprintError as _rec_err:
@@ -680,9 +684,9 @@ def _print_fetch_failure(c: Console, sources, identifier: str, meta=None, source
 
 def _scan_quarantined(c: Console, q_path: Path, bundle, meta, identifier: str):
     """Run the cached security scan on the quarantined bundle and print the report."""
+    from tools.skills_guard import format_scan_report, scan_skill_cached
     from tools.skills_hub import HUB_DIR
     from tools.skills_hub_models import source_url_for_bundle
-    from tools.skills_guard import scan_skill_cached, format_scan_report
     c.print("[bold]Running security scan...[/]")
     scan_source = ("official" if bundle.source == "official"
                    else bundle.identifier or getattr(meta, "identifier", "") or identifier)
@@ -729,6 +733,7 @@ def _install_bundled(c: Console, name: str, invalidate_cache: bool) -> tuple:
     bundled source. The hub copy of a built-in is either a stranger's same-named skill or this
     repo's files rescanned as community content and refused, so neither is fetched."""
     from types import SimpleNamespace
+
     from tools.skills_sync_bundled_ops import ensure_bundled_skill
     result = ensure_bundled_skill(name)
     if not result["ok"]:
@@ -753,7 +758,12 @@ def _registry_prefixes() -> tuple:
     from tools.skills_hub_clawhub import ClawHubSource
     from tools.skills_hub_official import OptionalSkillSource
     from tools.skills_hub_skillssh import SkillsShSource
-    from tools.skills_hub_sources import BrowseShSource, LobeHubSource, UrlSource, WellKnownSkillSource
+    from tools.skills_hub_sources import (
+        BrowseShSource,
+        LobeHubSource,
+        UrlSource,
+        WellKnownSkillSource,
+    )
 
     return (
         *((f"{cls.SOURCE_ID}/", cls.SOURCE_ID) for cls in (OptionalSkillSource, ClawHubSource, LobeHubSource, BrowseShSource)),
@@ -829,9 +839,9 @@ def _install_skill(identifier: str, category: str, force: bool, c: Console, skip
     ``failure_class``."""
     attempt = attempt if attempt is not None else {}
     attempt["registry"] = "none"
+    from tools.skills_guard import should_allow_install
     from tools.skills_hub import HubLockFile, ensure_hub_dirs, skills_hub_http_session
     from tools.skills_hub_install import install_from_quarantine, quarantine_bundle
-    from tools.skills_guard import should_allow_install
     ensure_hub_dirs()
     from tools.skills_sync_bundled_ops import bundled_skill_for_install
     if not source_id and not name_override and (builtin := bundled_skill_for_install(identifier)):
@@ -930,8 +940,11 @@ def _print_tier1_advisory(skill_dir, console) -> None:
     """Advisory SkillEvaluator Tier 1 report. Never raises/blocks: scanner missing, disabled via
     ``skills.tier1_advisory: false``, or erroring all degrade to silence. Secrets render red."""
     try:
-        from tools.skillevaluator_scan import (format_tier1_report, run_tier1_scan,
-                                               tier1_advisory_enabled)
+        from tools.skillevaluator_scan import (
+            format_tier1_report,
+            run_tier1_scan,
+            tier1_advisory_enabled,
+        )
         if not tier1_advisory_enabled():
             return
         report = run_tier1_scan(Path(skill_dir))
@@ -956,11 +969,16 @@ def do_list(source_filter: str = "all", enabled_only: bool = False,
             console: Optional[Console] = None) -> None:
     """List installed skills (hub / builtin / local). Enabled state comes from the active
     profile's config — ``-p`` swaps HERMES_HOME at process start, so no profile flag here."""
+    from agent.skill_commands import skill_command_collision_note
+    from agent.skill_utils import (
+        TIER_CREATE_DIR,
+        TIER_EXTERNAL,
+        TIER_PROJECT,
+        get_disabled_skill_names,
+    )
     from tools.skills_hub import HubLockFile, ensure_hub_dirs
     from tools.skills_sync import _read_manifest
     from tools.skills_tool import _skill_catalog
-    from agent.skill_utils import TIER_CREATE_DIR, TIER_EXTERNAL, TIER_PROJECT, get_disabled_skill_names
-    from agent.skill_commands import skill_command_collision_note
     c = console or _console
     ensure_hub_dirs()
     hub_installed = {e["name"]: e for e in HubLockFile().list_installed()}
@@ -1027,8 +1045,8 @@ def do_check(name: Optional[str] = None, console: Optional[Console] = None) -> N
 
 def _has_local_edits(installed: dict) -> bool:
     """True when the on-disk content no longer matches the install-time hash."""
-    from tools.skills_hub import SKILLS_DIR
     from tools.skills_guard import content_hash
+    from tools.skills_hub import SKILLS_DIR
     recorded_hash = installed.get("content_hash", "")
     skill_path = SKILLS_DIR / installed.get("install_path", "")
     try:
@@ -1097,8 +1115,8 @@ def do_update(name: Optional[str] = None, console: Optional[Console] = None,
 def do_audit(name: Optional[str] = None, console: Optional[Console] = None,
              deep: bool = False) -> None:
     """Re-scan installed hub skills; ``deep`` adds an AST diagnostic (review aid, not a gate)."""
-    from tools.skills_hub import HubLockFile, SKILLS_DIR
-    from tools.skills_guard import scan_skill, format_scan_report
+    from tools.skills_guard import format_scan_report, scan_skill
+    from tools.skills_hub import SKILLS_DIR, HubLockFile
     c = console or _console
     installed = HubLockFile().list_installed()
     if not installed:
@@ -1220,7 +1238,10 @@ def do_opt_out(remove: bool = False, console: Optional[Console] = None, skip_con
                invalidate_cache: bool = True) -> None:
     """Write the .no-bundled-skills marker; with ``remove`` also delete pristine (tracked AND
     unmodified) bundled skills. User-edited and non-bundled skills are never touched."""
-    from tools.skills_sync_bundled_ops import set_bundled_skills_opt_out, remove_pristine_bundled_skills
+    from tools.skills_sync_bundled_ops import (
+        remove_pristine_bundled_skills,
+        set_bundled_skills_opt_out,
+    )
     c = console or _console
     res = set_bundled_skills_opt_out(True)  # the marker first: always-safe
     if not _report_ok(c, res):
@@ -1338,9 +1359,9 @@ def _read_frontmatter(skill_md: str) -> dict:
 def do_publish(skill_path: str, target: str = "github", repo: str = "",
                console: Optional[Console] = None) -> None:
     """Publish a local skill to a registry (GitHub PR or ClawHub submission)."""
+    from tools.skills_guard import format_scan_report, scan_skill
     from tools.skills_hub import SKILLS_DIR
     from tools.skills_hub_github import GitHubAuth
-    from tools.skills_guard import scan_skill, format_scan_report
     c = console or _console
     path = Path(skill_path)
     if not path.is_absolute():
@@ -1385,6 +1406,7 @@ def do_publish(skill_path: str, target: str = "github", repo: str = "",
 def _github_publish(skill_path: Path, skill_name: str, target_repo: str, auth) -> tuple:
     """Fork, branch, upload, and open a PR with the skill. Returns (success, message)."""
     import base64
+
     import httpx
     headers = auth.get_headers()
     api = "https://api.github.com/repos"

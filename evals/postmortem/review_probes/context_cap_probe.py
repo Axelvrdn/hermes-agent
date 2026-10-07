@@ -4,9 +4,15 @@ Independent-review probe (written by the /review subagent for tracking issue #10
 It reproduced a defect in the first version of the PR; the fixed head must pass it. Paths are taken
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
-import os, sys, tempfile, json, socket, copy
+import copy
+import json
+import os
+import socket
+import sys
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
+
 root, tag = sys.argv[1:3]
 sys.path.insert(0, root)
 os.chdir(root)
@@ -17,6 +23,7 @@ home = tempfile.mkdtemp(prefix='cap-review-')
 os.environ['HERMES_HOME'] = home
 os.environ['HERMES_DISABLE_REDACTION'] = 'true'
 import hermes_yaml as yaml
+
 cfg = {'model': {'default': 'anthropic/claude-fable-5.1', 'provider':'openai-compat', 'base_url':'http://127.0.0.1:1/v1', 'context_length':1000000}, 'compression':{'threshold':0.85}, 'delegation': {}}
 if len(sys.argv)>3:
     cfg['delegation']['compression_threshold_tokens'] = json.loads(sys.argv[3])
@@ -25,12 +32,14 @@ def blocked(*a, **kw):
     raise RuntimeError('Network disabled in unpaid cap probe')
 socket.socket.connect = blocked
 socket.create_connection = blocked
-from run_agent import AIAgent
-import tools.delegate_tool as dt
+from unittest.mock import patch
+
 import agent.context_compressor as mod
+import tools.delegate_tool as dt
 from agent.model_metadata import estimate_messages_tokens_rough
 from hermes_state import SessionDB
-from unittest.mock import patch
+from run_agent import AIAgent
+
 print('IDENTITY',json.dumps({'tag':tag,'tree':root,'delegate':dt.__file__,'compressor':mod.__file__,'cap_present':hasattr(dt,'_apply_child_compression_cap'),'home':home}),flush=True)
 db=SessionDB(Path(home,'state.db'))
 parent=AIAgent(api_key='test-key',base_url='http://127.0.0.1:1/v1',provider='openai-compat',model='anthropic/claude-fable-5.1',enabled_toolsets=[],quiet_mode=True,skip_context_files=True,skip_memory=True,save_trajectories=False,session_db=db)
@@ -77,7 +86,8 @@ if hasattr(dt,'_apply_child_compression_cap'):
         except Exception as exc:
             print('CONFIG_EXCEPTION',repr(raw),type(exc).__name__,str(exc),flush=True)
 # Accounting policy: the cap changes the threshold, not what route-aware pressure counts.
-from agent.turn_context import _preflight_request_tokens, _agent_stale_thinking_on_wire
+from agent.turn_context import _agent_stale_thinking_on_wire, _preflight_request_tokens
+
 history=[{'role':'user','content':'review'}]
 for i in range(24):
     history += [{'role':'assistant','content':'observed','reasoning_content':'reasoning detail '*4000},{'role':'user','content':'continue'}]

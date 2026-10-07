@@ -8,7 +8,7 @@ import pytest
 
 from gateway.config import GatewayConfig, Platform
 from gateway.run import GatewayRunner, _profile_runtime_scope
-from gateway.session import SessionStore, SessionSource
+from gateway.session import SessionSource, SessionStore
 from hermes_cli import goals
 from hermes_cli.heartbeat import HeartbeatManager, HeartbeatState
 from hermes_state import SessionDB

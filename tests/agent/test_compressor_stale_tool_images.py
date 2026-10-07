@@ -9,8 +9,8 @@ compaction. Pass 2 of ``_prune_old_tool_results`` only strips images
 from __future__ import annotations
 
 from agent.context_compressor import (
-    ContextCompressor,
     _MAX_KEEP_TOOL_IMAGES,
+    ContextCompressor,
     _content_has_images,
     _tool_content_has_images,
 )

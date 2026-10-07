@@ -12,14 +12,13 @@ import queue
 import sys
 import threading
 import time
-
 from pathlib import Path
-from rich import box as rich_box
-from rich.panel import Panel
 from typing import Optional
 
-from agent.i18n import t
+from rich import box as rich_box
+from rich.panel import Panel
 
+from agent.i18n import t
 from hermes_cli.cli_agent_setup_mixin import _retire_agent
 
 
@@ -58,7 +57,15 @@ class CLIChatTurnMixin:
         objects for attached images voice_input: True when the message came from voice transcription (gates
         the concise voice-response prefix, #65827)
         """
-        from cli import ChatConsole, _ChatTurn, _DIM, _RST, _accent_hex, _cprint, set_secret_capture_callback
+        from cli import (
+            _DIM,
+            _RST,
+            ChatConsole,
+            _accent_hex,
+            _ChatTurn,
+            _cprint,
+            set_secret_capture_callback,
+        )
         from tools.process_registry_notifications import TimelineNotification
         # Single-query and direct chat callers do not go through run().
         set_secret_capture_callback(self._secret_capture_callback)
@@ -97,7 +104,10 @@ class CLIChatTurnMixin:
         ChatConsole().print(f"[{_accent_hex()}]{'─' * 40}[/]")
         _cprint("")
 
-        from agent.notification_presentation import notification_config_snapshot, notification_policy_snapshot
+        from agent.notification_presentation import (
+            notification_config_snapshot,
+            notification_policy_snapshot,
+        )
         with notification_policy_snapshot(agent, "cli", notification_config_snapshot()):
             turn = _ChatTurn()
             from gateway.warning_notifications import diagnostic_turn_muted
@@ -189,7 +199,10 @@ class CLIChatTurnMixin:
             return message
         text = message if isinstance(message, str) else ""
         try:
-            from agent.image_routing import build_native_content_parts, decide_image_input_mode
+            from agent.image_routing import (
+                build_native_content_parts,
+                decide_image_input_mode,
+            )
             from hermes_cli.config import load_config
 
             _img_model = (_split_model_config_default(self.model)[0]
@@ -240,6 +253,7 @@ class CLIChatTurnMixin:
         # Clear the prior turn's override before exposing the new staged input: a shutdown
         # before the worker prologue would otherwise persist old API-local text as this message.
         import contextlib
+
         from agent.message_metadata import stamp_message_timestamp
 
         persist_lock = getattr(agent, "_session_persist_lock", None)
@@ -322,11 +336,17 @@ class CLIChatTurnMixin:
 
     def _chat_run_agent(self, turn, message):
         """Agent-thread body: bind per-thread callbacks/approval key, prepend one-shot notes, run the turn."""
+        from agent.vault_backends.unlock import (
+            set_code_prompt_callback,
+            set_save_login_prompt_callback,
+            set_unlock_prompt_callback,
+        )
         from cli import (
-            _prepend_note_to_message, set_approval_callback, set_secret_capture_callback,
+            _prepend_note_to_message,
+            set_approval_callback,
+            set_secret_capture_callback,
             set_sudo_password_callback,
         )
-        from agent.vault_backends.unlock import set_code_prompt_callback, set_save_login_prompt_callback, set_unlock_prompt_callback
         # terminal_tool callbacks are thread-local: run()'s registration is invisible here.
         set_sudo_password_callback(self._sudo_password_callback)
         set_approval_callback(self._approval_callback)
@@ -337,7 +357,10 @@ class CLIChatTurnMixin:
         # Bind the approval session key so ``is_current_session_yolo_enabled()`` resolves
         # against the same key ``/yolo`` toggles under (``enable_session_yolo(self.session_id)``).
         try:
-            from tools.approval_context import reset_current_session_key, set_current_session_key
+            from tools.approval_context import (
+                reset_current_session_key,
+                set_current_session_key,
+            )
             _approval_session_token = set_current_session_key(self.session_id or "default")
         except Exception:
             reset_current_session_key = None  # type: ignore[assignment]
@@ -682,7 +705,12 @@ class CLIChatTurnMixin:
     def _chat_print_response_panel(self, turn, response):
         """Response box (close TTS-drawn box / post-stream transform / Rich Panel), then billing CTA."""
         from cli import (
-            ChatConsole, _ACCENT, _RST, _cprint, _maybe_remap_for_light_mode, _post_stream_transform_output,
+            _ACCENT,
+            _RST,
+            ChatConsole,
+            _cprint,
+            _maybe_remap_for_light_mode,
+            _post_stream_transform_output,
             _render_final_assistant_content,
         )
         if response and not (turn.result and turn.result.get("response_previewed", False)):

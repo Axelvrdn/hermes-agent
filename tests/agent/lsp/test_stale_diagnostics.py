@@ -27,7 +27,6 @@ import pytest
 
 from agent.lsp.client import LSPClient
 
-
 MOCK_SERVER = str(Path(__file__).parent / "_mock_lsp_server.py")
 
 

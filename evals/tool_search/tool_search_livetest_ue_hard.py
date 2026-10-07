@@ -22,8 +22,14 @@ Env: TS_UE_MODEL, TS_BENCH_REPS, TS_UE_MODES (eager,bridge,listing),
 """
 from __future__ import annotations
 
+import json
 import logging
-import json, os, re, shutil, sys, time, traceback
+import os
+import re
+import shutil
+import sys
+import time
+import traceback
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -33,7 +39,7 @@ sys.path.insert(0, str(_WORKTREE_ROOT))
 sys.path.insert(0, str(_THIS_DIR))
 
 import tool_search_livetest as base
-from tool_search_livetest_ue import load_epic_tools, _SANITIZE  # reuse loader
+from tool_search_livetest_ue import _SANITIZE, load_epic_tools  # reuse loader
 
 N_REPS = int(os.environ.get("TS_BENCH_REPS", "2"))
 

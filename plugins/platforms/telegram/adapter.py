@@ -3,16 +3,17 @@
 import asyncio
 import contextlib
 import dataclasses
+import html as _html
 import inspect
 import json
 import logging
 import os
-import html as _html
 import re
 import time
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, Iterator, List, Optional, Set
+
 from hermes_cli import setup_platforms
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,14 @@ from agent.deadline import run_bounded_async
 from agent.ssl_verify import platform_ssl_context
 from gateway.platforms._shared import (
     decode_json_list_literal as _decode_json_list_literal,
-    extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret,
+)
+from gateway.platforms._shared import (
+    extra_or_secret as _extra_or_secret,
+)
+from gateway.platforms._shared import (
+    get_scoped_secret as _get_scoped_secret,
+)
+from gateway.platforms._shared import (
     platform_gate_env as _scoped_gate_env,
 )
 
@@ -111,15 +119,28 @@ async def _shutdown_abandoned_app(app) -> None:
             logger.debug("Abandoned Telegram request shutdown failed", exc_info=True)
 
 try:
-    from telegram import Update, Bot, Message, InlineKeyboardButton, InlineKeyboardMarkup
+    from telegram import (
+        Bot,
+        InlineKeyboardButton,
+        InlineKeyboardMarkup,
+        Message,
+        Update,
+    )
     try:
         from telegram import LinkPreviewOptions
     except ImportError:
         LinkPreviewOptions = None
+    from telegram.constants import ChatType, ParseMode
     from telegram.ext import (
-        Application, CommandHandler, CallbackQueryHandler, InlineQueryHandler, MessageHandler as TelegramMessageHandler,
-        ContextTypes, TypeHandler, filters)
-    from telegram.constants import ParseMode, ChatType
+        Application,
+        CallbackQueryHandler,
+        CommandHandler,
+        ContextTypes,
+        InlineQueryHandler,
+        TypeHandler,
+        filters,
+    )
+    from telegram.ext import MessageHandler as TelegramMessageHandler
     from telegram.request import HTTPXRequest
     TELEGRAM_AVAILABLE = True
 except ImportError:
@@ -135,15 +156,27 @@ except ImportError:
 
 import sys
 from pathlib import Path as _Path
+
 sys.path.insert(0, str(_Path(__file__).resolve().parents[3]))
 
-from gateway.authz_mixin import _coerce_allow_set
 from agent.i18n import get_language, t
+from gateway.authz_mixin import _coerce_allow_set
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import (
-    BasePlatformAdapter, ExecApprovalPrompt, SendResult, classify_send_error, unauthorized_action_notice,
-    cache_image_from_bytes_async, cache_audio_from_bytes_async, cache_video_from_bytes_async, resolve_proxy_url, SUPPORTED_VIDEO_TYPES,
-    SUPPORTED_DOCUMENT_TYPES, SUPPORTED_IMAGE_DOCUMENT_TYPES, _TEXT_INJECT_EXTENSIONS, utf16_len,
+    _TEXT_INJECT_EXTENSIONS,
+    SUPPORTED_DOCUMENT_TYPES,
+    SUPPORTED_IMAGE_DOCUMENT_TYPES,
+    SUPPORTED_VIDEO_TYPES,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    cache_audio_from_bytes_async,
+    cache_image_from_bytes_async,
+    cache_video_from_bytes_async,
+    classify_send_error,
+    resolve_proxy_url,
+    unauthorized_action_notice,
+    utf16_len,
 )
 
 # Telegram truncates ``answerCallbackQuery`` text at 200 chars; ``BotCommand`` descriptions at 256.
@@ -182,7 +215,12 @@ from plugins.platforms.telegram.telegram_entities import expand_link_entities
 from plugins.platforms.telegram.telegram_held_inbound import TelegramHeldInboundMixin
 from plugins.platforms.telegram.telegram_ids import normalize_telegram_chat_id
 from plugins.platforms.telegram.telegram_network import (
-    SEED_FALLBACK_IPS, TelegramFallbackTransport, discover_fallback_ips, parse_fallback_ip_env, tcp_keepalive_socket_options)
+    SEED_FALLBACK_IPS,
+    TelegramFallbackTransport,
+    discover_fallback_ips,
+    parse_fallback_ip_env,
+    tcp_keepalive_socket_options,
+)
 from utils import env_float, env_int
 
 _TELEGRAM_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
@@ -400,8 +438,9 @@ def _separate_chunk_indicator_from_fence(text: str) -> str:
 
 
 # MarkdownV2 has no table syntax, so pipe tables become bullet groups via convert_table_to_bullets().
-from gateway.platforms.helpers import (
-    TABLE_SEPARATOR_RE as _TABLE_SEPARATOR_RE, compile_mention_patterns, convert_table_to_bullets as _wrap_markdown_tables)
+from gateway.platforms.helpers import TABLE_SEPARATOR_RE as _TABLE_SEPARATOR_RE
+from gateway.platforms.helpers import compile_mention_patterns
+from gateway.platforms.helpers import convert_table_to_bullets as _wrap_markdown_tables
 
 # Rich-message regions whose internal newlines must stay bare (Telegram renders them natively):
 # fenced code blocks OR GFM pipe-table blocks (header row, delimiter row, data rows).
@@ -1227,7 +1266,14 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
         if name in {"networkerror", "timedout", "connectionerror"}:
             return True
         try:
-            from telegram.error import BadRequest, Forbidden, InvalidToken, NetworkError, RetryAfter, TimedOut
+            from telegram.error import (
+                BadRequest,
+                Forbidden,
+                InvalidToken,
+                NetworkError,
+                RetryAfter,
+                TimedOut,
+            )
             if isinstance(error, (BadRequest, InvalidToken, Forbidden, RetryAfter)):
                 return False
             if isinstance(error, (NetworkError, TimedOut)):
@@ -2679,8 +2725,16 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
     async def _register_command_menu(self) -> None:
         """Register the command menu (from COMMAND_REGISTRY) in every scope — Telegram picks the
         narrowest matching one per chat type; forum topics are handled lazily by _ensure_forum_commands."""
-        from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats, BotCommandScopeDefault
-        from hermes_cli.commands_platforms import telegram_menu_commands, telegram_menu_max_commands
+        from hermes_cli.commands_platforms import (
+            telegram_menu_commands,
+            telegram_menu_max_commands,
+        )
+        from telegram import (
+            BotCommand,
+            BotCommandScopeAllGroupChats,
+            BotCommandScopeAllPrivateChats,
+            BotCommandScopeDefault,
+        )
         if not self._bot:
             return
         # Telegram allows 100 commands but has an undocumented ~4KB payload limit; default cap 60.
@@ -3175,7 +3229,10 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
         try:
             if not self._acquire_platform_lock('telegram-bot-token', self.config.token, 'Telegram bot token'):
                 return False
-            from plugins.platforms.telegram.update_admission import TelegramApplication, build_update_processor
+            from plugins.platforms.telegram.update_admission import (
+                TelegramApplication,
+                build_update_processor,
+            )
             builder = Application.builder().token(self.config.token)
             builder.application_class(TelegramApplication, {"adapter": self})
             custom_base_url = self.config.extra.get("base_url")
@@ -4636,7 +4693,9 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
             authorized = False
         if not authorized:
             try:
-                from plugins.platforms.telegram.inline_picker import CACHE_TIME_SECONDS as _deny_cache
+                from plugins.platforms.telegram.inline_picker import (
+                    CACHE_TIME_SECONDS as _deny_cache,
+                )
                 self._accept_update()
                 await inline_query.answer([], cache_time=_deny_cache, is_personal=True)
             except Exception:
@@ -4644,8 +4703,11 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
                 logger.debug("[%s] inline picker empty answer failed", self.name, exc_info=True)
             return
         try:
+            from plugins.platforms.telegram.inline_picker import (
+                CACHE_TIME_SECONDS as _CACHE,
+            )
+            from plugins.platforms.telegram.inline_picker import build_inline_results
             from telegram import InlineQueryResultArticle, InputTextMessageContent
-            from plugins.platforms.telegram.inline_picker import CACHE_TIME_SECONDS as _CACHE, build_inline_results
             # Per-keystroke catalog build resolves every skill path; keep it off the loop (#110707).
             results, next_offset = await asyncio.to_thread(
                 build_inline_results,
@@ -4849,7 +4911,9 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
             return
         resolved_text: Optional[str] = None
         try:
-            from tools.clarify_gateway import _entries as _clarify_entries  # type: ignore
+            from tools.clarify_gateway import (
+                _entries as _clarify_entries,  # type: ignore
+            )
             entry = _clarify_entries.get(clarify_id)
             if entry and entry.choices and 0 <= idx < len(entry.choices):
                 resolved_text = entry.choices[idx]
@@ -6428,8 +6492,11 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
                 chat_id = int(chat.id)
                 if chat_id in self._forum_command_registered:
                     return
+                from hermes_cli.commands_platforms import (
+                    telegram_menu_commands,
+                    telegram_menu_max_commands,
+                )
                 from telegram import BotCommandScopeChat
-                from hermes_cli.commands_platforms import telegram_menu_commands, telegram_menu_max_commands
                 menu_commands, _ = await asyncio.to_thread(
                     telegram_menu_commands, max_commands=telegram_menu_max_commands())
                 bot_commands = self._bot_commands(menu_commands)
@@ -6856,8 +6923,12 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
     async def _handle_sticker(self, msg: Message, event: "MessageEvent") -> None:
         """Describe a sticker via vision, cached by file_unique_id; animated/video stickers get an emoji placeholder."""
         from gateway.sticker_cache import (
-            get_cached_description, cache_sticker_description_async, build_sticker_injection,
-            build_animated_sticker_injection, STICKER_VISION_PROMPT)
+            STICKER_VISION_PROMPT,
+            build_animated_sticker_injection,
+            build_sticker_injection,
+            cache_sticker_description_async,
+            get_cached_description,
+        )
         sticker = msg.sticker
         emoji = sticker.emoji or ""
         set_name = sticker.set_name or ""
@@ -6891,7 +6962,9 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
     def _reload_dm_topics_from_config(self) -> None:
         """Re-read dm_topics from config.yaml so externally created topics work without restart."""
         try:
-            from hermes_cli.config import load_config_readonly  # canonical loader: managed overlay + ${VAR}
+            from hermes_cli.config import (
+                load_config_readonly,  # canonical loader: managed overlay + ${VAR}
+            )
             dm_topics = load_config_readonly().get("platforms", {}).get("telegram", {}).get("extra", {}).get("dm_topics", [])
             if not dm_topics:
                 self._dm_topics_config = []
@@ -7095,7 +7168,9 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
             user_name=user_name, thread_id=thread_id_str, chat_topic=chat_topic, message_id=str(message.message_id),
             is_bot=bool(getattr(user, "is_bot", False)) if user else False)
         reply_to_id, reply_to_text = self._reply_context(message)
-        from gateway.platforms.base import resolve_channel_prompt  # per-channel/topic ephemeral prompt
+        from gateway.platforms.base import (
+            resolve_channel_prompt,  # per-channel/topic ephemeral prompt
+        )
         from plugins.platforms.telegram.telegram_context import group_identity_prompt
         _chat_id_str = str(chat.id)
         channel_prompt = resolve_channel_prompt(self.config.extra, thread_id_str or _chat_id_str, _chat_id_str if thread_id_str else None)
@@ -7218,7 +7293,9 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
     gateway; delegates to the REST ``_send_telegram`` sender."""
     token = getattr(pconfig, "token", None)
     if not token:
-        from agent.secret_scope import get_secret  # profile-scoped: never borrow another profile's token
+        from agent.secret_scope import (
+            get_secret,  # profile-scoped: never borrow another profile's token
+        )
         token = get_secret("TELEGRAM_BOT_TOKEN", "") or ""
     disable_link_previews = bool(getattr(pconfig, "extra", {}) and pconfig.extra.get("disable_link_previews"))
     from tools.send_message_tool import _send_telegram
@@ -7241,6 +7318,7 @@ def _apply_yaml_config(yaml_cfg: dict, telegram_cfg: dict) -> dict | None:
     gateway/config.py::load_gateway_config().
     """
     import json as _json
+
     from gateway.platforms._shared import yaml_env_setter
     extras: dict = {}
     # Under multiplex a secondary profile's settings must NOT hit the process-global env (first-writer-wins

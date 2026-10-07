@@ -22,7 +22,6 @@ import pytest
 
 from tools.approval import detect_dangerous_command, detect_hardline_command
 
-
 # ---------------------------------------------------------------------------
 # Class 1 -- command-name obfuscation (issue #36846)
 # ---------------------------------------------------------------------------

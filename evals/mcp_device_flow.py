@@ -5,16 +5,16 @@ Run: python evals/mcp_device_flow.py --repo /path/to/checkout
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import threading
 import time
+from contextlib import contextmanager
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import parse_qs
 
 DEVICE_GRANT = "urn:ietf:params:oauth:grant-type:device_code"

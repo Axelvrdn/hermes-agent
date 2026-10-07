@@ -22,10 +22,10 @@ from typing import Optional
 
 from hermes_cli.browser_runtime import chromium_executable
 from hermes_constants import get_hermes_home
-
 from plugins.google_meet import process_manager as pm
 from plugins.google_meet.meet_bot import _is_safe_meet_url
-from plugins.google_meet.node.cli import node_command, register_cli as _register_node_cli
+from plugins.google_meet.node.cli import node_command
+from plugins.google_meet.node.cli import register_cli as _register_node_cli
 from plugins.google_meet.tools import resolve_node
 
 

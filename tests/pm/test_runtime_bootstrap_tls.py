@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -69,14 +69,14 @@ print(result.stdout)
 
 @pytest.mark.platforms("linux")
 def test_pm_cli_verifies_tls_with_platform_trust(tmp_path, monkeypatch):
-    from datetime import datetime, timedelta, timezone
     import hashlib
-    from http.server import ThreadingHTTPServer
-    from ipaddress import ip_address
     import io
     import ssl
     import tarfile
     import threading
+    from datetime import datetime, timedelta, timezone
+    from http.server import ThreadingHTTPServer
+    from ipaddress import ip_address
 
     from cryptography import x509
     from cryptography.hazmat.primitives import hashes, serialization
@@ -191,12 +191,12 @@ def test_importing_launch_does_not_patch_ssl_context():
 def test_cold_downloader_trusts_a_stored_intermediate_without_its_root(tmp_path):
     """Windows can cache an intermediate (Let's Encrypt "Root YR") without its
     root; Python < 3.13 then refused every GitHub asset before PM existed."""
-    from datetime import datetime, timedelta, timezone
-    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-    from ipaddress import ip_address
     import hashlib
     import ssl
     import threading
+    from datetime import datetime, timedelta, timezone
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from ipaddress import ip_address
 
     from cryptography import x509
     from cryptography.hazmat.primitives import hashes, serialization

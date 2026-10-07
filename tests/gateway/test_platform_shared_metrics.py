@@ -6,7 +6,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from gateway.platforms.base import BasePlatformAdapter, Platform, PlatformConfig, SendResult
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    Platform,
+    PlatformConfig,
+    SendResult,
+)
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.run_adapters import GatewayAdapterLifecycleMixin
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig

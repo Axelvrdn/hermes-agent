@@ -28,8 +28,9 @@ STATUS
     get_secret() from agent.secret_scope (matching the pattern in runtime_provider.py).
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from agent import secret_scope as ss
 from agent.anthropic_credentials import resolve_anthropic_token

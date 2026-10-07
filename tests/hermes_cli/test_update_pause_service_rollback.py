@@ -17,7 +17,10 @@ import pytest
 
 from hermes_cli import gateway, update_cmd, update_cmd_windows
 from hermes_cli import update_pause_record as pause_record
-from hermes_cli.update_cmd_windows import ServicePauseFailed, _pause_windows_gateways_for_update
+from hermes_cli.update_cmd_windows import (
+    ServicePauseFailed,
+    _pause_windows_gateways_for_update,
+)
 
 
 @pytest.mark.parametrize("restore_fails", [False, True])

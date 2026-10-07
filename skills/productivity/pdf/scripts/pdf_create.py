@@ -18,9 +18,9 @@ Spec format (UTF-8 JSON):
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 
 

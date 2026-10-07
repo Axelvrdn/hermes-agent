@@ -20,10 +20,10 @@ from itertools import chain, count
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from hermes_constants import get_hermes_home
-from agent.skill_utils import is_excluded_skill_path
 from agent.curator import _read_config_section
+from agent.skill_utils import is_excluded_skill_path
 from hermes_cli.sizefmt import format_bytes
+from hermes_constants import get_hermes_home
 
 logger = logging.getLogger(__name__)
 
@@ -285,7 +285,7 @@ def _restore_cron_skill_links(snapshot_dir: Path) -> Dict[str, Any]:
     if not backup_by_id:
         return {**report, "attempted": True}  # we tried but there was nothing to do
     try:
-        from cron.jobs import load_jobs, save_jobs, _jobs_lock
+        from cron.jobs import _jobs_lock, load_jobs, save_jobs
     except ImportError as e:
         return {**report, "error": f"cron module unavailable: {e}"}
 

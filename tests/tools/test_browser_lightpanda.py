@@ -5,13 +5,13 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+from tools import browser_tool_cdp as bt_cdp
+from tools import browser_tool_cloud as bt_cloud
+from tools import browser_tool_install as bt_install
 from tools import browser_tool_lifecycle as bt_lifecycle
 from tools import browser_tool_lightpanda_fallback as bt_lightpanda_fallback
 from tools import browser_tool_session as bt_session
-from tools import browser_tool_install as bt_install
-from tools import browser_tool_cloud as bt_cloud
-from tools import browser_tool_cdp as bt_cdp
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -228,6 +228,7 @@ class TestLightpandaFallbackWarning:
 
     def test_browser_navigate_surfaces_fallback_warning(self):
         import json
+
         import tools.browser_tool as bt
 
         result = bt_lightpanda_fallback._annotate_lightpanda_fallback(
@@ -256,6 +257,7 @@ class TestLightpandaFallbackWarning:
 
     def test_browser_vision_lightpanda_response_has_structured_fallback(self, tmp_path):
         import json
+
         import tools.browser_tool as bt
 
         chrome_shot = tmp_path / "chrome-structured.png"

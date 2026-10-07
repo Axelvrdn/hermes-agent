@@ -242,7 +242,11 @@ def _set_verbose(rid, params, key, value, session):
 
 def _set_focus(rid, params, key, value, session):
     # /focus: enabling stashes the configured tool_progress mode and pins it "off"; disabling restores.
-    from hermes_cli.focus_view import FOCUS_TOOL_PROGRESS_MODE, normalize_tool_progress_mode, resolve_focus_arg
+    from hermes_cli.focus_view import (
+        FOCUS_TOOL_PROGRESS_MODE,
+        normalize_tool_progress_mode,
+        resolve_focus_arg,
+    )
     d_f = _display_cfg()
     cur_focus = bool(d_f.get("focus_view", False))
     action, target = resolve_focus_arg(str(value or ""), cur_focus)

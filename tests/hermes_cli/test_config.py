@@ -7,29 +7,29 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.config import (
     DEFAULT_CONFIG,
     InvalidUserConfigError,
+    _normalize_max_turns_config,
+    _sanitize_env_lines,
     check_config_version,
-    get_hermes_home,
     ensure_hermes_home,
     get_compatible_custom_providers,
-    _normalize_max_turns_config,
+    get_hermes_home,
     is_provider_enabled,
     load_config,
     load_env,
     migrate_config,
     read_raw_config,
     remove_env_value,
+    sanitize_env_file,
     save_config,
     save_env_value,
     save_env_value_secure,
-    sanitize_env_file,
     set_config_value,
     unset_config_value,
-    _sanitize_env_lines,
 )
 
 
@@ -56,7 +56,7 @@ class TestEnsureHermesHome:
         # Older installers seeded a comment-only scaffold that shadowed the
         # runtime default. A SOUL.md still matching that scaffold carries no
         # user persona and should be upgraded in place to DEFAULT_SOUL_MD.
-        from hermes_cli.default_soul import DEFAULT_SOUL_MD, _LEGACY_TEMPLATE_SOULS
+        from hermes_cli.default_soul import _LEGACY_TEMPLATE_SOULS, DEFAULT_SOUL_MD
 
         with patch.dict(os.environ, {"HERMES_HOME": str(tmp_path)}):
             soul_path = tmp_path / "SOUL.md"
@@ -190,6 +190,7 @@ class TestLoadConfigParseFailure:
         parses again.
         """
         import time
+
         from hermes_cli.config_read_errors import _CONFIG_PARSE_WARNED
         _CONFIG_PARSE_WARNED.clear()
 
@@ -1889,6 +1890,7 @@ def test_default_config_kanban_block_not_dropped_by_duplicate_key():
 def test_default_config_has_no_duplicate_top_level_keys():
     """Guard against any duplicate key silently shadowing a default."""
     import ast
+
     import hermes_cli.config as cfg_mod
 
     src = open(cfg_mod.__file__, encoding="utf-8").read()

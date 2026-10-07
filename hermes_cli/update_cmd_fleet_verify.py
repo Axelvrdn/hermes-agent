@@ -26,7 +26,11 @@ _FLEET_PROBE_SETTLE_TIMEOUT_SECONDS = 120.0
 def _print_legacy_units_warning() -> None:
     """Legacy hermes.service fights hermes-gateway.service over the bot token; warn on
     every update until migrated."""
-    from hermes_cli.gateway import (has_legacy_hermes_units, _find_legacy_hermes_units, supports_systemd_services)
+    from hermes_cli.gateway import (
+        _find_legacy_hermes_units,
+        has_legacy_hermes_units,
+        supports_systemd_services,
+    )
     if not (supports_systemd_services() and has_legacy_hermes_units()):
         return
     print()
@@ -192,7 +196,9 @@ def _verify_fleet_after_update(restart, *, _pre_update_plan, _windows_gateway_re
     """
     from hermes_cli import update_cmd_fleet as fleet
     from hermes_cli.update_cmd import (
-        _m, _surviving_pre_update_serve_runtimes, _warn_stale_serve_runtimes,
+        _m,
+        _surviving_pre_update_serve_runtimes,
+        _warn_stale_serve_runtimes,
     )
     from hermes_cli.update_cmd_maint import _refresh_dashboard_after_update
     with _best_effort('Legacy unit check during update failed: %s'):
@@ -248,7 +254,9 @@ def _verify_fleet_after_update(restart, *, _pre_update_plan, _windows_gateway_re
             restart.incomplete = True
             # A proven-stale survivor must not keep running (its ticker yields every tick and
             # nothing else restarts it, #117275): hand it to the drain-first restart path.
-            from hermes_cli.update_cmd_stale_survivors import signal_stale_fleet_survivors
+            from hermes_cli.update_cmd_stale_survivors import (
+                signal_stale_fleet_survivors,
+            )
             signal_stale_fleet_survivors(_fleet_snapshot, restart, fleet._gateway_drain_budget())
         elif not _fleet_snapshot and _fleet_rows_expected:
             # collect_fleet_versions() swallows every failure, so zero rows with
@@ -272,7 +280,10 @@ def _verify_fleet_after_update(restart, *, _pre_update_plan, _windows_gateway_re
         # and skipped one the inventory knew about) — escalate it exactly like a STALE/DOWN fleet row. See
         # #91277.
         if _pre_update_plan is not None and _pre_update_plan.runtimes:
-            from hermes_cli.update_inventory import (match_runtime_outcomes, report_unaccounted_runtimes)
+            from hermes_cli.update_inventory import (
+                match_runtime_outcomes,
+                report_unaccounted_runtimes,
+            )
             from hermes_cli.update_receipt import row_is_external
             # Gateway incarnation evidence, from the post-restart fleet snapshot collected above: a
             # service can serve a profile its own name does not encode (root-home launchd label +
@@ -300,6 +311,7 @@ def _verify_fleet_after_update(restart, *, _pre_update_plan, _windows_gateway_re
                 live_gateway_pids=_live_gateway_pids,
             )
             from dataclasses import asdict
+
             from hermes_cli.update_serve_obligations import defer_manual_serve
 
             for runtime, outcome in zip(_pre_update_plan.runtimes, _runtime_outcomes):

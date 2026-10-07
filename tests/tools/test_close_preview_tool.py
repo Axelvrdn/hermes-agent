@@ -4,7 +4,8 @@ import json
 
 import pytest
 
-from tools import close_preview_tool as cp, desktop_ui
+from tools import close_preview_tool as cp
+from tools import desktop_ui
 
 
 @pytest.fixture(autouse=True)

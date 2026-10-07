@@ -1,14 +1,20 @@
 """Live: detached delegate_task batch, one child fails immediately, siblings run ~8 s. Does the parent's
 completion queue see the per-task failure notice BEFORE the consolidated batch result?
 Usage: python notice_live.py <repo_root>"""
-import json, os, sys, tempfile, threading, time
+import json
+import os
+import sys
+import tempfile
+import threading
+import time
+
 root = sys.argv[1]; sys.path.insert(0, root)
 os.environ["HERMES_HOME"] = tempfile.mkdtemp(prefix="hh-")
 os.environ["HERMES_STREAM_RETRIES"] = "0"
 
-from run_agent import AIAgent
 import tools.delegate_tool as dt
 import tools.delegate_tool_dispatch as dd
+from run_agent import AIAgent
 from tools.process_registry import process_registry
 
 parent = AIAgent(api_key="k", base_url="https://example.com/v1", provider="test-provider", model="test/model",
@@ -26,6 +32,7 @@ dd._Batch.run_child = fake_run_child
 
 # Background dispatch requires an async-capable session; emulate a CLI session key.
 import tools.async_delegation as ad
+
 t0 = time.time()
 out = dt.delegate_task(# Grouped: siblings share ONE final result, so a dead sibling would otherwise wait for the slowest. (Ungrouped tasks are
 # their own async unit since the per-group split landed on main and already report as they finish.)

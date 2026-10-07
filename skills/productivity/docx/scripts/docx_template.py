@@ -21,7 +21,6 @@ import re
 import sys
 
 from docx import Document
-
 from docx_common import iter_all_paragraphs, replace_in_paragraph
 
 TOKEN_RE = re.compile(r"\{\{\s*([A-Za-z0-9_.-]+)\s*\}\}")

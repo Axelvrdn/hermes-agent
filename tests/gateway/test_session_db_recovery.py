@@ -109,7 +109,7 @@ def test_runtime_health_is_sanitized_and_recovers() -> None:
 def test_session_store_and_runner_reopen_after_failed_construction(monkeypatch, tmp_path) -> None:
     import hermes_state
     import hermes_state_registry
-    from gateway.run import GatewayRunner, _SESSION_DB_UNPINNED
+    from gateway.run import _SESSION_DB_UNPINNED, GatewayRunner
     from gateway.session import SessionStore
     from gateway.session_persistence import _DB_UNPINNED
 

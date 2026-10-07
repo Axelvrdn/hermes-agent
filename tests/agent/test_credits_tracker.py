@@ -7,10 +7,10 @@ arrive as STRINGS (the producer calls String(...) on every field).
 from __future__ import annotations
 
 import time
+
 import pytest
 
 from agent.credits_tracker import CreditsState, parse_credits_headers
-
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
 

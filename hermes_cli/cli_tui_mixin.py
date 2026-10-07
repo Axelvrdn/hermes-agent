@@ -4,8 +4,9 @@ LAZILY inside each method (``from cli import ...``) — never at module load (im
 
 from __future__ import annotations
 
-import logging, errno
+import errno
 import json
+import logging
 import os
 import queue
 import shutil
@@ -13,11 +14,9 @@ import string
 import sys
 import threading
 import time
-
-from agent.i18n import t
-from agent.interrupt_compat import request_hard_interrupt
-from hermes_cli.commands_completion import SlashCommandAutoSuggest, SlashCommandCompleter
 from pathlib import Path
+from typing import Optional
+
 from prompt_toolkit.filters import Condition
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.key_binding import KeyBindings
@@ -26,19 +25,26 @@ from prompt_toolkit.layout import (
     FormattedTextControl,
     Layout,
     Window,
-    WindowAlign)
+    WindowAlign,
+)
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.menus import CompletionsMenu
 from prompt_toolkit.layout.processors import (
     ConditionalProcessor,
     PasswordProcessor,
     Processor,
-    Transformation)
+    Transformation,
+)
 from prompt_toolkit.styles import Style as PTStyle
 from prompt_toolkit.widgets import TextArea
-from typing import Optional
 
+from agent.i18n import t
+from agent.interrupt_compat import request_hard_interrupt
 from hermes_cli.cli_footer_split import FooterSplit
+from hermes_cli.commands_completion import (
+    SlashCommandAutoSuggest,
+    SlashCommandCompleter,
+)
 
 # Rows below an overlay panel taken by spinner/tool-progress, status bar, input, separators and
 # prompt symbol (measured ~6 during live PTY approval prompts) — shared by every panel budget.
@@ -1130,7 +1136,9 @@ class CLITuiMixin:
             event.app.invalidate()
             return
         import signal as _sig
+
         from prompt_toolkit.application import run_in_terminal
+
         from hermes_cli.skin_engine import get_active_skin
         agent_name = get_active_skin().get_branding("agent_name", "Hermes Agent")
         msg = "\n" + t("cli.tui.suspended", agent_name=agent_name)
@@ -1427,7 +1435,8 @@ class CLITuiMixin:
         from cli import (
             _apply_backslash_line_continuation,
             _is_backslash_line_continuation,
-            _looks_like_slash_command)
+            _looks_like_slash_command,
+        )
         if self._tui_enter_overlay(event):
             return
         buf = event.app.current_buffer
@@ -1510,7 +1519,7 @@ class CLITuiMixin:
         agent supports active-turn redirect, else the legacy interrupt queue (older agents,
         multimodal follow-ups, or a turn that finished in the race). queue → next turn.
         """
-        from cli import CLI_CONFIG, _ACCENT, _DIM, _RST, _cprint, _hermes_home
+        from cli import _ACCENT, _DIM, _RST, CLI_CONFIG, _cprint, _hermes_home
         _effective_mode = self.busy_input_mode
         redirected = False
         if _effective_mode == "steer":
@@ -1560,7 +1569,12 @@ class CLITuiMixin:
         # running event for this install; the flag persists to config.yaml. Guarded so
         # onboarding can never break the input loop.
         try:
-            from agent.onboarding import BUSY_INPUT_FLAG, busy_input_hint_cli, is_seen, mark_seen
+            from agent.onboarding import (
+                BUSY_INPUT_FLAG,
+                busy_input_hint_cli,
+                is_seen,
+                mark_seen,
+            )
             if not is_seen(CLI_CONFIG, BUSY_INPUT_FLAG):
                 _hint_mode = "redirect" if redirected else _effective_mode
                 _cprint(f"  {_DIM}{busy_input_hint_cli(_hint_mode)}{_RST}")
@@ -1704,7 +1718,8 @@ class CLITuiMixin:
             _should_auto_attach_clipboard_image_on_paste,
             _strip_leaked_bracketed_paste_wrappers,
             _strip_leaked_terminal_responses_with_meta,
-            logger)
+            logger,
+        )
         # Diagnostic canary: log when the handler blocks the event loop >500ms so recurring
         # "CLI freezes on paste" reports (#16263, macOS Tahoe + iTerm2/Ghostty) arrive with data.
         _paste_handler_start = time.perf_counter()
@@ -1750,7 +1765,10 @@ class CLITuiMixin:
         but batch newlines; Alt+Enter adds 1 newline per event so never trips it).
         """
         self._tui_last_text_change = time.monotonic()
-        from cli import _strip_leaked_bracketed_paste_wrappers, _strip_leaked_terminal_responses_with_meta
+        from cli import (
+            _strip_leaked_bracketed_paste_wrappers,
+            _strip_leaked_terminal_responses_with_meta,
+        )
         text = _strip_leaked_bracketed_paste_wrappers(buf.text)
         text, _had_mouse_reports = _strip_leaked_terminal_responses_with_meta(text)
         if _had_mouse_reports:
@@ -1788,7 +1806,11 @@ class CLITuiMixin:
         A stack (not a single slot) is what makes repeated Ctrl+S safe: a second stash never
         silently overwrites the first, both stay reachable in the panel.
         """
-        from hermes_cli.prompt_stash import ACTION_RESTORED, ACTION_STASHED, resolve_ctrl_s
+        from hermes_cli.prompt_stash import (
+            ACTION_RESTORED,
+            ACTION_STASHED,
+            resolve_ctrl_s,
+        )
         buf = event.app.current_buffer
         action, payload = resolve_ctrl_s(self._prompt_stash, buf.text, self._attached_images)
         if action == ACTION_STASHED:
@@ -1917,12 +1939,14 @@ class CLITuiMixin:
         binding, so the generic handlers (Tab, history Up/Down) are registered before or after
         their filtered modal overrides deliberately.
         """
+        from prompt_toolkit.keys import Keys
+
         from cli import (
             CLI_CONFIG,
             _bind_prompt_submit_keys,
             _cli_multiline_shortcuts_enabled,
-            _preserve_ctrl_enter_newline)
-        from prompt_toolkit.keys import Keys
+            _preserve_ctrl_enter_newline,
+        )
         kb = KeyBindings()
         _multiline_shortcuts_enabled = _cli_multiline_shortcuts_enabled(self.config or CLI_CONFIG)
         self._tui_multiline_shortcuts = _multiline_shortcuts_enabled
@@ -1965,7 +1989,11 @@ class CLITuiMixin:
         kb.add(Keys.BracketedPaste, eager=True)(self._tui_handle_paste)
         kb.add('c-v')(self._tui_handle_ctrl_v)
         kb.add('escape', 'v')(self._tui_handle_alt_v)
-        from hermes_cli.cli_subagent_monitor import modal_prompt_active, open_monitor, toggle_dock
+        from hermes_cli.cli_subagent_monitor import (
+            modal_prompt_active,
+            open_monitor,
+            toggle_dock,
+        )
         for key in ('c-t', 'f6'):
             kb.add(key, filter=Condition(lambda: not modal_prompt_active(self)))(
                 lambda event: open_monitor(self))
@@ -2096,7 +2124,8 @@ class CLITuiMixin:
             from hermes_cli.voice import (
                 normalize_voice_record_key_for_prompt_toolkit,
                 pt_key_to_sequence,
-                voice_record_key_from_config)
+                voice_record_key_from_config,
+            )
             _raw_key = voice_record_key_from_config(load_config())
             _voice_key = normalize_voice_record_key_for_prompt_toolkit(_raw_key)
             if (
@@ -2210,9 +2239,14 @@ class CLITuiMixin:
     def _tui_build_input_area(self):
         """Multi-line prompt TextArea with slash completion, paste-collapse tracking and
         placeholder/password processors."""
-        from cli import _estimate_tui_input_height, get_skill_bundles, get_skill_commands
         from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
         from prompt_toolkit.completion import ThreadedCompleter
+
+        from cli import (
+            _estimate_tui_input_height,
+            get_skill_bundles,
+            get_skill_commands,
+        )
         cli_ref = self
 
         def get_prompt():

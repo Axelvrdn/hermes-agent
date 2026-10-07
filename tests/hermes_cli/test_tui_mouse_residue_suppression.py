@@ -20,6 +20,7 @@ from unittest.mock import patch
 # their `patch("os.write")` context.
 from hermes_cli.main import _suppress_mouse_residue_early
 
+
 class TestEarlyMouseDisable:
 
 

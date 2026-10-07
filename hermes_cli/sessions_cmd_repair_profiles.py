@@ -10,7 +10,11 @@ import sys
 from typing import Dict, List
 
 from hermes_cli.sessions_repair_profiles import (
-    Finding, default_snapshot, enumerate_stores, live_gateway_homes, scan_stores,
+    Finding,
+    default_snapshot,
+    enumerate_stores,
+    live_gateway_homes,
+    scan_stores,
 )
 
 _KIND_LABELS = {

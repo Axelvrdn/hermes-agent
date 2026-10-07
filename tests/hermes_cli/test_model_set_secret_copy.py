@@ -16,7 +16,6 @@ import sys
 
 import pytest
 
-
 SECRET = "sk-SUPERSECRET-e2e-12345"
 
 

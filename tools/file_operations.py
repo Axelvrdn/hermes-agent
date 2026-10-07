@@ -9,26 +9,41 @@ implementation serves every environment (local, docker, ssh, modal, ...). Compan
 
 import base64
 import binascii
-import os
-import re
-import sys
 import difflib
 import hashlib
 import json
 import logging
+import os
+import re
 import secrets
+import sys
 import unicodedata
 from abc import ABC, abstractmethod
-from typing import Optional, Dict
 from pathlib import Path
+from typing import Dict, Optional
 
-from tools.binary_extensions import has_binary_extension
 from agent.file_safety import get_write_denied_error
+from tools.binary_extensions import has_binary_extension
 from tools.file_operations_common import (
-    ExecuteResult, PatchResult, ReadResult, SearchResult, WriteResult,
-    _UTF8_BOM, _detect_line_ending, _has_bom, _normalize_line_endings, _strip_bom,
-    _strip_terminal_fence_leaks, normalize_read_pagination, normalize_search_pagination)
-from tools.file_operations_lint import LINTERS_INPROC, LintMixin, _FAIL_CLOSED_INPROC_EXTS
+    _UTF8_BOM,
+    ExecuteResult,
+    PatchResult,
+    ReadResult,
+    SearchResult,
+    WriteResult,
+    _detect_line_ending,
+    _has_bom,
+    _normalize_line_endings,
+    _strip_bom,
+    _strip_terminal_fence_leaks,
+    normalize_read_pagination,
+    normalize_search_pagination,
+)
+from tools.file_operations_lint import (
+    _FAIL_CLOSED_INPROC_EXTS,
+    LINTERS_INPROC,
+    LintMixin,
+)
 from tools.file_operations_search import SearchMixin
 
 logger = logging.getLogger(__name__)
@@ -1646,7 +1661,7 @@ class ShellFileOperations(LintMixin, SearchMixin, FileOperations):
     def patch_v4a(self, patch_content: str) -> PatchResult:
         """Apply a V4A format patch (``*** Begin Patch`` / ``*** Update File:`` /
         ``@@ hint @@`` hunks / ``*** End Patch``)."""
-        from tools.patch_parser import parse_v4a_patch, apply_v4a_operations
+        from tools.patch_parser import apply_v4a_operations, parse_v4a_patch
         operations, parse_error = parse_v4a_patch(patch_content)
         if parse_error:
             return PatchResult(error=f"Failed to parse patch: {parse_error}")

@@ -165,7 +165,11 @@ def _claim(path: Path) -> Path | None:
 
 
 def process_exit_fields(record: dict[str, Any]) -> dict[str, str]:
-    from .shared_metrics_contract import CRASH_CLASSES, PROCESS_EXIT_KINDS, PROCESS_KINDS
+    from .shared_metrics_contract import (
+        CRASH_CLASSES,
+        PROCESS_EXIT_KINDS,
+        PROCESS_KINDS,
+    )
 
     state = record.get("state")
     exit_kind = "killed" if state == "running" or state not in PROCESS_EXIT_KINDS else state
@@ -245,7 +249,10 @@ def record_watchdog_turn_abort(agent: Any) -> None:
         if not home or getattr(agent, "_metrics_watchdog_abort_counted", True):
             return
         agent._metrics_watchdog_abort_counted = True
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         from . import shared_metrics_contract as contract
         from .shared_metrics_events import _emit

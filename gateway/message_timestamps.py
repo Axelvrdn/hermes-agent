@@ -16,7 +16,6 @@ from typing import Any, Optional, Tuple
 
 from hermes_time import safe_strftime
 
-
 # Leading timestamp prefix, either the current human format
 # ``[Tue 2026-04-28 13:40:53 CEST]`` or the older ISO one
 # ``[2026-04-13T17:02:06+0200]`` / ``[...+02:00]`` (human tried first).

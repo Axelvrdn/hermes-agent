@@ -12,9 +12,13 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from gateway.hosted_room_driver import TaskIdentity
-from gateway.hosted_room_peer import HostedMemberDispatch, PROTOCOL_VERSION
+from gateway.hosted_room_peer import PROTOCOL_VERSION, HostedMemberDispatch
 from tui_gateway.hosted_room_driver import (
-    ROOM_SESSION_SOURCE, HostedRoomBinding, InternalSessionRPC, room_session_title)
+    ROOM_SESSION_SOURCE,
+    HostedRoomBinding,
+    InternalSessionRPC,
+    room_session_title,
+)
 
 
 class HostedRoomPeerClient(Protocol):

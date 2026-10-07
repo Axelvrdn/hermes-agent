@@ -10,6 +10,7 @@ import pytest
 
 from hermes_cli import main as cli_main
 
+
 def test_restore_windows_gateway_service_waits_out_stop_pending(monkeypatch):
     import hermes_cli.update_cmd as update_cmd
     import hermes_cli.update_cmd_windows as update_cmd_windows
@@ -102,8 +103,8 @@ def test_pause_stops_launcher_after_worker_drain(
     tmp_path,
 ):
     """Capture the launcher identity while its worker is still inspectable."""
-    import hermes_cli.gateway as gateway_mod
     import gateway.status as status_mod
+    import hermes_cli.gateway as gateway_mod
 
     # The install venv is whatever hermes_constants.project_venv_dir resolves for the checkout (a
     # CI checkout has no venv/ and the test interpreter lives elsewhere); pin it to the fixture layout.

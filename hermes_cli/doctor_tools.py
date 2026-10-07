@@ -3,18 +3,31 @@ Split out of ``hermes_cli/doctor.py``, which re-exports every name so ``hermes_c
 
 from __future__ import annotations
 
-import logging
 import importlib.util
+import logging
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+
 from hermes_cli.doctor_platform import _system_package_install_cmd
-from hermes_cli.doctor_report import Finding, _fail_and_issue, check_bool, check_info, check_ok, check_warn, doctor_check
+from hermes_cli.doctor_report import (
+    Finding,
+    _fail_and_issue,
+    check_bool,
+    check_info,
+    check_ok,
+    check_warn,
+    doctor_check,
+)
 from hermes_cli.vercel_auth import describe_vercel_auth
 from hermes_constants import is_termux as _is_termux
-from tools.environments.docker import docker_runtime_name, docker_runtime_start_hint, find_docker
+from tools.environments.docker import (
+    docker_runtime_name,
+    docker_runtime_start_hint,
+    find_docker,
+)
 
 
 def _safe_which(cmd: str) -> str | None:
@@ -121,7 +134,10 @@ def _doctor_web_capability_rows() -> list[tuple[str, str, str]]:
     """
     rows: list[tuple[str, str, str]] = []
     try:
-        from agent.web_search_registry import get_active_extract_provider, get_active_search_provider
+        from agent.web_search_registry import (
+            get_active_extract_provider,
+            get_active_search_provider,
+        )
         from tools.web_tools import _ensure_web_plugins_loaded, _provider_is_ready
         # Fresh process: bundled web providers only register during plugin discovery (idempotent, cheap).
         _ensure_web_plugins_loaded()
@@ -360,8 +376,8 @@ def _check_chromium() -> None:
     """
     try:
         from tools.browser_tool import _is_camofox_mode
-        from tools.browser_tool_cloud import _get_cloud_provider
         from tools.browser_tool_cdp import _get_cdp_override_raw
+        from tools.browser_tool_cloud import _get_cloud_provider
         from tools.browser_tool_install import _chromium_installed
         from tools.browser_tool_lightpanda_fallback import _using_lightpanda_engine
     except Exception:
@@ -376,8 +392,14 @@ def _check_chromium() -> None:
 def _check_lightpanda() -> None:
     """Lightpanda engine (browser.engine / AGENT_BROWSER_ENGINE); independent of Node since Browser Use mode spawns ``lightpanda serve`` itself."""
     try:
-        from tools.browser_tool_lightpanda_fallback import _using_lightpanda_engine, lightpanda_engine_status
-        from tools.browser_lightpanda import LIGHTPANDA_INSTALL_HINT, find_lightpanda_binary
+        from tools.browser_lightpanda import (
+            LIGHTPANDA_INSTALL_HINT,
+            find_lightpanda_binary,
+        )
+        from tools.browser_tool_lightpanda_fallback import (
+            _using_lightpanda_engine,
+            lightpanda_engine_status,
+        )
     except Exception:
         return
     # _using_lightpanda_engine() is a cached config read — a failure there is exceptional, not hidden.
@@ -427,6 +449,7 @@ def _audit_one(npm_bin: str, npm_dir, label: str, audit_extra: list[str], issues
     prescribes a local mutating fix command. See #116774.
     """
     import json
+
     from hermes_constants import with_hermes_node_path
     try:
         # Resolved absolute path so Windows can execute npm.cmd (CreateProcessW can't run bare .cmd names).
@@ -499,7 +522,7 @@ def _check_npm_audit(should_fix: bool, f: Finding) -> None:
 def _check_tool_availability(should_fix: bool, f: Finding) -> None:
     from hermes_cli.doctor import PROJECT_ROOT
     sys.path.insert(0, str(PROJECT_ROOT))
-    from model_tools import check_tool_availability, TOOLSET_REQUIREMENTS
+    from model_tools import TOOLSET_REQUIREMENTS, check_tool_availability
     available, unavailable = _apply_doctor_tool_availability_overrides(*check_tool_availability())
     # Web is split into search/extract readiness rows so an explicitly
     # selected but unconfigured backend cannot look healthy.

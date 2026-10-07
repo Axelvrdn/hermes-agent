@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from tools.environments import ssh as ssh_env
-from tools.environments import modal as modal_env
 from tools.environments import daytona as daytona_env
+from tools.environments import modal as modal_env
+from tools.environments import ssh as ssh_env
 from tools.environments.ssh import SSHEnvironment
 
 # ── SSH helpers ──────────────────────────────────────────────────────

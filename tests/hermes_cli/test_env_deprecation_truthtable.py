@@ -24,7 +24,6 @@ Exercises the real scanner against a real temp HERMES_HOME .env file.
 
 import pytest
 
-
 REAL_PATH = "/home/user/projects/demo"
 
 # Truth table rows:

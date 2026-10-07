@@ -14,9 +14,9 @@ except ModuleNotFoundError as exc:
     if exc.name != "hermes_bootstrap":
         raise  # the bootstrap exists but cannot load: skipping it would skip PM activation
 
+import contextlib
 import json
 import logging
-import contextlib
 import os
 import time
 import traceback
@@ -27,7 +27,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import fire
 from rich.console import Console
-from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeRemainingColumn
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeRemainingColumn,
+)
 
 from model_tools import TOOL_TO_TOOLSET_MAP
 from run_agent import AIAgent

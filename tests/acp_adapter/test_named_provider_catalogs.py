@@ -11,12 +11,11 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+from acp.schema import SessionModelState
 
 from acp_adapter.model_catalog import _named_custom_provider_catalogs
 from acp_adapter.server import HermesACPAgent
 from acp_adapter.session import SessionManager
-from acp.schema import SessionModelState
-
 
 MANTLE_URL = "https://bedrock-mantle.us-east-1.api.aws/openai/v1"
 

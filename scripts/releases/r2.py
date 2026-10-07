@@ -2,15 +2,15 @@
 from __future__ import annotations
 
 import hashlib
-import json
-from pathlib import Path
 import hmac
 import http.client
+import json
 import os
 import re
 import sys
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Callable, Iterable, cast
 from urllib.parse import quote, urlparse
 
@@ -843,7 +843,7 @@ def feed_referenced_keys(dir_key: str, appinstaller_xml: str | None) -> list[str
     for uri in _feed_bundle_uris(appinstaller_xml):
         keys.append(f"{dir_key}/{uri.rsplit('/', 1)[-1]}")
         if "/" in uri and uri.startswith(("http://", "https://")):
-            from urllib.parse import urlsplit, unquote
+            from urllib.parse import unquote, urlsplit
             path = urlsplit(uri).path
             if path.startswith("/releases/"):
                 keys.append(unquote(path[1:]))

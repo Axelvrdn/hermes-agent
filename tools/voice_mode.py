@@ -13,20 +13,24 @@ import shlex
 import shutil
 import subprocess
 import sys
-from collections import deque
-from contextlib import suppress
-from pathlib import Path
 import tempfile
 import threading
 import time
 import wave
+from collections import deque
+from contextlib import suppress
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 from hermes_constants import is_termux as _is_termux_environment
 from hermes_platform.host.runtime import is_wsl
-from tools.voice_mode_transcript import _voice_config, is_voice_stop_phrase, is_whisper_hallucination
+from tools.voice_mode_transcript import (
+    _voice_config,
+    is_voice_stop_phrase,
+    is_whisper_hallucination,
+)
 
 # ── Recording parameters ──
 SAMPLE_RATE = 16000  # Whisper native rate
@@ -56,8 +60,8 @@ def _import_audio():
             pm.ensure_import("audio-io")
         except pm.InstallError as exc:
             raise ImportError(str(exc)) from exc
-    import sounddevice as sd
     import numpy as np
+    import sounddevice as sd
     return sd, np
 
 
@@ -1501,7 +1505,11 @@ def check_voice_requirements() -> Dict[str, Any]:
     """Check voice mode requirements: ``{available, audio_available, stt_available,
     missing_packages, details, environment}``."""
     from tools.transcription_tools import (
-        _get_provider, _load_stt_config, _resolve_command_stt_provider_config, is_stt_enabled)
+        _get_provider,
+        _load_stt_config,
+        _resolve_command_stt_provider_config,
+        is_stt_enabled,
+    )
     stt_config = _load_stt_config()
     stt_enabled = is_stt_enabled(stt_config)
     stt_provider = _get_provider(stt_config)

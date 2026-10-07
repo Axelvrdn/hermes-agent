@@ -4,8 +4,10 @@ import json
 
 import pytest
 
-from tools import apply_layout_tool as al, desktop_ui
+from tools import apply_layout_tool as al
+from tools import desktop_ui
 from tools.registry import registry
+
 
 @pytest.fixture(autouse=True)
 def _reset_emitter():

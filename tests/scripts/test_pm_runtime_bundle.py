@@ -1,10 +1,10 @@
 """A payload carries PM's independent dependency graph, not the app's imports."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -68,7 +68,8 @@ print(json.dumps(YAML(typ='safe').load('isolated: true')))
                              cwd=tmp_path, capture_output=True, text=True, timeout=30)
     assert checked.returncode == 0, checked.stderr
     assert json.loads(checked.stdout) == {"isolated": True}
-    from pm import runtime as runtime_api, paths
+    from pm import paths
+    from pm import runtime as runtime_api
     monkeypatch.setattr(paths, "repo_root", lambda: moved / "hermes-agent")
     command = runtime_api.runtime_command(moved / "hermes-agent/pm/launch.py", ["status"])
     checked = subprocess.run(command, cwd=tmp_path, env=runtime_api.runtime_environment(),

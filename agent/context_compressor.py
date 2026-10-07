@@ -7,20 +7,13 @@ import copy
 import hashlib
 import json
 import logging
-import sqlite3
 import re
+import sqlite3
 import time
 import uuid
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
-from agent.image_eviction_policy import outbound_image_retire_count
-from agent.compression_marker import (
-    ELISION_MARKER_MAX_LEN,
-    _elision_marker,
-    elide,
-    elide_middle,
-)
 from agent.auxiliary_client import (
     CODEX_STREAM_STALL_MARKER,
     AuxiliaryExplicitCancellation,
@@ -31,16 +24,27 @@ from agent.auxiliary_client import (
     call_llm,
     extract_content_or_reasoning,
 )
-from agent.context_engine import ContextEngine, sanitize_memory_context
+from agent.compression_marker import (
+    ELISION_MARKER_MAX_LEN,
+    _elision_marker,
+    elide,
+    elide_middle,
+)
 from agent.context_compressor_prellm import PreLlmSkipMixin
 from agent.context_compressor_summary import SummaryDispatchMixin
+from agent.context_engine import ContextEngine, sanitize_memory_context
 from agent.error_classifier import FailoverReason, classify_api_error
+from agent.image_eviction_policy import outbound_image_retire_count
 from agent.micro_compaction import MicroCompactionMixin
-from agent.prompt_builder import STEER_DISPLAY_KIND
 from agent.model_metadata import (
-    CHARS_PER_TOKEN, MINIMUM_CONTEXT_LENGTH, get_model_context_length, estimate_messages_tokens_rough, estimate_tokens_rough,
+    CHARS_PER_TOKEN,
+    MINIMUM_CONTEXT_LENGTH,
+    estimate_messages_tokens_rough,
+    estimate_tokens_rough,
+    get_model_context_length,
     strip_opaque_replay_items,
 )
+from agent.prompt_builder import STEER_DISPLAY_KIND
 from agent.redact import redact_sensitive_text
 from agent.turn_context import drop_stale_api_content
 from tools.todo_tool import TODO_INJECTION_HEADER
@@ -2712,7 +2716,9 @@ class ContextCompressor(SummaryDispatchMixin, PreLlmSkipMixin, MicroCompactionMi
         # re-entered the same silent route ~1 min after burning the full window (#112420). A stall cooldown
         # can never be shorter than the window that just failed to show progress.
         with contextlib.suppress(Exception):
-            from agent.conversation_compression import resolve_context_compression_timeouts
+            from agent.conversation_compression import (
+                resolve_context_compression_timeouts,
+            )
             idle, _ceiling = resolve_context_compression_timeouts()
             seconds = max(seconds, float(idle))
         self._record_compression_failure_cooldown(seconds, stamped)
@@ -4436,9 +4442,14 @@ Write only the summary body. Do not include any preamble or prefix."""
         text = _content_text_for_contains(message.get("content")).strip()
         # Recovery nudges are scaffolding, not human turns; lazy import avoids an import cycle.
         from agent.conversation_loop import (
-            _CODEX_ACK_CONTINUATION_NUDGE, _CODEX_INCOMPLETE_NUDGE, _DEGENERATE_FINAL_NUDGE,
-            _DROPPED_TOOLCALL_NUDGE_CONTENT, _EMPTY_TOOL_RESPONSE_NUDGE, _LENGTH_CONTINUATION_DROPPED_TOOLS_PREFIX,
-            _LEGACY_LENGTH_CONTINUATION_NETWORK_STUB, _LENGTH_CONTINUATION_NETWORK_STUB,
+            _CODEX_ACK_CONTINUATION_NUDGE,
+            _CODEX_INCOMPLETE_NUDGE,
+            _DEGENERATE_FINAL_NUDGE,
+            _DROPPED_TOOLCALL_NUDGE_CONTENT,
+            _EMPTY_TOOL_RESPONSE_NUDGE,
+            _LEGACY_LENGTH_CONTINUATION_NETWORK_STUB,
+            _LENGTH_CONTINUATION_DROPPED_TOOLS_PREFIX,
+            _LENGTH_CONTINUATION_NETWORK_STUB,
             _LENGTH_CONTINUATION_OUTPUT_LIMIT,
         )
         return text in {
@@ -5044,7 +5055,11 @@ Write only the summary body. Do not include any preamble or prefix."""
         # occurrence of it. When the original survived in the protected head,
         # retaining it gives the durable transcript two active rows with the
         # same message_uid and renders the request twice after reload.
-        from agent.message_metadata import MESSAGE_UID, message_uid_or_none, record_absorbed_message
+        from agent.message_metadata import (
+            MESSAGE_UID,
+            message_uid_or_none,
+            record_absorbed_message,
+        )
 
         if replay_uid := message_uid_or_none(replay):
             before = len(compressed)
@@ -5145,13 +5160,18 @@ Write only the summary body. Do not include any preamble or prefix."""
         """Per-message tail budget on a preserved-thinking native Anthropic route, else None. That route
         replays exactly the projected carriers minus this session's rejected signatures — what the
         preflight estimate prices — never the canonical ``reasoning`` keys."""
-        from agent.anthropic_thinking_policy import native_anthropic_preserves_prior_thinking
+        from agent.anthropic_thinking_policy import (
+            native_anthropic_preserves_prior_thinking,
+        )
 
         if (getattr(self, "api_mode", "") or "") != "anthropic_messages" or not native_anthropic_preserves_prior_thinking(
             getattr(self, "base_url", ""), getattr(self, "model", "")
         ):
             return None
-        from agent.anthropic_thinking_replay import session_rejected_thinking, strip_rejected_thinking
+        from agent.anthropic_thinking_replay import (
+            session_rejected_thinking,
+            strip_rejected_thinking,
+        )
         from agent.message_sanitization import native_anthropic_accounting_projection
 
         rejected = session_rejected_thinking(self, getattr(self, "_session_db", None), getattr(self, "_session_id", ""))

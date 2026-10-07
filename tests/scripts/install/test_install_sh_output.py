@@ -1,10 +1,10 @@
 """install.sh child output: one status line on a terminal, the full stream in CI."""
 import os
-from pathlib import Path
 import pty
 import re
 import shlex
 import subprocess
+from pathlib import Path
 
 import pytest
 

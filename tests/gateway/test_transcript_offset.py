@@ -15,7 +15,6 @@ to ``_run_agent``'s return dict and uses it for the slice.
 
 from gateway.run import _preserve_queued_followup_history_offset
 
-
 # ---------------------------------------------------------------------------
 # Helpers - replicate the filtering logic from _run_agent
 # ---------------------------------------------------------------------------

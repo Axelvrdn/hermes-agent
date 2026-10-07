@@ -18,8 +18,6 @@ import pytest
 from hermes_cli.observability import shared_metrics_contract as contract
 
 
-
-
 def test_acp_sessions_are_interactive():
     """An editor session is a human at a keyboard, like cli/tui/desktop."""
     fields = contract.task_start_fields({"platform": "acp"})

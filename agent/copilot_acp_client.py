@@ -25,11 +25,19 @@ from typing import Any
 
 from agent.acp_openai_bridge import (
     completion_to_stream_chunks as _completion_to_stream_chunks,
+)
+from agent.acp_openai_bridge import (
     extract_tool_calls_from_text as _extract_tool_calls_from_text,
+)
+from agent.acp_openai_bridge import (
     render_tool_bridge_sections as _render_tool_bridge_sections,
 )
 from agent.file_safety import (
-    get_nt_namespace_error, get_read_block_error, get_write_denied_error, is_write_approval_required)
+    get_nt_namespace_error,
+    get_read_block_error,
+    get_write_denied_error,
+    is_write_approval_required,
+)
 from agent.redact import redact_sensitive_text
 from tools.environments.local import hermes_subprocess_env
 
@@ -358,7 +366,9 @@ class CopilotACPClient:
                 "HERMES_COPILOT_ACP_COMMAND / HERMES_COPILOT_ACP_ARGS to a working pair."
             )
         try:
-            from hermes_cli._subprocess_compat import windows_hide_flags  # hide the Windows console flash (#56747); pipes intact for the ACP wire
+            from hermes_cli._subprocess_compat import (
+                windows_hide_flags,  # hide the Windows console flash (#56747); pipes intact for the ACP wire
+            )
 
             # Hide the console the CLI child would otherwise flash on Windows (#56747). Hide-only — stdio
             # pipes stay intact for the ACP wire.

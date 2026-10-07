@@ -179,7 +179,11 @@ def lazy_installs_allowed() -> bool:
     ):
         return False
     try:
-        from hermes_cli.config import cfg_get, load_config_readonly, require_readable_config_before_write
+        from hermes_cli.config import (
+            cfg_get,
+            load_config_readonly,
+            require_readable_config_before_write,
+        )
     except ModuleNotFoundError as exc:
         return exc.name in {"hermes_cli", "hermes_cli.config"}
     except ImportError:
@@ -633,6 +637,7 @@ def _still_declared(package, recorded: list[str]) -> list[str]:
     recorded spelling is what reaches uv.
     """
     import re
+
     from pm.features import declared_extras
 
     def normalized(name: str) -> str:
@@ -698,8 +703,8 @@ def _feature_policy(extras: Optional[list[str]], *, repair: bool) -> tuple[list[
 @contextmanager
 def _venv_install_lock(*, patient: bool):
     """Hold the dependency lock, or refuse when an impatient caller would queue."""
-    from pm import receipt
     from hermes_cli.runtime_state import INSTALL_LOCK_TIMEOUT_SECONDS, runtime_lock
+    from pm import receipt
 
     # Holding this lock means rebuilding the whole dependency environment, which takes tens of
     # seconds on a bundle. Only an install the user asked for may queue for it; an opportunistic
@@ -730,8 +735,8 @@ def _publication(plugins: PluginInput | None):
 
 def _publish_inactive(change) -> None:
     """A disabled plugin's code changes without touching the dependency environment."""
-    from pm import receipt
     from hermes_cli.runtime_state import finish_publication, recover_publication
+    from pm import receipt
 
     try:
         change.publish(paths.repo_root())
@@ -761,8 +766,8 @@ def _target_selection(package, fact: dict, *, extras, inputs: dict, repair: bool
 def _commit_selection(package, facts: Facts, change, *, enabled: list[str], stamp: str, inputs: dict,
                       current: bool, repair: bool, explicit: bool, skip_invalid_secondary: bool = False) -> None:
     """Build (unless current), publish the plugin change, then record the selection."""
-    from pm import receipt
     from hermes_cli.runtime_state import finish_publication, recover_publication
+    from pm import receipt
 
     try:
         result = {} if current else (package.apply(enabled, explicit=explicit,

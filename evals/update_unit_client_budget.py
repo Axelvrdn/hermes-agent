@@ -1,11 +1,11 @@
 """Real disposable user-systemd transaction, never a production gateway."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 repo, tag, output = sys.argv[1:4]
 catchup = sys.argv[4:] == ["--catchup"]
@@ -17,6 +17,7 @@ os.environ.clear()
 os.environ.update(allowed, HOME=str(home), HERMES_HOME=str(home / "hermes"))
 sys.path.insert(0, repo)
 from hermes_cli import update_cmd_fleet as fleet
+
 _systemctl_reset_and_restart = fleet._systemctl_reset_and_restart
 actual_systemctl = fleet._systemctl
 def scoped_systemctl(argv, *, timeout):

@@ -18,7 +18,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Iterator, Optional
 
-
 # ---------------------------------------------------------------------------
 # Safety exclusions
 # ---------------------------------------------------------------------------
@@ -148,7 +147,10 @@ def scan_approval_history(db_path: Optional[Path] = None, days: int = 90) -> lis
     """``(command, dangerous_class_description)`` records for dangerous-classified terminal commands
     that actually executed (i.e. carried an implied user approval).
     """
-    from tools.approval_detection import detect_dangerous_command, detect_hardline_command
+    from tools.approval_detection import (
+        detect_dangerous_command,
+        detect_hardline_command,
+    )
     path = Path(db_path) if db_path else default_db_path()
     if not path.exists():
         return []
@@ -180,7 +182,10 @@ def scan_approval_history(db_path: Optional[Path] = None, days: int = 90) -> lis
 
 def normalize_command(command: str) -> str:
     """Fold user/hermes home prefixes and collapse whitespace."""
-    from tools.approval_detection import _rewrite_resolved_hermes_home, _rewrite_resolved_user_home
+    from tools.approval_detection import (
+        _rewrite_resolved_hermes_home,
+        _rewrite_resolved_user_home,
+    )
     return " ".join(_rewrite_resolved_user_home(_rewrite_resolved_hermes_home(command)).split())
 
 

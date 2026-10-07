@@ -10,8 +10,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
-from hermes_constants import get_hermes_home
 from hermes_cli.plugins_manifest import _portable_skill_namespace
+from hermes_constants import get_hermes_home
 
 _PLUGIN_SETTING_SEGMENT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$")
 _PLUGIN_SETTING_RESERVED_ROOTS = frozenset({"model", "plugins", "security", "settings"})

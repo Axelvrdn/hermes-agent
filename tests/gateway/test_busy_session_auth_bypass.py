@@ -5,13 +5,12 @@ messages from non-allowlisted users must be silently dropped — matching the co
 behavior in _handle_message. Previously, the busy path skipped the auth check entirely,
 allowing unauthorized users to inject text into another user's running session.
 """
+import sys
 import time
+import types
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
-import sys
-import types
 
 # Minimal stubs for gateway imports
 _tg = types.ModuleType("telegram")
@@ -30,7 +29,6 @@ from gateway.platforms.base import (
     build_session_key,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -58,7 +56,7 @@ def _make_event(text="hello", chat_id="123", user_id="user1", user_name="TestUse
 
 def _make_runner(authorized_users=None):
     """Build a minimal GatewayRunner with configurable auth."""
-    from gateway.run import GatewayRunner, _AGENT_PENDING_SENTINEL
+    from gateway.run import _AGENT_PENDING_SENTINEL, GatewayRunner
 
     if authorized_users is None:
         authorized_users = {"user1"}  # only user1 is authorized by default

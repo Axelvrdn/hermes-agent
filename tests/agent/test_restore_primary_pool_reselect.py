@@ -11,7 +11,6 @@ exhausting remaining entries and falling through to cross-provider fallback.
 import time
 from unittest.mock import MagicMock
 
-
 from agent.credential_pool import (
     AUTH_TYPE_OAUTH,
     PooledCredential,

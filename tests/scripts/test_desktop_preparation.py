@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -102,8 +102,8 @@ def test_prepared_input_roundtrip_rejects_mutation_and_foreign_source(tmp_path):
     cache = tmp_path / "cache"
     request = BuildRequest.create(source, tag=None, commit=commit, variant="light", work=work, cache=cache, bundle_env={})
     from pm.lock import Facts
-    from pm.store import tree_digest
     from pm.registry import get_package
+    from pm.store import tree_digest
     store = cache / "tools"
     binaries = {}
     for name in ("python", "node", "npm"):

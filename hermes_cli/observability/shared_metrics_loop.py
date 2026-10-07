@@ -114,7 +114,12 @@ def _memory_origin() -> str:
 
 
 def memory_op_fields(*, op: Any, provider: Any, outcome: Any, origin: Any, failure_class: Any) -> dict[str, str]:
-    from .shared_metrics_contract import MEMORY_OP_FAILURE_CLASSES, MEMORY_OP_ORIGINS, MEMORY_OP_OUTCOMES, MEMORY_OPS
+    from .shared_metrics_contract import (
+        MEMORY_OP_FAILURE_CLASSES,
+        MEMORY_OP_ORIGINS,
+        MEMORY_OP_OUTCOMES,
+        MEMORY_OPS,
+    )
 
     outcome_value, origin_value, class_value = _norm(outcome), _norm(origin), _norm(failure_class)
     outcome_value = outcome_value if outcome_value in MEMORY_OP_OUTCOMES else "failed"

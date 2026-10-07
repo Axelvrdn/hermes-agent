@@ -13,13 +13,15 @@ import shutil
 import sys
 import threading
 import time
+from contextlib import suppress
+
+from prompt_toolkit.application import Application
+from rich.markup import escape as _escape
+
 from agent.i18n import t
 from agent.interrupt_compat import request_hard_interrupt
 from agent.pet import render as pet_render
-from contextlib import suppress
 from hermes_constants import get_hermes_home
-from prompt_toolkit.application import Application
-from rich.markup import escape as _escape
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("cli")
@@ -61,7 +63,16 @@ class CLITuiRuntimeMixin:
 
     def _tui_process_one_input(self, user_input):
         """Route one submitted input: file drop, /resume pick, ! shell, slash command, or a chat turn."""
-        from cli import _DIM, _PASTE_REF_RE, _RST, _cprint, _detect_file_drop, _looks_like_slash_command, _strip_leaked_bracketed_paste_wrappers, _strip_leaked_terminal_responses_with_meta
+        from cli import (
+            _DIM,
+            _PASTE_REF_RE,
+            _RST,
+            _cprint,
+            _detect_file_drop,
+            _looks_like_slash_command,
+            _strip_leaked_bracketed_paste_wrappers,
+            _strip_leaked_terminal_responses_with_meta,
+        )
         from tools.process_registry_notifications import TimelineNotification
         user_input, is_voice_input, is_seeded_query = self._tui_unwrap_input(user_input)
         if not user_input:
@@ -202,7 +213,10 @@ class CLITuiRuntimeMixin:
         ``logger.debug`` is guarded: logging is not reentrant-safe and a shutdown race
         can raise ``KeyError`` inside the handler, bypassing prompt_toolkit's unwind.
         """
-        from cli import _arm_exit_watchdog_on_shutdown_signal, _interrupt_agent_for_signal
+        from cli import (
+            _arm_exit_watchdog_on_shutdown_signal,
+            _interrupt_agent_for_signal,
+        )
         with suppress(Exception):
             logger.debug("Received signal %s, triggering graceful shutdown", signum)
         # Arm the backstop IMMEDIATELY: if the unwind wedges, _run_cleanup never arms its own.
@@ -255,8 +269,8 @@ class CLITuiRuntimeMixin:
         # so; this TTY is where they can. Either answer pins an image, so it is asked once.
         if sys.stdin.isatty():
             try:
-                from hermes_cli.sandbox_image_switch import offer_interactive
                 from cli import _cprint
+                from hermes_cli.sandbox_image_switch import offer_interactive
                 offer_interactive(cprint=_cprint)
             except Exception:
                 logger.debug("sandbox image switch offer failed", exc_info=True)
@@ -301,8 +315,9 @@ class CLITuiRuntimeMixin:
         if os.environ.get("HERMES_DEFER_AGENT_STARTUP") != "1":
             def _prewarm_agent_runtime() -> None:
                 try:
-                    import run_agent  # noqa: F401  (imports model_tools + tool registry)
                     import openai  # noqa: F401
+
+                    import run_agent  # noqa: F401  (imports model_tools + tool registry)
                 except Exception:
                     logger.debug("agent runtime pre-import failed", exc_info=True)
 
@@ -323,7 +338,11 @@ class CLITuiRuntimeMixin:
         # One-time banner when ~/.openclaw/ is left over from a migration.
         try:
             from agent.onboarding import (
-                OPENCLAW_RESIDUE_FLAG, detect_openclaw_residue, is_seen, mark_seen, openclaw_residue_hint_cli,
+                OPENCLAW_RESIDUE_FLAG,
+                detect_openclaw_residue,
+                is_seen,
+                mark_seen,
+                openclaw_residue_hint_cli,
             )
             if not is_seen(self.config, OPENCLAW_RESIDUE_FLAG) and detect_openclaw_residue():
                 try:
@@ -357,7 +376,12 @@ class CLITuiRuntimeMixin:
 
     def _tui_build_application(self, layout, kb, style):
         """Construct the prompt_toolkit Application for the REPL."""
-        from cli import CLI_CONFIG, EditingMode, _STEADY_CURSOR, _select_classic_cli_pt_output
+        from cli import (
+            _STEADY_CURSOR,
+            CLI_CONFIG,
+            EditingMode,
+            _select_classic_cli_pt_output,
+        )
         _cpr_disabled_output = _select_classic_cli_pt_output(sys.stdout)
 
         # Kitty placeholders encode the image id in exact foreground RGB, so the whole app
@@ -439,7 +463,16 @@ class CLITuiRuntimeMixin:
 
     def _tui_shutdown(self):
         """Teardown after the app exits: interrupt agent, stop voice/pet, persist + close session, cleanup, exit summary."""
-        from cli import _DIM, _RST, _cprint, _invoke_interrupted_session_end, _run_cleanup, set_approval_callback, set_secret_capture_callback, set_sudo_password_callback
+        from cli import (
+            _DIM,
+            _RST,
+            _cprint,
+            _invoke_interrupted_session_end,
+            _run_cleanup,
+            set_approval_callback,
+            set_secret_capture_callback,
+            set_sudo_password_callback,
+        )
         self._should_exit = True
         self._pet_stop_anim()
         # Without this line the terminal sits silent through the whole cleanup window.
@@ -455,8 +488,12 @@ class CLITuiRuntimeMixin:
         with suppress(Exception):
             from tools.voice_mode import cleanup_temp_recordings
             cleanup_temp_recordings()
-        from agent.vault_backends.unlock import (lock as _vault_lock, set_code_prompt_callback,
-                                                 set_save_login_prompt_callback, set_unlock_prompt_callback)
+        from agent.vault_backends.unlock import lock as _vault_lock
+        from agent.vault_backends.unlock import (
+            set_code_prompt_callback,
+            set_save_login_prompt_callback,
+            set_unlock_prompt_callback,
+        )
         for _unset in (set_sudo_password_callback, set_approval_callback, set_secret_capture_callback,
                        set_unlock_prompt_callback, set_save_login_prompt_callback, set_code_prompt_callback):
             _unset(None)

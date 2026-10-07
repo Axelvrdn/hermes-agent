@@ -1,11 +1,11 @@
 """Command diagnostics use the same selection and launch contract as setup."""
 
 import json
-from argparse import Namespace
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from argparse import Namespace
+from pathlib import Path
 
 import pytest
 
@@ -135,6 +135,7 @@ def test_fix_preserves_user_managed_commands(tmp_path, monkeypatch, capsys, kind
 @pytest.mark.parametrize("active", [True, False])
 def test_doctor_reports_selected_import_tree_not_interpreter_prefix(tmp_path, monkeypatch, capsys, layout, active):
     import importlib
+
     import pm.paths
 
     project, _home, _command = _tree(tmp_path, monkeypatch)

@@ -6,12 +6,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from gateway.session import SessionSource, build_session_key
-from gateway.run import GatewayRunner
-from gateway.profile_routing import ProfileRoute, ProfileRouteRejected
 from gateway.config import GatewayConfig, Platform
 from gateway.platforms.base import BasePlatformAdapter
 from gateway.platforms.event import MessageEvent
+from gateway.profile_routing import ProfileRoute, ProfileRouteRejected
+from gateway.run import GatewayRunner
+from gateway.session import SessionSource, build_session_key
 
 
 @pytest.fixture

@@ -11,12 +11,12 @@ set_current_session_id().
 """
 import pytest
 
-from gateway.session_context import (
-    get_session_env,
-    _VAR_MAP,
-    _UNSET,
-)
 import tui_gateway.server as server
+from gateway.session_context import (
+    _UNSET,
+    _VAR_MAP,
+    get_session_env,
+)
 
 
 @pytest.fixture(autouse=True)

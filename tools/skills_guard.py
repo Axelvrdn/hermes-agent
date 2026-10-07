@@ -7,16 +7,15 @@ Known gap: language write APIs (open(..., 'w'), Path.write_text, shutil.copy*, f
 agent-config files surface only the low *_ref finding — static regexes cannot tie the call to a dynamic
 destination; future coverage belongs as a fourth "mechanical" tier next to agent_config_mod_shell."""
 
-import re
 import fnmatch
 import hashlib
 import json
+import re
 from contextlib import suppress
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Tuple
-
 
 SCANNER_VERSION = "skills-guard-v8"
 

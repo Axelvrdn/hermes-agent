@@ -1,13 +1,13 @@
 """Synchronous PM mutations in an isolated interpreter, never the app's imports."""
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
 import json
-from pathlib import Path
 import subprocess
 import sys
 import threading
 import uuid
+from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 from pm import paths, plugin_inputs
 from pm.package import InstallError, Runner, StatePackage

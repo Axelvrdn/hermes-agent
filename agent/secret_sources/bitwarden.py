@@ -22,12 +22,29 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from agent.secret_sources._cache import (
-    CachedFetch as _CachedFetch, SecretCache, atomic_write_json, entry_from_payload,
-    fingerprint as _token_fingerprint, resolve_cache_home,
+    CachedFetch as _CachedFetch,
+)
+from agent.secret_sources._cache import (
+    SecretCache,
+    atomic_write_json,
+    entry_from_payload,
+    resolve_cache_home,
+)
+from agent.secret_sources._cache import (
+    fingerprint as _token_fingerprint,
 )
 from agent.secret_sources.base import (
-    ErrorKind, FetchResult, SecretSource, classify_cli_error, coerce_float,
-    is_valid_env_name as _is_valid_env_name, get_source_environment, run_cli, source_child_env,
+    ErrorKind,
+    FetchResult,
+    SecretSource,
+    classify_cli_error,
+    coerce_float,
+    get_source_environment,
+    run_cli,
+    source_child_env,
+)
+from agent.secret_sources.base import (
+    is_valid_env_name as _is_valid_env_name,
 )
 
 logger = logging.getLogger(__name__)

@@ -26,8 +26,7 @@ import pytest
 
 from agent.tool_executor import _ConcurrentToolAuthorizationGate
 from tools import approval as approval_mod
-from tools import approval_context
-from tools import approval_human_wait
+from tools import approval_context, approval_human_wait
 
 
 @pytest.fixture(autouse=True)

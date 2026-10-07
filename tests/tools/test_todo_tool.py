@@ -4,6 +4,7 @@ import json
 
 from tools.todo_tool import TodoStore, todo_tool
 
+
 class TestWriteAndRead:
     def test_write_replaces_list(self):
         store = TodoStore()

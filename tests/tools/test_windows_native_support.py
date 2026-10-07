@@ -18,7 +18,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # configure_windows_stdio
 # ---------------------------------------------------------------------------
@@ -59,8 +58,9 @@ class TestConfigureWindowsStdio:
 
     def test_reconfigure_stream_handles_missing_method(self, monkeypatch):
         """StringIO-like objects without .reconfigure() must not blow up."""
-        from hermes_cli import stdio
         import io
+
+        from hermes_cli import stdio
 
         buf = io.StringIO()
         # Must not raise

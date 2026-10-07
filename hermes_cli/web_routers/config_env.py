@@ -4,30 +4,60 @@ Extracted from ``hermes_cli.web_server``; helpers/state that tests monkeypatch o
 ``web_server`` stay there and are late-bound (cycle-safe).
 """
 
+import asyncio
 import contextlib
 import logging
 import re
-import asyncio
 import time
 import urllib.parse
-from fastapi import APIRouter
-from hermes_cli.web_routers._common import (
-    REDACTED_CREDENTIAL_WRITE_DETAIL, http_failure, is_redacted_credential_preview,
-    redacted_credential_preview, scoped_to_thread,
+from typing import Any, Dict, List, Optional, Tuple
+
+from fastapi import APIRouter, HTTPException, Request
+
+from hermes_cli.config import (
+    _ENV_REF_RE,
+    DEFAULT_CONFIG,
+    OPTIONAL_ENV_VARS,
+    _deep_merge,
+    coerce_provider_id,
+    custom_endpoint_key_env,
+    find_provider_entry,
+    get_compatible_custom_providers,
+    read_raw_config,
+    require_readable_config_before_write,
+)
+from hermes_cli.config_providers import (
+    _canonical_api_mode,
+    _custom_provider_entry_to_provider_config,
 )
 from hermes_cli.web_deps import LateState, late
+from hermes_cli.web_models import (
+    ConfigUpdate,
+    CustomEndpointUpdate,
+    EnvVarDelete,
+    EnvVarReveal,
+    EnvVarUpdate,
+)
+from hermes_cli.web_routers._common import (
+    REDACTED_CREDENTIAL_WRITE_DETAIL,
+    http_failure,
+    is_redacted_credential_preview,
+    redacted_credential_preview,
+    scoped_to_thread,
+)
 from hermes_cli.web_server_config import (
-    _apply_main_model_assignment, _denormalize_config_from_web, _normalize_config_for_web, _schema_with_dynamic_provider_options,
+    _apply_main_model_assignment,
+    _denormalize_config_from_web,
+    _normalize_config_for_web,
+    _schema_with_dynamic_provider_options,
     _validated_main_model_selection,
 )
 from hermes_cli.web_server_profiles import (
-    _approval_mode_of, _broadcast_gateway_session_info, _is_other_profile, _parse_model_entries,
+    _approval_mode_of,
+    _broadcast_gateway_session_info,
+    _is_other_profile,
+    _parse_model_entries,
 )
-from fastapi import HTTPException, Request
-from hermes_cli.config import DEFAULT_CONFIG, OPTIONAL_ENV_VARS, read_raw_config, require_readable_config_before_write, custom_endpoint_key_env, coerce_provider_id, find_provider_entry, get_compatible_custom_providers, _ENV_REF_RE, _deep_merge
-from hermes_cli.config_providers import _canonical_api_mode, _custom_provider_entry_to_provider_config
-from hermes_cli.web_models import ConfigUpdate, EnvVarUpdate, EnvVarDelete, EnvVarReveal, CustomEndpointUpdate
-from typing import Any, Dict, List, Optional, Tuple
 
 _log = logging.getLogger("hermes_cli.web_server")
 config_router = APIRouter()
@@ -342,7 +372,10 @@ def _save_env_credential(key: str, value: str, provider_setup: bool = False) -> 
     """Save under the request's profile scope; a new provider API key also counts as a provider setup."""
     from hermes_cli.config import load_env
     from hermes_cli.credential_lifecycle import save_provider_env_credential
-    from hermes_cli.observability.shared_metrics_setup import record_api_key_saved, web_setup_surface
+    from hermes_cli.observability.shared_metrics_setup import (
+        record_api_key_saved,
+        web_setup_surface,
+    )
 
     previous = load_env().get(key)
     result = save_provider_env_credential(key, value)
@@ -602,7 +635,9 @@ def _write_custom_endpoint(cfg: Dict[str, Any], body: CustomEndpointUpdate) -> T
         # Settings saves the row the list rendered. A legacy custom_providers
         # entry is not in providers, so resolving only there forked a keyless
         # twin and left the list row (and its key_env) behind.
-        from hermes_cli.config_providers import _custom_provider_entry_to_provider_config
+        from hermes_cli.config_providers import (
+            _custom_provider_entry_to_provider_config,
+        )
 
         legacy = _pop_legacy_custom_provider(cfg, endpoint_id)
         converted = (
@@ -764,7 +799,10 @@ def upsert_custom_endpoint(body: CustomEndpointUpdate, profile: Optional[str] = 
 
 def _record_custom_endpoint_setup(home: Any) -> None:
     """Counted after the config lock is released (a cold metrics runtime must not stall writers)."""
-    from hermes_cli.observability.shared_metrics_setup import record_provider_setup_done, web_setup_surface
+    from hermes_cli.observability.shared_metrics_setup import (
+        record_provider_setup_done,
+        web_setup_surface,
+    )
 
     record_provider_setup_done(web_setup_surface(), "custom", hermes_home=home, background=True)
 
@@ -991,6 +1029,7 @@ def _endpoint_probe_client(url: str, timeout: float):
     system proxy (Clash on Windows, corporate) answered the ``127.0.0.1`` probe with its own error
     page and the GUI reported "advertised no models" while the CLI saw the model (#63472)."""
     import httpx
+
     from agent.model_metadata import is_local_endpoint
     return httpx.AsyncClient(timeout=httpx.Timeout(timeout), trust_env=not is_local_endpoint(url))
 

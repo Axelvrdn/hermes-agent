@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 import subprocess
-from typing import Any, Dict, List, Tuple, Self
+from typing import Any, Dict, List, Self, Tuple
 
 import pytest
 

@@ -21,18 +21,20 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
 from urllib.parse import unquote
 
-from gateway.platforms._shared import (
-    decode_json_list_literal as _decode_json_list_literal, get_scoped_secret as _get_scoped_secret,
-    platform_gate_env as _platform_gate_env, seed_extra_from_env as _seed_extra_from_env, send_error
-)
 from gateway.config import Platform, PlatformConfig
-from hermes_constants import hermes_home_key
+from gateway.platforms._shared import (
+    decode_json_list_literal as _decode_json_list_literal,
+)
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import platform_gate_env as _platform_gate_env
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms._shared import send_error
 from gateway.platforms.base import BasePlatformAdapter, SendResult, cache_image_from_url
-from gateway.platforms.helpers import cancel_task
 from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import cancel_task
+from hermes_constants import hermes_home_key
 
 logger = logging.getLogger(__name__)
 
@@ -516,8 +518,9 @@ class SimplexAdapter(BasePlatformAdapter):
         png_path = str(p.with_suffix(".png")) if needs_png else file_path
         thumb_uri = ""
         try:
-            from PIL import Image
             import io
+
+            from PIL import Image
             img = Image.open(file_path)
             if needs_png:
                 img.save(png_path, "PNG")
@@ -677,8 +680,8 @@ _SETUP_PROMPTS = (
 
 def interactive_setup() -> None:
     """``hermes setup gateway`` → SimpleX wizard (writes ``~/.hermes/.env``); CLI helpers are lazy-imported."""
-    from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli.cli_output import print_header, print_info, prompt
+    from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli.setup_platforms import declines_reconfigure
     print_header("SimpleX Chat")
     if declines_reconfigure("SimpleX", "Reconfigure SimpleX?", "SIMPLEX_WS_URL"):

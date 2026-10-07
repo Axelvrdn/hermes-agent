@@ -135,8 +135,8 @@ def _confirmed(args: argparse.Namespace, prompt: str) -> bool:
 
 
 def cmd_clear(args: argparse.Namespace) -> int:
-    from tools.checkpoint_manager import CHECKPOINT_BASE
     from tools.checkpoint_maintenance import clear_all, store_status
+    from tools.checkpoint_manager import CHECKPOINT_BASE
 
     info = store_status()
     if info["total_size_bytes"] == 0 and not Path(CHECKPOINT_BASE).exists():

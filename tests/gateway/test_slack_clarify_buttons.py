@@ -47,8 +47,8 @@ def _ensure_slack_mock():
 
 _ensure_slack_mock()
 
-from plugins.platforms.slack.adapter import SlackAdapter
 from gateway.config import PlatformConfig
+from plugins.platforms.slack.adapter import SlackAdapter
 
 
 def _make_adapter():

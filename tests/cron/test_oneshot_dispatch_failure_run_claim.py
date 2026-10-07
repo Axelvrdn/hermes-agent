@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import cron.jobs as jobs_mod
 from cron.jobs import clear_run_claim
 
+
 @pytest.fixture
 def cron_store(tmp_path, monkeypatch):
     hermes_home = tmp_path / ".hermes"

@@ -20,6 +20,8 @@ sys.modules.setdefault("fal_client", types.SimpleNamespace())
 
 from agent.sdk_transform_bypass import (
     _is_plain_json_data,
+)
+from agent.sdk_transform_bypass import (
     bypass_sdk_request_transform as _bypass_sdk_request_transform,
 )
 

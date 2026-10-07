@@ -18,7 +18,8 @@ class TestTuiApprovalEmitRedaction:
     @staticmethod
     def _sent(monkeypatch):
         """Capture the ``approval`` server request frame ``_emit_approval_request`` sends."""
-        from tui_gateway import server as tui_server, server_requests
+        from tui_gateway import server as tui_server
+        from tui_gateway import server_requests
 
         sent = {}
         monkeypatch.setattr(server_requests, "send_async",

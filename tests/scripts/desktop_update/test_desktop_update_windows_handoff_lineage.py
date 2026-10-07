@@ -6,22 +6,22 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import pytest
 
 from tests.scripts.desktop_update.lineage_rule_cases import ENV_CASES, RULE_CASES
 from tests.scripts.desktop_update.windows_handoff_support import (
-    SCRIPT,
     MARKER,
     MARKER_PS1,
     POWERSHELL,
+    SCRIPT,
     _creation_time,
-    _script,
     _finish,
+    _script,
     _wait_for_log,
 )
 

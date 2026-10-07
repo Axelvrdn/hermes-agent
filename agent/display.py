@@ -15,10 +15,13 @@ from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import urlsplit
 
-from utils import safe_json_loads
 from agent.i18n import t
 from agent.redact import redact_sensitive_text
-from agent.tool_result_classification import file_mutation_result_landed, is_guardrail_refusal
+from agent.tool_result_classification import (
+    file_mutation_result_landed,
+    is_guardrail_refusal,
+)
+from utils import safe_json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -668,7 +671,10 @@ def _resolve_local_edit_paths(tool_name: str, function_args: dict | None, task_i
         return _resolve_skill_manage_paths(function_args)
     path = function_args.get("path") if tool_name in {"write_file", "patch"} else None
     if path and task_id is not None:
-        from tools.file_tools_paths import _resolve_path_for_task, _terminal_env_type_for_task
+        from tools.file_tools_paths import (
+            _resolve_path_for_task,
+            _terminal_env_type_for_task,
+        )
 
         # A remote target may happen to exist on this host too. Never persist a
         # preview of that unrelated file; patch can still supply its own diff.

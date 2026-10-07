@@ -8,8 +8,8 @@ from __future__ import annotations
 import sys
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli import auth as auth_mod
 from hermes_cli.model_switch import switch_model
 from hermes_cli.providers import resolve_provider_full

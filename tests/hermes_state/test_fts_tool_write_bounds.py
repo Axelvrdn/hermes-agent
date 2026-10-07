@@ -4,9 +4,9 @@ import pytest
 
 from hermes_state import SessionDB
 from hermes_state_common import (
+    _FTS_TRIGGERS,
     FTS_TOOL_CONTENT_PREFIX_CHARS,
     LEGACY_FTS_SQL,
-    _FTS_TRIGGERS,
 )
 
 

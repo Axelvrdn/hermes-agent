@@ -8,10 +8,15 @@ import pytest
 
 @pytest.mark.parametrize('paint_source', ['modal', 'tick'])
 def test_prompt_paint_yields_monitor_but_ordinary_paint_does_not(monkeypatch, paint_source):
-    from hermes_cli.cli_subagent_monitor import SubagentMonitor, build_monitor_application, install_dock
-    from hermes_cli.cli_terminal_mixin import CLITerminalMixin
     from prompt_toolkit.input import create_pipe_input
     from prompt_toolkit.output import DummyOutput
+
+    from hermes_cli.cli_subagent_monitor import (
+        SubagentMonitor,
+        build_monitor_application,
+        install_dock,
+    )
+    from hermes_cli.cli_terminal_mixin import CLITerminalMixin
 
     async def run():
         for name in ('_approval_state', '_clarify_state', '_secret_state', '_sudo_state',
@@ -72,13 +77,17 @@ def test_prompt_paint_yields_monitor_but_ordinary_paint_does_not(monkeypatch, pa
 
 
 def test_secret_callback_yields_monitor_and_restores_composer():
-    from hermes_cli.cli_subagent_monitor import SubagentMonitor, build_monitor_application
-    from hermes_cli.cli_terminal_mixin import CLITerminalMixin
-    from hermes_cli.cli_modal_mixin import CLIModalMixin
     from prompt_toolkit.buffer import Buffer
     from prompt_toolkit.document import Document
     from prompt_toolkit.input import create_pipe_input
     from prompt_toolkit.output import DummyOutput
+
+    from hermes_cli.cli_modal_mixin import CLIModalMixin
+    from hermes_cli.cli_subagent_monitor import (
+        SubagentMonitor,
+        build_monitor_application,
+    )
+    from hermes_cli.cli_terminal_mixin import CLITerminalMixin
 
     class CLI(CLIModalMixin, CLITerminalMixin):
         def _ring_bell(self, **kwargs):

@@ -47,6 +47,7 @@ def test_invalid_creation_is_rejected_without_writes(tmp_path):
             assert result["success"] is False, (flags, result)
             assert jobs.load_jobs() == []
         from types import SimpleNamespace
+
         from hermes_cli.main import cmd_cron
 
         args = SimpleNamespace(cron_command="create", schedule="every 1h", prompt="invalid",

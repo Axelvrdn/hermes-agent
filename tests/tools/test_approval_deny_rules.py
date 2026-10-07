@@ -9,9 +9,10 @@ import shlex
 
 import pytest
 
-from tools import approval as mod
 import tools.approval_floors as approval_floors
+from tools import approval as mod
 from tools import approval_context
+
 
 @pytest.fixture
 def deny_config(monkeypatch):

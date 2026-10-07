@@ -50,8 +50,12 @@ def _cdp_http_reachable(parsed, timeout: float = 2.0) -> bool:
 def _connect_local_default(port: int, system: str, announce) -> str | None:
     """Discover (or launch) the default local debug browser → CDP URL, or None after announcing."""
     from hermes_cli.browser_connect import (
-        discover_local_cdp_url, find_free_debug_port, launch_chrome_debug, local_port_in_use,
-        manual_chrome_debug_command)
+        discover_local_cdp_url,
+        find_free_debug_port,
+        launch_chrome_debug,
+        local_port_in_use,
+        manual_chrome_debug_command,
+    )
 
     # Dual-stack discovery: when another app squats the IPv4 loopback on the debug port, a
     # browser bound there comes up on [::1] only; an IPv4-only probe misses it AND hangs
@@ -95,9 +99,10 @@ def _connect_local_default(port: int, system: str, announce) -> str | None:
 
 def _browser_connect(rid, params: dict) -> dict:
     import platform
+    from urllib.parse import urlparse
+
     from hermes_cli.browser_connect import DEFAULT_BROWSER_CDP_URL
     from tools.browser_tool_lifecycle import cleanup_all_browsers
-    from urllib.parse import urlparse
     raw_url = params.get("url")
     if raw_url is not None and not isinstance(raw_url, str):
         return _err(rid, 4015, f"browser url must be a string, got {type(raw_url).__name__}")

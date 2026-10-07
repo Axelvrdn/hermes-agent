@@ -9,7 +9,6 @@ import re
 import sys
 from pathlib import Path
 
-
 SKILL_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE = SKILL_DIR / "assets" / "job.template.json"
 ASPECT_DEFAULTS = {

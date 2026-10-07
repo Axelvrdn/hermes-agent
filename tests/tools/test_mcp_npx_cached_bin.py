@@ -128,6 +128,7 @@ def test_unusable_args_are_ignored(args):
 @pytest.mark.parametrize("rejected", [False, True])
 def test_preflight_checks_original_package_before_cache_access(tmp_path, monkeypatch, rejected):
     import asyncio
+
     from tools import mcp_tool
 
     target = _cache(tmp_path, package="mcp-linear", bin_field={"mcp-linear": "i.js"})

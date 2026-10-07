@@ -1,9 +1,9 @@
 """Packaged facts describe final tool bytes without changing their identity."""
 import copy
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 

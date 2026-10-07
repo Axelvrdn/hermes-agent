@@ -17,14 +17,14 @@ import sys
 import tempfile
 import threading
 import time
-from typing import Dict, Any, Optional, Union
 from pathlib import Path
+from typing import Any, Dict, Optional, Union
+
 from agent.redact import redact_cdp_url
-from hermes_constants import get_hermes_home, hermes_home_key
-from utils import env_int
 from hermes_cli.config import DEFAULT_CONFIG, cfg_get
 from hermes_cli.observability.shared_metrics_loop import record_browser_call
-
+from hermes_constants import get_hermes_home, hermes_home_key
+from utils import env_int
 
 # Env keys re-added to the agent-browser subprocess AFTER credential stripping.
 # agent-browser is a Node process loading npm deps: a compromised transitive
@@ -49,10 +49,13 @@ def _build_browser_env() -> dict:
     harnesses stub the ``tools`` package). The passthrough keys are re-added from the active
     profile's secret scope, never ``os.environ``: under multiplex that holds the LAUNCH profile's
     Browserbase/Firecrawl keys, and a served profile's browser must run on its own (or none)."""
-    from agent.secret_scope import current_secret_scope, get_secret, serves_routed_profile
-    from tools.environments.local import served_profile_child_env
-
     from agent.proxy_bypass import add_loopback_no_proxy
+    from agent.secret_scope import (
+        current_secret_scope,
+        get_secret,
+        serves_routed_profile,
+    )
+    from tools.environments.local import served_profile_child_env
 
     env = served_profile_child_env(inherit_credentials=False)
     # A routed profile (multiplex, or a Desktop/dashboard backend serving ``?profile=B`` with the
@@ -85,8 +88,14 @@ except Exception:
 try:
     from tools.url_safety import (
         _is_declared_fake_ip,
-        is_safe_url as _is_safe_url,
+    )
+    from tools.url_safety import (
         is_always_blocked_url as _is_always_blocked_url,
+    )
+    from tools.url_safety import (
+        is_safe_url as _is_safe_url,
+    )
+    from tools.url_safety import (
         normalize_url_for_request as _normalize_url_for_request,
     )
 except Exception:
@@ -97,8 +106,11 @@ except Exception:
 # Browser-provider ABC + registry; per-vendor providers live under
 # ``plugins/browser/<vendor>/``. The dispatcher consults the registry. See #25214.
 from agent.browser_provider import BrowserProvider
+
 try:
-    from agent.browser_registry import registry_generation as _browser_registry_generation
+    from agent.browser_registry import (
+        registry_generation as _browser_registry_generation,
+    )
 except ImportError:
     # Isolated compat tests install a minimal ``agent.browser_registry`` stub
     # with only ``get_provider``; no mutable registry → constant generation.
@@ -111,7 +123,9 @@ try:
 except ImportError:
     _is_camofox_mode = lambda: False  # noqa: E731
 try:
-    from tools.browser_use_cli import is_browser_use_cli_mode as _is_browser_use_cli_mode
+    from tools.browser_use_cli import (
+        is_browser_use_cli_mode as _is_browser_use_cli_mode,
+    )
 except ImportError:
     _is_browser_use_cli_mode = lambda: False  # noqa: E731
 
@@ -256,11 +270,8 @@ def _get_vision_model() -> Optional[str]:
 
 
 from tools import browser_tool_cdp as _cdp
-
 from tools import browser_tool_cloud as _cloud
-
 from tools import browser_tool_lightpanda_fallback as _lp
-
 
 # Single shared real-profile copy-browser session: concurrent tasks reuse it
 # instead of each launching a rival Chromium on the same copied user-data-dir.
@@ -631,6 +642,7 @@ def _secret_url_error(url: str) -> Optional[dict]:
     """Refuse URLs embedding an API key/token (raw and URL-decoded, catching ``%2D``
     tricks) — a prompt injection could otherwise exfiltrate secrets via the URL."""
     import urllib.parse
+
     from agent.redact import _PREFIX_RE
 
     if _PREFIX_RE.search(url) or _PREFIX_RE.search(urllib.parse.unquote(url)):
@@ -836,7 +848,9 @@ def browser_snapshot(
     # Merge supervisor state (pending dialogs + frame tree) when a CDP supervisor is
     # attached. See website/docs/developer-guide/browser-supervisor.md.
     try:
-        from tools.browser_supervisor import SUPERVISOR_REGISTRY  # type: ignore[import-not-found]
+        from tools.browser_supervisor import (
+            SUPERVISOR_REGISTRY,  # type: ignore[import-not-found]
+        )
         _supervisor = SUPERVISOR_REGISTRY.get(effective_task_id)
         if _supervisor is not None:
             _sv_snap = _supervisor.snapshot()
@@ -903,7 +917,10 @@ def browser_type(ref: str, text: str, task_id: Optional[str] = None) -> str:
         return blocked
     ref = _at_ref(ref)
     result = _session._run_browser_command(effective_task_id, "fill", [ref, text])
-    from agent.display import redact_browser_typed_text_for_display, redact_tool_args_for_display
+    from agent.display import (
+        redact_browser_typed_text_for_display,
+        redact_tool_args_for_display,
+    )
     # Typed text goes through the secret-pattern redactor so API keys / tokens don't
     # leak into tool progress or chat history (the raw value already went to the browser).
     display_text = (redact_tool_args_for_display("browser_type", {"text": text}) or {})["text"]
@@ -1046,7 +1063,9 @@ def _eval_supervisor_fast_path(effective_task_id: str, expression: str) -> Optio
     JS-side exception — NOT retried via subprocess, that would just reproduce it slower);
     None to fall through to the subprocess path."""
     try:
-        from tools.browser_supervisor import SUPERVISOR_REGISTRY  # type: ignore[import-not-found]
+        from tools.browser_supervisor import (
+            SUPERVISOR_REGISTRY,  # type: ignore[import-not-found]
+        )
         supervisor = SUPERVISOR_REGISTRY.get(effective_task_id)
         if supervisor is None:
             return None
@@ -1256,6 +1275,7 @@ def browser_vision(question: str, annotate: bool = False, task_id: Optional[str]
         return _camofox("camofox_vision", question, annotate, task_id)
 
     import uuid as uuid_mod
+
     from hermes_constants import get_hermes_dir
     screenshots_dir = get_hermes_dir("cache/screenshots", "browser_screenshots")
     screenshot_path = screenshots_dir / f"browser_screenshot_{uuid_mod.uuid4().hex}.png"
@@ -1302,8 +1322,11 @@ def browser_vision(question: str, annotate: bool = False, task_id: Optional[str]
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
+from tools.browser_extension_router import (
+    extension_controller_available,
+    routed_browser_handler,
+)
 from tools.registry import registry, tool_error
-from tools.browser_extension_router import extension_controller_available, routed_browser_handler
 
 _BROWSER_SCHEMA_MAP = {s["name"]: s for s in BROWSER_TOOL_SCHEMAS}
 

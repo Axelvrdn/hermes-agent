@@ -32,6 +32,7 @@ def skills_home(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(home))
     # Force skill_usage module to re-resolve paths per test
     import importlib
+
     import tools.skill_usage as mod
     importlib.reload(mod)
     monkeypatch.setattr(mod, "_prune_builtins_enabled", lambda: False)
@@ -84,7 +85,7 @@ def test_get_record_missing_returns_empty_record(skills_home):
 
 
 def test_load_usage_handles_corrupt_file(skills_home):
-    from tools.skill_usage import load_usage, _usage_file
+    from tools.skill_usage import _usage_file, load_usage
     _usage_file().write_text("{ not json }", encoding="utf-8")
     assert load_usage() == {}
 
@@ -293,7 +294,7 @@ def test_malformed_usage_counters_recover_without_losing_patch_reuse(
     assert [event["reuse_after_patch"] for event in loaded] == [False, True]
 
 def test_bumps_do_not_corrupt_other_skills(skills_home):
-    from tools.skill_usage import bump_view, bump_use, get_record
+    from tools.skill_usage import bump_use, bump_view, get_record
     bump_view("skill-a")
     bump_use("skill-b")
     bump_view("skill-a")
@@ -333,7 +334,7 @@ def test_concurrent_bump_view_preserves_all_updates(skills_home):
 
 
 def test_restoring_from_archive_clears_timestamp(skills_home):
-    from tools.skill_usage import set_state, get_record, STATE_ARCHIVED, STATE_ACTIVE
+    from tools.skill_usage import STATE_ACTIVE, STATE_ARCHIVED, get_record, set_state
     set_state("x", STATE_ARCHIVED)
     assert get_record("x")["archived_at"] is not None
     set_state("x", STATE_ACTIVE)
@@ -428,8 +429,16 @@ def test_end_to_end_telemetry_tracked_but_lifecycle_refused(skills_home):
       lands and the directories stay on disk.
     """
     from tools.skill_usage import (
-        bump_view, bump_use, bump_patch, set_state, set_pinned,
-        archive_skill, load_usage, STATE_ACTIVE, STATE_STALE, STATE_ARCHIVED,
+        STATE_ACTIVE,
+        STATE_ARCHIVED,
+        STATE_STALE,
+        archive_skill,
+        bump_patch,
+        bump_use,
+        bump_view,
+        load_usage,
+        set_pinned,
+        set_state,
     )
     skills_dir = skills_home / "skills"
     _write_skill(skills_dir, "bundled-one")
@@ -595,6 +604,7 @@ def test_skill_file_lock_is_reentrant_in_thread_and_exclusive_across_threads(tmp
     second thread still waits until the outer holder releases.
     """
     import threading
+
     from tools.skill_usage import skill_file_lock
 
     lock_path = tmp_path / ".locks" / "demo.lock"

@@ -6,8 +6,9 @@ A distribution maps toolset names to the % chance each is enabled for a prompt
 be a "+"-grouped compound ("browser+search") that rolls once for all members.
 """
 
-from typing import Any, Dict, List, Optional
 import random
+from typing import Any, Dict, List, Optional
+
 from toolsets import validate_toolset
 
 

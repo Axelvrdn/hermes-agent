@@ -17,8 +17,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from gateway.config import PlatformConfig, Platform
+from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import BasePlatformAdapter, SendResult
+
 
 class _StubStore:
     def __init__(self, transcript: List[Dict[str, Any]]) -> None:

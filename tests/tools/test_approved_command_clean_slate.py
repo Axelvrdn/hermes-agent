@@ -25,10 +25,10 @@ import pytest
 
 from tools import terminal_tool as tt
 from tools.interrupt import (
-    set_interrupt,
-    is_interrupted,
     _interrupted_threads,
     _lock,
+    is_interrupted,
+    set_interrupt,
 )
 
 

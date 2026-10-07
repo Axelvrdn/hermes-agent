@@ -38,8 +38,8 @@ HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from pm.downloader import Download  # noqa: E402
 from pm.artifact_mirror import pinned_source  # noqa: E402
+from pm.downloader import Download  # noqa: E402
 from pm.package import DebPackage  # noqa: E402
 from pm.termux_libs import load_table  # noqa: E402
 

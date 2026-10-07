@@ -10,20 +10,47 @@ import re
 import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+from agent.context_compressor import _DB_PERSISTED_MARKER as _DB_PERSISTED_MARKER_KEY
 from agent.context_compressor import (
-    _DB_PERSISTED_MARKER as _DB_PERSISTED_MARKER_KEY, MODEL_ONLY_DISPLAY_METADATA_KEY, _is_checkpoint_item,
-    _newest_checkpoint_carrier, split_user_originated_turn)
+    MODEL_ONLY_DISPLAY_METADATA_KEY,
+    _is_checkpoint_item,
+    _newest_checkpoint_carrier,
+    split_user_originated_turn,
+)
 from agent.memory_manager import sanitize_context
 from agent.message_metadata import (
-    CANONICAL_ROW, DB_ROW_SNAPSHOT, MESSAGE_UID, TOOL_CALL_UID, TOOL_CALL_UIDS,
-    index_tool_call_uids, message_uid_or_none, resolve_tool_call_uid, mint_uid, stamp_message_uid)
+    CANONICAL_ROW,
+    DB_ROW_SNAPSHOT,
+    MESSAGE_UID,
+    TOOL_CALL_UID,
+    TOOL_CALL_UIDS,
+    index_tool_call_uids,
+    message_uid_or_none,
+    mint_uid,
+    resolve_tool_call_uid,
+    stamp_message_uid,
+)
 from agent.message_sanitization import _sanitize_surrogates, coalesce_tool_call_id
 from hermes_cli.timefmt import coerce_epoch
 from hermes_state_common import (
-    _COMPRESSION_LOCK_ROW_SQL, _ENDED_ROW_SQL, _RESET_END_REASONS, _RESET_END_REASONS_SQL, _ended_by_compression,
-    _json_or, _legacy_reset_child_sql, _placeholders, _sql_json_extract)
+    _COMPRESSION_LOCK_ROW_SQL,
+    _ENDED_ROW_SQL,
+    _RESET_END_REASONS,
+    _RESET_END_REASONS_SQL,
+    _ended_by_compression,
+    _json_or,
+    _legacy_reset_child_sql,
+    _placeholders,
+    _sql_json_extract,
+)
 from hermes_state_identity import (
-    _absorbed_uids_json, _restore_identity_columns, _stable_tool_key, _tool_call_uid_map, _tool_call_uid_or_none, _tool_call_uids_json)
+    _absorbed_uids_json,
+    _restore_identity_columns,
+    _stable_tool_key,
+    _tool_call_uid_map,
+    _tool_call_uid_or_none,
+    _tool_call_uids_json,
+)
 
 logger = logging.getLogger("hermes_state")  # caplog tests pin the origin module's name
 
@@ -223,7 +250,10 @@ class SessionMessagesMixin:
         unowned turn lease in that same transaction.
         """
         from hermes_state import SessionCompressionInProgressError
-        from hermes_state_errors import CompressionSessionClosedError, SessionTurnLeaseLostError
+        from hermes_state_errors import (
+            CompressionSessionClosedError,
+            SessionTurnLeaseLostError,
+        )
         # NOTE (#75316 redesign): appends do NOT check compression_locks. The lock's job is to stop two
         # COMPRESSIONS colliding, not to fence ordinary transcript writes. Concurrent appends during a
         # compression are safe by construction: archive_and_compact() commits against a watermark captured
@@ -1568,9 +1598,12 @@ class SessionMessagesMixin:
         mutable payload while the digest still fences a concurrent winner. ``_row_id`` is opt-in (gateway
         reactions); reasoning restored on assistant rows only; ``api_content`` VERBATIM (no sanitize/strip)
         so replay keeps the provider prompt cache byte-stable."""
-        from hermes_state import _strip_background_review_harness, _strip_stale_tool_call_markers
         # Runtime import avoids the transcript_repair -> hermes_state_messages module cycle.
         from agent.transcript_repair import transcript_row_snapshot
+        from hermes_state import (
+            _strip_background_review_harness,
+            _strip_stale_tool_call_markers,
+        )
         # Only the unaddressed live replay gets the digest: row-addressed loaders (include_row_ids) keep the
         # legacy resumed-dict path, whose rewrite never re-writes columns the projection does not decode
         # (a CAS-match rewrite of a resumed row would otherwise null token_count).
@@ -1720,7 +1753,10 @@ class SessionMessagesMixin:
         """Resume row count, or raise ``SessionResumeTooLargeError``. ``max_messages=None`` reads config; 0
         disables the guard without counting. ``tip_only`` bounds only the tip's active rows for callers that
         never materialize the lineage: a heavily compressed conversation is a success, not a rejection."""
-        from hermes_state import SessionResumeTooLargeError, resolved_max_resume_messages
+        from hermes_state import (
+            SessionResumeTooLargeError,
+            resolved_max_resume_messages,
+        )
         if max_messages is None:
             max_messages = resolved_max_resume_messages()
         if max_messages < 0:

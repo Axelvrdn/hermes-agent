@@ -7,7 +7,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from agent.tool_executor import _ToolCallRef, _begin_tool_execution, _ensure_file_checkpoint
+from agent.tool_executor import (
+    _begin_tool_execution,
+    _ensure_file_checkpoint,
+    _ToolCallRef,
+)
 from agent.turn_explainers import TurnExplainersMixin
 from tools.checkpoint_manager import CheckpointManager
 from tools.terminal_tool import _active_environments, _env_lock

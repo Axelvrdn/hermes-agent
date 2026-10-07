@@ -15,7 +15,13 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Optional
 
-from agent.billing_view import OrgRoleCapability, fetch_portal_state, format_money, parse_money, parse_org_fields
+from agent.billing_view import (
+    OrgRoleCapability,
+    fetch_portal_state,
+    format_money,
+    parse_money,
+    parse_org_fields,
+)
 
 logger = logging.getLogger(__name__)
 

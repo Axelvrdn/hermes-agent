@@ -18,14 +18,13 @@ import threading
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from run_agent import AIAgent
-
 from agent.chat_completion_helpers import (
     direct_api_call,
     interruptible_api_call,
     interruptible_streaming_api_call,
     should_use_direct_api_call,
 )
+from run_agent import AIAgent
 
 
 def _make_agent(*, platform="cron"):

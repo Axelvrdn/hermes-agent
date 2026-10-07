@@ -8,8 +8,6 @@ from tui_gateway import server
 from tui_gateway import ws as ws_mod
 
 
-
-
 def _run_disconnect(monkeypatch, seed):
     """Drive handle_ws to its disconnect `finally`, seeding sessions against the
     live WSTransport the moment it exists. Returns nothing; inspect _sessions."""

@@ -16,6 +16,7 @@ Both fixed together by:
 import threading
 
 import pytest
+
 from tools import approval_context
 
 
@@ -50,8 +51,8 @@ class TestThreadLocalApprovalCallback:
     def test_callback_not_visible_in_different_thread(self):
         """Thread A's callback is NOT visible to Thread B."""
         from tools.terminal_tool import (
-            set_approval_callback,
             _get_approval_callback,
+            set_approval_callback,
         )
 
         cb_a = lambda cmd, desc: "thread_a"  # noqa: E731
@@ -88,8 +89,8 @@ class TestThreadLocalApprovalCallback:
         """A callback set in the main thread does NOT leak into a
         freshly-spawned worker thread."""
         from tools.terminal_tool import (
-            set_approval_callback,
             _get_approval_callback,
+            set_approval_callback,
         )
 
         cb_main = lambda cmd, desc: "main"  # noqa: E731

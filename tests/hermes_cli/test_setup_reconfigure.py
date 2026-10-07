@@ -147,8 +147,8 @@ class TestQuickFlag:
                 gateway="hermes_cli.setup.setup_gateway",
                 tools="hermes_cli.setup.setup_tools",
             )
-            from hermes_cli.setup import run_setup_wizard
             from hermes_cli import setup as setup_mod
+            from hermes_cli.setup import run_setup_wizard
 
             section_indexes = []
             m["quick"].side_effect = lambda *_args: section_indexes.append(
@@ -179,8 +179,8 @@ class TestFreshInstall:
                 prompt=("hermes_cli.setup.prompt_choice", {"return_value": 0}),
                 first="hermes_cli.setup_quick._run_first_time_quick_setup",
             )
-            from hermes_cli.setup import run_setup_wizard
             from hermes_cli import setup as setup_mod
+            from hermes_cli.setup import run_setup_wizard
 
             section_indexes = []
             m["first"].side_effect = lambda *_args: section_indexes.append(
@@ -218,6 +218,7 @@ class TestArgparse:
 
     def test_reconfigure_flag_reaches_cmd_setup(self, monkeypatch):
         import sys
+
         from hermes_cli.main import main
 
         captured = {}

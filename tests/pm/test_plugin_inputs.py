@@ -5,7 +5,14 @@ import json
 
 import pytest
 
-from pm.plugin_inputs import Candidates, Members, Selection, StagedUpdate, decode, encode
+from pm.plugin_inputs import (
+    Candidates,
+    Members,
+    Selection,
+    StagedUpdate,
+    decode,
+    encode,
+)
 
 
 @pytest.mark.parametrize("build", [

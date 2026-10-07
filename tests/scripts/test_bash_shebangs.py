@@ -1,8 +1,7 @@
 """The repository shebang checker scans tracked scripts and embedded payloads."""
-from pathlib import Path
 import subprocess
 import sys
-
+from pathlib import Path
 
 CHECKER = Path(__file__).resolve().parents[2] / "scripts" / "check_bash_shebangs.py"
 

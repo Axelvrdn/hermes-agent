@@ -2,18 +2,18 @@
 import importlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli import memory_setup
-from pm.environments import selected_venv
 from pm import paths
+from pm.environments import selected_venv
 from tests.pm._fixtures import _wheel
 
 

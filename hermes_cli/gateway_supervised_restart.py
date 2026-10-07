@@ -80,7 +80,11 @@ def restart_externally_supervised_gateway(supervised_pid: int) -> None:
     wedge (#110637). A broken/unloaded supervisor surfaces as exit 1, not a success printed over
     a dead gateway (the contract ``launchd_restart`` enforces via ``_wait_for_launchd_service_pid``).
     """
-    from hermes_cli.gateway import _get_restart_exit_wait_budget, _graceful_restart_via_sigusr1, _print_lines
+    from hermes_cli.gateway import (
+        _get_restart_exit_wait_budget,
+        _graceful_restart_via_sigusr1,
+        _print_lines,
+    )
 
     wait_budget = _get_restart_exit_wait_budget()
     print(f"→ Restarting externally-supervised gateway (PID {supervised_pid}) — "

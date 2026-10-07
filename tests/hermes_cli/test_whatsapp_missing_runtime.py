@@ -7,8 +7,8 @@ from fastapi import HTTPException
 
 
 def _missing_package(monkeypatch):
-    import pm
     import hermes_constants
+    import pm
 
     monkeypatch.setattr(hermes_constants, "find_node_executable", lambda executable: None)
     monkeypatch.setattr(hermes_constants, "with_hermes_node_path", dict)
@@ -18,8 +18,8 @@ def _missing_package(monkeypatch):
 
 @pytest.mark.parametrize("executable", ["npm", "node"])
 def test_dashboard_reports_prepared_bridge_binary_missing(tmp_path, monkeypatch, executable):
-    from hermes_cli.web_routers import messaging
     from gateway.platforms import whatsapp_common
+    from hermes_cli.web_routers import messaging
 
     _missing_package(monkeypatch)
     bridge_dir = tmp_path / "bridge"
@@ -39,8 +39,9 @@ def test_dashboard_reports_prepared_bridge_binary_missing(tmp_path, monkeypatch,
 
 @pytest.mark.parametrize("executable", ["npm", "node"])
 def test_cli_reports_prepared_bridge_binary_missing(tmp_path, monkeypatch, capsys, executable):
-    from hermes_cli import main, main_platform_setup as setup
     from gateway.platforms import whatsapp_common
+    from hermes_cli import main
+    from hermes_cli import main_platform_setup as setup
 
     _missing_package(monkeypatch)
     bridge_dir = tmp_path / "bridge"

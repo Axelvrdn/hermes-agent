@@ -30,7 +30,6 @@ from collections.abc import Iterator
 
 import pytest
 
-
 # How long to give a `docker run -d` container before declaring it not ready.
 # Generous because under arm64 QEMU emulation cont-init (a Python config
 # migration + chowns) runs several times slower than on native amd64.

@@ -12,8 +12,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
 
@@ -51,8 +51,11 @@ def test_routed_local_profile_cwd_matches_standalone_gateway(tmp_path, two_homes
     import; the routed profile's terminal scope must yield the same cwd, not the multiplexer's
     process cwd — otherwise the system prompt, context files and the terminal all start in
     wherever ``hermes gateway`` happened to be launched from."""
-    from tools.terminal_scope import build_profile_terminal_scope, install_and_reset_profile_terminal_scope
     from agent.runtime_cwd import resolve_agent_cwd
+    from tools.terminal_scope import (
+        build_profile_terminal_scope,
+        install_and_reset_profile_terminal_scope,
+    )
 
     a, _ = two_homes
     assert build_profile_terminal_scope(a)["TERMINAL_CWD"] == str(tmp_path)
@@ -64,7 +67,11 @@ def test_routed_local_profile_cwd_matches_standalone_gateway(tmp_path, two_homes
 
 def test_launch_artifact_context_cwd_follows_routed_profile(two_homes, tmp_path):
     """Ignoring a Desktop launch cwd must still resolve terminal.cwd from the profile whose turn is active."""
-    from agent.runtime_cwd import resolve_context_cwd, reset_session_cwd, set_session_cwd
+    from agent.runtime_cwd import (
+        reset_session_cwd,
+        resolve_context_cwd,
+        set_session_cwd,
+    )
     from tools.terminal_scope import install_and_reset_profile_terminal_scope
 
     a, b = two_homes

@@ -1,6 +1,5 @@
 """Standalone per-platform senders and error helpers for send_message."""
 
-from pm import install_hint
 import asyncio
 import contextlib
 import logging
@@ -9,6 +8,7 @@ import re
 import time
 
 from agent.redact import redact_sensitive_text
+from pm import install_hint
 
 logger = logging.getLogger("tools.send_message_tool")
 
@@ -211,7 +211,10 @@ async def _telegram_send_one_media(bot, chat_id, media_path, is_voice, *, captio
         # Keyed on the extension because ``_telegram_send_media`` routes every video extension to
         # ``sendVideo`` regardless of ``force_document`` (which only forces images to documents).
         with contextlib.suppress(Exception):
-            from plugins.platforms.telegram.adapter import _probe_video_geometry, _video_thumbnail_jpeg
+            from plugins.platforms.telegram.adapter import (
+                _probe_video_geometry,
+                _video_thumbnail_jpeg,
+            )
             geometry = await asyncio.to_thread(_probe_video_geometry, media_path)
             if geometry:
                 media_kwargs.update(geometry)
@@ -261,8 +264,8 @@ async def _send_telegram(token, chat_id, message, media_files=None, thread_id=No
     try:
         formatted, send_parse_mode, _has_html = _telegram_format(message)
         bot = _telegram_bot(token)
-        from plugins.platforms.telegram.telegram_ids import normalize_telegram_chat_id
         from gateway.platforms.base import BasePlatformAdapter, utf16_len
+        from plugins.platforms.telegram.telegram_ids import normalize_telegram_chat_id
         # Telegram accepts a numeric chat_id OR an @username string; never force-int.
         # See #13206.
         int_chat_id = normalize_telegram_chat_id(chat_id)
@@ -370,7 +373,7 @@ async def _resolve_slack_user_target(token, chat_id):
         return None, {"error": "aiohttp not installed. Run: "
                       f"{install_hint('messaging')}"}
     try:
-        from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+        from gateway.platforms.base import proxy_kwargs_for_aiohttp, resolve_proxy_url
         _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(resolve_proxy_url())
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30), **_sess_kw) as session:
@@ -620,7 +623,11 @@ async def _send_bluebubbles(extra, chat_id, message):
 def _qqbot_media_file_type(media_path: str, is_voice: bool) -> int:
     """Map a local path / voice flag to QQ Bot ``file_type`` constants."""
     from gateway.platforms.qqbot.constants import (
-        MEDIA_TYPE_FILE, MEDIA_TYPE_IMAGE, MEDIA_TYPE_VIDEO, MEDIA_TYPE_VOICE)
+        MEDIA_TYPE_FILE,
+        MEDIA_TYPE_IMAGE,
+        MEDIA_TYPE_VIDEO,
+        MEDIA_TYPE_VOICE,
+    )
 
     ext = os.path.splitext(media_path)[1].lower()
     if is_voice or ext in _VOICE_EXTS:
@@ -654,6 +661,7 @@ async def _qqbot_api_json(client, headers: dict, method: str, path: str,
 async def _qqbot_upload_local_file(client, headers, chat_type, chat_id, media_path, file_type) -> dict:
     """Chunked-upload a local file; returns the ``/files`` complete response."""
     from pathlib import Path as _Path
+
     from gateway.platforms.qqbot.chunked_upload import ChunkedUploader
     from gateway.platforms.qqbot.constants import FILE_UPLOAD_TIMEOUT
 

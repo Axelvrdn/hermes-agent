@@ -163,7 +163,10 @@ def test_strip_helper_drops_cloned_nous_refresh_grant(tmp_path, fleet):
     agent_key-only nous rows carry no single-use grant and must survive both strip and heal.
     """
     from agent.credential_pool import load_pool
-    from hermes_cli.auth import heal_forked_single_use_oauth_grants, strip_cloned_single_use_oauth_grants
+    from hermes_cli.auth import (
+        heal_forked_single_use_oauth_grants,
+        strip_cloned_single_use_oauth_grants,
+    )
     grant = {"access_token": "AT1", "refresh_token": "RT1", "agent_key": "AK"}
     root_store = json.loads((fleet["root"] / "auth.json").read_text())
     root_store["providers"]["nous"] = dict(grant)
@@ -240,8 +243,8 @@ def test_strip_helper_leaves_shared_root_auth_store_unchanged(fleet, link):
 
 def test_strip_helper_fails_closed_when_root_store_cannot_be_resolved(fleet, monkeypatch):
     """Credential hygiene must not mutate auth when store identity is unknown."""
-    from hermes_cli.auth import strip_cloned_single_use_oauth_grants
     import hermes_constants
+    from hermes_cli.auth import strip_cloned_single_use_oauth_grants
 
     root = fleet["root"]
     _seed_codex_grant(root)
@@ -515,6 +518,7 @@ def _fork(fleet, name, *, rotated_to=None):
 def test_heal_consolidates_existing_forks_to_the_live_copy(fleet, caplog):
     """root + atlas hold spent RT0; forge already rotated to RT1 on old code."""
     import logging
+
     from agent.credential_pool import load_pool
 
     forge = _fork(fleet, "forge", rotated_to=1)
@@ -548,8 +552,12 @@ def test_heal_consolidates_existing_forks_to_the_live_copy(fleet, caplog):
 
 def test_heal_is_idempotent_and_logs_once(fleet, caplog):
     import logging
+
     from agent.credential_pool import load_pool
-    from hermes_cli.auth import consume_oauth_heal_notices, heal_forked_single_use_oauth_grants
+    from hermes_cli.auth import (
+        consume_oauth_heal_notices,
+        heal_forked_single_use_oauth_grants,
+    )
 
     kid = _fork(fleet, "kid")
     fleet["use"](kid)
@@ -589,6 +597,7 @@ def test_heal_never_deletes_the_only_surviving_copy(fleet):
 def test_heal_preserves_independent_grants_for_same_account(fleet, shape, claims):
     """An account can have independent device logins; identity is not lineage."""
     import base64
+
     from hermes_cli.auth import heal_forked_single_use_oauth_grants
 
     def pair(tag):
@@ -662,6 +671,7 @@ def test_heal_rotated_fork_moves_provider_block_with_the_pool_row(fleet):
 def test_heal_leaves_a_different_account_alone(fleet):
     """A profile row whose JWT identity names ANOTHER account is not root's grant."""
     import base64
+
     from agent.credential_pool import load_pool
 
     def jwt(sub):
@@ -793,7 +803,10 @@ def test_heal_skips_profile_auth_json_symlinked_to_the_root_store(fleet):
     """#101356: `ln -s ~/.hermes/auth.json <profile>/auth.json` shares ONE store.
     Both sides of the consolidation read the same file, so every row looks like
     a fork of itself — healing would strip the shared grant through the link."""
-    from hermes_cli.auth import consume_oauth_heal_notices, heal_forked_single_use_oauth_grants
+    from hermes_cli.auth import (
+        consume_oauth_heal_notices,
+        heal_forked_single_use_oauth_grants,
+    )
 
     root = fleet["root"]
     _seed_codex_grant(root)

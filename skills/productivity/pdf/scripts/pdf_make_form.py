@@ -28,9 +28,9 @@ so lint the layout first, then build.
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 
 

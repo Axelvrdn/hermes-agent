@@ -16,8 +16,8 @@ directories, matching ripgrep's default behavior.
 
 import pytest
 
-from tools.file_operations import ShellFileOperations
 from tools.environments.local import LocalEnvironment
+from tools.file_operations import ShellFileOperations
 
 
 @pytest.fixture

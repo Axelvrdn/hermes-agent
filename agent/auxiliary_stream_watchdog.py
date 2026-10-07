@@ -140,7 +140,10 @@ def chat_stream_windows(client: Any, kwargs: dict, task: Optional[str]) -> "tupl
     a model thinking silently on a large prompt is not cut; local servers keep their silent prefill
     on the request timeout (None). Both are capped at the request timeout."""
     from agent.auxiliary_client import (
-        _AUX_STREAM_NO_PROGRESS_TIMEOUT_SECONDS, _RELAY_AUX_CALL_CONTEXT, _get_task_no_progress_timeout)
+        _AUX_STREAM_NO_PROGRESS_TIMEOUT_SECONDS,
+        _RELAY_AUX_CALL_CONTEXT,
+        _get_task_no_progress_timeout,
+    )
     from agent.chat_completion_helpers import _cloud_stale_timeout_for
     from agent.model_metadata import is_local_endpoint
     window = _get_task_no_progress_timeout(task or "") or _AUX_STREAM_NO_PROGRESS_TIMEOUT_SECONDS

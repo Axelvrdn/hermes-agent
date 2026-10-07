@@ -18,7 +18,10 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from gateway.whatsapp_identity import expand_whatsapp_aliases, normalize_whatsapp_identifier
+from gateway.whatsapp_identity import (
+    expand_whatsapp_aliases,
+    normalize_whatsapp_identifier,
+)
 from hermes_constants import get_default_hermes_root, get_hermes_dir, get_hermes_home
 from utils import atomic_json_write, file_signature
 
@@ -156,7 +159,7 @@ def _configured_allowlist(platform: str):
 def _write_allowlist_env(env_var: str, ids: list) -> None:
     """Best-effort persist (empty list removes the key); the pairing store grant still authorizes via the union."""
     with contextlib.suppress(Exception):
-        from hermes_cli.config import save_env_value, remove_env_value
+        from hermes_cli.config import remove_env_value, save_env_value
         save_env_value(env_var, ",".join(ids)) if ids else remove_env_value(env_var)
 
 

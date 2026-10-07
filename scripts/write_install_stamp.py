@@ -145,7 +145,11 @@ def build_stamp(
     # Only a caller-supplied commit may stand in for a missing release version.
     commit_admitted = commit is not None
     if channel_request is not None:
-        from scripts.bundles.desktop_prepare import git, require_source, validate_channel_request
+        from scripts.bundles.desktop_prepare import (
+            git,
+            require_source,
+            validate_channel_request,
+        )
         channel_request = validate_channel_request(channel_request)
         if os.environ.get("HERMES_BUILD_COMMIT") or os.environ.get("HERMES_PAYLOAD_TAG"):
             raise ValueError("channel request conflicts with commit-build or tag identity")

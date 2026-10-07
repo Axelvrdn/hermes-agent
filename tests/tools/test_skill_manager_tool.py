@@ -11,24 +11,24 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.skill_manager_tool import (
-    _validate_name,
-    _validate_category,
-    _validate_frontmatter,
-    _validate_file_path,
-    _create_skill,
-    _edit_skill,
-    _patch_skill,
-    _delete_skill,
-    _write_file,
-    _remove_file,
-    _find_skill,
-    _skill_lock_path,
-    skill_manage,
-)
 from agent.skill_utils import (
     extract_skill_description,
     parse_frontmatter,
+)
+from tools.skill_manager_tool import (
+    _create_skill,
+    _delete_skill,
+    _edit_skill,
+    _find_skill,
+    _patch_skill,
+    _remove_file,
+    _skill_lock_path,
+    _validate_category,
+    _validate_file_path,
+    _validate_frontmatter,
+    _validate_name,
+    _write_file,
+    skill_manage,
 )
 
 
@@ -839,7 +839,7 @@ class TestSecurityScanGate:
     def test_scan_blocks_dangerous_when_flag_on(self, tmp_path):
         """Dangerous verdict + flag on → returns an error string for the agent."""
         from tools.skill_manager_tool import _security_scan_skill
-        from tools.skills_guard import ScanResult, Finding
+        from tools.skills_guard import Finding, ScanResult
 
         finding = Finding(
             pattern_id="test", severity="critical", category="exfiltration",
@@ -1260,8 +1260,8 @@ class TestCuratorConsolidationDeleteGuard:
         self, tmp_path, monkeypatch
     ):
         """A view in one tool worker authorizes a patch in the next worker."""
-        from tools.skills_tool import skill_view
         from tools.skill_manager_guards import _reset_background_review_read_marks
+        from tools.skills_tool import skill_view
 
         _reset_background_review_read_marks()
         with _curator_pass(tmp_path, monkeypatch=monkeypatch):
@@ -1285,8 +1285,8 @@ class TestCuratorConsolidationDeleteGuard:
         self, tmp_path, monkeypatch
     ):
         """Copied tool contexts share only their own review's read marks."""
-        from tools.skills_tool import skill_view
         from tools.skill_manager_guards import _reset_background_review_read_marks
+        from tools.skills_tool import skill_view
 
         _reset_background_review_read_marks()
         with _curator_pass(tmp_path, monkeypatch=monkeypatch):
@@ -1313,8 +1313,8 @@ class TestCuratorConsolidationDeleteGuard:
         _reset_background_review_read_marks()
 
     def test_background_review_support_file_overwrite_requires_that_file_read(self, tmp_path, monkeypatch):
-        from tools.skills_tool import skill_view
         from tools.skill_manager_guards import _reset_background_review_read_marks
+        from tools.skills_tool import skill_view
 
         _reset_background_review_read_marks()
         with _curator_pass(tmp_path, monkeypatch=monkeypatch):

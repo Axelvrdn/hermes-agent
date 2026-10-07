@@ -2,12 +2,13 @@
 import json
 import logging
 import time
-import pytest
 from dataclasses import replace
 from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
-from hermes_state import SessionDB
-from gateway.config import Platform, GatewayConfig, PlatformConfig
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.platforms.event import MessageEvent
 from gateway.session import (
     SessionEntry,
@@ -19,6 +20,7 @@ from gateway.session import (
     canonical_whatsapp_identifier,
     neutralize_untrusted_inline_text,
 )
+from hermes_state import SessionDB
 
 # Legacy name preserved for these tests; product renamed the function to
 # canonical_whatsapp_identifier.  Keep the tests referencing the old name
@@ -68,6 +70,7 @@ class TestBuildSessionContextPrompt:
         a static pointer.
         """
         from unittest.mock import patch
+
         import gateway.session as _gs
 
         config = GatewayConfig(
@@ -106,6 +109,7 @@ class TestBuildSessionContextPrompt:
         never borrow the ambient env token (another profile's). Pre-fix the
         ``except Exception -> os.environ`` tail returned True here."""
         from unittest.mock import patch
+
         from agent import secret_scope as ss
         from gateway.session import _slack_tools_loaded
 
@@ -134,6 +138,7 @@ class TestBuildSessionContextPrompt:
         config is intentionally left unset so only the MCP path can pass."""
         import os as _os
         from unittest.mock import patch
+
         from gateway.session import _slack_tools_loaded
         from tools import mcp_tool_registration as _mcp_registration
 
@@ -961,8 +966,9 @@ class TestEnsureLoadedSkipsInvalidEntries:
 
     def test_invalid_entry_skipped_valid_entry_loads(self, tmp_path):
         import json
-        from gateway.session import SessionStore
+
         from gateway.config import GatewayConfig
+        from gateway.session import SessionStore
 
         sessions_file = tmp_path / "sessions.json"
         sessions_file.write_text(json.dumps({
@@ -1038,8 +1044,9 @@ class TestLastPromptTokens:
 
     def test_session_entry_roundtrip(self):
         """last_prompt_tokens should survive serialization/deserialization."""
-        from gateway.session import SessionEntry
         from datetime import datetime
+
+        from gateway.session import SessionEntry
         entry = SessionEntry(
             session_key="test",
             session_id="s1",
@@ -1062,8 +1069,9 @@ class TestLastPromptTokens:
         store._db = None
         store._save = MagicMock()
 
-        from gateway.session import SessionEntry
         from datetime import datetime
+
+        from gateway.session import SessionEntry
         entry = SessionEntry(
             session_key="k1",
             session_id="s1",
@@ -1293,6 +1301,7 @@ class TestGatewaySessionDbRecovery:
     def test_transcript_reroute_migrates_remaining_backlog_to_child(self):
         import threading
         from types import SimpleNamespace
+
         from hermes_state_errors import CompressionSessionClosedError
 
         class FakeDb:
@@ -1448,6 +1457,7 @@ class TestGatewaySessionDbRecovery:
         to disk (long before the 200-message cap) and replayed in order on recovery."""
         import threading
         from types import SimpleNamespace
+
         import hermes_constants
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))

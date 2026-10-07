@@ -32,6 +32,7 @@ def test_preset_roundtrip_keeps_refusals_and_dense_spill(tmp_path, monkeypatch):
 
 def test_optional_draft_is_enabled_only_with_room_at_the_selected_window(tmp_path, monkeypatch):
     from dataclasses import replace
+
     from hermes_cli.local_runtime import bootstrap, catalog
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -54,7 +55,10 @@ def test_optional_draft_is_enabled_only_with_room_at_the_selected_window(tmp_pat
     assert with_draft.keys["model-draft"] == str(draft)
     assert with_draft.keys["spec-type"] == "draft-dspark"
     # Full target-window f16 state and logits count even above the draft's native window.
-    from hermes_cli.local_runtime.context_policy import RUNTIME_OVERHEAD_BYTES, ub_logits_bytes
+    from hermes_cli.local_runtime.context_policy import (
+        RUNTIME_OVERHEAD_BYTES,
+        ub_logits_bytes,
+    )
     from hermes_cli.local_runtime.estimator import LayerKind, ctx_bytes
 
     draft_profile = replace(draft_profile, n_ctx_train=32768,

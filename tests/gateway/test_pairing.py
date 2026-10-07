@@ -10,13 +10,13 @@ from unittest.mock import patch
 import pytest
 
 from gateway.pairing import (
-    PairingStore,
     ALPHABET,
     CODE_LENGTH,
     CODE_TTL_SECONDS,
-    RATE_LIMIT_SECONDS,
-    MAX_PENDING_PER_PLATFORM,
     MAX_FAILED_ATTEMPTS,
+    MAX_PENDING_PER_PLATFORM,
+    RATE_LIMIT_SECONDS,
+    PairingStore,
     _save_json_file,
 )
 
@@ -534,8 +534,8 @@ class TestListAndClear:
 
 class TestUnreadablePairingFile:
     def test_permission_error_logs_warning_and_returns_empty(self, tmp_path, caplog):
-        import logging
         import builtins
+        import logging
 
         approved_path = tmp_path / "weixin-approved.json"
         approved_path.write_text(

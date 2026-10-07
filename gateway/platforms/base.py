@@ -20,10 +20,11 @@ import weakref
 from abc import ABC, abstractmethod
 from urllib.parse import urlsplit
 
-from utils import normalize_proxy_url
 from agent.i18n import t
+from agent.proxy_bypass import first_proxy_env_value
+from agent.proxy_bypass import should_bypass_proxy as _should_bypass_proxy
 from agent.retry_utils import jittered_backoff
-from agent.proxy_bypass import first_proxy_env_value, should_bypass_proxy as _should_bypass_proxy
+from utils import normalize_proxy_url
 
 logger = logging.getLogger(__name__)
 
@@ -419,22 +420,41 @@ def is_host_excluded_by_no_proxy(hostname: str, no_proxy_value: str | None = Non
 import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Optional, Any, Callable, Awaitable, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from agent.provider_media import GENERATED_SUBDIR, MEDIA_CACHE_MAX_AGE_HOURS
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms.helpers import fence_state_after
 from gateway.platforms.base_exec_approval import (
-    approval_timeout_seconds, ea_action_labels, ea_default_reason_text, ea_header_text,
-    ea_reason_label_text, ea_smart_deny_line_text, format_approval_deadline_line)
+    approval_timeout_seconds,
+    ea_action_labels,
+    ea_default_reason_text,
+    ea_header_text,
+    ea_reason_label_text,
+    ea_smart_deny_line_text,
+    format_approval_deadline_line,
+)
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
-from gateway.warning_notifications import diagnostic_wake_muted
-from hermes_cli.observability.shared_metrics_gateway import records_delivery, stop_reply_clock
+from gateway.platforms.helpers import fence_state_after
 from gateway.session import SessionSource, build_session_key
 from gateway.session_transcript import TranscriptReadError
+from gateway.warning_notifications import diagnostic_wake_muted
+from hermes_cli.observability.shared_metrics_gateway import (
+    records_delivery,
+    stop_reply_clock,
+)
 from hermes_constants import get_default_hermes_root, get_hermes_dir, get_hermes_home
-from agent.provider_media import GENERATED_SUBDIR, MEDIA_CACHE_MAX_AGE_HOURS
 
 if TYPE_CHECKING:
     from agent.display import ToolPreview
@@ -694,8 +714,9 @@ async def _cache_media_from_url(url: str, ext: str, retries: int, *, media_type:
                                 cache_fn, log_label: str) -> str:
     """Shared downloader behind ``cache_*_from_url``: SSRF-checked (pre-flight + per-redirect;
     raises ValueError), size-capped, linear-backoff retries on timeouts / 429 / 5xx."""
-    from tools.url_safety import create_ssrf_safe_async_client, is_safe_url
     import httpx
+
+    from tools.url_safety import create_ssrf_safe_async_client, is_safe_url
     if not is_safe_url(url):
         raise ValueError(f"Blocked unsafe URL (SSRF protection): {safe_url_for_log(url)}")
     headers = {"User-Agent": "Mozilla/5.0 (compatible; HermesAgent/1.0)", "Accept": accept}
@@ -922,7 +943,10 @@ def _media_delivery_allowed_roots() -> List[Path]:
 
 def _media_delivery_recency_seconds() -> float:
     """Recency window (seconds) for trusting fresh files; 0 = pure-allowlist mode."""
-    from gateway.media_policy import media_delivery_trust_recent, media_delivery_trust_recent_seconds
+    from gateway.media_policy import (
+        media_delivery_trust_recent,
+        media_delivery_trust_recent_seconds,
+    )
     if not media_delivery_trust_recent():
         return 0.0
     custom = media_delivery_trust_recent_seconds().strip()
@@ -2100,7 +2124,7 @@ class BasePlatformAdapter(ABC):
     def render_message_event(self, event: Any, sink: Any) -> None:
         """Render a MessageChunk / MessageStop / Commentary onto the sink (a
         GatewayStreamConsumer), mapping 1:1 onto its existing primitives."""
-        from gateway.stream_events import MessageChunk, MessageStop, Commentary
+        from gateway.stream_events import Commentary, MessageChunk, MessageStop
         if isinstance(event, MessageChunk) and event.text:
             sink.on_delta(event.text)
         elif isinstance(event, MessageStop) and not event.final:
@@ -2256,7 +2280,10 @@ class BasePlatformAdapter(ABC):
         holder is replaced only when the runner armed this adapter for its initial
         ``--replace`` connect (the status module validates ownership and terminates)."""
         from gateway.status import (
-            acquire_scoped_lock, scoped_lock_owner_label, take_over_scoped_lock_holder)
+            acquire_scoped_lock,
+            scoped_lock_owner_label,
+            take_over_scoped_lock_holder,
+        )
         self._platform_lock_scope, self._platform_lock_identity = scope, identity
         lock_meta = {"platform": self.platform.value}
         acquired, existing = acquire_scoped_lock(scope, identity, metadata=lock_meta)
@@ -2672,7 +2699,9 @@ class BasePlatformAdapter(ABC):
                 history.remove(last_reply)
         if not history:
             return None
-        from gateway.run import _collect_history_media_paths  # lazy: gateway.run imports us
+        from gateway.run import (
+            _collect_history_media_paths,  # lazy: gateway.run imports us
+        )
         return _collect_history_media_paths(history)
 
     async def _bounded_history_media_paths_for_session(self, session_key: str) -> Optional[set]:
@@ -4089,7 +4118,10 @@ class BasePlatformAdapter(ABC):
         # runner. Without this, they are queued as pending messages and either: See #4926.
         self._canonicalize(event.source)  # identity FIRST (direct callers may skip handle_message)
         cmd = event.get_command()
-        from hermes_cli.commands import (is_interrupt_then_dispatch, should_bypass_active_session)
+        from hermes_cli.commands import (
+            is_interrupt_then_dispatch,
+            should_bypass_active_session,
+        )
         if should_bypass_active_session(cmd):
             try:
                 # /stop, /new, /reset: cancel + response + drain; other bypasses don't cancel.
@@ -4203,7 +4235,7 @@ class BasePlatformAdapter(ABC):
         paths: List[str] = []
         requested_path = None
         try:
-            from tools.tts_tool import text_to_speech_tool, check_tts_requirements
+            from tools.tts_tool import check_tts_requirements, text_to_speech_tool
             if check_tts_requirements():
                 import json as _json
                 speech_text = self.prepare_tts_text(text_content)
@@ -4253,7 +4285,11 @@ class BasePlatformAdapter(ABC):
             return None
         try:
             from gateway.delivery_ledger import (
-                compute_obligation_id, ledger_enabled, mark_attempting, record_obligation)
+                compute_obligation_id,
+                ledger_enabled,
+                mark_attempting,
+                record_obligation,
+            )
             if not await asyncio.to_thread(ledger_enabled):
                 return None
             source = event.source
@@ -4286,7 +4322,11 @@ class BasePlatformAdapter(ABC):
         backoff has passed instead of waiting for the next restart (#91653)."""
         try:
             from gateway.dead_targets import classify_dead_error
-            from gateway.delivery_ledger import is_reconnect_only, mark_delivered, mark_failed
+            from gateway.delivery_ledger import (
+                is_reconnect_only,
+                mark_delivered,
+                mark_failed,
+            )
             if getattr(result, "success", False):
                 await asyncio.to_thread(mark_delivered, obligation_id)
                 return

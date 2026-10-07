@@ -9,7 +9,10 @@ from typing import Any
 
 from hermes_cli.proxy.adapters import ADAPTERS, get_adapter
 from hermes_cli.proxy.server import (
-    AIOHTTP_AVAILABLE, DEFAULT_HOST, DEFAULT_PORT, run_server
+    AIOHTTP_AVAILABLE,
+    DEFAULT_HOST,
+    DEFAULT_PORT,
+    run_server,
 )
 
 logger = logging.getLogger(__name__)

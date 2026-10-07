@@ -1,21 +1,22 @@
 """Actual background tasks exercise the same configured route as foreground chat."""
 
 import asyncio
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import socket
 import threading
 import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
+
 import hermes_yaml as yaml
 
 
 @pytest.fixture
 def actual_endpoint(monkeypatch):
     from agent.auxiliary_client import (
-        shutdown_cached_clients,
         _reset_aux_unhealthy_cache,
+        shutdown_cached_clients,
     )
 
     shutdown_cached_clients()
@@ -428,7 +429,7 @@ def test_actual_rejects_forced_responses_before_http(
 def test_actual_auxiliary_fallback_reaches_chat_completions(
     tmp_path, monkeypatch, actual_endpoint, provider, async_mode
 ):
-    from agent.auxiliary_client import call_llm, async_call_llm
+    from agent.auxiliary_client import async_call_llm, call_llm
 
     local_url, requests = actual_endpoint
     actual_url = local_url.replace("127.0.0.1", "api.actual.inc") + "/v1"

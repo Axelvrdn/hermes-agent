@@ -1,6 +1,5 @@
 import threading
 import time
-
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -88,7 +87,10 @@ def test_stream_delta_plugin_hook_error_does_not_break_streaming(monkeypatch):
 
 
 def test_stream_hook_queue_drops_oldest_pending_event_when_full(monkeypatch):
-    from agent.plugin_stream_hooks import enqueue_plugin_stream_hook, shutdown_plugin_stream_hook_dispatcher
+    from agent.plugin_stream_hooks import (
+        enqueue_plugin_stream_hook,
+        shutdown_plugin_stream_hook_dispatcher,
+    )
 
     shutdown_plugin_stream_hook_dispatcher()
     monkeypatch.setattr("agent.plugin_stream_hooks._QUEUE_SIZE", 1)
@@ -116,7 +118,10 @@ def test_stream_hook_queue_drops_oldest_pending_event_when_full(monkeypatch):
 
 
 def test_stream_hook_queue_isolated_per_consumer(monkeypatch):
-    from agent.plugin_stream_hooks import enqueue_plugin_stream_hook, shutdown_plugin_stream_hook_dispatcher
+    from agent.plugin_stream_hooks import (
+        enqueue_plugin_stream_hook,
+        shutdown_plugin_stream_hook_dispatcher,
+    )
 
     shutdown_plugin_stream_hook_dispatcher()
     monkeypatch.setattr("agent.plugin_stream_hooks._QUEUE_SIZE", 1)

@@ -76,7 +76,8 @@ def test_interrupt_hook_observer_sees_the_sessions_profile_a_b_a(tmp_path, monke
     (#125063), and no binding leaks past the dispatch."""
     from agent.secret_scope import set_multiplex_active
     from hermes_constants import get_hermes_home, get_hermes_home_override
-    from tui_gateway import launch_profile_policy as lpp, server
+    from tui_gateway import launch_profile_policy as lpp
+    from tui_gateway import server
 
     launch = tmp_path / "hermes_home"
     routed = launch / "profiles" / "s6probe-b"

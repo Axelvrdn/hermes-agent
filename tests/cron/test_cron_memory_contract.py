@@ -48,6 +48,7 @@ from unittest.mock import MagicMock, patch
 
 from cron.scheduler import run_job
 
+
 @contextlib.contextmanager
 def _run_job_patches(tmp_path):
     """Patch bundle so run_job runs offline; yields (fake_db, mock_agent_cls).

@@ -7,8 +7,6 @@ if unset). The bridge owns Raft message cursors/bodies; the agent uses the Raft 
 
 from __future__ import annotations
 
-from collections import deque
-from datetime import datetime, timezone
 import functools
 import hmac
 import json
@@ -24,6 +22,8 @@ import threading
 import time
 import uuid
 import weakref
+from collections import deque
+from datetime import datetime, timezone
 from pathlib import Path as _Path
 from typing import Any, Deque, Dict, List, Optional
 
@@ -37,9 +37,14 @@ except ImportError:
 sys.path.insert(0, str(_Path(__file__).resolve().parents[3]))
 
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms.base import BasePlatformAdapter, SendResult, merge_pending_message_event
+from gateway.platforms._shared import coerce_port
+from gateway.platforms._shared import profile_scoped as _profile_scoped
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    SendResult,
+    merge_pending_message_event,
+)
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms._shared import coerce_port, profile_scoped as _profile_scoped
 
 logger = logging.getLogger(__name__)
 
@@ -527,7 +532,13 @@ def _env_enablement() -> Optional[dict]:
 def interactive_setup() -> None:
     """``hermes gateway setup`` flow: persists ``RAFT_PROFILE`` to the Hermes env file.
     CLI helpers are lazy-imported so the plugin stays importable in gateway runtime and tests."""
-    from hermes_cli.cli_output import print_header, print_info, print_success, print_warning, prompt
+    from hermes_cli.cli_output import (
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+    )
     from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli.setup_platforms import declines_reconfigure
     print_header("Raft")

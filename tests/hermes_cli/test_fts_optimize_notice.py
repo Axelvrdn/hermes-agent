@@ -6,9 +6,9 @@ from types import SimpleNamespace
 
 def test_update_notice_offers_v1_trigram_tool_calls_rebuild(tmp_path, monkeypatch, capsys):
     """A deployed v1 trigram projection still receives the opt-in notice."""
-    from hermes_cli import update_cmd
     import hermes_constants
     import hermes_state
+    from hermes_cli import update_cmd
 
     db_path = tmp_path / "state.db"
     db_path.touch()

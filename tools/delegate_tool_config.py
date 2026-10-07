@@ -5,8 +5,9 @@ from __future__ import annotations
 import logging
 import os
 from typing import Any, Dict, List, Optional
-from utils import base_url_hostname, is_truthy_value
+
 from hermes_cli.fallback_config import scoped_fallback_chain
+from utils import base_url_hostname, is_truthy_value
 
 logger = logging.getLogger("tools.delegate_tool")  # log-record parity with the origin module
 
@@ -222,7 +223,10 @@ def _loaded_pool(key: Any):
 def _pool_serves_endpoint(pool: Any, provider: Optional[str], base_url: Optional[str]) -> bool:
     """Provider identity AND at least one entry for the child's endpoint; pools without entry metadata pass."""
     from agent.credential_pool import (
-        credential_pool_entry_serves_endpoint as _entry_serves_endpoint, credential_pool_matches_provider,
+        credential_pool_entry_serves_endpoint as _entry_serves_endpoint,
+    )
+    from agent.credential_pool import (
+        credential_pool_matches_provider,
     )
     if not credential_pool_matches_provider(pool, provider, base_url=base_url):
         return False

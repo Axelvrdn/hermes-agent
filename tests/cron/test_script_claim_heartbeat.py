@@ -1,9 +1,9 @@
 """Regression coverage for one-shot claims during blocking cron scripts."""
 
-from datetime import datetime, timedelta, timezone
 import contextlib
 import threading
 import time
+from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -15,7 +15,9 @@ import pytest
 @pytest.mark.parametrize("topology", ["detached", "stubborn-pipe"])
 def test_script_termination_reaps_descendants(tmp_path, monkeypatch, trigger, topology):
     import os
+
     import psutil
+
     from cron import scheduler, scheduler_script
 
     monkeypatch.setattr(scheduler, "_get_hermes_home", lambda: tmp_path)

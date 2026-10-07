@@ -135,7 +135,10 @@ def run(out_path: str) -> dict:
         return kept, kw.get("active_system_prompt") or sys_prompt
 
     agent._compress_context = counting  # type: ignore[method-assign]
-    from agent.image_token_cost import current_image_token_cost, learned_image_token_cost
+    from agent.image_token_cost import (
+        current_image_token_cost,
+        learned_image_token_cost,
+    )
     history: list = []
     per_turn = []
     try:

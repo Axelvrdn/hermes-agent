@@ -19,7 +19,6 @@ import threading
 
 import pytest
 
-
 PNG_1PX = bytes.fromhex(
     "89504e470d0a1a0a0000000d49484452000000010000000108020000009077"
     "53de00000010494441547801635c0e000000feff03000006000557bfabd400"
@@ -122,8 +121,9 @@ class TestSaveUrlImage:
     def test_404_raises(self, http_server):
         """HTTP errors must propagate — caller decides whether to fall back."""
         base, _ = http_server
-        from agent.image_gen_provider import save_url_image
         import httpx
+
+        from agent.image_gen_provider import save_url_image
 
         with pytest.raises(httpx.HTTPStatusError):
             save_url_image(f"{base}/404")

@@ -30,6 +30,7 @@ from agent.context_compressor import (
     _summarize_tool_result,
 )
 
+
 def _make_compressor(**overrides):
     kwargs = dict(
         model="test/model",

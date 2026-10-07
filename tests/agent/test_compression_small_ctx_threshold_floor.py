@@ -136,7 +136,10 @@ class TestTailBudgetProportionality:
         """The lean 10K floor is 61% of a 16K window and 122% of an 8K one: on a local 27B the
         "protected" tail was the whole request and compaction reclaimed nothing. Whatever the
         formula, the verbatim tail stays within ``TAIL_MAX_CONTEXT_FRACTION`` of the window."""
-        from agent.context_compressor import LEAN_TAIL_FLOOR_TOKENS, TAIL_MAX_CONTEXT_FRACTION
+        from agent.context_compressor import (
+            LEAN_TAIL_FLOOR_TOKENS,
+            TAIL_MAX_CONTEXT_FRACTION,
+        )
 
         for ctx in (8_192, 16_384, 32_768):
             comp = _make(ctx)
@@ -149,7 +152,10 @@ class TestTailBudgetProportionality:
         """End to end through the boundary walk: on an 8K window a tool-heavy transcript must yield a
         compressible middle that is most of the transcript, and the retained tail must stay near the
         window share (one atomic tool group of overrun is allowed for the required anchors)."""
-        from agent.context_compressor import TAIL_MAX_CONTEXT_FRACTION, _estimate_msg_budget_tokens
+        from agent.context_compressor import (
+            TAIL_MAX_CONTEXT_FRACTION,
+            _estimate_msg_budget_tokens,
+        )
 
         ctx = 8_192
         comp = _make(ctx)

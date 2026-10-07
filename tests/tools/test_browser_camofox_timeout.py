@@ -2,7 +2,6 @@
 from unittest.mock import patch
 
 
-
 class TestCamofoxCommandTimeout:
     """Verify that the Camofox HTTP backend reads browser.command_timeout."""
 
@@ -10,9 +9,8 @@ class TestCamofoxCommandTimeout:
 
     def test_config_read_error_falls_back(self):
         """If config read raises, fall back to 30s."""
-        from tools.browser_camofox import _get_command_timeout
-
         import tools.browser_camofox as mod
+        from tools.browser_camofox import _get_command_timeout
         mod._cmd_timeout_resolved = False
         mod._cached_cmd_timeout = None
 

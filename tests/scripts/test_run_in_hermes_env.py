@@ -29,7 +29,11 @@ from pathlib import Path
 
 import pytest
 
-from pm.environments import ACTIVATION_INPUTS, activation_input_mtimes, record_activation_inputs
+from pm.environments import (
+    ACTIVATION_INPUTS,
+    activation_input_mtimes,
+    record_activation_inputs,
+)
 from tests.pm.activation_support import bash, posix
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

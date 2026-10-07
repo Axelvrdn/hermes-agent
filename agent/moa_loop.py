@@ -15,14 +15,19 @@ import logging
 import re
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, wait as _futures_wait
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import wait as _futures_wait
 from dataclasses import KW_ONLY, dataclass, replace
 from types import SimpleNamespace
 from typing import Any
 
 from agent.auxiliary_client import call_llm
 from agent.message_content import flatten_message_text
-from agent.moa_alternation import destination_key, is_role_alternation_rejection, merge_same_role_messages
+from agent.moa_alternation import (
+    destination_key,
+    is_role_alternation_rejection,
+    merge_same_role_messages,
+)
 from agent.transports import get_transport
 from agent.usage_pricing import CanonicalUsage
 
@@ -346,9 +351,14 @@ def _maybe_apply_moa_cache_control(
     ``prompt_caching.cache_ttl: off`` is not bypassed by the blank-agent pattern (#76085).
     """
     try:
-        from agent.agent_runtime_helpers import anthropic_prompt_cache_policy, blank_cache_policy_stub
+        from agent.agent_runtime_helpers import (
+            anthropic_prompt_cache_policy,
+            blank_cache_policy_stub,
+        )
         from agent.prompt_caching import (
-            apply_anthropic_cache_control, effective_cache_ttl, envelope_tool_part_cache_markers_supported,
+            apply_anthropic_cache_control,
+            effective_cache_ttl,
+            envelope_tool_part_cache_markers_supported,
         )
 
         # Explicit kwarg > runtime snapshot (threaded from the live agent) > config.

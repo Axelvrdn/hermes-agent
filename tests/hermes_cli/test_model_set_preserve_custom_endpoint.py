@@ -68,7 +68,6 @@ def test_new_endpoint_model_set_still_registers_named_provider(isolated_home):
     """The guard must not over-fix: introducing a GENUINELY new custom endpoint through the
     dashboard still registers a named ``custom_providers`` row (the picker's ready row)."""
     import hermes_yaml as yaml
-
     from hermes_cli.web_server_config import _apply_model_assignment_sync
 
     _write_cli_config(isolated_home)

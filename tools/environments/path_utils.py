@@ -7,7 +7,6 @@ from __future__ import annotations
 import hashlib
 import re
 
-
 # A persistent sandbox's host directory is named after task_id, and that name
 # then becomes the source half of a Docker bind spec or a writable Singularity
 # overlay directory. Keep every backend on one collision-safe mapping.

@@ -508,8 +508,8 @@ def test_peel_keeps_mixed_and_local_batches_as_sequential_barrier():
 
 
 def _connectors_on(monkeypatch, client_factory):
-    from tools.registry import invalidate_check_fn_cache
     from tools.connectors.gateway import bridge, config
+    from tools.registry import invalidate_check_fn_cache
 
     monkeypatch.setattr(config, "connectors_available", lambda: True)
     monkeypatch.setattr(bridge, "connectors_available", lambda: True)

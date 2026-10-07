@@ -15,15 +15,14 @@ from unittest.mock import patch
 import pytest
 
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_METADATA_KEY,
-    ContextCompressor,
     _ACTIVE_TASK_MAX_CHARS,
     _INFLIGHT_TASK_REPLAY_HEADER,
     _SUMMARY_END_MARKER,
+    COMPRESSED_SUMMARY_METADATA_KEY,
+    ContextCompressor,
     _authored_request_text,
     _estimate_msg_budget_tokens,
 )
-
 
 _ACTIVE_REQUEST = "Inspect every shard and preserve the active request exactly."
 _TOKEN_BUDGET = 250
@@ -269,9 +268,9 @@ def test_active_request_survives_repeated_compaction_and_restart(tmp_path) -> No
     # Only a replay after the LAST end marker is live: a carrier merged into a
     # newer summary's prior context is history, and a leftover flag is not content.
     from agent.context_compressor import (
-        SUMMARY_PREFIX,
         _MERGED_PRIOR_CONTEXT_HEADER,
         _MERGED_SUMMARY_DELIMITER,
+        SUMMARY_PREFIX,
     )
 
     old = f"{SUMMARY_PREFIX}\nold\n\n{_SUMMARY_END_MARKER}\n\n{_INFLIGHT_TASK_REPLAY_HEADER}\ndo X"

@@ -5,10 +5,6 @@ from unittest.mock import patch
 from cli import HermesCLI
 
 
-
-
-
-
 def test_process_command_version_prints_version_info():
     cli_obj = HermesCLI.__new__(HermesCLI)
 

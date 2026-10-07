@@ -31,7 +31,6 @@ import json
 import sys
 from pathlib import Path
 
-
 _PATH = Path(__file__).resolve().parents[2] / "scripts" / "ci" / "assemble_review_comment.py"
 _spec = importlib.util.spec_from_file_location("assemble_review_comment", _PATH)
 if _spec is None or _spec.loader is None:

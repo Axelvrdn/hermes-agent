@@ -10,6 +10,7 @@ config -> signature -> AIAgent kwargs.
 
 from gateway.run import GatewayRunner
 
+
 class TestSkipContextFilesSignature:
     """A toggled skip_context_files must invalidate the agent cache."""
 

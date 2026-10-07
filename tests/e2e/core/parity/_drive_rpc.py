@@ -14,10 +14,11 @@ Both speak the same contract (``tui_gateway/contracts``): ``session.create`` →
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import queue
 import subprocess
+import sys
 import threading
 import time
 import uuid
@@ -32,8 +33,6 @@ from tests.e2e.core.parity._helpers import (
     terminate,
 )
 from tests.fakes.fake_llm_provider import FakeLLMServer
-
-import sys
 
 READY_TIMEOUT = 120.0
 

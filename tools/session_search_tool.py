@@ -781,7 +781,10 @@ SESSION_SEARCH_SCHEMA = {
 }
 
 
-from tools.registry import registry, tool_error  # noqa: E402  (registration at import time)
+from tools.registry import (  # noqa: E402  (registration at import time)
+    registry,
+    tool_error,
+)
 
 registry.register(
     name="session_search",

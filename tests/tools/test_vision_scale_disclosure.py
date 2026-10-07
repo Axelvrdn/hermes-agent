@@ -27,7 +27,6 @@ from PIL import Image  # noqa: E402
 from tools.computer_use.tool import _shrink_capture_for_vision  # noqa: E402
 from tools.vision_tools import _build_scale_note, vision_analyze_tool  # noqa: E402
 
-
 ORIG_W, ORIG_H = 3024, 1964
 SQUARE_X, SQUARE_Y, SQUARE_SIZE = 2400, 1500, 10
 

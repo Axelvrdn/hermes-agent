@@ -8,7 +8,6 @@ stripped PATH — gateway and service sessions don't inherit the interactive env
 
 from __future__ import annotations
 
-from contextlib import suppress
 import csv
 import logging
 import os
@@ -17,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import time
+from contextlib import suppress
 from dataclasses import replace
 from pathlib import Path
 

@@ -1,13 +1,14 @@
 """Tests for hermes_cli.doctor."""
 
-import logging
+import contextlib
 import importlib.util
+import io
+import logging
 import os
+import shutil
 import subprocess
 import sys
 import types
-import io
-import contextlib
 from argparse import Namespace
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,17 +16,13 @@ from types import SimpleNamespace
 import pytest
 
 import hermes_cli.doctor as doctor
+import hermes_cli.gateway as gateway_cli
 import hermes_constants
 from hermes_cli import config as config_mod
-import hermes_cli.gateway as gateway_cli
 from hermes_cli import doctor as doctor_mod
+from hermes_cli import doctor_config, doctor_platform, doctor_state, doctor_tools
 from hermes_cli.doctor_config import _has_provider_env_config
 from hermes_cli.doctor_report import Finding
-import shutil
-from hermes_cli import doctor_tools
-from hermes_cli import doctor_state
-from hermes_cli import doctor_platform
-from hermes_cli import doctor_config
 from tools import browser_tool_install as bt_install
 
 
@@ -404,7 +401,8 @@ class TestDoctorMemoryProviderSection:
             lambda cmd: None if cmd == "gh" else real_which(cmd),
         )
 
-        import io, contextlib
+        import contextlib
+        import io
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             doctor_mod.run_doctor(Namespace(fix=False))
@@ -894,8 +892,8 @@ def test_doctor_fix_does_not_claim_success_without_published_binary(monkeypatch,
 
 
 def test_doctor_fix_reports_pm_install_failure(monkeypatch, tmp_path):
-    from hermes_cli import doctor_tools
     import pm
+    from hermes_cli import doctor_tools
     _doctor_env_for_agent_browser(monkeypatch, tmp_path)
 
     def missing(**kwargs):
@@ -952,7 +950,8 @@ def test_run_doctor_kimi_cn_env_is_detected_and_probe_is_null_safe(monkeypatch, 
     import httpx
     monkeypatch.setattr(httpx, "get", fake_get)
 
-    import io, contextlib
+    import contextlib
+    import io
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         doctor_mod.run_doctor(Namespace(fix=False))
@@ -1060,7 +1059,8 @@ def test_run_doctor_opencode_go_skips_invalid_models_probe(monkeypatch, tmp_path
     import httpx
     monkeypatch.setattr(httpx, "get", fake_get)
 
-    import io, contextlib
+    import contextlib
+    import io
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         doctor_mod.run_doctor(Namespace(fix=False))

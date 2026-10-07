@@ -17,6 +17,7 @@ import pytest
 from agent import background_review
 from hermes_state import SessionDB
 
+
 @pytest.fixture
 def db(tmp_path):
     return SessionDB(tmp_path / "state.db")

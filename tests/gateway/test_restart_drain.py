@@ -335,8 +335,9 @@ async def test_windows_detached_restart_scrubs_gateway_marker(monkeypatch, tmp_p
     assert kwargs["env"].get("_HERMES_GATEWAY") is None
     # The watcher is an installation-bound command: PM's bootstrap selects the
     # dependency generation at child start, no venv is captured in its env.
-    from hermes_cli._launchers import runtime_command
     from pathlib import Path
+
+    from hermes_cli._launchers import runtime_command
     assert cmd[:3] == runtime_command(Path(gateway_run.__file__).resolve().parent.parent)[:3]
     assert kwargs["stdout"] is subprocess.DEVNULL
     assert kwargs["stderr"] is subprocess.DEVNULL
@@ -425,8 +426,8 @@ async def test_drain_suppress_skips_home_channel_keeps_session_ping(tmp_path, mo
     "your task was interrupted, message me to resume" hint). This is the core
     drain-notification-suppression contract.
     """
-    from gateway.config import HomeChannel, Platform
     import gateway.drain_control as dc
+    from gateway.config import HomeChannel, Platform
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
 

@@ -1,9 +1,9 @@
 """Broken custody imports never authorize repair of a possibly live checkout."""
-from pathlib import Path
 import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 

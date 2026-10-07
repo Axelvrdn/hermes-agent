@@ -16,7 +16,16 @@ from pathlib import Path
 import pytest
 
 from tests.e2e.core.providers._catalog_helpers import (
-    AUTH_HEADER_OF_DIALECT, FINAL, Known, Row, decoy_keys, discover_catalog, gate, known_gate, run_hermes, write_home,
+    AUTH_HEADER_OF_DIALECT,
+    FINAL,
+    Known,
+    Row,
+    decoy_keys,
+    discover_catalog,
+    gate,
+    known_gate,
+    run_hermes,
+    write_home,
 )
 from tests.fakes.providers.catalog_fake import CatalogFake
 

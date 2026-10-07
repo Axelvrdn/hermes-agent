@@ -107,7 +107,10 @@ def _desktop_macos_setup_tcc_identity(identity: str = "Hermes Local Signing") ->
     signing identity, so a certificate-anchored one is stable across rebuilds (the yabai/skhd
     mechanism). Idempotent; never raises."""
     from hermes_cli.main import PROJECT_ROOT
-    from hermes_cli.main_desktop import _desktop_macos_relaunchable_fixup, _desktop_packaged_executable
+    from hermes_cli.main_desktop import (
+        _desktop_macos_relaunchable_fixup,
+        _desktop_packaged_executable,
+    )
     if sys.platform != "darwin":
         print("  (--setup-tcc-identity is macOS-only; skipping)")
         return False

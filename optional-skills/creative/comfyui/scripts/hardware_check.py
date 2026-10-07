@@ -32,7 +32,6 @@ import subprocess
 import sys
 from typing import Any
 
-
 # Thresholds (GiB).
 MIN_VRAM_GB_USABLE = 6
 OK_VRAM_GB = 8

@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from pm.package import InstallError, Package
 from pm.lock import Lockfile
+from pm.package import InstallError, Package
 from pm.store import Store
 
 ensure_mod = importlib.import_module("pm.install")
@@ -76,8 +76,8 @@ ENTRY = "stage-test-1.0-linux-arm64-bionic"
 ])
 def test_bionic_deb_stages_real_packages_without_host_execution(tmp_path, monkeypatch, name, relative):
     from pm import paths
-    from tests.pm.test_deb_safety import _build_deb
     from pm.registry import get_package
+    from tests.pm.test_deb_safety import _build_deb
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "home"))
     monkeypatch.setenv("HERMES_RUNTIME_DIR", str(tmp_path / "store"))

@@ -14,7 +14,6 @@ import pytest
 
 from tools import bot_failure_reasons as bfr
 
-
 # ── policy function ──────────────────────────────────────────────────────────
 
 

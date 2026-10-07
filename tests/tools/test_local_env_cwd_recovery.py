@@ -8,12 +8,12 @@ subsequent terminal/file-tool call until the gateway restarts.
 Regression coverage for https://github.com/NousResearch/hermes-agent/issues/17558.
 """
 import logging
-import pytest
-
 import os
 import shutil
 import tempfile
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from tools.environments.local import (
     LocalEnvironment,

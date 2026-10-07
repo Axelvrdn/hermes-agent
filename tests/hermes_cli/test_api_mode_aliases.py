@@ -29,7 +29,7 @@ from __future__ import annotations
 import pytest
 
 from hermes_cli.config import _canonical_api_mode, _normalize_custom_provider_entry
-from hermes_cli.runtime_provider import _parse_api_mode, _VALID_API_MODES
+from hermes_cli.runtime_provider import _VALID_API_MODES, _parse_api_mode
 
 
 class TestCanonicalApiMode:

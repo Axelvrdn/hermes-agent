@@ -13,11 +13,12 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from agent.memory_provider import MemoryProvider
+from hermes_cli.config import cfg_get
 from tools.registry import tool_error
 from utils import is_truthy_value
-from .store import MemoryStore
+
 from .retrieval import FactRetriever
-from hermes_cli.config import cfg_get
+from .store import MemoryStore
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,9 @@ _EXTRACT_CATEGORIES = (
 
 def _load_plugin_config() -> dict:
     try:
-        from hermes_cli.config import load_config_readonly  # canonical: managed-scope overlay + ${VAR} expansion
+        from hermes_cli.config import (
+            load_config_readonly,  # canonical: managed-scope overlay + ${VAR} expansion
+        )
         return cfg_get(load_config_readonly(), "plugins", "hermes-memory-store", default={}) or {}
     except Exception:
         return {}
@@ -240,7 +243,11 @@ class HolographicMemoryProvider(MemoryProvider):
         # Compaction handoff summaries arrive as role="user" and match the decision patterns; never store the
         # compactor's own output as a fact. A merge-into-tail row holds genuine prior user text BEFORE
         # _MERGED_SUMMARY_DELIMITER (after the header) and the summary AFTER it — harvest only that segment.
-        from agent.context_compressor import _MERGED_PRIOR_CONTEXT_HEADER, _MERGED_SUMMARY_DELIMITER, is_compaction_summary_message  # heavy; lazy
+        from agent.context_compressor import (  # heavy; lazy
+            _MERGED_PRIOR_CONTEXT_HEADER,
+            _MERGED_SUMMARY_DELIMITER,
+            is_compaction_summary_message,
+        )
         extracted = 0
         for msg in messages:
             content = msg.get("content", "") if msg.get("role") == "user" else None

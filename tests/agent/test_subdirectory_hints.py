@@ -1,13 +1,13 @@
 """Tests for progressive subdirectory hint discovery."""
 
 import time
-
-import pytest
 from pathlib import Path
 from unittest.mock import patch
 
-from agent.search_policy import SEARCH_PRUNE_DIR_NAMES
+import pytest
+
 from agent.prompt_builder import drain_truncation_warnings
+from agent.search_policy import SEARCH_PRUNE_DIR_NAMES
 from agent.subdirectory_hints import SubdirectoryHintTracker
 
 
@@ -121,6 +121,7 @@ class TestSubdirectoryHintTracker:
         """Over the ceiling: head AND tail survive, the marker names the file to read_file, and it is logged
         (the old silent tail-chop hid a truncated apps/desktop/AGENTS.md for months)."""
         import logging
+
         from agent import subdirectory_hints as sh
         sub = tmp_path / "bigdir"
         sub.mkdir()

@@ -10,9 +10,8 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-from tests.pm._fixtures import client, isolated_python  # noqa: F401
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.plugins_cmd import (
     PluginOperationError,
     _copy_example_files,
@@ -23,6 +22,7 @@ from hermes_cli.plugins_cmd import (
     _sanitize_plugin_name,
 )
 from hermes_cli.plugins_cmd_install import _refuse_unavailable_portable_plugin
+from tests.pm._fixtures import client, isolated_python  # noqa: F401
 
 
 def _write_portable_app_plugin(root: Path, app: Path) -> None:
@@ -522,8 +522,9 @@ class TestPromptPluginEnvVars:
 
 
     def test_prompts_for_missing_var_rich_format(self):
-        from hermes_cli.plugins_cmd import _prompt_plugin_env_vars
         from unittest.mock import MagicMock, patch
+
+        from hermes_cli.plugins_cmd import _prompt_plugin_env_vars
 
         console = MagicMock()
         manifest = {
@@ -549,8 +550,9 @@ class TestPromptPluginEnvVars:
         assert "langfuse.com" in printed
 
     def test_secret_uses_masked_prompt(self):
-        from hermes_cli.plugins_cmd import _prompt_plugin_env_vars
         from unittest.mock import MagicMock, patch
+
+        from hermes_cli.plugins_cmd import _prompt_plugin_env_vars
 
         console = MagicMock()
         manifest = {
@@ -741,6 +743,7 @@ class TestSubdirInstallE2E:
 
         import json
         import subprocess as sp
+
         from hermes_cli import plugins_cmd as pc
         from hermes_cli.agent_plugins import PLUGIN_SCHEMA_V1
 
@@ -960,8 +963,9 @@ def prepared_publication(client, tmp_path, monkeypatch):
 
 
 def test_default_compressor_does_not_activate_an_offered_plugin(monkeypatch):
-    from agent.agent_init import _select_context_engine
     from types import SimpleNamespace
+
+    from agent.agent_init import _select_context_engine
     candidate = SimpleNamespace(name='offered', clone_for_agent=lambda: candidate)
     monkeypatch.setattr('plugins.context_engine.load_context_engine', lambda _: None)
     monkeypatch.setattr('hermes_cli.plugins.get_plugin_context_engine', lambda: candidate)

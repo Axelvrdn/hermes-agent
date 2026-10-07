@@ -21,7 +21,6 @@ from tools.tts_tool import (
 )
 from tools.tts_tool_local import DEFAULT_PIPER_VOICE, _resolve_piper_voice_path
 
-
 # ---------------------------------------------------------------------------
 # Registry / constants
 # ---------------------------------------------------------------------------

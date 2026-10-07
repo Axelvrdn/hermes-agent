@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from hermes_cli._subprocess_compat import windows_hide_flags
-from tools.browser_tool_origin import origin as _bt
 from tools import browser_tool_cdp as _cdp
 from tools import browser_tool_cloud as _cloud
 from tools import browser_tool_install as _install
@@ -23,6 +22,7 @@ from tools import browser_tool_lifecycle as _lifecycle
 from tools import browser_tool_lightpanda_fallback as _lp
 from tools import browser_tool_real_profile as _real_profile
 from tools import browser_tool_snapshot as _snapshot
+from tools.browser_tool_origin import origin as _bt
 
 _DOCKER_PULL = "docker pull ghcr.io/nousresearch/hermes-agent:latest"
 _CHROMIUM_INSTALL = "hermes pm install chromium (system libraries: npx playwright install-deps chromium)"
@@ -550,7 +550,8 @@ def _recycle_local_session(task_id: str, session_info: Dict[str, Any], task_sock
 def _sandbox_close_daemon(session_name: str) -> None:
     """``agent-browser --session <name> close`` inside the sandbox (best effort; the daemon's own idle timer and
     the sandbox's lifetime bound it otherwise)."""
-    from tools.bot_desktop import runtime as _bd_runtime, sandbox_host
+    from tools.bot_desktop import runtime as _bd_runtime
+    from tools.bot_desktop import sandbox_host
     from tools.environments import streams
     env = _bd_runtime._sandbox_env(create=False)
     if env is None or not session_name:
@@ -666,7 +667,8 @@ def _sandbox_wrap(cmd_parts: List[str], browser_env: Dict[str, str], task_socket
     liveness probes keep their shape) and a screen-published DISPLAY. Identity on a gateway-hosted screen."""
     if not _browser_in_sandbox():
         return cmd_parts, browser_env
-    from tools.bot_desktop import runtime as _bd_runtime, sandbox_host
+    from tools.bot_desktop import runtime as _bd_runtime
+    from tools.bot_desktop import sandbox_host
     from tools.environments import streams
     env = _bd_runtime._sandbox_env(create=True)
     if env is None:
@@ -700,7 +702,8 @@ def _sandbox_wrap(cmd_parts: List[str], browser_env: Dict[str, str], task_socket
 def _browser_command_preflight() -> Dict[str, Any]:
     """Fail fast before spawning (missing CLI, Termux gap, interrupt, no Chromium in local
     mode — else every call hangs for command_timeout). Error result, or ``{"browser_cmd": path}``."""
-    from tools.bot_desktop import placement, runtime as _bd_runtime
+    from tools.bot_desktop import placement
+    from tools.bot_desktop import runtime as _bd_runtime
     try:
         where = _bd_runtime.tool_placement()  # starts the sandbox screen on demand; raises for refused / down
     except RuntimeError as e:
@@ -830,7 +833,8 @@ def _shares_bot_desktop_browser(session_info: Dict[str, Any]) -> bool:
     A human lease with the screen already gone (dead Xvnc) still fences — computer_use does the same."""
     if not (session_info.get("features") or {}).get("local"):
         return False
-    from tools.bot_desktop import lease as _bd_lease, runtime as _bd_runtime
+    from tools.bot_desktop import lease as _bd_lease
+    from tools.bot_desktop import runtime as _bd_runtime
     return bool(_bd_runtime.published_env().get("DISPLAY")) or _bd_lease.human_holds()
 
 

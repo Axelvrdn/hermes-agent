@@ -56,7 +56,11 @@ class TestAsyncClientLazyCreation:
 @pytest.mark.asyncio
 async def test_generate_summary_async_kimi_omits_temperature():
     """Kimi models should have temperature omitted — server manages it."""
-    from trajectory_compressor import CompressionConfig, TrajectoryCompressor, TrajectoryMetrics
+    from trajectory_compressor import (
+        CompressionConfig,
+        TrajectoryCompressor,
+        TrajectoryMetrics,
+    )
 
     config = CompressionConfig(
         summarization_model="kimi-for-coding",

@@ -5,24 +5,36 @@ The toolset/terminal catalogs and helpers stay in web_server (some are defined
 monkeypatching on web_server stays authoritative.
 """
 
-import logging
 import asyncio
+import logging
 import shutil
 import subprocess
 import sys
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
+from starlette.concurrency import run_in_threadpool
 
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_profiles import _plugin_terminal_backend_rows
-from starlette.concurrency import run_in_threadpool
 from hermes_cli.web_models import (
-    TerminalBackendSelect, ToolsetEnvUpdate, ToolsetModelSelect, ToolsetPostSetup,
-    ToolsetProviderSelect, ToolsetToggle)
+    TerminalBackendSelect,
+    ToolsetEnvUpdate,
+    ToolsetModelSelect,
+    ToolsetPostSetup,
+    ToolsetProviderSelect,
+    ToolsetToggle,
+)
 from hermes_cli.web_routers._common import (
-    _CONFIG_MUTATION_LOCK, _profile_cli_args, _profile_scope, _spawn_hermes_action,
-    config_write_scope, log as _log, scoped_to_thread, spawn_profile_action)
+    _CONFIG_MUTATION_LOCK,
+    _profile_cli_args,
+    _profile_scope,
+    _spawn_hermes_action,
+    config_write_scope,
+    scoped_to_thread,
+    spawn_profile_action,
+)
+from hermes_cli.web_routers._common import log as _log
+from hermes_cli.web_server_profiles import _plugin_terminal_backend_rows
 
 router = APIRouter()
 
@@ -63,7 +75,11 @@ def _probe_docker_backend(_cfg) -> tuple:
     because Podman has no ServerVersion field and the agent already probes with
     ``version``.
     """
-    from tools.environments.docker import docker_runtime_name, docker_runtime_start_hint, find_docker
+    from tools.environments.docker import (
+        docker_runtime_name,
+        docker_runtime_start_hint,
+        find_docker,
+    )
     from tools.environments.remote_common import run_capture
 
     docker_exe = find_docker()
@@ -174,7 +190,11 @@ def _resolve_toolset_model_plugin(ts_key: str, provider_row: dict) -> Optional[s
 def _toolset_model_catalog(ts_key: str, plugin_name: str, config: dict):
     """Return ``(catalog_dict, default_model)`` for a toolset's plugin backend or, for an image row's
     ``imagegen_backend`` (``fal``, the managed ``nous`` union), that backend's catalog."""
-    from hermes_cli.tools_config import IMAGEGEN_BACKENDS, _plugin_image_gen_catalog, _plugin_video_gen_catalog
+    from hermes_cli.tools_config import (
+        IMAGEGEN_BACKENDS,
+        _plugin_image_gen_catalog,
+        _plugin_video_gen_catalog,
+    )
 
     if ts_key == "image_gen":
         backend = IMAGEGEN_BACKENDS.get(plugin_name)
@@ -230,11 +250,16 @@ def _no_models(name: str) -> dict:
 
 @router.get("/api/tools/toolsets")
 async def get_toolsets(profile: Optional[str] = None):
-    from hermes_cli.tools_config import (
-        _CONFIG_ONLY_TOOLSETS, _get_effective_configurable_toolsets, _get_platform_tools,
-        _toolset_configuration_platform, _toolset_has_keys, get_nous_subscription_features,
-        gui_toolset_label)
     from hermes_cli.platforms import platform_label
+    from hermes_cli.tools_config import (
+        _CONFIG_ONLY_TOOLSETS,
+        _get_effective_configurable_toolsets,
+        _get_platform_tools,
+        _toolset_configuration_platform,
+        _toolset_has_keys,
+        get_nous_subscription_features,
+        gui_toolset_label,
+    )
     from toolsets import resolve_toolset
     from utils import is_truthy_value
 
@@ -284,8 +309,11 @@ async def toggle_toolset(name: str, body: ToolsetToggle, profile: Optional[str] 
     (``platform_toolsets.cli`` for most; platform-restricted toolsets target
     their own platform) via the same ``_save_platform_tools`` the CLI uses."""
     from hermes_cli.tools_config import (
-        _CONFIG_ONLY_TOOLSETS, _get_platform_tools, _save_platform_tools,
-        _toolset_configuration_platform)
+        _CONFIG_ONLY_TOOLSETS,
+        _get_platform_tools,
+        _save_platform_tools,
+        _toolset_configuration_platform,
+    )
 
     _require_known_toolset(name)
     target_platform = _toolset_configuration_platform(name)
@@ -318,7 +346,10 @@ async def toggle_toolset(name: str, body: ToolsetToggle, profile: Optional[str] 
     if body.enabled and name not in _CONFIG_ONLY_TOOLSETS:
         def _pending_install_key() -> Optional[str]:
             from hermes_cli.tools_config import (
-                TOOL_CATEGORIES, _post_setup_already_installed, _visible_providers)
+                TOOL_CATEGORIES,
+                _post_setup_already_installed,
+                _visible_providers,
+            )
 
             cat = TOOL_CATEGORIES.get(name)
             if not cat:
@@ -347,11 +378,15 @@ async def toggle_toolset(name: str, body: ToolsetToggle, profile: Optional[str] 
 async def get_toolset_config(name: str, profile: Optional[str] = None):
     """Provider matrix + key status for a toolset's config panel (the CLI picker
     rows, each env var annotated ``is_set``); no category -> ``has_category: false``."""
-    from hermes_cli.tools_config import (
-        TOOL_CATEGORIES, _is_provider_active, _visible_providers, provider_readiness_status,
-        web_provider_capabilities)
     from hermes_cli.config import get_env_value
     from hermes_cli.nous_subscription import get_nous_subscription_features
+    from hermes_cli.tools_config import (
+        TOOL_CATEGORIES,
+        _is_provider_active,
+        _visible_providers,
+        provider_readiness_status,
+        web_provider_capabilities,
+    )
 
     _require_known_toolset(name)
 
@@ -411,7 +446,11 @@ async def get_toolset_config(name: str, profile: Optional[str] = None):
                 # or the user's own key (the managed and BYOK Firecrawl rows share one backend name).
                 try:
                     from plugins.web.firecrawl.provider import is_managed_route
-                    from tools.web_tools import _get_extract_backend, _get_search_backend, _managed_web_search
+                    from tools.web_tools import (
+                        _get_extract_backend,
+                        _get_search_backend,
+                        _managed_web_search,
+                    )
 
                     search_backend = _get_search_backend()
                     extract_backend = _get_extract_backend()
@@ -514,9 +553,14 @@ async def select_toolset_provider(
     entitlement (``needs_nous_auth`` + ``feature``): the GUI has no inline
     login, so an unentitled selection would write config and never activate.
     """
-    from hermes_cli.tools_config import apply_provider_selection, web_provider_capabilities
     from hermes_cli.nous_subscription import (
-        MANAGED_FEATURE_COVERAGE_CATEGORY, get_nous_subscription_features)
+        MANAGED_FEATURE_COVERAGE_CATEGORY,
+        get_nous_subscription_features,
+    )
+    from hermes_cli.tools_config import (
+        apply_provider_selection,
+        web_provider_capabilities,
+    )
 
     _require_known_toolset(name)
 

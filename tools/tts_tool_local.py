@@ -14,7 +14,12 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, Tuple
 
-from tools.tts_tool_delivery import _finalize_wav_output, _origin, _section, _wav_sidecar_path
+from tools.tts_tool_delivery import (
+    _finalize_wav_output,
+    _origin,
+    _section,
+    _wav_sidecar_path,
+)
 
 logger = logging.getLogger("tools.tts_tool")
 

@@ -12,9 +12,9 @@ Per transcript:
 
 Usage: codex_arm.py <lineage_json> <questions_json> <workdir> <out_json>
 """
-import logging
 import glob
 import json
+import logging
 import os
 import re
 import subprocess

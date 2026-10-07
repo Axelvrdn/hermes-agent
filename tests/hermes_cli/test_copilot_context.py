@@ -9,7 +9,6 @@ import pytest
 
 from hermes_cli.models import get_copilot_model_context
 
-
 # Sample catalog items mimicking the Copilot /models API response
 _SAMPLE_CATALOG = [
     {
@@ -85,6 +84,7 @@ class TestGetCopilotModelContext:
     @patch("hermes_cli.models._urlopen_model_catalog_request")
     def test_fetch_github_model_catalog_uses_short_lived_cache(self, mock_urlopen):
         import json as _json
+
         import hermes_cli.models as mod
 
         mod._github_model_catalog_cache = None
@@ -129,6 +129,7 @@ class TestGetCopilotModelContext:
     def test_fetch_github_model_catalog_cache_expires_after_ttl(self, mock_urlopen):
         import json as _json
         import time as _time
+
         import hermes_cli.models as mod
 
         mod._github_model_catalog_cache = None
@@ -168,6 +169,7 @@ class TestGetCopilotModelContext:
     @patch("hermes_cli.models._urlopen_model_catalog_request")
     def test_fetch_github_model_catalog_cache_misses_on_credential_change(self, mock_urlopen):
         import json as _json
+
         import hermes_cli.models as mod
 
         mod._github_model_catalog_cache = None

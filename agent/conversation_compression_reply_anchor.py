@@ -45,7 +45,9 @@ def _ensure_compressed_keeps_last_assistant_reply(
     that is not "the reply is already there" is logged here with its reason.
     """
     from agent.context_compressor import (
-        _DB_PERSISTED_MARKER, _fresh_compaction_message_copy, is_compaction_summary_message,
+        _DB_PERSISTED_MARKER,
+        _fresh_compaction_message_copy,
+        is_compaction_summary_message,
     )
     from agent.conversation_compression import _message_text
 

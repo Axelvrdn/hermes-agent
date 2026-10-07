@@ -4,8 +4,8 @@ prompt_toolkit-free for the gateway."""
 
 from __future__ import annotations
 
-import logging
 import functools
+import logging
 import os
 import shutil
 import subprocess
@@ -31,8 +31,8 @@ def _personalities_from_cli_config() -> Dict[str, Any]:
     Falls back to a fresh load when the file cannot be stat'ed."""
     global _personalities_memo
     from cli import load_cli_config
-    from utils import file_signature
     from hermes_cli.personality import available_personalities
+    from utils import file_signature
     try:
         from hermes_cli.config import get_config_path
         cfg_path = get_config_path()
@@ -125,7 +125,10 @@ def _tools_completions(sub_text: str, sub_lower: str):
     already = set(completed[1:])
     from hermes_cli.config import load_config_readonly
     from hermes_cli.tools_config import (
-        CONFIGURABLE_TOOLSETS, _get_platform_tools, _get_plugin_toolset_keys)
+        CONFIGURABLE_TOOLSETS,
+        _get_platform_tools,
+        _get_plugin_toolset_keys,
+    )
     # Readonly loader: per keystroke and never mutates, so skip load_config()'s deepcopy.
     # Read-only path: the completer only inspects the config (toolset enable state + MCP server names) — it
     # never mutates it. Use the readonly loader so the per-keystroke completion doesn't pay the defensive

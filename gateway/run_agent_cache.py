@@ -14,9 +14,9 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from agent.interrupt_compat import _accepts_keyword
 from gateway.config import Platform
+from gateway.run_shutdown import _log_suppressed
 from gateway.session import SessionSource, build_session_context_prompt
 from gateway.session_prompt_pin import PROMPT_PIN_VERSION, sanitize_prompt_pin
-from gateway.run_shutdown import _log_suppressed
 from hermes_cli.config import DEFAULT_CONFIG, cfg_get
 from hermes_cli.local_runtime.endpoint import LLAMACPP_ALIASES
 
@@ -116,7 +116,8 @@ class GatewayAgentCacheMixin:
         broke #27371's per-user-peer contract in multi-user gateways. Per-user agent rebuilds in shared
         threads trade prompt-cache warmth for correct memory attribution.
         """
-        import hashlib, json as _j
+        import hashlib
+        import json as _j
         # Fingerprint the FULL credential, not a short prefix: OAuth/JWT-style tokens often share a
         # common prefix (e.g. "eyJhbGci"), so a prefix would give false cache hits across auth switches.
         _api_key = str(runtime.get("api_key", "") or "")
@@ -179,7 +180,10 @@ class GatewayAgentCacheMixin:
                     # The managed llama.cpp supervisor owns its live port; a persisted loopback URL from a
                     # boot that fell back to an ephemeral port would strand the session on a dead endpoint.
                     override["base_url"] = runtime.get("base_url")
-                from hermes_cli.models import normalize_opencode_base_url, opencode_provider_family
+                from hermes_cli.models import (
+                    normalize_opencode_base_url,
+                    opencode_provider_family,
+                )
                 if opencode_provider_family(provider) is not None and override.get("base_url"):
                     # api_mode was just re-derived from the target model; a relay URL persisted by an older
                     # build for another wire (/v1-stripped) or the other family is healed to match (#96066).
@@ -280,7 +284,10 @@ class GatewayAgentCacheMixin:
         # Vendor prefix stripped on native providers, else the cached agent is evicted every turn,
         # destroying prompt caching.
         with suppress(Exception):
-            from hermes_cli.model_normalize import _AGGREGATOR_PROVIDERS, normalize_model_for_provider
+            from hermes_cli.model_normalize import (
+                _AGGREGATOR_PROVIDERS,
+                normalize_model_for_provider,
+            )
             if provider and provider not in _AGGREGATOR_PROVIDERS:
                 model = normalize_model_for_provider(model, provider)
         # The Nous welcome host runs its one model whatever the chat configured (pin_model_for_route).
@@ -492,7 +499,12 @@ class GatewayAgentCacheMixin:
         ``tool_reason`` names a system issuer (eviction); ``None`` keeps the user attribution of /stop and /new.
         Returns the post-bump generation."""
         from contextvars import copy_context
-        from gateway.run import _AGENT_PENDING_SENTINEL, _reap_gateway_turn_processes, request_hard_interrupt
+
+        from gateway.run import (
+            _AGENT_PENDING_SENTINEL,
+            _reap_gateway_turn_processes,
+            request_hard_interrupt,
+        )
         state = self._peek_session_state(session_key)
         running_agent = state.turn.agent if state else None
         _process_task_id, _process_baseline = "", None
@@ -535,6 +547,7 @@ class GatewayAgentCacheMixin:
             session_key, interrupt_reason=interrupt_reason, invalidation_reason=invalidation_reason,
         )
         from gateway.run import _AGENT_PENDING_SENTINEL
+
         # The turn's hard interrupt reaches only its in-turn children; background delegations were
         # detached at dispatch and would otherwise run to completion and wake the session later.
         # Each interrupted unit still returns as a completion (status=interrupted, partial output).
@@ -873,7 +886,11 @@ class GatewayAgentCacheMixin:
         scope = nullcontext()
         if is_multiplex_active():
             from gateway.run import _profile_runtime_scope
-            from hermes_constants import get_default_hermes_root, get_hermes_home, hermes_home_key
+            from hermes_constants import (
+                get_default_hermes_root,
+                get_hermes_home,
+                hermes_home_key,
+            )
             owner = None
             store = getattr(self, "session_store", None)
             if session_key and store is not None:
@@ -972,10 +989,12 @@ class GatewayAgentCacheMixin:
         Pressure eviction bounds that heap before the cgroup throttles and SIGTERM can
         no longer flush inside systemd's stop timeout (#80764).
         """
-        from gateway.run import _AGENT_PENDING_SENTINEL
         from gateway.agent_cache_pressure import (
-            plan_pressure_evictions, read_anon_rss_mb, transcript_persistence_caught_up
+            plan_pressure_evictions,
+            read_anon_rss_mb,
+            transcript_persistence_caught_up,
         )
+        from gateway.run import _AGENT_PENDING_SENTINEL
         bounds = self._agent_cache_bounds()
         _cache = getattr(self, "_agent_cache", None)
         _lock = getattr(self, "_agent_cache_lock", None)

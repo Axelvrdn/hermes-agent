@@ -2,15 +2,15 @@
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from agent.models_dev import (
     PROVIDER_TO_MODELS_DEV,
-    _extract_context,
     _default_model_override,
     _explicit_model_override,
+    _extract_context,
     _override_context_window,
     _override_for,
     _validate_registry,
@@ -19,7 +19,6 @@ from agent.models_dev import (
     get_model_info,
     lookup_models_dev_context,
 )
-
 
 SAMPLE_REGISTRY = {
     "anthropic": {

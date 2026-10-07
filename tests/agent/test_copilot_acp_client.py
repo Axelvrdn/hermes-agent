@@ -171,6 +171,7 @@ if __name__ == "__main__":
 # ── HOME env propagation tests (from PR #11285) ─────────────────────
 
 from unittest.mock import patch as _patch
+
 import pytest
 
 

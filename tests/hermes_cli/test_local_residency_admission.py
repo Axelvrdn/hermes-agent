@@ -76,8 +76,7 @@ def test_boot_hands_the_router_the_derived_cap(tmp_path, monkeypatch, configured
     """The wiring, not just the math: what ``ensure_local_runtime`` passes as ``--models-max``."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
     import hermes_cli.local_runtime.bootstrap as bs
-    from hermes_cli.local_runtime import binaries, hardware, supervisor
-    from hermes_cli.local_runtime import endpoint
+    from hermes_cli.local_runtime import binaries, endpoint, hardware, supervisor
 
     mdir = _staged(tmp_path, monkeypatch, {"nine-b": 6 * GIB})
     monkeypatch.setattr(bs, "models_dir", lambda: mdir)

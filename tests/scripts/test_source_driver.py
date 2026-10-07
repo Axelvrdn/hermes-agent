@@ -2,15 +2,14 @@
 import hashlib
 import json
 import os
-from pathlib import Path
 import runpy
 import shutil
 import subprocess
 import sys
 import sysconfig
+from pathlib import Path
 
 import pytest
-
 
 ASSETS = Path(__file__).resolve().parents[1] / "install/e2e-assets"
 

@@ -7,11 +7,11 @@ Covers:
 
 from __future__ import annotations
 
-from tests.agent.metadata_transport import metadata_transport  # noqa: F401
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+from tests.agent.metadata_transport import metadata_transport  # noqa: F401
 
 
 @pytest.fixture(autouse=True)
@@ -88,9 +88,10 @@ class TestDetectLocalServerTypeCache:
         """Stopping Ollama and starting LM Studio on the same port must be
         re-detected once the TTL lapses — the cache is bounded, not
         process-lifetime."""
+        import time as _time
+
         from agent import model_metadata
         from agent.model_metadata import detect_local_server_type
-        import time as _time
 
         client = self._get_client()
         with patch("httpx.Client", return_value=client):
@@ -161,6 +162,7 @@ class TestLocalhostIPv4SiblingSites:
     @pytest.mark.parametrize("llamacpp", [False, True])
     def test_endpoint_and_props_followup_use_ipv4(self, metadata_transport, llamacpp):
         import httpx
+
         from agent import model_metadata as mm
 
         mm._endpoint_model_metadata_cache.clear()
@@ -251,8 +253,9 @@ class TestDetectServerTypeNegativeCaching:
     def test_negative_verdict_expires_quickly(self):
         """The short failure TTL keeps a transient failure recoverable."""
         import time as _time
-        from agent.model_metadata import detect_local_server_type
+
         from agent import model_metadata
+        from agent.model_metadata import detect_local_server_type
 
         client = self._client_all_401()
         with patch("httpx.Client", return_value=client):

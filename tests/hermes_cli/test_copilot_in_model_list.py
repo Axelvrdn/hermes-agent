@@ -5,9 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
+from hermes_cli import model_switch_providers, models
 from hermes_cli.model_switch import list_authenticated_providers
-from hermes_cli import model_switch_providers
-from hermes_cli import models
 from hermes_cli.models import provider_model_ids
 
 

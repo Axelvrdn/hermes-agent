@@ -19,11 +19,17 @@ from pathlib import Path
 from typing import Any, Dict, Optional, cast
 
 from agent.i18n import t
-from gateway.config import Platform, _BUILTIN_PLATFORM_VALUES
+from gateway.config import _BUILTIN_PLATFORM_VALUES, Platform
 from gateway.platforms.base import BasePlatformAdapter, _mark_notify_metadata
 from gateway.platforms.event import MessageEvent, MessageType
+from gateway.run_shutdown import (
+    _delivery_target_key,
+    _log_suppressed,
+    _notice_target_key,
+    _send_error,
+    _send_failed,
+)
 from gateway.session import SessionEntry, SessionSource
-from gateway.run_shutdown import _delivery_target_key, _log_suppressed, _notice_target_key, _send_error, _send_failed
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("gateway.run")
@@ -362,7 +368,10 @@ class GatewayNotificationsMixin:
         with _log_suppressed(logging.WARNING, "Post-stream media extraction failed: %s"):
             # Capture [[as_document]] before extract_media strips it: images then go via send_document.
             force_document_attachments = "[[as_document]]" in response
-            from gateway.platforms.base import BasePlatformAdapter, should_send_media_as_audio
+            from gateway.platforms.base import (
+                BasePlatformAdapter,
+                should_send_media_as_audio,
+            )
             media_files, cleaned = adapter.extract_media(response)
             media_files = BasePlatformAdapter.filter_media_delivery_paths(media_files)
             # Strip image URLs (parity with the non-streaming chain); no extract_local_files here.
@@ -1156,7 +1165,10 @@ class GatewayNotificationsMixin:
 
         See #9290.
         """
-        from gateway.run import _drain_gateway_watch_events, _format_gateway_process_notification
+        from gateway.run import (
+            _drain_gateway_watch_events,
+            _format_gateway_process_notification,
+        )
         watch_events = _drain_gateway_watch_events(completion_queue)
         for evt in watch_events:
             async with self._completion_event_scope(evt):
@@ -1273,7 +1285,11 @@ class GatewayNotificationsMixin:
         ``True`` on adapter acceptance, ``False`` on retryable adapter failure, ``None`` with no
         gateway route. Not transactional: a crash after acceptance can replay (at-least-once).
         """
-        from gateway.wake import WakeNotAccepted, adapter_supports_push, admit_internal_event
+        from gateway.wake import (
+            WakeNotAccepted,
+            adapter_supports_push,
+            admit_internal_event,
+        )
         source = await asyncio.to_thread(self._build_process_event_source, evt)
         if not source:
             # API-server sessions bind the RAW X-Hermes-Session-Id key, not a structured ``agent:...`` key.
@@ -1559,7 +1575,9 @@ class GatewayNotificationsMixin:
             # No routed profile: the launch profile's own completion. Bind ITS scope once the
             # process multiplexes — unscoped, a fail-closed ledger read raises on a legitimate
             # launch-profile event (no-op while single-profile).
-            from tui_gateway.launch_profile_policy import async_launch_profile_scope_if_multiplexed
+            from tui_gateway.launch_profile_policy import (
+                async_launch_profile_scope_if_multiplexed,
+            )
             return async_launch_profile_scope_if_multiplexed()
         profile_home = self._resolve_profile_home_for_source(source)
         if get_hermes_home_override() == str(profile_home):
@@ -1964,8 +1982,8 @@ class GatewayNotificationsMixin:
     @staticmethod
     def _build_process_completion_event(watcher: dict, session, session_id: str) -> dict:
         """Build the synthetic ``completion`` event for an agent-notify watcher."""
-        from gateway.run import _redact_gateway_user_facing_secrets
         from agent.redact import redact_terminal_output
+        from gateway.run import _redact_gateway_user_facing_secrets
         from tools.ansi_strip import strip_ansi
         from tools.process_registry import transform_process_output
         _command = getattr(session, "command", "") or ""
@@ -2006,7 +2024,10 @@ class GatewayNotificationsMixin:
         """Human-facing completion message. Every mode shares the one-line status header; the
         raw-output modes (all/result/error) append the bounded output tail under it instead of the
         old bracketed ``[Background process proc_… finished~ …]`` debug wrapper (#54266)."""
-        from gateway.run import _format_concise_process_notification, _redact_gateway_user_facing_secrets
+        from gateway.run import (
+            _format_concise_process_notification,
+            _redact_gateway_user_facing_secrets,
+        )
         new_output = self._redacted_output_tail(session, 1000)
         _started = getattr(session, "started_at", None)
         _dur = max(0.0, time.time() - _started) if isinstance(_started, (int, float)) else None
@@ -2018,7 +2039,10 @@ class GatewayNotificationsMixin:
         return t("gateway.background.final_output", header=header, output=new_output.strip()) if new_output.strip() else header
 
     def _format_process_running_message(self, session) -> str:
-        from gateway.run import _redact_gateway_user_facing_secrets, _shorten_command_for_display
+        from gateway.run import (
+            _redact_gateway_user_facing_secrets,
+            _shorten_command_for_display,
+        )
         new_output = self._redacted_output_tail(session, 500)
         short_cmd = _shorten_command_for_display(_redact_gateway_user_facing_secrets(getattr(session, "command", "") or ""))
         header = t("gateway.background.still_running") + (f" — `{short_cmd}`" if short_cmd else "")

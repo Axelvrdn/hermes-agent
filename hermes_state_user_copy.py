@@ -9,7 +9,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from hermes_state_errors import STORAGE_RECOVERY_DOCS_URL, classify_persistence_error, is_disk_full_error
+from hermes_state_errors import (
+    STORAGE_RECOVERY_DOCS_URL,
+    classify_persistence_error,
+    is_disk_full_error,
+)
 
 
 @dataclass(frozen=True)

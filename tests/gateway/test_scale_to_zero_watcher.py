@@ -10,8 +10,8 @@ respects the cooldown, and skips when busy — the F7/D3 + D12 behaviour.
 
 from __future__ import annotations
 
-import contextlib
 import asyncio
+import contextlib
 import time
 
 import pytest

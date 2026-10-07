@@ -6,8 +6,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agent.conversation_compression import _emit_aborted_attempt_telemetry, compress_context
 from agent.context_compressor import ContextCompressor
+from agent.conversation_compression import (
+    _emit_aborted_attempt_telemetry,
+    compress_context,
+)
 
 
 class _TodoStore:

@@ -12,16 +12,17 @@ from __future__ import annotations
 
 import pytest
 
+from agent.agent_runtime_helpers import repair_message_sequence
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_HAS_USER_TURN_KEY,
-    COMPRESSED_SUMMARY_METADATA_KEY,
-    COMPRESSION_CONTINUATION_USER_CONTENT,
-    ContextCompressor,
-    HISTORICAL_TASK_HEADING,
-    SUMMARY_PREFIX,
     _MERGED_PRIOR_CONTEXT_HEADER,
     _MERGED_SUMMARY_DELIMITER,
     _SUMMARY_END_MARKER,
+    COMPRESSED_SUMMARY_HAS_USER_TURN_KEY,
+    COMPRESSED_SUMMARY_METADATA_KEY,
+    COMPRESSION_CONTINUATION_USER_CONTENT,
+    HISTORICAL_TASK_HEADING,
+    SUMMARY_PREFIX,
+    ContextCompressor,
     history_before_user_originated_turn,
     is_compaction_summary_message,
     is_user_originated_turn,
@@ -33,7 +34,6 @@ from agent.context_compressor import (
 from agent.conversation_loop import (
     _should_skip_model_call_for_reference_handoff,
 )
-from agent.agent_runtime_helpers import repair_message_sequence
 from agent.turn_context import reanchor_current_turn_user_idx
 
 

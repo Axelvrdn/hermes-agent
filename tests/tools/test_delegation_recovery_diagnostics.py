@@ -1,9 +1,9 @@
 """Public dispatch/restart diagnostics for an owner lost before any child finishes."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 

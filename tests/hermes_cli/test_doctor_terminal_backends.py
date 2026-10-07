@@ -5,6 +5,7 @@ import pytest
 
 from hermes_cli import doctor_tools
 
+
 @pytest.fixture
 def issues():
     return []

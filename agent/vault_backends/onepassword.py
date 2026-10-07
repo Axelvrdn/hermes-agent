@@ -18,8 +18,12 @@ from typing import Dict, List, Optional
 
 from agent.secret_sources.base import run_cli
 from agent.secret_sources.onepassword import _OP_ENV_ALLOWLIST, _scrub, find_op
-from agent.vault_backends.base import LoginBackend, UnlockRequired, run_with_stdin_secret
 from agent.vault_backends import unlock as _unlock
+from agent.vault_backends.base import (
+    LoginBackend,
+    UnlockRequired,
+    run_with_stdin_secret,
+)
 from agent.vault_store import VaultItemMeta, normalize_origin
 
 logger = logging.getLogger(__name__)

@@ -23,8 +23,11 @@ from tools.computer_use.backend import ActionResult, ComputerUseBackend
 from tools.computer_use.cua_backend_capture import _CaptureMixin
 from tools.computer_use.cua_backend_daemon import _EmbeddedCuaDaemon
 from tools.computer_use.cua_backend_driver import (  # noqa: F401 — resolve_cua_driver_cmd: frozen updater surface
-    _CUA_DRIVER_CMD_ENV, cua_driver_binary_available, cua_driver_runtime_contract_status,
-    resolve_cua_driver_cmd)
+    _CUA_DRIVER_CMD_ENV,
+    cua_driver_binary_available,
+    cua_driver_runtime_contract_status,
+    resolve_cua_driver_cmd,
+)
 from tools.computer_use.cua_backend_input import _InputMixin
 from tools.computer_use.cua_backend_parse import _action_result_from
 from tools.computer_use.cua_backend_session import _AsyncBridge, _CuaDriverSession
@@ -156,7 +159,8 @@ def sandbox_mcp_invocation() -> Optional[Tuple[Tuple[str, List[str]], Dict[str, 
     gateway-hosted desktop, where the local driver is used. Placement is the authority: a ``terminal``
     placement gets its screen started here and a ``refused`` one raises — the host driver is never the
     fallback for a sandbox whose screen is down."""
-    from tools.bot_desktop import placement, runtime as _bd_runtime
+    from tools.bot_desktop import placement
+    from tools.bot_desktop import runtime as _bd_runtime
     if _bd_runtime.tool_placement() == placement.GATEWAY:
         return None
     published = _bd_runtime.published_env()

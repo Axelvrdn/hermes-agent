@@ -1,11 +1,10 @@
 """Regression tests for scanner-safe GitHub credential extraction (#22722)."""
 
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HELPER = REPO_ROOT / "skills/software-development/github/scripts/git-credential-token.py"

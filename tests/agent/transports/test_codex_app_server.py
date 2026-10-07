@@ -14,7 +14,9 @@ from unittest.mock import Mock
 import pytest
 
 from agent.transports.codex_app_server import (
-    CodexAppServerClient, CodexAppServerError, CodexAppServerTransportError,
+    CodexAppServerClient,
+    CodexAppServerError,
+    CodexAppServerTransportError,
 )
 
 

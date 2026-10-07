@@ -8,9 +8,7 @@ verify the read-only endpoints we rely on.
 from __future__ import annotations
 
 import pytest
-
 from _common import http_get, parse_model_list, resolve_url
-
 
 pytestmark = pytest.mark.cloud
 

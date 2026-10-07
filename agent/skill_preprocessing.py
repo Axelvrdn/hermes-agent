@@ -108,8 +108,8 @@ def _is_community_hub_skill(skill_dir: Path | None) -> bool:
     if skill_dir is None:
         return False
     try:
-        from tools.skills_tool import _skills_dir
         from tools.skills_hub import HubLockFile
+        from tools.skills_tool import _skills_dir
         installed = HubLockFile().load().get("installed") or {}
         for entry in installed.values():
             if not (isinstance(entry, dict) and entry.get("trust_level") == "community"):

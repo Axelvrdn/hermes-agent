@@ -33,14 +33,12 @@ from __future__ import annotations
 import logging
 
 import pytest
-
 from fastapi.testclient import TestClient
 
 from hermes_cli import web_server
 from hermes_cli.dashboard_auth import clear_providers, register_provider
 from hermes_cli.dashboard_auth import prefix as prefix_mod
 from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
-
 
 HA_INGRESS_DASHBOARD_PREFIX = (
     "/api/hassio_ingress/8AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEf"
@@ -444,6 +442,7 @@ class TestCookiePathRespectsPrefix:
         spec-compatible without Secure."""
         from fastapi import FastAPI
         from fastapi.responses import Response
+
         from hermes_cli.dashboard_auth.cookies import set_pkce_cookie
 
         app = FastAPI()
@@ -675,8 +674,7 @@ class TestLoginPageWholeClassPrefix:
         (the PKCE cookie Path matches the mount, so a root-absolute POST
         would silently drop the cookie and break native login)."""
         from hermes_cli.dashboard_auth import clear_providers, register_provider
-        from tests.hermes_cli.test_dashboard_auth_password_login import (
-            PasswordProvider)
+        from tests.hermes_cli.test_dashboard_auth_password_login import PasswordProvider
 
         clear_providers()
         register_provider(PasswordProvider())
@@ -694,9 +692,10 @@ class TestLoginPageWholeClassPrefix:
         """The RFC 8252 desktop provider chooser shares the login template,
         so its font URLs must honour the prefix too (rendered when more
         than one interactive provider is registered)."""
-        from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
         from hermes_cli.dashboard_auth.login_page import (
-            render_native_provider_choice_html)
+            render_native_provider_choice_html,
+        )
+        from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
 
         class _SecondStub(StubAuthProvider):
             name = "stub2"
@@ -717,9 +716,10 @@ class TestLoginPageWholeClassPrefix:
         assert 'href="/hermes/auth/native/authorize?' in html
 
     def test_native_chooser_bare_root_without_prefix(self):
-        from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
         from hermes_cli.dashboard_auth.login_page import (
-            render_native_provider_choice_html)
+            render_native_provider_choice_html,
+        )
+        from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider
 
         class _SecondStub(StubAuthProvider):
             name = "stub2"

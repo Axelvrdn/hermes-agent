@@ -16,7 +16,6 @@ from agent.error_surface import (
     build_error_surface_from_result,
 )
 
-
 # ── build_error_surface_from_result ──────────────────────────────────────
 
 

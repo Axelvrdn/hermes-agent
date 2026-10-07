@@ -33,7 +33,13 @@ from typing import Any
 import httpx
 
 from tests.e2e.core.dashboard._helpers import (
-    _READY_RE, _TOKEN_RE, Dashboard, Sandbox, group_members, kill_group, poll,
+    _READY_RE,
+    _TOKEN_RE,
+    Dashboard,
+    Sandbox,
+    group_members,
+    kill_group,
+    poll,
 )
 from tests.e2e.core.dashboard._reaper import kill_identified
 

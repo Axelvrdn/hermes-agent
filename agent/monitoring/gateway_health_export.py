@@ -19,10 +19,14 @@ from agent.monitoring import emitter, otlp_exporter
 from agent.monitoring.gateway_health import (
     GatewayDiagnosticLogHandler,
     GatewayMetric,
-    _safe_profile as _profile,
-    _safe_version as _version,
     build_gateway_health_snapshot,
     source_logger_for_export,
+)
+from agent.monitoring.gateway_health import (
+    _safe_profile as _profile,
+)
+from agent.monitoring.gateway_health import (
+    _safe_version as _version,
 )
 from agent.monitoring.otlp_exporter import (
     EmitterStreamer,

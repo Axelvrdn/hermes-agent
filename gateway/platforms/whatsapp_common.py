@@ -19,11 +19,11 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from gateway.platforms._shared import (
-    decode_json_list_literal as _decode_json_list_literal, extra_or_secret as _extra_or_wsecret,
-    get_scoped_secret as _get_wsecret
+    decode_json_list_literal as _decode_json_list_literal,
 )
+from gateway.platforms._shared import extra_or_secret as _extra_or_wsecret
+from gateway.platforms._shared import get_scoped_secret as _get_wsecret
 from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
-
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +166,10 @@ class WhatsAppBehaviorMixin(OwnAccessPolicyMixin):
             return False
         if candidate in allow_from:
             return True
-        from gateway.whatsapp_identity import expand_whatsapp_aliases, normalize_whatsapp_identifier
+        from gateway.whatsapp_identity import (
+            expand_whatsapp_aliases,
+            normalize_whatsapp_identifier,
+        )
         candidate_aliases = expand_whatsapp_aliases(candidate)
         if not candidate_aliases:
             return False
@@ -290,6 +293,7 @@ def resolve_whatsapp_bridge_dir() -> Path:
     """Bridge directory for CLI and adapter. A read-only install tree (e.g. Docker
     /opt/hermes) is mirrored to HERMES_HOME so npm install works."""
     import shutil
+
     from hermes_constants import get_hermes_home
     install_bridge = Path(__file__).resolve().parents[2] / "scripts" / "whatsapp-bridge"
     hermes_home_bridge = get_hermes_home() / "scripts" / "whatsapp-bridge"

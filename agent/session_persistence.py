@@ -2,32 +2,37 @@
 with intrinsic ``_DB_PERSISTED_MARKER`` dedup, ephemeral-scaffolding filtering, explicit
 trajectory export."""
 import hashlib
-
 import logging
 import re
 from contextlib import nullcontext
-
 from typing import Any, Dict, List, Optional, Tuple
 
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_METADATA_KEY,
     _DB_PERSISTED_MARKER,
+    COMPRESSED_SUMMARY_METADATA_KEY,
     ContextCompressor,
     _newest_checkpoint_carrier,
     _strip_persistence_markers,
     drop_shadowed_checkpoints,
     user_originated_turn_view,
 )
-from agent.lazy_forward import forward as _forward, forward_static as _forward_static
+from agent.lazy_forward import forward as _forward
+from agent.lazy_forward import forward_static as _forward_static
 from agent.memory_manager import sanitize_context
-
-from agent.tool_dispatch_helpers import _is_multimodal_tool_result, _multimodal_text_summary
-from agent.trajectory import save_trajectory as _save_trajectory_to_file
 from agent.message_metadata import (
-    DB_ROW_SNAPSHOT, MERGED_TURN_PREFIX, REPAIR_BOOKKEEPING_FIELDS, TOOL_CALL_UID, copy_identity_fields,
-    tool_call_uid_from_history)
+    DB_ROW_SNAPSHOT,
+    MERGED_TURN_PREFIX,
+    REPAIR_BOOKKEEPING_FIELDS,
+    TOOL_CALL_UID,
+    copy_identity_fields,
+    tool_call_uid_from_history,
+)
+from agent.tool_dispatch_helpers import (
+    _is_multimodal_tool_result,
+    _multimodal_text_summary,
+)
+from agent.trajectory import save_trajectory as _save_trajectory_to_file
 from agent.transcript_repair import sync_flushed_message_markers
-
 
 logger = logging.getLogger("run_agent")  # origin module's name: log records / caplog filters unchanged
 
@@ -348,7 +353,12 @@ def _db_flush_failed(agent, e: Exception, batch_rows: List[Dict[str, Any]], adop
     agent._db_flush_scan_prefix = None  # full re-scan next flush: an exception mid-loop leaves mixed dispositions
     # The only place the SQLite error is visible before it becomes a bare False — classify it so the turn-end
     # explanation names the real cause.
-    from hermes_state import StateDbCorruptError, StateDbReplacedError, classify_persistence_error, divert_session_transcript_jsonl
+    from hermes_state import (
+        StateDbCorruptError,
+        StateDbReplacedError,
+        classify_persistence_error,
+        divert_session_transcript_jsonl,
+    )
     from hermes_state_errors import CompressionSessionClosedError
     agent._last_persistence_error_cause = classify_persistence_error(e)
     if agent._last_persistence_error_cause == "session_row_missing":

@@ -431,7 +431,7 @@ plugins:
 class TestPluginContextIntegration:
 
     def test_ctx_llm_uses_manifest_key_for_policy(self):
-        from hermes_cli.plugins import PluginContext, PluginManifest, PluginManager
+        from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
 
         manifest = PluginManifest(
             name="bare-name", source="test", key="image_gen/openai"
@@ -468,8 +468,8 @@ class TestAttribution:
     def test_response_model_used_even_when_no_overrides(self, monkeypatch):
         """The provider's canonical model name should still flow through
         when no overrides are set."""
-        from agent import plugin_llm
         import agent.auxiliary_client as ac
+        from agent import plugin_llm
 
         monkeypatch.setattr(ac, "_read_main_provider", lambda: "openrouter")
         monkeypatch.setattr(ac, "_read_main_model", lambda: "openai/gpt-4o")
@@ -494,7 +494,7 @@ class TestHookMode:
     the real ``invoke_hook`` machinery, and check the call landed."""
 
     def test_complete_works_from_post_tool_call_hook(self):
-        from hermes_cli.plugins import PluginContext, PluginManifest, PluginManager
+        from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
 
         manifest = PluginManifest(name="hook-plugin", source="test", key="hook-plugin")
         manager = PluginManager()

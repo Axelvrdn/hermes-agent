@@ -323,8 +323,8 @@ def test_forward_port_carries_bytes_both_ways_through_the_exec_stream(monkeypatc
 
 
 def test_sandbox_cdp_endpoint_is_rewritten_to_the_forwarded_local_port(monkeypatch):
-    from tools import browser_use_cli as buc
     from tools import browser_tool_session as bts
+    from tools import browser_use_cli as buc
 
     monkeypatch.setattr(bts, "_browser_in_sandbox", lambda: True)
     monkeypatch.setattr(runtime, "_sandbox_env", lambda *, create: _FakeDocker())

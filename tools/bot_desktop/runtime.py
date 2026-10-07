@@ -558,8 +558,7 @@ def geometry() -> str:
 
 def status(profile: Optional[str] = None) -> DesktopStatus:
     from tools.bot_desktop import browser as _bd_browser
-    from tools.bot_desktop import resources
-    from tools.bot_desktop import sandbox_host
+    from tools.bot_desktop import resources, sandbox_host
     where = placement.resolve()
     if where.where == placement.TERMINAL or sandbox_host._read_marker():
         # A screen already running inside a sandbox is reported (and stoppable) even after the placement

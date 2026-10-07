@@ -14,7 +14,6 @@ from agent.memory_manager import MemoryManager
 from agent.memory_provider import MemoryProvider
 from agent.skill_commands import extract_user_instruction_from_skill_message
 
-
 _SINGLE_SKILL_TURN = (
     '[IMPORTANT: The user has invoked the "skill-creator" skill, indicating they want '
     "you to follow its instructions. The full skill content is loaded below.]\n\n"

@@ -16,7 +16,11 @@ from typing import Any, Dict, List, Optional
 
 from hermes_cli._subprocess_compat import windows_hide_flags
 from tools.computer_use import cua_backend_driver as _driver
-from tools.computer_use.cua_backend_parse import _extract_tool_result, _mcp_field, _tool_envelope
+from tools.computer_use.cua_backend_parse import (
+    _extract_tool_result,
+    _mcp_field,
+    _tool_envelope,
+)
 
 logger = logging.getLogger("tools.computer_use.cua_backend")
 
@@ -210,8 +214,10 @@ class _CuaDriverSession:
     async def _lifecycle_coro(self) -> None:
         """Owns the stdio MCP contexts: open, signal ready, block on shutdown, clean up — all in one task."""
         import time as _time
+
         from mcp import ClientSession, StdioServerParameters
         from mcp.client.stdio import stdio_client
+
         from tools.computer_use import cua_backend as _cb
         from tools.environments.local import _sanitize_subprocess_env
 
@@ -441,6 +447,7 @@ class _CuaDriverSession:
         screenshot to a temp file (``screenshot_out_file``) so the daemon returns a tiny JSON body, not the
         multi-megabyte base64 blob that congests the socket; ``_cli_result`` reads it back."""
         import tempfile as _tempfile
+
         from tools.computer_use import cua_backend as _cb
         from tools.environments.local import _sanitize_subprocess_env
 

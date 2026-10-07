@@ -10,11 +10,11 @@ import os
 from typing import Any, Optional
 from urllib.parse import quote
 
-from gateway.config import PlatformConfig
-from agent.i18n import t
-from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
-
 import httpx
+
+from agent.i18n import t
+from gateway.config import PlatformConfig
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
 
 
 def _parse_bool(value: Any, *, default: bool = False) -> bool:

@@ -9,8 +9,8 @@ import pytest
 
 @pytest.fixture
 def runtime(monkeypatch):
-    from tui_gateway import server
     from tools import async_delegation, delegate_tool_registry
+    from tui_gateway import server
 
     transport = SimpleNamespace(write=lambda frame: True)
     owner = {"session_key": "parent", "history": [], "transport": transport}
@@ -39,8 +39,8 @@ def runtime(monkeypatch):
 def test_snapshot_projects_only_this_sessions_runtime_records(runtime):
     from tools import async_delegation as bg
     from tools.delegate_tool_child_run import _register_child
-    from tools.delegate_tool_registry import _unregister_subagent
     from tools.delegate_tool_progress import _build_child_progress_callback
+    from tools.delegate_tool_registry import _unregister_subagent
 
     server, owner, transport, call = runtime
     release = threading.Event()
@@ -90,7 +90,10 @@ def test_snapshot_projects_only_this_sessions_runtime_records(runtime):
 def test_live_tail_and_steer_share_exact_owner_and_end_with_child(runtime):
     from run_agent import AIAgent
     from tools.delegate_tool_child_run import _register_child
-    from tools.delegate_tool_registry import _close_subagent_steering, _unregister_subagent
+    from tools.delegate_tool_registry import (
+        _close_subagent_steering,
+        _unregister_subagent,
+    )
     from tools.delegation_live_log import LiveTranscriptWriter
 
     server, owner, transport, call = runtime
@@ -130,7 +133,7 @@ def test_live_tail_and_steer_share_exact_owner_and_end_with_child(runtime):
 
 def test_interrupt_requires_exact_live_owner_but_direct_helper_stays_legacy(runtime):
     from tools.delegate_tool_child_run import _register_child
-    from tools.delegate_tool_registry import interrupt_subagent, _unregister_subagent
+    from tools.delegate_tool_registry import _unregister_subagent, interrupt_subagent
 
     server, owner, transport, call = runtime
     stopped = []

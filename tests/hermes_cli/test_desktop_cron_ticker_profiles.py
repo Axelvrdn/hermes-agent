@@ -8,8 +8,8 @@ every profile's store — the desktop sibling of the multiplex-gateway fix for
 #69377.
 """
 
-from pathlib import Path
 import threading
+from pathlib import Path
 
 import pytest
 
@@ -78,9 +78,9 @@ def test_multi_profile_homes_passed_to_builtin(monkeypatch, _providers, tmp_path
 @pytest.mark.parametrize("gateway_running", [True, False])
 def test_single_profile_ticks_only_without_gateway(monkeypatch, tmp_path, gateway_running):
     """Exercise Desktop startup through the real built-in scheduler loop."""
+    import hermes_cli.profiles as profiles_mod
     from cron.scheduler_provider import InProcessCronScheduler
     from hermes_constants import get_hermes_home
-    import hermes_cli.profiles as profiles_mod
 
     home = tmp_path / "root"
     home.mkdir()

@@ -58,11 +58,11 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path, PurePosixPath
-from hermes_constants import get_hermes_home
-from hermes_cli._subprocess_compat import selected_git_env, windows_hide_flags
-from hermes_cli.gitlock import clear_stale_tmp_packs
 from typing import Dict, List, Optional, Set, Tuple
 
+from hermes_cli._subprocess_compat import selected_git_env, windows_hide_flags
+from hermes_cli.gitlock import clear_stale_tmp_packs
+from hermes_constants import get_hermes_home
 from utils import env_int, rmtree_readonly
 
 logger = logging.getLogger(__name__)
@@ -1621,7 +1621,7 @@ class CheckpointManager:
     def _prune(self, store: Path, working_dir: str, ref: str) -> None:
         """Checkpoint-take path: snapshot-count budget plus one size round, gc deferred to the
         periodic prune — a repack here held the tool call for the whole gc on a large store."""
-        from tools.checkpoint_pruning import Pruner, PruneError
+        from tools.checkpoint_pruning import PruneError, Pruner
 
         pruner = Pruner(_run_git, store, working_dir, _GIT_TIMEOUT, _dir_size_bytes, _REFS_PREFIX)
         try:

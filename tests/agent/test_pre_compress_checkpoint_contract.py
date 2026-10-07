@@ -14,6 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from agent.context_compressor import COMPRESSED_SUMMARY_METADATA_KEY
 from agent.conversation_compression import (
     CompressionCheckpointUnavailable,
     _checkpoint_blocked,
@@ -21,7 +22,6 @@ from agent.conversation_compression import (
     _pre_compress_memory_context,
     _warn_checkpoint_required_without_capable_provider,
 )
-from agent.context_compressor import COMPRESSED_SUMMARY_METADATA_KEY
 from agent.memory_manager import MemoryManager
 from agent.memory_provider import (
     PRE_COMPRESS_CHECKPOINT_API_VERSION,
@@ -487,10 +487,10 @@ def test_turn_finalizer_never_micro_compacts_while_checkpoint_gate_armed(
     evidence is absorbed into a rolling summary that the checkpoint filter
     later excludes, and the evidence never reaches the durable provider.
     """
+    from agent.turn_finalizer import finalize_turn
     from tests.agent.test_turn_finalizer_final_response_persistence import (
         FakeAgent,
     )
-    from agent.turn_finalizer import finalize_turn
 
     monkeypatch.setattr("hermes_cli.plugins.invoke_hook", lambda *_a, **_kw: [])
 

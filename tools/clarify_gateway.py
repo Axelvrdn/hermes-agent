@@ -6,6 +6,7 @@ fires. Adapters render inline buttons (an "Other" row flips the entry into text-
 mode) or a numbered-list text fallback."""
 
 from __future__ import annotations
+
 import json
 import logging
 import threading

@@ -26,20 +26,28 @@ from typing import Any, Callable, Dict, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-
 from starlette.concurrency import run_in_threadpool
 
-from hermes_cli import config as config_mod, web_deps
-from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK, _config_profile_scope
-from hermes_cli.local_runtime import (
-    binaries, bootstrap, catalog, context_policy, estimator, growth, hardware, hf_browse,
-    load_progress, presets, supervisor,
-)
 from agent.memory_provider import spawn_context_thread
-from pm.downloader import Download, DownloadPaused, Source
-
+from hermes_cli import config as config_mod
+from hermes_cli import web_deps
+from hermes_cli.local_runtime import (
+    binaries,
+    bootstrap,
+    catalog,
+    context_policy,
+    estimator,
+    growth,
+    hardware,
+    hf_browse,
+    load_progress,
+    presets,
+    supervisor,
+)
 from hermes_cli.local_runtime.endpoint import _state_endpoint
 from hermes_cli.local_runtime.gguf import split_parts
+from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK, _config_profile_scope
+from pm.downloader import Download, DownloadPaused, Source
 
 logger = logging.getLogger(__name__)
 

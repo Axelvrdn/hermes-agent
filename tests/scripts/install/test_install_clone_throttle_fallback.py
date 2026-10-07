@@ -1,10 +1,10 @@
 """A throttled clone is retried without publishing a partial checkout."""
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 

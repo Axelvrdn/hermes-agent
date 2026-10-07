@@ -7,8 +7,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from agent.turn_failure_copy import FAILED_TURN_NOTICE
 import gateway.run as gateway_run
+from agent.turn_failure_copy import FAILED_TURN_NOTICE
 from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.platforms.event import MessageEvent, ProcessingOutcome

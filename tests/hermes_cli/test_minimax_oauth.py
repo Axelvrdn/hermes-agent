@@ -22,18 +22,18 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hermes_cli.auth import (
-    AuthError,
     MINIMAX_OAUTH_CLIENT_ID,
     MINIMAX_OAUTH_GLOBAL_BASE,
     MINIMAX_OAUTH_GLOBAL_INFERENCE,
     MINIMAX_OAUTH_REFRESH_SKEW_SECONDS,
+    AuthError,
     _minimax_pkce_pair,
     _minimax_request_user_code,
     _minimax_resolve_token_expiry_unix,
     _refresh_minimax_oauth_state,
-    resolve_minimax_oauth_runtime_credentials,
-    get_minimax_oauth_auth_status,
     get_auth_status,
+    get_minimax_oauth_auth_status,
+    resolve_minimax_oauth_runtime_credentials,
 )
 
 # ---------------------------------------------------------------------------

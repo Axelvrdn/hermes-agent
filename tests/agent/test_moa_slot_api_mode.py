@@ -10,6 +10,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import patch
 
+
 def _response(content="ok"):
     message = SimpleNamespace(content=content, tool_calls=[])
     choice = SimpleNamespace(message=message, finish_reason="stop")

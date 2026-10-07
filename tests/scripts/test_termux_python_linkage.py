@@ -42,8 +42,9 @@ def test_python_symbols_gain_an_explicit_library_dependency(tmp_path):
 
 def test_wheel_rewrite_regenerates_record_for_changed_member(tmp_path):
     import zipfile
+
     from scripts.termux import retag_wheel
-    from tests.termux_fixtures import write_wheel, verify_record
+    from tests.termux_fixtures import verify_record, write_wheel
 
     wheel = write_wheel(tmp_path)
 

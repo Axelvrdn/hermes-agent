@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 import subprocess
 from typing import Dict, List, Optional
+
 from hermes_cli.auth_constants import DEFAULT_NOUS_PORTAL_URL
 
 logger = logging.getLogger("hermes_cli.auth")
@@ -27,7 +28,10 @@ def _confirm_selection_guards(
     Shows one [y/N] confirm listing every warning that fired. Returns True to proceed.
     """
     try:
-        from hermes_cli.model_selection_guards import combined_message, selection_warnings
+        from hermes_cli.model_selection_guards import (
+            combined_message,
+            selection_warnings,
+        )
         warnings = selection_warnings(
             model_id, provider=provider, base_url=base_url, api_key=api_key, include_kinds=include_kinds,
         )
@@ -59,7 +63,10 @@ class _ModelPickerRows:
         self, all_models: List[str], pricing: Optional[Dict[str, Dict[str, str]]], *,
         current_model: str, sale_chrome: bool, notes: Optional[Dict[str, str]] = None,
     ) -> None:
-        from hermes_cli.models_pricing import _format_price_per_mtok, compute_sale_discount
+        from hermes_cli.models_pricing import (
+            _format_price_per_mtok,
+            compute_sale_discount,
+        )
         self.current_model = current_model
         # Per-model dim annotation (e.g. "usage credits"); the row stays selectable.
         self.notes = notes or {}
@@ -243,8 +250,8 @@ def _prompt_model_selection(
         pass
 
     # Fallback: numbered list (ANSI colors for sale chrome)
-    from hermes_cli.curses_ui import format_radio_item_ansi
     from hermes_cli.colors import Colors, color
+    from hermes_cli.curses_ui import format_radio_item_ansi
     for line in menu_title.splitlines():
         print(line.replace("★", color("★", Colors.YELLOW), 1) if "★" in line else line)
     num_width = len(str(n + 2))
@@ -284,7 +291,7 @@ def _prompt_model_selection(
 
 def _save_model_choice(model_id: str) -> None:
     """Save the selected model to config.yaml only — NOT .env, which would stomp in multi-agent setups."""
-    from hermes_cli.config import save_config, load_config
+    from hermes_cli.config import load_config, save_config
     config = load_config()
     # Always use dict format so provider/base_url can be stored alongside
     if isinstance(config.get("model"), dict):

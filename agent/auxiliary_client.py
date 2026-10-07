@@ -21,9 +21,37 @@ import threading
 import time
 import uuid
 from types import SimpleNamespace
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, TYPE_CHECKING, Union
-from urllib.parse import urlparse, parse_qs, urlunparse
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+    Union,
+)
+from urllib.parse import parse_qs, urlparse, urlunparse
 
+from agent.auxiliary_reasoning_floor import (
+    remember_reasoning_floor,
+    with_reasoning_floor,
+)
+from agent.auxiliary_structured_output import remember_structured_output_rejection
+from agent.codex_headers import (
+    CODEX_AUX_BASE_URL as _CODEX_AUX_BASE_URL,
+)
+from agent.codex_headers import (
+    apply_required_codex_headers as _apply_required_codex_headers,
+)
+from agent.codex_headers import (
+    codex_cloudflare_headers as _codex_cloudflare_headers,
+)
+from agent.codex_headers import (
+    is_official_codex_base_url as _is_official_codex_base_url,
+)
+from agent.codex_runtime import _codex_event_has_content
 from agent.error_classifier import (
     _BILLING_PATTERNS,
     _OVERLOADED_PATTERNS,
@@ -31,15 +59,6 @@ from agent.error_classifier import (
     is_reasoning_field_rejection,
     is_reasoning_required_rejection,
 )
-from agent.auxiliary_reasoning_floor import remember_reasoning_floor, with_reasoning_floor
-from agent.auxiliary_structured_output import remember_structured_output_rejection
-from agent.codex_headers import (
-    CODEX_AUX_BASE_URL as _CODEX_AUX_BASE_URL,
-    apply_required_codex_headers as _apply_required_codex_headers,
-    codex_cloudflare_headers as _codex_cloudflare_headers,
-    is_official_codex_base_url as _is_official_codex_base_url,
-)
-from agent.codex_runtime import _codex_event_has_content
 from agent.sdk_transform_bypass import bypass_chat_sdk_request_transform
 
 # `openai.OpenAI` is imported lazily (~240 ms cold); `OpenAI` below is a proxy
@@ -116,19 +135,33 @@ def aux_probe_mode():
         _aux_probe_state.active = prev
 
 
+from agent.auxiliary_health import (
+    _custom_health_base_url,
+    _unhealthy_cache_key,
+    fallback_candidate_quarantine_ttl,
+    fallback_candidate_unavailable_reason,
+)
+from agent.auxiliary_unavailable import (
+    AuxiliaryClientUnavailable,
+    clear_nous_credential_failure,
+    missing_provider_credentials_message,
+    nous_credential_failure_detail,
+    record_nous_credential_failure,
+)
 from agent.credential_pool import load_pool
 from agent.model_metadata import MINIMUM_CONTEXT_LENGTH, get_model_context_length
 from hermes_cli.config import get_hermes_home
 from hermes_cli.config_providers import _canonical_api_mode
-from agent.auxiliary_health import (
-    _custom_health_base_url, _unhealthy_cache_key, fallback_candidate_quarantine_ttl,
-    fallback_candidate_unavailable_reason,
-)
-from agent.auxiliary_unavailable import (
-    AuxiliaryClientUnavailable, clear_nous_credential_failure, missing_provider_credentials_message,
-    nous_credential_failure_detail, record_nous_credential_failure)
 from hermes_constants import OPENROUTER_BASE_URL, hermes_home_key
-from utils import base_url_host_matches, base_url_hostname, base_url_origin, env_float, is_truthy_value, model_forces_max_completion_tokens, normalize_proxy_env_vars
+from utils import (
+    base_url_host_matches,
+    base_url_hostname,
+    base_url_origin,
+    env_float,
+    is_truthy_value,
+    model_forces_max_completion_tokens,
+    normalize_proxy_env_vars,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +179,10 @@ def _resolve_aux_verify(base_url: Optional[str]) -> Any:
     ``ssl_verify``; otherwise the OS trust store); any failure → httpx default (``True``)."""
     try:
         from agent.ssl_verify import resolve_httpx_verify
-        from hermes_cli.config import get_custom_provider_tls_settings, load_config_readonly
+        from hermes_cli.config import (
+            get_custom_provider_tls_settings,
+            load_config_readonly,
+        )
         tls = get_custom_provider_tls_settings(str(base_url or ""), config=load_config_readonly())
         return resolve_httpx_verify(
             ca_bundle=tls.get("ssl_ca_cert"), ssl_verify=tls.get("ssl_verify"), base_url=str(base_url or ""))
@@ -765,7 +801,10 @@ def _fast_model_from_catalog(provider_id: str) -> str:
     if is_nous:
         # Narrow catalog ids by org policy, as the pickers do.
         try:
-            from hermes_cli.models_pricing import nous_policy_allowed_ids, restrict_to_nous_policy
+            from hermes_cli.models_pricing import (
+                nous_policy_allowed_ids,
+                restrict_to_nous_policy,
+            )
             ids = restrict_to_nous_policy(ids, nous_policy_allowed_ids())
         except Exception:
             logger.debug("Nous policy filter unavailable", exc_info=True)
@@ -805,7 +844,10 @@ def _get_aux_model_for_provider(provider_id: str, *, prefer_fast: bool = False) 
     # let the caller keep the main model.
     if picked and provider_id.strip().lower() == "nous":
         try:
-            from hermes_cli.models_pricing import nous_policy_allowed_ids, restrict_to_nous_policy
+            from hermes_cli.models_pricing import (
+                nous_policy_allowed_ids,
+                restrict_to_nous_policy,
+            )
             allowed = nous_policy_allowed_ids()
             if allowed and not restrict_to_nous_policy([picked], allowed):
                 return ""
@@ -1425,7 +1467,11 @@ class _CodexCompletionsAdapter:
             # in place and would strip the caller's tool registry.
             try:
                 import copy as _copy
-                from tools.schema_sanitizer import strip_pattern_and_format, strip_slash_enum
+
+                from tools.schema_sanitizer import (
+                    strip_pattern_and_format,
+                    strip_slash_enum,
+                )
                 tools = _copy.deepcopy(list(tools))
                 tools, _ = strip_pattern_and_format(tools)
                 tools, _ = strip_slash_enum(tools)
@@ -1527,8 +1573,11 @@ class _CodexCompletionsAdapter:
             # Reuse the Responses transport's single authoritative hash algorithm and session-scope
             # normalization so equivalent static prefixes route to the same cache bucket across modes,
             # without concentrating unrelated sessions into one shared bucket (see #78941).
-            from agent.transports.codex import _cache_scope_from_session_id, _content_cache_key
-            from agent.transports.codex import _default_prompt_cache_retention_for_request
+            from agent.transports.codex import (
+                _cache_scope_from_session_id,
+                _content_cache_key,
+                _default_prompt_cache_retention_for_request,
+            )
             if not (is_xai or is_github) and "prompt_cache_key" not in resp_kwargs:
                 scope = _cache_scope_from_session_id(
                     _runtime_main_value("cache_scope") or _runtime_main_value("session_id")
@@ -1715,7 +1764,10 @@ class _AnthropicCompletionsAdapter:
                         self._base_url = candidate
 
     def create(self, **kwargs) -> Any:
-        from agent.anthropic_adapter import build_anthropic_kwargs, create_anthropic_message
+        from agent.anthropic_adapter import (
+            build_anthropic_kwargs,
+            create_anthropic_message,
+        )
         from agent.transports import get_transport
         model = kwargs.get("model", self._model)
         # ZAI's Anthropic endpoint rejects max_tokens on vision models (code 1210);
@@ -2074,7 +2126,10 @@ def _resolve_xai_oauth_for_aux() -> Optional[Tuple[str, str]]:
     Pool first (some xAI OAuth logins exist only as pool entries), then the singleton auth-store resolver.
     """
     try:
-        from hermes_cli.auth import DEFAULT_XAI_OAUTH_BASE_URL, _xai_validate_inference_base_url
+        from hermes_cli.auth import (
+            DEFAULT_XAI_OAUTH_BASE_URL,
+            _xai_validate_inference_base_url,
+        )
         pool = load_pool("xai-oauth")
         if pool and pool.has_credentials():
             entry = pool.select()
@@ -2149,7 +2204,10 @@ def _read_codex_singleton_token() -> Optional[str]:
 def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
     """Try each API-key provider in PROVIDER_REGISTRY order; (client, model) or (None, None)."""
     try:
-        from hermes_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
+        from hermes_cli.auth import (
+            PROVIDER_REGISTRY,
+            resolve_api_key_provider_credentials,
+        )
     except ImportError:
         logger.debug("Could not import PROVIDER_REGISTRY for API-key fallback")
         return None, None
@@ -2201,7 +2259,10 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
         # Native Gemini, else OpenAI-wire + Anthropic rewrap.
         base_url = _to_openai_base_url(raw_base_url)
         if provider_id == "gemini":
-            from agent.gemini_native_adapter import GeminiNativeClient, is_native_gemini_base_url
+            from agent.gemini_native_adapter import (
+                GeminiNativeClient,
+                is_native_gemini_base_url,
+            )
             if is_native_gemini_base_url(base_url):
                 return GeminiNativeClient(api_key=api_key, base_url=base_url), model
         if base_url_host_matches(base_url, "api.kimi.com"):
@@ -2989,9 +3050,9 @@ def _try_azure_foundry(
     """Azure Foundry aux client via the main agent's ``_resolve_azure_foundry_runtime`` (api_key vs Entra
     callable bearer, per-model api_mode, base_url overrides). Returns ``(client, model)`` or ``(None, None)``."""
     try:
-        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
         from hermes_cli.auth import AuthError
         from hermes_cli.config import load_config_readonly
+        from hermes_cli.runtime_provider import _resolve_azure_foundry_runtime
     except ImportError:
         return None, None
     try:
@@ -3829,7 +3890,12 @@ def _creds_have_api_key(creds: Dict[str, Any]) -> bool:
 
 
 def _refresh_copilot_credentials() -> bool:
-    from hermes_cli.copilot_auth import _jwt_cache, _token_fingerprint, exchange_copilot_token, resolve_copilot_token
+    from hermes_cli.copilot_auth import (
+        _jwt_cache,
+        _token_fingerprint,
+        exchange_copilot_token,
+        resolve_copilot_token,
+    )
     raw_token, _source = resolve_copilot_token()
     if not str(raw_token or "").strip():
         return False
@@ -3851,7 +3917,10 @@ def _refresh_nous_credentials() -> bool:
 
 
 def _refresh_anthropic_credentials(failed_api_key: str = "") -> bool:
-    from agent.anthropic_credentials import read_claude_code_credentials, _refresh_oauth_token
+    from agent.anthropic_credentials import (
+        _refresh_oauth_token,
+        read_claude_code_credentials,
+    )
     token = failed_api_key
     if not token:
         return False
@@ -4019,7 +4088,10 @@ def _replan_synchronous_cache_sections(
     messages: list, tools: Optional[list], *, destination: _FallbackDestination
 ) -> tuple[list, list]:
     """Strip source decoration and plan one synchronous destination locally."""
-    from agent.agent_runtime_helpers import configured_cache_ttl, plan_cache_sections_for_destination
+    from agent.agent_runtime_helpers import (
+        configured_cache_ttl,
+        plan_cache_sections_for_destination,
+    )
     return plan_cache_sections_for_destination(
         messages, tools, provider=destination.provider, base_url=destination.base_url,
         api_mode=destination.api_mode or "", model=destination.model or "",
@@ -4285,7 +4357,11 @@ def _failed_backend_skip(
     """Predicate ``skip(provider, model, base_url="")`` → True when a candidate must be skipped for the failed
     route. Scope: ``failed_model`` → model-scoped (only that deployment; timeout/connection/rate-limit);
     None → credential-wide (whole provider; auth/payment)."""
-    from agent.backend_identity import BackendIdentity, FailureScope, should_skip_candidate
+    from agent.backend_identity import (
+        BackendIdentity,
+        FailureScope,
+        should_skip_candidate,
+    )
     skip_model = (failed_model or "").strip().lower() or None
     failed_ident = BackendIdentity.build(
         provider=failed_provider, model=skip_model, base_url=failed_base_url)
@@ -4724,7 +4800,10 @@ def _to_async_client(sync_client, model: str, is_vision: bool = False):
     if isinstance(sync_client, BedrockAuxiliaryClient):
         return AsyncBedrockAuxiliaryClient(sync_client), model
     with contextlib.suppress(ImportError):
-        from agent.gemini_native_adapter import GeminiNativeClient, AsyncGeminiNativeClient
+        from agent.gemini_native_adapter import (
+            AsyncGeminiNativeClient,
+            GeminiNativeClient,
+        )
         if isinstance(sync_client, GeminiNativeClient):
             return AsyncGeminiNativeClient(sync_client), model
     # ACP shims (subprocess, not an HTTP pool) are already async-safe and opt out of the wrapper.
@@ -4809,12 +4888,16 @@ def _build_bedrock_client(provider: str, model: Optional[str], *, raw_codex: boo
     """AWS Bedrock: Claude → Anthropic Bedrock SDK (prompt caching, thinking); bare in-Region OpenAI IDs
     → Mantle Responses; everything else, incl. OpenAI ``us.``/``global.`` profiles, → Converse API."""
     try:
-        from agent.bedrock_adapter import (
-            has_aws_credentials, is_anthropic_bedrock_model, resolve_bedrock_runtime_region,
-            bedrock_openai_uses_mantle, bedrock_openai_base_url, resolve_bedrock_bearer_token,
-            configure_bedrock_openai_client_kwargs,
-        )
         from agent.anthropic_adapter import build_anthropic_bedrock_client
+        from agent.bedrock_adapter import (
+            bedrock_openai_base_url,
+            bedrock_openai_uses_mantle,
+            configure_bedrock_openai_client_kwargs,
+            has_aws_credentials,
+            is_anthropic_bedrock_model,
+            resolve_bedrock_bearer_token,
+            resolve_bedrock_runtime_region,
+        )
     except ImportError:
         logger.warning("resolve_provider_client: bedrock requested but boto3, httpx/openai, or anthropic SDK not installed")
         return None, None
@@ -5293,7 +5376,9 @@ def _resolve_api_key_branch(req: _ResolveRequest, pconfig: Any, resolve_creds: C
     if provider == "actual":
         with contextlib.suppress(Exception):
             from hermes_cli.auth import (
-                ACTUAL_LOCAL_NOAUTH_PLACEHOLDER, is_actual_local_base_url, normalize_actual_base_url
+                ACTUAL_LOCAL_NOAUTH_PLACEHOLDER,
+                is_actual_local_base_url,
+                normalize_actual_base_url,
             )
             raw_base_url = normalize_actual_base_url(raw_base_url)
             if not api_key and is_actual_local_base_url(raw_base_url):
@@ -5314,7 +5399,10 @@ def _resolve_api_key_branch(req: _ResolveRequest, pconfig: Any, resolve_creds: C
         logger.debug("resolve_provider_client: %s native client from provider profile (%s)", provider, final_model)
         return _route_client(req, profile_client, final_model)
     if provider == "gemini":
-        from agent.gemini_native_adapter import GeminiNativeClient, is_native_gemini_base_url
+        from agent.gemini_native_adapter import (
+            GeminiNativeClient,
+            is_native_gemini_base_url,
+        )
         if is_native_gemini_base_url(base_url):
             client = GeminiNativeClient(api_key=api_key, base_url=base_url)
             logger.debug("resolve_provider_client: %s (%s)", provider, final_model)
@@ -5382,7 +5470,8 @@ def _resolve_registry_branch(req: _ResolveRequest) -> _ResolveResult:
     provider = req.provider
     try:
         from hermes_cli.auth import (
-            PROVIDER_REGISTRY, resolve_api_key_provider_credentials,
+            PROVIDER_REGISTRY,
+            resolve_api_key_provider_credentials,
             resolve_external_process_provider_credentials,
         )
     except ImportError:
@@ -6387,7 +6476,10 @@ def _with_custom_endpoint_extra_body(
         return extra_body
     try:
         from agent.agent_init import _custom_provider_extra_body_for_agent
-        from hermes_cli.config import get_compatible_custom_providers, load_config_readonly
+        from hermes_cli.config import (
+            get_compatible_custom_providers,
+            load_config_readonly,
+        )
         inherited = _custom_provider_extra_body_for_agent(
             provider=provider or "", model=model or "", base_url=str(base_url),
             custom_providers=get_compatible_custom_providers(load_config_readonly()),
@@ -6771,8 +6863,8 @@ def _build_call_kwargs(
     # ``extra_body.reasoning`` fallback. Clamp Hermes-internal levels (``ultra``) to the
     # OpenAI-compat wire ONCE here, before either path sees the config — the same entry clamp the
     # main transport applies (#89503); MoA aggregator/reference and aux calls 400'd without it (#112010).
-    from agent.reasoning_effort import clamp_reasoning_config
     from agent.auxiliary_reasoning_floor import known_reasoning_floor
+    from agent.reasoning_effort import clamp_reasoning_config
     if isinstance(extra_body, dict):
         task_reasoning = extra_body.get("reasoning")
         if isinstance(task_reasoning, dict) and "enabled" in task_reasoning:
@@ -6786,7 +6878,9 @@ def _build_call_kwargs(
     kwargs.update(projection.top_level)
     merged_extra = _merge_aux_extra_body(extra_body, projection, reasoning_config, provider_norm)
     if "response_format" in merged_extra:
-        from agent.auxiliary_structured_output import without_unsupported_response_format
+        from agent.auxiliary_structured_output import (
+            without_unsupported_response_format,
+        )
         merged_extra = without_unsupported_response_format(merged_extra, provider_norm, effective_base, model, task)
     if merged_extra:
         kwargs["extra_body"] = merged_extra

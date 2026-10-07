@@ -1,11 +1,12 @@
 import json
-import pytest
 import os
 import queue
 import subprocess
 import sys
 import threading
 from pathlib import Path
+
+import pytest
 
 
 def _stdout_queue(proc: subprocess.Popen) -> queue.Queue[dict]:

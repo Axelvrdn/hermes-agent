@@ -136,9 +136,10 @@ def test_concurrent_quarantine_no_clobber(tmp_path):
     second process re-checks under the lock, finds the file no longer
     zeroed (or gone), and returns without clobbering.
     """
-    import hermes_state as hs
-    import threading
     import sqlite3
+    import threading
+
+    import hermes_state as hs
 
     db = tmp_path / "state.db"
     db.write_bytes(bytes(4096))  # zeroed (all-NUL) 4 KB file
@@ -195,9 +196,10 @@ def test_quarantine_fails_closed_when_lock_held(tmp_path):
     the file. A fail-open fallback would let a slow/paused startup that
     still owns the lock race with the fallback's re-check + rename.
     """
-    import hermes_state as hs
     import platform
     import threading
+
+    import hermes_state as hs
 
     db = tmp_path / "state.db"
     db.write_bytes(bytes(4096))  # zeroed (all-NUL) 4 KB file
@@ -265,8 +267,9 @@ def test_concurrent_openers_zero_byte_startup_serialization(tmp_path, monkeypatc
     database serialize through the startup lock, avoid racing on the initial
     0-byte creation window, and do not falsely quarantine each other's live file.
     """
-    import hermes_state as hs
     import threading
+
+    import hermes_state as hs
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     db = tmp_path / "state.db"

@@ -12,6 +12,7 @@ from pathlib import Path
 
 from gateway.session import SessionStore
 
+
 class TestSessionLoadBoolCorruption:
     """Verify that non-dict entries in sessions.json are skipped, not fatal."""
 

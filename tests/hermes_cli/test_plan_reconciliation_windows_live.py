@@ -13,7 +13,14 @@ reconciliation. No mocks on the components under test.
  4. A running record naming a live NON-gateway process is not a runtime
     (verified identity, not bare PID existence — #109680).
 """
-import io, contextlib, json, os, subprocess, sys, tempfile, time
+import contextlib
+import io
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import time
 from pathlib import Path
 
 WORKTREE = Path(__file__).resolve().parents[1]

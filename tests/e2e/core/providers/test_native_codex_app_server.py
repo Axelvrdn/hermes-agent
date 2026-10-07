@@ -20,7 +20,11 @@ from concurrent.futures import ThreadPoolExecutor
 import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
-from tests.e2e.core.providers._native_helpers import KnownSymptom, messages, tool_calls_of
+from tests.e2e.core.providers._native_helpers import (
+    KnownSymptom,
+    messages,
+    tool_calls_of,
+)
 from tests.fakes.providers.codex_app_server import CodexRun, run_codex_scenario
 
 pytestmark = [

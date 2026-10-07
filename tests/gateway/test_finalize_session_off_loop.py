@@ -21,6 +21,7 @@ import time
 
 from gateway.run import GatewayRunner
 
+
 def _make_runner():
     runner = object.__new__(GatewayRunner)
     return runner

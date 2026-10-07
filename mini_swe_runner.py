@@ -18,10 +18,11 @@ import logging
 import os
 import tempfile
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 import fire
 from dotenv import load_dotenv
+
 from agent.tool_dispatch_helpers import make_tool_result_message
 from trajectory_compressor import _effective_temperature_for_model
 

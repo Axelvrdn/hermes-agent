@@ -5,14 +5,14 @@ must defer to recorded-graph recovery, not resolve today's application inputs.
 """
 from __future__ import annotations
 
-import importlib
 import hashlib
+import importlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -21,6 +21,7 @@ from pm.plugin_inputs import Members
 from pm.runtime import runtime_environment
 from pm.store import current_target, tree_digest
 from tests.pm._fixtures import _wheel
+
 
 @pytest.fixture(autouse=True)
 def isolated_machine_home(tmp_path, monkeypatch):

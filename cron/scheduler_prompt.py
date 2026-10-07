@@ -11,8 +11,9 @@ from __future__ import annotations
 import json
 import logging
 import re
-from hermes_time import now as _hermes_now
 from typing import Optional
+
+from hermes_time import now as _hermes_now
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("cron.scheduler")
@@ -192,11 +193,14 @@ def _inject_context_from(job: dict, prompt: str) -> tuple[str, bool]:
 
 def _load_cron_skill_parts(job: dict, skill_names: list[str]) -> list[str]:
     """Load each named skill/bundle into prompt parts; unknown ones are skipped with a notice."""
-    from tools.skills_tool import skill_view
-    from tools.skill_usage import bump_use
-    from agent.skill_bundles import build_bundle_invocation_message, resolve_bundle_command_key
+    from agent.skill_bundles import (
+        build_bundle_invocation_message,
+        resolve_bundle_command_key,
+    )
     from agent.skill_commands import _inject_skill_config, ambiguous_skill_label
     from agent.skill_utils import normalize_skill_lookup_name
+    from tools.skill_usage import bump_use
+    from tools.skills_tool import skill_view
     job_label = job.get("name", job.get("id"))
     task_id = str(job.get("id") or "") or None
     parts: list[str] = []
@@ -378,8 +382,8 @@ def _scan_assembled_cron_prompt(
     Since cron runs non-interactively (auto-approves tool calls), a malicious skill carrying an injection
     payload bypassed every gate. See #3968.
     """
-    from tools.cronjob_tools import _scan_cron_prompt
     from tools.cronjob_prompt_scan import _scan_cron_skill_assembled
+    from tools.cronjob_tools import _scan_cron_prompt
     if has_skills or has_injected_data:
         # The cleaned (sanitized) prompt is what actually runs.
         assembled, scan_error = _scan_cron_skill_assembled(assembled)

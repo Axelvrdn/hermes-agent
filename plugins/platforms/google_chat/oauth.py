@@ -120,8 +120,8 @@ def load_user_credentials(email: Optional[str] = None) -> Optional[Any]:
 
     warn_if_credential_file_broadly_readable(token_path, label="[google_chat_user_oauth]", log=logger)
     try:
-        from google.oauth2.credentials import Credentials
         from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
     except ImportError:
         logger.warning(
             "[google_chat_user_oauth] google-auth not installed; user-OAuth "
@@ -391,8 +391,8 @@ def revoke(email: Optional[str] = None) -> None:
         print("No token to revoke.")
         return
     _ensure_deps()
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
 
     try:
         creds = Credentials.from_authorized_user_file(str(token_path), SCOPES)

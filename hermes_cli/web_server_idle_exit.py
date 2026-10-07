@@ -123,8 +123,8 @@ def busy_ledger() -> Optional[str]:
             busy_sessions = [sid for sid, s in gateway._sessions.items() if _session_work_in_flight(s)]
         if busy_sessions:
             return "session:" + ",".join(str(sid) for sid in busy_sessions)
-        from tools.async_delegation import active_count
         from cron.scheduler import get_running_job_ids
+        from tools.async_delegation import active_count
         if active_count():
             return "delegation"
         running_jobs = get_running_job_ids()

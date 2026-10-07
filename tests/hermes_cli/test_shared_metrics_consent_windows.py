@@ -262,7 +262,8 @@ class TestReconcilerProperties:
         so deleting the advance from the REAL writer survived 314 tests.
         This drives the production exporter instead.
         """
-        from datetime import date, timedelta as _td
+        from datetime import date
+        from datetime import timedelta as _td
 
         yesterday = (date.today() - _td(days=1)).isoformat()
         with store._connection() as connection:

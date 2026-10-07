@@ -9,8 +9,6 @@ token, generous budget, reasoning_content scanned); always dial 127.0.0.1 — re
 
 from __future__ import annotations
 
-from contextlib import suppress
-from functools import lru_cache
 import json
 import logging
 import os
@@ -22,6 +20,8 @@ import threading
 import time
 import urllib.error
 import urllib.request
+from contextlib import suppress
+from functools import lru_cache
 from pathlib import Path
 
 from hermes_cli.local_runtime.binaries import runtimes_root
@@ -222,7 +222,9 @@ class LlamaServerSupervisor:
 
     def _write_state(self) -> None:
         import os
+
         import psutil
+
         from gateway.status import get_process_start_time
         from utils import atomic_json_write
 

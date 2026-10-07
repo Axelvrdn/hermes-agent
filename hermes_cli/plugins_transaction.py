@@ -1,9 +1,9 @@
 """Publish plugin code and its dependency selection through one recoverable handoff."""
 from __future__ import annotations
 
+import shutil
 from collections.abc import Callable
 from pathlib import Path
-import shutil
 
 
 def recover_plugin_publication(project: Path, row: dict, journal: Path) -> None:
@@ -36,7 +36,9 @@ def publish_plugin(staged: Path, target: Path, old_metadata: dict, new_metadata:
                 outcome = ("Reinstall declined: {}. The installed plugin and active environment are unchanged."
                            if target.exists() else "Install declined: {}. Nothing was installed.")
                 # The refusal carries its closed class (plugins_cmd_install._ConsentRefusal).
-                from hermes_cli.observability.shared_metrics_fields import tagged_failure_class
+                from hermes_cli.observability.shared_metrics_fields import (
+                    tagged_failure_class,
+                )
 
                 raise plugins_cmd.PluginOperationError(
                     outcome.format(reason), failure_class=tagged_failure_class(reason) or "other")
@@ -118,7 +120,11 @@ def update_plugin(
     feed_revision = None
     if catalog_entry is None:
         from hermes_cli.plugins_provenance import Provenance, ProvenanceClass
-        from hermes_cli.plugins_updates import check_local_provenance, default_fetch, parse_feed_yml
+        from hermes_cli.plugins_updates import (
+            check_local_provenance,
+            default_fetch,
+            parse_feed_yml,
+        )
 
         checked = check_local_provenance(Provenance(target.name, ProvenanceClass.GIT, target, record))
         if checked.needs_fixing:

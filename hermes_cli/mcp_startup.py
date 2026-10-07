@@ -162,7 +162,7 @@ def _resolve_discovery_timeout(explicit: "float | None", *, single_query: bool =
     key = "mcp_single_query_discovery_timeout" if single_query else "mcp_discovery_timeout"
     fallback = 15.0 if single_query else 1.5
     try:
-        from hermes_cli.config import load_config, DEFAULT_CONFIG
+        from hermes_cli.config import DEFAULT_CONFIG, load_config
 
         default = float(DEFAULT_CONFIG.get(key, fallback))
     except Exception:

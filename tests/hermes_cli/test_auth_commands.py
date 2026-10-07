@@ -8,6 +8,7 @@ import time
 from unittest.mock import patch
 
 import pytest
+
 import hermes_yaml as yaml
 
 
@@ -489,8 +490,8 @@ def test_auth_add_codex_oauth_keeps_distinct_pool_accounts(tmp_path, monkeypatch
     )
     monkeypatch.setattr("hermes_cli.auth._codex_device_code_login", lambda: next(logins))
 
-    from hermes_cli.auth_commands import auth_add_command
     from agent.credential_pool import load_pool
+    from hermes_cli.auth_commands import auth_add_command
 
     class _Args:
         provider = "openai-codex"
@@ -585,7 +586,11 @@ def test_codex_runtime_pool_only_rate_limit_is_not_missing_auth(tmp_path, monkey
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, _codex_pool_only_store(exhausted=True))
 
-    from hermes_cli.auth import AuthError, CODEX_RATE_LIMITED_CODE, resolve_codex_runtime_credentials
+    from hermes_cli.auth import (
+        CODEX_RATE_LIMITED_CODE,
+        AuthError,
+        resolve_codex_runtime_credentials,
+    )
 
     with pytest.raises(AuthError) as exc_info:
         resolve_codex_runtime_credentials()
@@ -641,8 +646,8 @@ def test_auth_add_xai_oauth_keeps_distinct_pool_accounts(tmp_path, monkeypatch):
         lambda **kwargs: next(logins),
     )
 
-    from hermes_cli.auth_commands import auth_add_command
     from agent.credential_pool import load_pool
+    from hermes_cli.auth_commands import auth_add_command
 
     class _Args:
         provider = "xai-oauth"
@@ -829,6 +834,7 @@ def test_logout_resets_codex_config_when_auth_state_already_cleared(tmp_path, mo
     )
 
     from types import SimpleNamespace
+
     from hermes_cli.auth import logout_command
 
     logout_command(SimpleNamespace(provider="openai-codex"))
@@ -843,7 +849,11 @@ def test_unsuppress_credential_source_clears_marker(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
     _write_auth_store(tmp_path, {"version": 1})
 
-    from hermes_cli.auth import suppress_credential_source, unsuppress_credential_source, is_source_suppressed
+    from hermes_cli.auth import (
+        is_source_suppressed,
+        suppress_credential_source,
+        unsuppress_credential_source,
+    )
 
     suppress_credential_source("openai-codex", "device_code")
     assert is_source_suppressed("openai-codex", "device_code") is True
@@ -863,9 +873,9 @@ def test_unsuppress_credential_source_preserves_other_markers(tmp_path, monkeypa
     _write_auth_store(tmp_path, {"version": 1})
 
     from hermes_cli.auth import (
+        is_source_suppressed,
         suppress_credential_source,
         unsuppress_credential_source,
-        is_source_suppressed,
     )
 
     suppress_credential_source("openai-codex", "device_code")
@@ -934,6 +944,7 @@ def test_auth_remove_copilot_suppresses_all_variants(tmp_path, monkeypatch):
     )
 
     from types import SimpleNamespace
+
     from hermes_cli.auth import is_source_suppressed
     from hermes_cli.auth_commands import auth_remove_command
 
@@ -987,6 +998,7 @@ def test_auth_remove_env_seeded_dotenv_with_bom_no_shell_hint(tmp_path, monkeypa
     )
 
     from types import SimpleNamespace
+
     from hermes_cli.auth_commands import auth_remove_command
     auth_remove_command(SimpleNamespace(provider="deepseek", target="1"))
 

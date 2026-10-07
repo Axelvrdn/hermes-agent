@@ -15,11 +15,9 @@ import os
 from io import StringIO
 
 import pytest
-
 from acp.exceptions import RequestError
 
 from acp_adapter.entry import _BenignProbeMethodFilter
-
 
 # -- Unit tests on the filter itself ----------------------------------------
 

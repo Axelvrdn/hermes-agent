@@ -7,8 +7,8 @@ must be stable for the life of a session (username only — never a per-message 
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from telegram import Message
     from plugins.platforms.telegram.adapter import TelegramAdapter
+    from telegram import Message
 
 
 def mentions_other_participants(adapter: "TelegramAdapter", message: "Message") -> bool:

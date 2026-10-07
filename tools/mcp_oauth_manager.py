@@ -108,8 +108,12 @@ class HermesMCPOAuthProvider(HermesProviderMixin, *_SDK_BASES):
             return
         from mcp.client.auth.utils import (
             build_oauth_authorization_server_metadata_discovery_urls,
-            build_protected_resource_metadata_discovery_urls, create_oauth_metadata_request,
-            handle_auth_metadata_response, handle_protected_resource_response)
+            build_protected_resource_metadata_discovery_urls,
+            create_oauth_metadata_request,
+            handle_auth_metadata_response,
+            handle_protected_resource_response,
+        )
+
         from tools.mcp_oauth_provider import stamp_default_user_agent
         server_url = self.context.server_url
 
@@ -345,8 +349,14 @@ class MCPOAuthManager:
         if _HERMES_PROVIDER_CLS is None:
             logger.warning("MCP OAuth '%s': SDK auth module unavailable", server_name)
             return None
-        from tools.mcp_dashboard_oauth import get_dashboard_oauth_flow  # lazy: circular at import time
-        from tools.mcp_oauth import _OAUTH_AVAILABLE, OAuthNonInteractiveError, _is_interactive
+        from tools.mcp_dashboard_oauth import (
+            get_dashboard_oauth_flow,  # lazy: circular at import time
+        )
+        from tools.mcp_oauth import (
+            _OAUTH_AVAILABLE,
+            OAuthNonInteractiveError,
+            _is_interactive,
+        )
         from tools.mcp_oauth_provider import build_provider_kwargs, prepare_oauth_config
         if not _OAUTH_AVAILABLE:
             return None

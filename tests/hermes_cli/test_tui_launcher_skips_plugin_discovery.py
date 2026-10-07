@@ -9,9 +9,9 @@ then redoes. Plain chat must still discover plugins.
 
 from __future__ import annotations
 
-from argparse import Namespace
 import sys
 import types
+from argparse import Namespace
 
 from hermes_cli import main as main_mod
 from hermes_cli import mcp_startup

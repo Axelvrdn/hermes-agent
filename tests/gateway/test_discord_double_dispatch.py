@@ -22,18 +22,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from gateway.config import PlatformConfig
-
-
 # ---------------------------------------------------------------------------
 # Discord mock setup
 # The tests/gateway/conftest.py already installs a comprehensive discord
 # mock at collection time.  We import the adapter AFTER that is done.
 # ---------------------------------------------------------------------------
-
 import plugins.platforms.discord.adapter as discord_platform  # noqa: E402
+from gateway.config import PlatformConfig
 from plugins.platforms.discord.adapter import DiscordAdapter  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Fake channel/thread helpers

@@ -122,7 +122,9 @@ def _discover_systemd() -> list[dict]:
     """Active ``hermes-gateway*`` units of this install, one per live MainPID."""
     from hermes_cli.gateway import _ensure_user_systemd_env, supports_systemd_services
     from hermes_cli.update_cmd_fleet import (
-        _for_each_systemd_gateway_unit, _systemd_gateway_unit_listings, _systemd_unit_owned_by_update,
+        _for_each_systemd_gateway_unit,
+        _systemd_gateway_unit_listings,
+        _systemd_unit_owned_by_update,
         _unit_main_pid,
     )
     if not supports_systemd_services():
@@ -152,7 +154,9 @@ def _discover_launchd() -> list[dict]:
     if sys.platform != "darwin":
         return []
     from hermes_cli.gateway import (
-        _locate_launchd_gateway_service, get_launchd_plist_path, launchd_gateway_labels_for_install,
+        _locate_launchd_gateway_service,
+        get_launchd_plist_path,
+        launchd_gateway_labels_for_install,
         legacy_launchd_labels_for_install,
     )
     from hermes_cli.update_fleet_scope import launchd_label_foreign_home
@@ -225,7 +229,11 @@ def _respawning_service(pid: int) -> str | None:
 def _discover_bare(service_pids: set[int]) -> tuple[list[dict], list[str]]:
     """``(bare gateways, notices)``: this install's ``gateway run`` processes outside any unit."""
     from gateway.status import get_process_start_time
-    from hermes_cli.gateway import _capture_gateway_argv, _get_service_pids, find_gateway_pids
+    from hermes_cli.gateway import (
+        _capture_gateway_argv,
+        _get_service_pids,
+        find_gateway_pids,
+    )
     from hermes_cli.update_cmd_fleet import _scoped_manual_gateway_pids
     from hermes_cli.update_fleet_scope import gateway_pid_home
     exclude = set(service_pids) | set(_get_service_pids(all_profiles=True))
@@ -337,7 +345,10 @@ def _start_unit(unit: dict) -> int:
     """Start *unit* through systemd; the new MainPID (raises when it does not come up). The unit
     gets the definition repair the restart it replaces ran first (``_restart_one_systemd_gateway_unit``)."""
     from hermes_cli.update_cmd_fleet import (
-        _repair_unit_without_fatal_exit_park, _systemctl, _unit_main_pid, _wait_for_service_active,
+        _repair_unit_without_fatal_exit_park,
+        _systemctl,
+        _unit_main_pid,
+        _wait_for_service_active,
     )
     cmd = _manage_cmd(unit["scope"])
     if cmd is None:
@@ -371,7 +382,10 @@ def _start_job(job: dict) -> None:
     """Load and start *job*. The invoking profile's plist is regenerated first, as the restart it
     replaces does (``launchd_restart``); that refresh also loads it."""
     from hermes_cli.gateway import (
-        _launchctl_bootstrap, _wait_for_launchd_service_pid, get_launchd_label, refresh_launchd_plist_if_needed,
+        _launchctl_bootstrap,
+        _wait_for_launchd_service_pid,
+        get_launchd_label,
+        refresh_launchd_plist_if_needed,
     )
     if not (job["label"] == get_launchd_label() and refresh_launchd_plist_if_needed()):
         _launchctl_bootstrap(job["domain"], job["plist"], job["label"])
@@ -509,7 +523,10 @@ def _replay_env(home: str) -> dict:
     under that same profile, inherits the launcher's environment (an exported bot token may be its
     only credential). The multiplexing root, and any home other than the launcher's, get that home's
     own secrets and none of the launcher's (``served_profile_child_env``)."""
-    from hermes_constants import get_default_hermes_root, get_routing_process_hermes_home
+    from hermes_constants import (
+        get_default_hermes_root,
+        get_routing_process_hermes_home,
+    )
     from tools.environments.local import build_subprocess_env, served_profile_child_env
     target = Path(home).resolve()
     if target != get_default_hermes_root().resolve() and target == get_routing_process_hermes_home().resolve():

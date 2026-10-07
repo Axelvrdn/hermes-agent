@@ -8,6 +8,7 @@ from __future__ import annotations
 # as literal text. The xterm modifyOtherKeys ``ESC[27;N;CP~`` encoding never carries lock bits.
 # See #88221, #89651.
 import logging
+
 _LOCK_BIT_OFFSETS = (0, 64, 128, 192)
 
 

@@ -13,7 +13,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -430,7 +429,11 @@ class TestBackup:
             conn.execute("CREATE TABLE sessions (id TEXT PRIMARY KEY)")
             conn.execute("INSERT INTO sessions VALUES ('s1')")
 
-        from hermes_cli.backup import _QUICK_SNAPSHOTS_DIR, create_quick_snapshot, run_backup
+        from hermes_cli.backup import (
+            _QUICK_SNAPSHOTS_DIR,
+            create_quick_snapshot,
+            run_backup,
+        )
 
         # Real producer, so the layout under state-snapshots/ is whatever the
         # code actually writes (manifest.json + state.db copy + ...).
@@ -885,6 +888,7 @@ class TestValidation:
     def test_validate_with_config(self):
         """Zip with config.yaml passes validation."""
         import io
+
         from hermes_cli.backup import _validate_backup_zip
 
         buf = io.BytesIO()
@@ -900,6 +904,7 @@ class TestValidation:
     def test_detect_prefix_only_dirs(self):
         """Prefix detection returns empty for zip with only directory entries."""
         import io
+
         from hermes_cli.backup import _detect_prefix
 
         buf = io.BytesIO()
@@ -922,6 +927,7 @@ class TestBackupEdgeCases:
         """A negative keep slices away the NEWEST archives/snapshots, so both the
         ``backup --keep`` parser and ``/snapshot prune N`` refuse it."""
         import argparse
+
         from hermes_cli.cli_commands_mixin import CLICommandsMixin
         from hermes_cli.subcommands.backup import build_backup_parser
 
@@ -1670,6 +1676,7 @@ class TestQuickSnapshot:
         pruned — losing the only recovery copy.
         """
         import json
+
         from hermes_cli.backup import create_quick_snapshot, list_quick_snapshots
 
         # First snapshot: complete (state.db is small, under any cap)
@@ -2055,7 +2062,7 @@ class TestPreMigrationBackup:
     def test_restorable_with_hermes_import(self, hermes_home, tmp_path):
         """The zip produced by pre-migration backup must be a valid Hermes
         backup — `hermes import` should accept it."""
-        from hermes_cli.backup import create_pre_migration_backup, _validate_backup_zip
+        from hermes_cli.backup import _validate_backup_zip, create_pre_migration_backup
         out = create_pre_migration_backup(hermes_home=hermes_home)
         assert out is not None
         with zipfile.ZipFile(out) as zf:
@@ -2068,7 +2075,10 @@ class TestPreMigrationBackup:
     def test_does_not_touch_pre_update_backups(self, hermes_home):
         """Pre-migration rotation must only prune pre-migration-*.zip files,
         leaving pre-update-*.zip backups untouched."""
-        from hermes_cli.backup import create_pre_update_backup, create_pre_migration_backup
+        from hermes_cli.backup import (
+            create_pre_migration_backup,
+            create_pre_update_backup,
+        )
         update_backup = create_pre_update_backup(hermes_home=hermes_home, keep=5)
         assert update_backup is not None and update_backup.exists()
         # Spin up a lot of migration backups with keep=1
@@ -2748,6 +2758,7 @@ class TestImportLiveSessionDatabase:
     ):
         """A refused live-safe restore is a warning, not a counted success."""
         import hermes_cli.backup as backup_mod
+
         # _import_db_member (the run_import .db publish path) lives in
         # hermes_cli.backup_restore and resolves _safe_restore_db there.
         import hermes_cli.backup_restore as backup_restore_mod
@@ -2823,6 +2834,7 @@ def test_run_backup_prunes_older_default_named_zips_but_not_others(tmp_path, mon
     """Hourly `hermes backup` callers accumulated 150+ zips; --keep bounds the default-named
     ones and leaves custom-named or foreign zips alone (#81317)."""
     from argparse import Namespace
+
     from hermes_cli import backup as backup_mod
 
     home = tmp_path / ".hermes"

@@ -1,7 +1,8 @@
 """Tests for banner get_available_skills() — disabled and platform filtering."""
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 _MOCK_SKILLS = [
     {"name": "skill-a", "description": "A skill", "category": "tools"},

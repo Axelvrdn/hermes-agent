@@ -8,6 +8,7 @@ subprocess. Anything that waits belongs in the async helper, never in the probe.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import shutil
@@ -18,8 +19,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from gateway.restart import DEFAULT_GATEWAY_CRON_DRAIN_TIMEOUT, resolve_systemd_timeout_stop_sec
-import contextlib
+from gateway.restart import (
+    DEFAULT_GATEWAY_CRON_DRAIN_TIMEOUT,
+    resolve_systemd_timeout_stop_sec,
+)
 
 _SIGNAL_NAME_BY_NUM: Dict[int, str] = {
     int(getattr(signal, _name)): _name

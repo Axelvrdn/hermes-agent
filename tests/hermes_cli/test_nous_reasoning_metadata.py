@@ -137,7 +137,10 @@ class TestNousModelReasoningCapabilities:
 
     def test_openrouter_cache_is_independent(self, cold_cache, monkeypatch):
         """Two catalogs, two caches — a Portal fetch must not answer for OpenRouter."""
-        from hermes_cli.models_reasoning_caps import nous_model_reasoning_capabilities, openrouter_model_reasoning_capabilities
+        from hermes_cli.models_reasoning_caps import (
+            nous_model_reasoning_capabilities,
+            openrouter_model_reasoning_capabilities,
+        )
 
         monkeypatch.setattr(cold_cache, "_openrouter_reasoning_caps_cache", None)
         monkeypatch.setattr(cold_cache, "_openrouter_reasoning_caps_failed_at", None)

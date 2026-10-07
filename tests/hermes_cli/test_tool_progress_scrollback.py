@@ -5,10 +5,9 @@ persistent lines to scrollback on tool.completed, restoring the stacked
 tool history that was lost when the TUI switched to a single-line spinner.
 """
 
-import sys
 import importlib
+import sys
 from unittest.mock import MagicMock, patch
-
 
 # Module-level reference to the cli module (set by _make_cli on first call)
 _cli_mod = None

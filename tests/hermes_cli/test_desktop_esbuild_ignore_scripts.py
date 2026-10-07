@@ -1,7 +1,7 @@
 """Regression tests for the esbuild / ignore-scripts build-failure diagnosis (#53082)."""
 
-import io
 import contextlib
+import io
 
 from hermes_cli.main_desktop import _diagnose_esbuild_ignore_scripts
 

@@ -21,7 +21,7 @@ class TestWebhookProfileResolution:
     """_resolve_request_profile validates the /p/<profile>/ prefix."""
 
     def _adapter(self, multiplex: bool, served=("default", "coder")):
-        from gateway.platforms.webhook import WebhookAdapter, _PROFILE_REJECTED
+        from gateway.platforms.webhook import _PROFILE_REJECTED, WebhookAdapter
 
         class _FakeReq:
             def __init__(self, profile):

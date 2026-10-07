@@ -1,9 +1,9 @@
 """Disposable CI namespaces at the object-key boundary, never in bucket names."""
 from __future__ import annotations
 
-from dataclasses import dataclass
 import os
 import re
+from dataclasses import dataclass
 
 # A lease is the workflow run id alone: "re-run failed jobs" must re-enter the
 # SAME namespace because succeeded jobs are skipped and their outputs persist.

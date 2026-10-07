@@ -18,11 +18,16 @@ import logging
 import threading
 import time
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
 from tools.browser_supervisor_dialogs import (
-    DEFAULT_DIALOG_POLICY, DEFAULT_DIALOG_TIMEOUT_S, RECENT_DIALOGS_MAX, _VALID_POLICIES, DialogRecord,
-    DialogSupervisionMixin, PendingDialog,
+    _VALID_POLICIES,
+    DEFAULT_DIALOG_POLICY,
+    DEFAULT_DIALOG_TIMEOUT_S,
+    RECENT_DIALOGS_MAX,
+    DialogRecord,
+    DialogSupervisionMixin,
+    PendingDialog,
 )
 from tools.browser_supervisor_frames import FrameInfo, FrameTrackingMixin
 
@@ -375,6 +380,7 @@ class CDPSupervisor(DialogSupervisionMixin, FrameTrackingMixin):
         A failure before the first successful attach is fatal for ``start()``."""
         reconnect_failures, last_success_at, backoff = 0, 0.0, 0.5
         import websockets  # deferred: only supervisors that connect pay the import
+
         from agent.proxy_bypass import loopback_connect_kwargs
         connect_kwargs = {"max_size": 50 * 1024 * 1024, **loopback_connect_kwargs(self.cdp_url)}
         while not self._stop_requested:

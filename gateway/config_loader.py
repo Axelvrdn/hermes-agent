@@ -13,7 +13,14 @@ import os
 from pathlib import Path
 from typing import Any, Optional
 
-from gateway.config import UNAUTHORIZED_DM_BEHAVIORS, Platform, PlatformConfig, _coerce_dict, _dict_slot, _normalize_choice
+from gateway.config import (
+    UNAUTHORIZED_DM_BEHAVIORS,
+    Platform,
+    PlatformConfig,
+    _coerce_dict,
+    _dict_slot,
+    _normalize_choice,
+)
 
 # Logger name parity with the origin module: records stay under "gateway.config".
 logger = logging.getLogger("gateway.config")

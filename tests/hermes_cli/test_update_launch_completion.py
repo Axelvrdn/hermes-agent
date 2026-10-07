@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -65,7 +65,6 @@ def _committed_checkout(tmp_path, monkeypatch):
     recorded the tree, so launching at the same commit owes no rebuild.
     """
     from hermes_cli import _launchers
-
     from hermes_cli.source_stamp import write_source_stamp
 
     root = tmp_path / "checkout"
@@ -408,6 +407,7 @@ def test_launch_under_the_owning_update_does_not_run_the_tail_again(tmp_path, mo
     """The tail imports the application, whose entry point runs prepare_launch: inside the
     process tree of the update that owns the pending tail it must be a no-op, not recurse."""
     import time
+
     import pm
     from hermes_cli.update_lock import update_marker_path
 

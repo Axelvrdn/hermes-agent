@@ -12,7 +12,6 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-
 # ---------------------------------------------------------------------------
 # Effort level parsing
 # ---------------------------------------------------------------------------

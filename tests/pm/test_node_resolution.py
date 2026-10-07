@@ -2,9 +2,9 @@
 
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -221,7 +221,8 @@ def npm_consumers(npm_probe, tmp_path, monkeypatch):
     from gateway.config import PlatformConfig
     from hermes_cli.main_platform_setup import _whatsapp_install_bridge
     from hermes_cli.web_routers.messaging import _ensure_whatsapp_bridge_dependencies
-    from plugins.platforms.photon import adapter as photon, cli
+    from plugins.platforms.photon import adapter as photon
+    from plugins.platforms.photon import cli
     from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
 
     home, _node, _binary, _publish = npm_probe

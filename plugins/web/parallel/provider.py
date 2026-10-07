@@ -12,8 +12,20 @@ import os
 from typing import Any, Dict, List
 
 from plugins.web._common import (
-    SEARCH_LIMIT_CAP, BaseWebSearchProvider, cached_sdk_client, document, keyless_extract, keyless_search,
-    keyless_variant_schema, page_error, provider_env, run_extract_async, run_search, search_ok, use_keyless, web_hit,
+    SEARCH_LIMIT_CAP,
+    BaseWebSearchProvider,
+    cached_sdk_client,
+    document,
+    keyless_extract,
+    keyless_search,
+    keyless_variant_schema,
+    page_error,
+    provider_env,
+    run_extract_async,
+    run_search,
+    search_ok,
+    use_keyless,
+    web_hit,
 )
 
 logger = logging.getLogger(__name__)

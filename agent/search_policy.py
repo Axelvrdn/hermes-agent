@@ -8,7 +8,6 @@ path; broad diagnostic probes should apply this policy to recursive walks.
 
 from __future__ import annotations
 
-
 # Keep this policy conservative and name-based so it works for local and remote
 # shell backends alike. The same set is used by context discovery and search
 # probes; adding a directory here protects every broad recursive consumer.

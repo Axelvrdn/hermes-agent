@@ -2,13 +2,10 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-
-
-
+from pathlib import Path
 
 
 def test_ambient_uv_config_does_not_affect_pm_venv_sync(tmp_path, monkeypatch):

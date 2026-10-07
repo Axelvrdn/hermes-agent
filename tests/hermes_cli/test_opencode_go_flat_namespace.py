@@ -26,7 +26,6 @@ from unittest.mock import patch
 from hermes_cli.model_normalize import normalize_model_for_provider
 from hermes_cli.model_switch import switch_model
 
-
 # Live catalog opencode-go currently returns from /v1/models (snapshot).
 _OPENCODE_GO_LIVE = [
     "minimax-m2.7", "minimax-m2.5",

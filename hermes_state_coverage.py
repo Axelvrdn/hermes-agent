@@ -132,7 +132,11 @@ class SessionCoverageMixin:
         Only rows at or below *watermark*: the repair ran on a load taken before the snapshot, so a
         run appended later that joins to the same text is another surface's, not the merged one.
         """
-        from agent.conversation_compression_archive import MERGED_DURABLE_ROWS, OWN_ROW, RETIRED_DURABLE_ROWS
+        from agent.conversation_compression_archive import (
+            MERGED_DURABLE_ROWS,
+            OWN_ROW,
+            RETIRED_DURABLE_ROWS,
+        )
 
         content, width = message.get("content"), message.get(MERGED_DURABLE_ROWS)
         if message.get("role") != "user" or not isinstance(content, str) or type(width) is not int or width < 2:
@@ -196,7 +200,12 @@ class SessionCoverageMixin:
             return None
         from agent.context_compressor import _DB_PERSISTED_MARKER
         from agent.conversation_compression_archive import (
-            ABSORBED_ROW_IDS, MERGED_DURABLE_ROWS, OWN_ROW, RETIRED_DURABLE_ROWS, RETIRED_ROW)
+            ABSORBED_ROW_IDS,
+            MERGED_DURABLE_ROWS,
+            OWN_ROW,
+            RETIRED_DURABLE_ROWS,
+            RETIRED_ROW,
+        )
 
         proved = [int(row_id) for row_id in covered_ids if isinstance(row_id, int) and row_id > 0]
         merged_away: Set[int] = set()
@@ -241,7 +250,11 @@ class SessionCoverageMixin:
         without ids are in neither, so their count is added. A dict that holds a ``_row_id`` was
         written back as a single row by an earlier compaction.
         """
-        from agent.conversation_compression_archive import ABSORBED_ROW_IDS, MERGED_DURABLE_ROWS, UNNAMED_DURABLE_ROWS
+        from agent.conversation_compression_archive import (
+            ABSORBED_ROW_IDS,
+            MERGED_DURABLE_ROWS,
+            UNNAMED_DURABLE_ROWS,
+        )
 
         def behind(message: Dict[str, Any]) -> int:
             merged, unnamed = message.get(MERGED_DURABLE_ROWS), message.get(UNNAMED_DURABLE_ROWS)

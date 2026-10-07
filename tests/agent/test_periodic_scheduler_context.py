@@ -1,7 +1,7 @@
 """Context propagation contract for the shared periodic scheduler."""
 
-from contextvars import ContextVar
 import threading
+from contextvars import ContextVar
 
 from agent.periodic_scheduler import PeriodicScheduler
 

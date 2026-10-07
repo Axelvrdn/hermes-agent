@@ -16,12 +16,15 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Request
 
-from hermes_cli.config import format_docker_update_message, recommended_update_command_for_method
+from hermes_cli.config import (
+    format_docker_update_message,
+    recommended_update_command_for_method,
+)
 from hermes_cli.update_contract import COMMIT_BUILD_UPDATE_MESSAGE, is_commit_build
 from hermes_cli.version_info import get_version_info
 from hermes_cli.web_deps import LateState, late
-from hermes_cli.web_server_gateway import _ACTION_LOG_FILES
 from hermes_cli.web_routers._common import http_failure
+from hermes_cli.web_server_gateway import _ACTION_LOG_FILES
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -197,7 +200,11 @@ async def gateway_drain(request: Request):
     transition (the marker IS the control channel). Idempotent on both sides;
     ``POST /api/gateway/restart`` is the force-override that supersedes a drain.
     """
-    from gateway.drain_control import clear_drain_request, drain_requested, write_drain_request
+    from gateway.drain_control import (
+        clear_drain_request,
+        drain_requested,
+        write_drain_request,
+    )
 
     try:
         body = await request.json()
@@ -250,7 +257,10 @@ async def update_hermes():
 
     # Shared admission gate: marker-first, then the docker/nix/apt heuristics —
     # one decision with the CLI paths.
-    from hermes_cli.update_contract import evaluate_update_admission, record_refusal_receipt
+    from hermes_cli.update_contract import (
+        evaluate_update_admission,
+        record_refusal_receipt,
+    )
 
     refusal = evaluate_update_admission(_server_path("PROJECT_ROOT"))
     if refusal is not None:

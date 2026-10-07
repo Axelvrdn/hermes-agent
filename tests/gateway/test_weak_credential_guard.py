@@ -9,8 +9,7 @@ import logging
 
 import pytest
 
-from gateway.config import PlatformConfig, Platform, _validate_gateway_config
-
+from gateway.config import Platform, PlatformConfig, _validate_gateway_config
 
 # ---------------------------------------------------------------------------
 # Helper: create a minimal GatewayConfig with one enabled platform

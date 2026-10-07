@@ -12,6 +12,7 @@ from gateway.config import Platform
 from gateway.platforms.event import MessageEvent
 from gateway.session import SessionSource
 
+
 def _make_event(text="/bg", platform=Platform.TELEGRAM,
                 user_id="12345", chat_id="67890"):
     """Build a MessageEvent for testing."""

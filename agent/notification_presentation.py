@@ -2,7 +2,6 @@
 from contextlib import contextmanager
 from contextvars import ContextVar
 
-
 _muted_surface: ContextVar[str | None] = ContextVar("muted_notification_surface", default=None)
 # These are text/media UI events, not approval/clarify/connection requests or outcomes.
 _FREEFORM_EVENTS = frozenset({

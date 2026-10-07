@@ -4,10 +4,13 @@ from types import SimpleNamespace
 
 
 def test_monitor_keys_pin_controls_across_roster_changes(monkeypatch):
-    from hermes_cli.cli_subagent_monitor import SubagentMonitor, build_monitor_application
-
     from prompt_toolkit.input import create_pipe_input
     from prompt_toolkit.output import DummyOutput
+
+    from hermes_cli.cli_subagent_monitor import (
+        SubagentMonitor,
+        build_monitor_application,
+    )
     from tools import delegate_tool_registry as registry
     monkeypatch.setattr(registry, '_active_subagents', {})
     received = []

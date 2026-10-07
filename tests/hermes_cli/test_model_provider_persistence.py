@@ -91,8 +91,8 @@ class TestProviderPersistsAfterModelSave:
         # Simulate: user has a Kimi API key, model was a string
         monkeypatch.setenv("KIMI_API_KEY", "sk-kimi-test-key")
 
-        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
         from hermes_cli.config import load_config
+        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
 
         # Mock the model selection prompt to return "kimi-k2.5"
         # Also mock input() for the base URL prompt and builtins.input
@@ -131,8 +131,8 @@ class TestBaseUrlValidation:
         monkeypatch.setenv("MINIMAX_API_KEY", "test-key")
         monkeypatch.delenv("MINIMAX_BASE_URL", raising=False)
 
+        from hermes_cli.config import get_env_value, load_config
         from hermes_cli.model_setup_flows import _model_flow_api_key_provider
-        from hermes_cli.config import load_config, get_env_value
 
         with patch("hermes_cli.auth._prompt_model_selection", return_value="MiniMax-M2"), \
              patch("hermes_cli.auth.deactivate_provider"), \
@@ -148,8 +148,8 @@ class TestZaiEndpointPicker:
 
     def test_custom_proxy_rejects_invalid_url(self, config_home, monkeypatch):
         """Custom proxy must start with http:// or https://."""
-        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
         from hermes_cli.config import load_config
+        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
 
         monkeypatch.setenv("GLM_API_KEY", "test-key")
         monkeypatch.delenv("GLM_BASE_URL", raising=False)

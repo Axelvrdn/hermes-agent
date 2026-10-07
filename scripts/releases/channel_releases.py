@@ -5,13 +5,16 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import tempfile
 from datetime import datetime, timezone
+from pathlib import Path
 
 from hermes_cli.release_channels import (
-    ChannelError, build_prefix, canonical_json, validate_identity,
+    ChannelError,
+    build_prefix,
+    canonical_json,
+    validate_identity,
 )
 from scripts.bundles.channel_artifacts import assemble
 from scripts.releases import handoff, r2, stable
@@ -111,9 +114,9 @@ def canary_windows_version(tag: str) -> str:
 def admit_transaction(policy: str, env: dict, *, require_published: bool = False,
                       run=stable.output) -> tuple[str, str]:
     """A callable CLI is not permission to bypass the existing workflow gate."""
-    from scripts.releases.semver import is_release_version
     from hermes_cli.release_channels import require_commit, validate_repository
     from hermes_cli.update_channel import is_canary_tag
+    from scripts.releases.semver import is_release_version
 
     repository = validate_repository(env.get("GITHUB_REPOSITORY"))
     tag = env.get("RELEASE_TAG", "")

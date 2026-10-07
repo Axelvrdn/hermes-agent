@@ -158,6 +158,7 @@ class TestBuildMemoryContextBlockWarnsOnViolation:
 
     def test_provider_emitting_wrapper_warns(self, caplog):
         import logging
+
         from agent.memory_manager import build_memory_context_block
 
         prewrapped = (
@@ -175,6 +176,7 @@ class TestBuildMemoryContextBlockWarnsOnViolation:
 
     def test_clean_provider_output_does_not_warn(self, caplog):
         import logging
+
         from agent.memory_manager import build_memory_context_block
 
         with caplog.at_level(logging.WARNING, logger="agent.memory_manager"):

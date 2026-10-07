@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import re
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 _SHA = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 
@@ -25,12 +25,20 @@ def prepare(request: dict) -> tuple[Path, dict[str, str]]:
     from hermes_cli.gitlock import convert_treeless_checkout_first
     convert_treeless_checkout_first(root)
     publish_stage("Updating Python dependencies (PM)")
-    from pm import receipt
-    from pm.client import ensure_tools_for_sync, sync_venv, venv_is_current
-    from pm.environments import activation_environment, install_state_dir, runtime_facts_path
     from hermes_cli._launchers import resolve_store_python
     from hermes_cli.venv_sync import (
-        arm_completion, collect_superseded_generations, publish_launchers, refuse_foreign_owned_venv)
+        arm_completion,
+        collect_superseded_generations,
+        publish_launchers,
+        refuse_foreign_owned_venv,
+    )
+    from pm import receipt
+    from pm.client import ensure_tools_for_sync, sync_venv, venv_is_current
+    from pm.environments import (
+        activation_environment,
+        install_state_dir,
+        runtime_facts_path,
+    )
 
     # The historical updater already moved the tree: owe the tail and the fleet restart before the
     # first slow step, exactly like a current updater's commit point, so a kill from here on leaves
@@ -72,7 +80,10 @@ def _arm_fleet_obligation(root: Path) -> None:
     # modules here (``update_cmd_fleet``'s writer imports ``update_cmd`` -> config -> ruamel, which a
     # release older than ruamel does not have). Same arm and per-home fallback as the commit point's;
     # its False (a debt other profiles cannot see) is already said out loud, and the tree has moved.
-    from hermes_cli.update_host_obligation import PROFILE_MARKER_NAME, arm_host_obligation
+    from hermes_cli.update_host_obligation import (
+        PROFILE_MARKER_NAME,
+        arm_host_obligation,
+    )
     from hermes_constants import get_hermes_home
 
     # A git-less archive root has no SHA: an SHA-less record still owes the restart; its readers hold

@@ -1,7 +1,7 @@
 """The local transport can use Git Bash without a PATH entry."""
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
 

@@ -10,10 +10,13 @@ Retired ``deepseek-chat``/``deepseek-reasoner`` IDs are remapped in
 
 from typing import Any
 
-from agent.reasoning_effort import DEEPSEEK_V4_EFFORTS, DEEPSEEK_V4_OVERRIDES, thinking_toggle_extras
+from agent.reasoning_effort import (
+    DEEPSEEK_V4_EFFORTS,
+    DEEPSEEK_V4_OVERRIDES,
+    thinking_toggle_extras,
+)
 from providers import register_provider
 from providers.base import ProviderProfile
-
 
 # Version-less canonical ids for thinking-capable DeepSeek models. The 2026-09 Flash
 # refresh dropped the ``v<N>`` marker from the public id: ``GET /v1/models`` reports

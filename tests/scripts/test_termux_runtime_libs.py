@@ -8,14 +8,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
-from tests.termux_fixtures import build_deb
 
-import sys
+from tests.termux_fixtures import build_deb
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))

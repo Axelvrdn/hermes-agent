@@ -264,7 +264,10 @@ def _start_realtime_speaker(rt: dict, cfg: "_BotConfig", stop_flag: dict, state:
     queue_path.touch()  # so the speaker poller doesn't error on first iteration
     phase = "import"
     try:
-        from plugins.google_meet.realtime.openai_client import RealtimeSession, RealtimeSpeaker
+        from plugins.google_meet.realtime.openai_client import (
+            RealtimeSession,
+            RealtimeSpeaker,
+        )
         phase = "connect"
         session = RealtimeSession(
             api_key=cfg.realtime_api_key, model=cfg.realtime_model, voice=cfg.realtime_voice,

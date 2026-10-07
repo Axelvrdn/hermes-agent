@@ -17,7 +17,9 @@ import weakref
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from tools.terminal_tool import set_approval_callback as _set_subagent_approval_cb  # noqa: F401  (used via _ChildRun.await_child)
+from tools.terminal_tool import (
+    set_approval_callback as _set_subagent_approval_cb,  # noqa: F401  (used via _ChildRun.await_child)
+)
 from utils import is_truthy_value
 
 logger = logging.getLogger(__name__)
@@ -25,36 +27,92 @@ logger = logging.getLogger(__name__)
 # The delegate_tool_* siblings hold the pieces split out of this module; every name callers or patching tests reach as
 # ``tools.delegate_tool.<name>`` is re-imported here. Mutable flag globals live only in their owning module.
 from tools.delegate_tool_child_run import (  # noqa: F401
-    _ChildRun, _attach_child, _build_child_goal_message, _build_result_entry, _dump_subagent_timeout_diagnostic, _fabricated_entry,
-    _lease_child_credential, _merge_late_steer, _register_child, _start_heartbeat, _validate_child_output_schema,
+    _attach_child,
+    _build_child_goal_message,
+    _build_result_entry,
+    _ChildRun,
+    _dump_subagent_timeout_diagnostic,
+    _fabricated_entry,
+    _lease_child_credential,
+    _merge_late_steer,
+    _register_child,
+    _start_heartbeat,
+    _validate_child_output_schema,
 )
 from tools.delegate_tool_config import (  # noqa: F401
-    _DEFAULT_MAX_CONCURRENT_CHILDREN, _get_child_timeout, _get_max_async_children, _get_max_concurrent_children,
-    _get_max_spawn_depth, _get_oneshot_max_children, _get_orchestrator_enabled, _get_subagent_approval_callback, _get_worktree_isolation,
-    _inherit_parent_capabilities, _load_config, _merge_request_overrides, _resolve_child_credential_pool,
-    _resolve_child_runtime, _resolve_delegation_credentials,
-    _subagent_auto_approve, _subagent_auto_deny,
+    _DEFAULT_MAX_CONCURRENT_CHILDREN,
+    _get_child_timeout,
+    _get_max_async_children,
+    _get_max_concurrent_children,
+    _get_max_spawn_depth,
+    _get_oneshot_max_children,
+    _get_orchestrator_enabled,
+    _get_subagent_approval_callback,
+    _get_worktree_isolation,
+    _inherit_parent_capabilities,
+    _load_config,
+    _merge_request_overrides,
+    _resolve_child_credential_pool,
+    _resolve_child_runtime,
+    _resolve_delegation_credentials,
+    _subagent_auto_approve,
+    _subagent_auto_deny,
 )
-from tools.delegate_tool_dispatch import _Batch, _announce_batch, _capture_origin, _run_batch
+from tools.delegate_tool_dispatch import (
+    _announce_batch,
+    _Batch,
+    _capture_origin,
+    _run_batch,
+)
 from tools.delegate_tool_progress import (  # noqa: F401
-    DelegateEvent, SUBAGENT_FAILURE_STATUSES, _batch_prefix, _build_child_progress_callback,
-    _build_child_system_prompt, _clean_error_text, _emit_parent_console, _quiet, _resolve_workspace_hint,
-    _safe_progress, format_batch_tag, format_subagent_failure_line,
+    SUBAGENT_FAILURE_STATUSES,
+    DelegateEvent,
+    _batch_prefix,
+    _build_child_progress_callback,
+    _build_child_system_prompt,
+    _clean_error_text,
+    _emit_parent_console,
+    _quiet,
+    _resolve_workspace_hint,
+    _safe_progress,
+    format_batch_tag,
+    format_subagent_failure_line,
 )
 from tools.delegate_tool_registry import (  # noqa: F401
-    _CONTROL_ACTIONS, _active_subagents, _active_subagents_lock, _capture_gateway_steer_authority,
-    _handle_control_action, _is_descendant_of, _owns_subagent_record, _register_subagent, _unregister_subagent,
-    get_subagent_attribution, interrupt_subagent, is_spawn_paused, list_active_subagents, set_spawn_paused,
+    _CONTROL_ACTIONS,
+    _active_subagents,
+    _active_subagents_lock,
+    _capture_gateway_steer_authority,
+    _handle_control_action,
+    _is_descendant_of,
+    _owns_subagent_record,
+    _register_subagent,
+    _unregister_subagent,
+    get_subagent_attribution,
+    interrupt_subagent,
+    is_spawn_paused,
+    list_active_subagents,
+    set_spawn_paused,
     steer_subagent,
 )
+from tools.delegate_tool_results import (  # noqa: F401
+    _apply_summary_budget,
+    _build_child_preserving_parent_tools,
+    _run_child_lifecycle,
+    _summarize_tool_arguments,
+)
 from tools.delegate_tool_tasks import (  # noqa: F401
-    _MAX_TASK_IMAGES, _coerce_task_images, _coerce_task_schemas, _normalize_task_images, _normalize_task_list,
+    _MAX_TASK_IMAGES,
+    _coerce_task_images,
+    _coerce_task_schemas,
+    _normalize_task_images,
+    _normalize_task_list,
 )
 from tools.delegate_tool_toolsets import (  # noqa: F401
-    DELEGATE_BLOCKED_TOOLS, _expand_parent_toolsets, _resolve_child_toolsets, _strip_blocked_tools,
-)
-from tools.delegate_tool_results import (  # noqa: F401
-    _apply_summary_budget, _build_child_preserving_parent_tools, _run_child_lifecycle, _summarize_tool_arguments,
+    DELEGATE_BLOCKED_TOOLS,
+    _expand_parent_toolsets,
+    _resolve_child_toolsets,
+    _strip_blocked_tools,
 )
 
 _ROLES = frozenset({"leaf", "orchestrator"})
@@ -220,8 +278,9 @@ def _build_child_agent(
     """Build (don't run) a child AIAgent on the main thread. override_* (from delegation config) replace parent
     inheritance so children can run on a different provider:model pair."""
     import uuid as _uuid
-    from run_agent import AIAgent
+
     from agent.delegation_context import delegated_child_context
+    from run_agent import AIAgent
     # Role is depth-derived: a child may delegate iff the kill switch is on and
     # depth budget remains below max_spawn_depth. The `role` arg is ignored.
     child_depth = getattr(parent_agent, "_delegate_depth", 0) + 1
@@ -768,6 +827,7 @@ DELEGATE_TASK_SCHEMA = {
 
 # --- Registry ---
 from tools.registry import registry, tool_error
+
 
 def _model_background_value(args: dict, parent_agent=None) -> bool:
     """Background flag for the MODEL-facing dispatch path (registry fallback). Top-level delegations always run in the

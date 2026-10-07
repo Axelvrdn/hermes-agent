@@ -3,8 +3,8 @@
 These are document contracts, not proof that an agent obeys the instructions.
 Section ordering, step counts and other prose quality remain review-owned.
 """
-from pathlib import Path
 import re
+from pathlib import Path
 
 import pytest
 

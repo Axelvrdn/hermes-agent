@@ -23,8 +23,16 @@ from tools.binary_extensions import (
     is_sqlite_sidecar,
 )
 from tools.file_tools_paths import (
-    _expand_tilde, _resolve_path_for_task, _ssh_path_escapes_home, _terminal_env_type_for_task)
-from tools.file_tools_read_tracking import _has_full_write_baseline, _is_own_blind_patch, _read_mtime_drifted
+    _expand_tilde,
+    _resolve_path_for_task,
+    _ssh_path_escapes_home,
+    _terminal_env_type_for_task,
+)
+from tools.file_tools_read_tracking import (
+    _has_full_write_baseline,
+    _is_own_blind_patch,
+    _read_mtime_drifted,
+)
 
 # Prefixes matched after realpath. macOS: /private/var mirrors /var — block the
 # sensitive subtrees only; a blanket "/private/var/" refuses every temp-file
@@ -194,7 +202,7 @@ def _protected_instruction_config() -> tuple[bool, list[str]]:
     ``security.protected_instruction_extra_patterns`` (fnmatch on basename). Config read
     failures keep the gate ON — fail-safe for a security boundary."""
     try:
-        from hermes_cli.config import load_config, cfg_get
+        from hermes_cli.config import cfg_get, load_config
         cfg = load_config()
         enabled = cfg_get(cfg, "security", "protected_instruction_files", default=True)
         extra = cfg_get(cfg, "security", "protected_instruction_extra_patterns", default=[])
@@ -405,7 +413,11 @@ def _get_container_mirror_prefix_for_task(task_id: str = "default") -> str | Non
     """Return the container-side Hermes mirror prefix for persistent Docker file tools."""
     try:
         from tools.terminal_tool import (
-            _active_environments, _env_lock, _get_env_config, _resolve_container_task_id)
+            _active_environments,
+            _env_lock,
+            _get_env_config,
+            _resolve_container_task_id,
+        )
         container_key = _resolve_container_task_id(task_id)
         with _env_lock:
             env = _active_environments.get(container_key) or _active_environments.get(task_id)
@@ -426,7 +438,10 @@ def _check_cross_profile_path(filepath: str, task_id: str = "default") -> str | 
     Hermes state (a write the host never reads). Not profile isolation — that guard was
     removed; ``cross_profile=True`` keeps bypassing this one for replay compat. Fails open."""
     try:
-        from agent.file_safety import get_container_mirror_warning, get_sandbox_mirror_warning
+        from agent.file_safety import (
+            get_container_mirror_warning,
+            get_sandbox_mirror_warning,
+        )
     except Exception:
         return None
     resolved = _resolved_or_raw(filepath, task_id)

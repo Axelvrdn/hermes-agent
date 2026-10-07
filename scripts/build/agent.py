@@ -4,12 +4,17 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import tomllib
+from pathlib import Path
 
-from scripts.build.inputs import AgentInputs, RESOURCE_ENV, project_entries, validate_frontends
+from scripts.build.inputs import (
+    RESOURCE_ENV,
+    AgentInputs,
+    project_entries,
+    validate_frontends,
+)
 from scripts.build.launchers import write_launchers
 
 

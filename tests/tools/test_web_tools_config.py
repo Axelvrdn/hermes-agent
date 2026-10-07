@@ -14,8 +14,9 @@ import json
 import os
 import sys
 import types
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 class TestFirecrawlClientConfig:
@@ -449,22 +450,29 @@ class TestParallelClientConfig:
     def test_creates_client_with_key(self):
         """PARALLEL_API_KEY set → creates Parallel client."""
         with patch.dict(os.environ, {"PARALLEL_API_KEY": "test-key"}):
-            from plugins.web.parallel.provider import _get_sync_client as _get_parallel_client
             from parallel import Parallel
+
+            from plugins.web.parallel.provider import (
+                _get_sync_client as _get_parallel_client,
+            )
             client = _get_parallel_client()
             assert client is not None
             assert isinstance(client, Parallel)
 
     def test_no_key_raises_with_helpful_message(self):
         """No PARALLEL_API_KEY → ValueError with guidance."""
-        from plugins.web.parallel.provider import _get_sync_client as _get_parallel_client
+        from plugins.web.parallel.provider import (
+            _get_sync_client as _get_parallel_client,
+        )
         with pytest.raises(ValueError, match="PARALLEL_API_KEY"):
             _get_parallel_client()
 
     def test_singleton_returns_same_instance(self):
         """Second call returns cached client."""
         with patch.dict(os.environ, {"PARALLEL_API_KEY": "test-key"}):
-            from plugins.web.parallel.provider import _get_sync_client as _get_parallel_client
+            from plugins.web.parallel.provider import (
+                _get_sync_client as _get_parallel_client,
+            )
             client1 = _get_parallel_client()
             client2 = _get_parallel_client()
             assert client1 is client2
@@ -473,7 +481,9 @@ class TestParallelClientConfig:
         """/reload (reload_env) fixing or removing the key reaches the next call: the client built
         with the old key is never handed out again."""
         from hermes_cli.config import get_env_path, reload_env
-        from plugins.web.parallel.provider import _get_sync_client as _get_parallel_client
+        from plugins.web.parallel.provider import (
+            _get_sync_client as _get_parallel_client,
+        )
         with patch.dict(os.environ):
             get_env_path().write_text("PARALLEL_API_KEY=typo-key\n")
             reload_env()
@@ -698,8 +708,8 @@ class TestCheckWebApiKey:
         monkeypatch.setenv("XAI_API_KEY", "xai-test-key")
         for k in ("PERPLEXITY_API_KEY", "SEARXNG_URL", "BRAVE_SEARCH_API_KEY"):
             monkeypatch.delenv(k, raising=False)
-        from tools.registry import invalidate_check_fn_cache
         import model_tools
+        from tools.registry import invalidate_check_fn_cache
 
         with patch("tools.web_tools._load_web_config", return_value={}):
             invalidate_check_fn_cache()
@@ -743,7 +753,7 @@ class TestCheckWebApiKey:
                  "agent.web_search_registry.get_active_extract_provider",
                  return_value=unavailable,
              ):
-            from tools.web_tools import check_web_api_key, _provider_is_ready
+            from tools.web_tools import _provider_is_ready, check_web_api_key
             assert _provider_is_ready(unavailable) is False
             assert check_web_api_key() is False
 

@@ -14,7 +14,15 @@ from pathlib import Path
 import pytest
 
 from scripts.code_health.ts_measure import pinned_typescript, resolve_typescript
-from tests.scripts.test_code_health import _LEGACY, _SWALLOW, REPO, _commit, _git, _repo, _verdict
+from tests.scripts.test_code_health import (
+    _LEGACY,
+    _SWALLOW,
+    REPO,
+    _commit,
+    _git,
+    _repo,
+    _verdict,
+)
 
 _EDITED = _LEGACY.replace("return 7\n", "return 77\n")  # one constant changed, CC still 22
 # Same name and CC as _LEGACY, unrelated body: a new function reusing a deleted name.

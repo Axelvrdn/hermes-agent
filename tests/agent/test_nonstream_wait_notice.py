@@ -1,7 +1,7 @@
 """Wait status describes request-local silence, never active generation."""
 
-from types import SimpleNamespace
 import threading
+from types import SimpleNamespace
 
 import pytest
 

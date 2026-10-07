@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pytest
 
-
 CANARY_KEY = "HERMES_TEAMS_DOTENV_CANARY"
 
 

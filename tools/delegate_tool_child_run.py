@@ -3,24 +3,31 @@ timeout/failure handling, result-entry assembly and cleanup (``_ChildRun``)."""
 
 from __future__ import annotations
 
-import logging
 import contextvars
 import json
+import logging
 import os
 import threading
 import time
 from concurrent.futures import TimeoutError as FuturesTimeoutError
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
+
 from agent.compression_marker import elide
 from agent.interrupt_compat import request_hard_interrupt
-from dataclasses import dataclass, field
 from tools import file_state
 from tools.delegate_tool_progress import _quiet, _safe_progress
 from tools.delegate_tool_registry import (
-    _capture_gateway_steer_authority, _close_subagent_steering, _register_subagent, _unregister_subagent,
+    _capture_gateway_steer_authority,
+    _close_subagent_steering,
+    _register_subagent,
+    _unregister_subagent,
 )
 from tools.delegate_tool_results import (
-    _extract_output_tail, _looks_like_error_output, _stringify_tool_content, _summarize_tool_arguments,
+    _extract_output_tail,
+    _looks_like_error_output,
+    _stringify_tool_content,
+    _summarize_tool_arguments,
 )
 
 logger = logging.getLogger("tools.delegate_tool")  # log-record parity with the origin module
@@ -173,8 +180,9 @@ def _dump_subagent_timeout_diagnostic(
     response", 0 API calls, nothing to inspect): ``~/.hermes/logs/subagent-timeout-<sid>-<ts>.log`` with the
     child's config, prompt/schema sizes, activity snapshot and worker stack. Path, or None on failure."""
     try:
-        from hermes_constants import get_hermes_home
         import datetime as _dt
+
+        from hermes_constants import get_hermes_home
         logs_dir = get_hermes_home() / "logs"
         try:
             logs_dir.mkdir(parents=True, exist_ok=True)
@@ -295,7 +303,11 @@ class _Heartbeat:
 
     def tick(self):
         """Returning False stops the periodic callback."""
-        from tools.delegate_tool import _HEARTBEAT_INTERVAL, _HEARTBEAT_STALE_CYCLES_IDLE, _HEARTBEAT_STALE_CYCLES_IN_TOOL
+        from tools.delegate_tool import (
+            _HEARTBEAT_INTERVAL,
+            _HEARTBEAT_STALE_CYCLES_IDLE,
+            _HEARTBEAT_STALE_CYCLES_IN_TOOL,
+        )
         child, parent_agent, task_index, last_seen = self.child, self.parent_agent, self.task_index, self.last_seen
         touch = getattr(parent_agent, "_touch_activity", None) if parent_agent is not None else None
         if not touch:
@@ -439,7 +451,9 @@ def _lease_child_credential(child: Any) -> tuple[Any, Optional[str]]:
     child_pool = getattr(child, "_credential_pool", None)
     if child_pool is None:
         return None, None
-    from agent.credential_pool import credential_pool_entry_serves_endpoint as _entry_serves_endpoint
+    from agent.credential_pool import (
+        credential_pool_entry_serves_endpoint as _entry_serves_endpoint,
+    )
     base_url = getattr(child, "base_url", None)
     leased_cred_id = child_pool.acquire_lease()
     if leased_cred_id is not None:
@@ -667,7 +681,10 @@ def _build_child_goal_message(goal: str, images: List[str], child) -> Any:
         data_urls = [s for s in images if s.startswith("data:image/")]
         urls = [s for s in images if _is_image_url(s) and s not in data_urls]
         paths = [s for s in images if not _is_image_url(s)]
-        from agent.image_routing import build_native_content_parts, decide_image_input_mode
+        from agent.image_routing import (
+            build_native_content_parts,
+            decide_image_input_mode,
+        )
         cfg = None
         with _quiet(None):
             from hermes_cli.config import load_config_readonly
@@ -754,7 +771,11 @@ class _ChildRun:
         # but the child's later `cd`s stay in its own record. Per-session container
         # isolation keys containers by task_id; the child must share the PARENT's.
         with _quiet("Child cwd seed failed: %s"):
-            from tools.terminal_tool import get_session_cwd, record_session_cwd, register_container_alias
+            from tools.terminal_tool import (
+                get_session_cwd,
+                record_session_cwd,
+                register_container_alias,
+            )
             record_session_cwd(self.child_task_id, get_session_cwd(self.parent_task_id))
             register_container_alias(self.child_task_id, self.parent_task_id)
 
@@ -837,10 +858,13 @@ class _ChildRun:
         via a Future done-callback (``close_deferred=True``) — closing here would race its still-unwinding finally
         path.
         """
-        from tools.delegate_tool import (
-            _STALE_RESULT_GRACE_SECONDS, _get_child_timeout, _get_subagent_approval_callback, _set_subagent_approval_cb,
-        )
         from tools.daemon_pool import DaemonThreadPoolExecutor
+        from tools.delegate_tool import (
+            _STALE_RESULT_GRACE_SECONDS,
+            _get_child_timeout,
+            _get_subagent_approval_callback,
+            _set_subagent_approval_cb,
+        )
         child, task_index = self.child, self.task_index
         child_timeout = _get_child_timeout()
         executor = DaemonThreadPoolExecutor(
@@ -995,7 +1019,7 @@ class _ChildRun:
         if handed:
             entry["handed_off_processes"] = handed
         with _quiet(None):
-            from tools.process_registry import process_registry, _output_tail
+            from tools.process_registry import _output_tail, process_registry
             leftover = process_registry.running_owned_by(self.child_task_id)
             if leftover:
                 entry["orphaned_processes"] = [

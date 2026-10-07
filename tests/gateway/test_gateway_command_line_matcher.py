@@ -13,10 +13,13 @@ import pytest
 
 from gateway.status import (
     gateway_spawn_intent_subcommand as spawn_intent,
+)
+from gateway.status import (
     looks_like_gateway_command_line as matches,
+)
+from gateway.status import (
     looks_like_gateway_runtime_command_line as matches_runtime,
 )
-
 
 ACCEPT = [
     "pythonw.exe -m hermes_cli.main gateway run",

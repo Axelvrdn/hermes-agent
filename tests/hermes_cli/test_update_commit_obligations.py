@@ -412,7 +412,10 @@ def test_an_arm_racing_a_release_is_never_undone_by_it(root, monkeypatch):
     write under one mutex, so the racing arm lands after the release, never under it."""
     import threading
 
-    from hermes_cli.update_host_obligation import read_host_obligation, write_host_obligation
+    from hermes_cli.update_host_obligation import (
+        read_host_obligation,
+        write_host_obligation,
+    )
 
     commit.arm_commit_obligations(root, "a" * 40)  # run X, over an absent record
     host, real_unlink, racer = host_obligation_path(), Path.unlink, []

@@ -10,11 +10,10 @@ from __future__ import annotations
 import io
 import json
 import time
+import urllib.request
 from contextlib import redirect_stdout
 from types import SimpleNamespace
 from unittest import mock
-
-import urllib.request
 
 from agent import anthropic_credentials as ac
 from agent import credential_sources

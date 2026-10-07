@@ -145,11 +145,10 @@ class TestNormalizeWebAssetMimeTypes:
         assert mimetypes.guess_type(filename)[0] in expected
 
     def test_table_is_complete_for_served_assets(self):
-        from hermes_cli.web_asset_mime_types import WEB_ASSET_MIME_TYPES
-
         # Every extension we pin must be present in the strict map after import
         # of the dashboard module (module-level call already ran).
         import hermes_cli.web_server_dashboard  # noqa: F401
+        from hermes_cli.web_asset_mime_types import WEB_ASSET_MIME_TYPES
 
         for ext, mime in WEB_ASSET_MIME_TYPES.items():
             assert mimetypes.guess_type(f"file{ext}")[0] == mime

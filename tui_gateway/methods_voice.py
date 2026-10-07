@@ -124,6 +124,7 @@ def _tts_stream_stop(user_barge: bool = True) -> None:
         return
     if user_barge and not state["done"].is_set():
         import traceback
+
         from tools.tts_streaming import mark_speech_interrupted
         logger.debug("TTS CUT: _tts_stream_stop(user_barge=True) — new turn or "
                      "interrupt cutting in-flight TTS\n%s", "".join(traceback.format_stack()))
@@ -174,8 +175,11 @@ def _full_duplex_listener() -> None:
     """Mic live from utterance-submit to turn-complete; a trip transcribes -> ``voice.transcript``."""
     global _fd_listener_active
     try:
-        from tools.voice_mode import (full_duplex_listen, is_audio_output_active,
-                                      transcribe_recording)
+        from tools.voice_mode import (
+            full_duplex_listen,
+            is_audio_output_active,
+            transcribe_recording,
+        )
 
         def _should_stop() -> bool:
             return not _voice_mode_enabled() or not (
@@ -470,8 +474,14 @@ def _(rid, params: dict) -> dict:
         return _ok(rid, {"started": False, "reason": reason, **extra})
     try:
         from tools.wake_word import (
-            WakeWordInUse, detector_frame_info, load_wake_word_config, owns_listener,
-            start_listening, wake_phrase, wake_surface_enabled)
+            WakeWordInUse,
+            detector_frame_info,
+            load_wake_word_config,
+            owns_listener,
+            start_listening,
+            wake_phrase,
+            wake_surface_enabled,
+        )
     except Exception as e:
         return _err(rid, 5026, f"wake module unavailable: {e}")
     cfg = load_wake_word_config()
@@ -558,8 +568,14 @@ def _(rid, params: dict) -> dict:
 def _(rid, params: dict) -> dict:
     try:
         from tools.wake_word import (
-            audio_is_silent, detector_frame_info, get_input_device_status, is_listening,
-            load_wake_word_config, owns_listener, silent_audio_hint)
+            audio_is_silent,
+            detector_frame_info,
+            get_input_device_status,
+            is_listening,
+            load_wake_word_config,
+            owns_listener,
+            silent_audio_hint,
+        )
         cfg = load_wake_word_config()
         probe_capture, reqs = _wake_probe(cfg, params, str(params.get("surface") or "").strip().lower())
         owner, owner_surface = _wake_owner_snapshot()

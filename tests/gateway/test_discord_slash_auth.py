@@ -19,7 +19,6 @@ import pytest
 
 from gateway.config import PlatformConfig
 
-
 # ---------------------------------------------------------------------------
 # Discord module mock — borrowed from test_discord_slash_commands.py so this
 # file runs on machines without discord.py installed.
@@ -360,7 +359,6 @@ def test_visibility_hide_tolerates_unsetable_command(adapter, caplog):
 
 # os import for test_visibility_hide_off_by_default_is_noop
 import os  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Fail-closed parity on malformed slash auth context

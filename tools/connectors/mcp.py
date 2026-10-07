@@ -12,7 +12,12 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from hermes_constants import hermes_home_key
 from tools.connectors.contract import Actor, SettleReason, TargetState
 from tools.connectors.gateway.config import operation_session_key
-from tools.connectors.operation import ConnectionOperation, DetachedOperation, IllegalTransition, Target
+from tools.connectors.operation import (
+    ConnectionOperation,
+    DetachedOperation,
+    IllegalTransition,
+    Target,
+)
 from tools.connectors.run import Kind, run_operation
 from tools.connectors.targets import hosted_names, misrouted_to_mcp_error
 from tools.registry import tool_error
@@ -126,7 +131,11 @@ class _CatalogBackend:
     def start_install_oauth(self, name: str, env: Dict[str, str]) -> Any:
         """Install an OAuth entry through the card's flow. The configuration is built in memory and
         lands, together with the setup values, only when ``initialize`` accepts the token."""
-        from hermes_cli.mcp_catalog import card_install_config, is_installed, record_mcp_install
+        from hermes_cli.mcp_catalog import (
+            card_install_config,
+            is_installed,
+            record_mcp_install,
+        )
         from tools.connectors import mcp_oauth
 
         fresh = not is_installed(name)
@@ -158,7 +167,11 @@ class _CatalogBackend:
 
     def _install(self, name: str, env: Dict[str, str]) -> List[str]:
         from agent.secret_scope import (
-            current_secret_scope, current_secret_scope_home, reset_secret_scope, set_secret_scope)
+            current_secret_scope,
+            current_secret_scope_home,
+            reset_secret_scope,
+            set_secret_scope,
+        )
         from hermes_cli.mcp_catalog import _inline_non_secret_value, card_install_config
         from hermes_cli.mcp_config import _probe_single_server, _save_mcp_server
 

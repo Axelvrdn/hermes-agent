@@ -178,7 +178,7 @@ def test_unconfigured_rows_hide_excluded_provider_by_alias():
     ``list_authenticated_providers``. Comparing the raw exclusion strings
     against ``entry.slug`` alone would leak the canonical row back in."""
     from hermes_cli.inventory import _append_unconfigured_rows
-    from hermes_cli.models import CANONICAL_PROVIDERS, _PROVIDER_ALIASES
+    from hermes_cli.models import _PROVIDER_ALIASES, CANONICAL_PROVIDERS
 
     # Pick an alias whose canonical target is an actual skeleton row.
     baseline = {r["slug"].lower() for r in _append_unconfigured_rows([], _picker_ctx())}

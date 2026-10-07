@@ -50,8 +50,8 @@ def hermes_home(monkeypatch):
 
     # Import lazily (inside fixture) so the modules are already resident,
     # then redirect their captured paths at the new temp dir.
-    import tools.skills_tool as _st
     import agent.skill_commands as _sc
+    import tools.skills_tool as _st
 
     monkeypatch.setattr(_st, "HERMES_HOME", home, raising=False)
     monkeypatch.setattr(_st, "SKILLS_DIR", home / "skills", raising=False)

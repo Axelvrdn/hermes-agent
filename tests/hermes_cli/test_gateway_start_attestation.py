@@ -20,7 +20,6 @@ import pytest
 
 import hermes_cli.gateway_windows as gateway_windows
 
-
 # ---------------------------------------------------------------------------
 # _wait_for_gateway_ready: confirmation window
 # ---------------------------------------------------------------------------

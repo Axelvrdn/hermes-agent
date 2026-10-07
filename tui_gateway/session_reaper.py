@@ -6,15 +6,14 @@ knobs _SESSION_TTL_S, _REAPER_SCAN_S, _EXIT_FLUSH_BUDGET_S and _INCREMENTAL_FLUS
 
 from __future__ import annotations
 
-import logging
 import contextlib
+import logging
 import secrets
 import threading
 
 from tui_gateway._env import env_float
 
 from .method_ctx import bind_module
-
 
 # ── Flush-on-kill + periodic incremental flush ───────────────────────────
 # (a) SIGTERM/SIGINT run a bounded flush to state.db BEFORE normal shutdown, chained to the prior handler;

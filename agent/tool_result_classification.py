@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from typing import Any
 
-
 FILE_MUTATING_TOOL_NAMES = frozenset({"write_file", "patch"})
 
 

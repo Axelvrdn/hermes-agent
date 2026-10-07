@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 
 from hermes_cli.auth import (
-    AuthError,
     DEFAULT_XAI_OAUTH_BASE_URL,
+    AuthError,
     _read_xai_oauth_tokens,
     _refresh_xai_oauth_tokens,
     _save_xai_oauth_tokens,
@@ -18,7 +18,6 @@ from hermes_cli.auth import (
     resolve_provider,
     resolve_xai_oauth_runtime_credentials,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -546,9 +545,10 @@ def test_auth_remove_xai_oauth_clears_singleton_and_sticks(tmp_path, monkeypatch
     nothing to clean up" branch. That branch is correct for ``manual``
     entries (pool-only) but wrong for singleton-seeded ``device_code``
     entries (auth.json singleton survives the in-memory removal)."""
+    from types import SimpleNamespace
+
     from agent.credential_pool import load_pool
     from hermes_cli.auth_commands import auth_remove_command
-    from types import SimpleNamespace
 
     hermes_home = tmp_path / "hermes"
     fresh = _jwt_with_exp(int(time.time()) + 2 * 60 * 60)
@@ -741,8 +741,9 @@ def test_pool_manual_entry_does_not_sync_back_to_singleton(tmp_path, monkeypatch
     independent credentials and must NOT write to the singleton.  Sync-back
     is restricted to entries seeded from the singleton.  Otherwise adding a
     second pool credential would silently overwrite the user's main login."""
-    from agent.credential_pool import load_pool, AUTH_TYPE_OAUTH, PooledCredential
     import uuid
+
+    from agent.credential_pool import AUTH_TYPE_OAUTH, PooledCredential, load_pool
 
     hermes_home = tmp_path / "hermes"
     # Singleton has its own tokens (separate login).

@@ -11,10 +11,10 @@ Regression for #113738 (found via Slack's native stop button, gateway-gateway#28
 import pytest
 
 from agent.i18n import t
-from gateway.run import GatewayRunner, _AGENT_PENDING_SENTINEL
-from gateway.session import SessionSource, build_session_key
 from gateway.platforms.base import Platform
 from gateway.platforms.event import MessageEvent, MessageType
+from gateway.run import _AGENT_PENDING_SENTINEL, GatewayRunner
+from gateway.session import SessionSource, build_session_key
 
 
 class _FakeAgent:

@@ -1,7 +1,8 @@
 """Tests for the BedrockTransport."""
 
-import pytest
 from types import SimpleNamespace
+
+import pytest
 
 from agent.transports import get_transport
 from agent.transports.types import NormalizedResponse

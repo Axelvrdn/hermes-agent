@@ -19,6 +19,7 @@ import pytest
 
 from run_agent import AIAgent
 
+
 def _make_agent_openrouter():
     """Agent on openrouter (openai-compatible) with sentinel client + kwargs."""
     agent = AIAgent.__new__(AIAgent)

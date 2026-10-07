@@ -11,26 +11,26 @@ Coverage levels:
 """
 
 import time
+from unittest.mock import MagicMock, patch
 
 import pytest
-import hermes_yaml as yaml
-from unittest.mock import patch, MagicMock
 
+import hermes_yaml as yaml
 from agent.model_metadata import (
+    _MODEL_CACHE_TTL,
     CONTEXT_PROBE_TIERS,
     DEFAULT_CONTEXT_LENGTHS,
     DEFAULT_FALLBACK_CONTEXT,
     _strip_provider_prefix,
-    estimate_tokens_rough,
     estimate_messages_tokens_rough,
     estimate_request_tokens_rough,
+    estimate_tokens_rough,
+    fetch_model_metadata,
+    get_cached_context_length,
     get_model_context_length,
     get_next_probe_tier,
-    get_cached_context_length,
     parse_context_limit_from_error,
     save_context_length,
-    fetch_model_metadata,
-    _MODEL_CACHE_TTL,
 )
 
 
@@ -1707,8 +1707,8 @@ class TestContextLengthCache:
         ``os.replace`` write leaves the previous file byte-for-byte intact
         when the swap fails.
         """
-        import utils
         import agent.model_metadata as mm
+        import utils
 
         cache_file = tmp_path / "cache.yaml"
         monkeypatch.setattr(mm, "_get_context_cache_path", lambda: cache_file)
@@ -1745,6 +1745,7 @@ class TestGrok43StaleCacheGuard:
     def test_stale_grok_4_3_dropped_and_reresolves_to_1m(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
         import importlib
+
         import agent.model_metadata as mm
         importlib.reload(mm)
         base = "https://api.x.ai/v1"
@@ -1758,6 +1759,7 @@ class TestGrok43StaleCacheGuard:
     def test_grok_4_not_clobbered(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
         import importlib
+
         import agent.model_metadata as mm
         importlib.reload(mm)
         base = "https://api.x.ai/v1"

@@ -27,7 +27,7 @@ def temp_home(tmp_path, monkeypatch):
 
 def _write_cron_job(schedule_expr: str, next_run_at: datetime) -> str:
     """Persist a cron job with a pinned next_run_at (the stale-edit shape)."""
-    from cron.jobs import create_job, save_jobs, load_jobs
+    from cron.jobs import create_job, load_jobs, save_jobs
 
     job = create_job(prompt="x", schedule="every 5m", name="t")
     jobs = load_jobs()

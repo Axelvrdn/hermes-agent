@@ -194,7 +194,11 @@ def _stage_session_file_attachment(
     resolved = None
     if raw_path:
         try:
-            from cli import _detect_file_drop, _resolve_attachment_path, _split_path_input
+            from cli import (
+                _detect_file_drop,
+                _resolve_attachment_path,
+                _split_path_input,
+            )
         except Exception:
             _detect_file_drop = None
         if _detect_file_drop is not None:

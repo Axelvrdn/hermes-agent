@@ -8,12 +8,6 @@ import pytest
 from gateway.platforms import api_server
 
 
-
-
-
-
-
-
 @pytest.mark.asyncio
 async def test_non_room_run_body_passes_through_unchanged():
     adapter = api_server.APIServerAdapter.__new__(api_server.APIServerAdapter)

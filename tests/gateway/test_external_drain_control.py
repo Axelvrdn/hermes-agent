@@ -17,10 +17,9 @@ import json
 import pytest
 
 import gateway.drain_control as dc
-from gateway.run import GatewayRunner
 from gateway.platforms.event import MessageEvent, MessageType
+from gateway.run import GatewayRunner
 from tests.gateway.restart_test_helpers import make_restart_runner, make_restart_source
-
 
 # ---------------------------------------------------------------------------
 # Marker contract (drain_control.py)

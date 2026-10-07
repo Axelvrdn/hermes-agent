@@ -1,11 +1,11 @@
 """Registry-facing sync handlers for MCP tools and utility tools (resources/prompts), plus the per-call recovery
 ladder: trust gating, circuit breaker, auth (401) refresh, session-expired reconnect and dead-stdio respawn retry."""
 
-import logging
 import asyncio
 import contextvars
 import inspect
 import json
+import logging
 import time
 from contextlib import asynccontextmanager
 from functools import partial
@@ -13,16 +13,26 @@ from types import SimpleNamespace
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from hermes_platform import declaration
-from tools.registry import invalidate_check_fn_cache, tool_error
-from tools.ansi_strip import strip_unicode_tags
-from tools.mcp_tool_common import _exc_str, _sanitize_error, mcp_field, _core
 from tools import mcp_tool_loop as _loop
+from tools.ansi_strip import strip_unicode_tags
+from tools.mcp_tool_common import _core, _exc_str, _sanitize_error, mcp_field
 from tools.mcp_tool_content import (
-    _MCP_HARD_RESULT_CAP_CHARS, _cache_mcp_audio_block, _cache_mcp_image_block, _mcp_result_with_native_images,
-    _render_mcp_dropped_block_notice, _render_mcp_resource_block, _strip_reserved_meta_keys,
-    _truncate_mcp_text_result)
+    _MCP_HARD_RESULT_CAP_CHARS,
+    _cache_mcp_audio_block,
+    _cache_mcp_image_block,
+    _mcp_result_with_native_images,
+    _render_mcp_dropped_block_notice,
+    _render_mcp_resource_block,
+    _strip_reserved_meta_keys,
+    _truncate_mcp_text_result,
+)
 from tools.mcp_tool_errors import (
-    _auth_error_detail, _is_auth_error, _is_session_expired_error, _mcp_call_failed_message)
+    _auth_error_detail,
+    _is_auth_error,
+    _is_session_expired_error,
+    _mcp_call_failed_message,
+)
+from tools.registry import invalidate_check_fn_cache, tool_error
 
 logger = logging.getLogger("tools.mcp_tool")
 _MISSING = object()
@@ -110,7 +120,9 @@ def _acquire_call_server(server_name: str, tool_timeout: float):
     """``(server, None)`` when a call may be dispatched, else ``(None, error)``. No session: a
     reconnect may be completing, so wait briefly before a breaker strike; still down -> ask the
     server task to rebuild (probing a dead transport would re-arm the breaker forever)."""
-    from tools import mcp_tool_discovery as _discovery  # lazy: discovery -> registration -> handlers cycle
+    from tools import (
+        mcp_tool_discovery as _discovery,  # lazy: discovery -> registration -> handlers cycle
+    )
     not_connected = tool_error(f"MCP server '{server_name}' is not connected")
     from tools.mcp_liveness import unavailable_details
     details = unavailable_details(server_name)

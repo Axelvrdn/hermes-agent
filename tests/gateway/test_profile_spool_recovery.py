@@ -17,8 +17,15 @@ import agent.secret_scope as ss
 from gateway.config import GatewayConfig
 from gateway.platforms.base import Platform, SessionSource
 from gateway.session import SessionEntry, SessionStore
-from gateway.shutdown_flush import recover_gateway_pending, spool_dropped_transcript_message
-from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
+from gateway.shutdown_flush import (
+    recover_gateway_pending,
+    spool_dropped_transcript_message,
+)
+from hermes_constants import (
+    get_hermes_home,
+    reset_hermes_home_override,
+    set_hermes_home_override,
+)
 
 
 @pytest.fixture

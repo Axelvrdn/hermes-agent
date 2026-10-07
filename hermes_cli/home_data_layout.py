@@ -1,7 +1,6 @@
 """Machine-specific state excluded from portable home transfers."""
 from __future__ import annotations
 
-
 # Dependency generations, downloaded tools, and partial transfers belong to this machine.
 PM_RUNTIME_ROOT_DIRS = frozenset({"installs", "tools", "cache"})
 

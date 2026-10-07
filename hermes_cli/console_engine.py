@@ -18,7 +18,6 @@ from typing import Callable, Iterable, Literal, NoReturn, Sequence
 
 from tools.ansi_strip import strip_ansi as _strip_ansi
 
-
 ConsoleStatus = Literal["ok", "error", "confirm_required", "exit", "clear"]
 
 

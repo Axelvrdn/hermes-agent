@@ -5,8 +5,9 @@ are imported lazily inside the functions that use them (avoids an import cycle).
 """
 
 import logging
-from pm import install_hint
 import sys
+
+from pm import install_hint
 
 
 def _cmd_memory_off():
@@ -21,7 +22,7 @@ def _cmd_memory_off():
 
 
 def _cmd_memory_reset(args):
-    from hermes_constants import get_hermes_home, display_hermes_home
+    from hermes_constants import display_hermes_home, get_hermes_home
     mem_dir = get_hermes_home() / "memories"
     target = getattr(args, "target", "all")
     files_to_reset = []
@@ -110,8 +111,8 @@ def cmd_tools(args):
 def cmd_insights(args):
     db = None
     try:
-        from hermes_state import SessionDB, _default_db_path
         from agent.insights import InsightsEngine
+        from hermes_state import SessionDB, _default_db_path
         if not _default_db_path().exists():
             print("No session data yet.")
             return
@@ -191,11 +192,13 @@ def _cmd_skills_trust(args):
     (nearest ancestor with ``.git``).
     """
     from pathlib import Path
+
     from agent.skill_utils import (
         PROJECT_SKILLS_SUBDIRS,
         _candidate_project_skills_dirs,
         find_project_root,
-        iter_skill_index_files)
+        iter_skill_index_files,
+    )
     from hermes_cli.config import load_config, save_config
     action = args.skills_action
     raw_path = getattr(args, "path", None)

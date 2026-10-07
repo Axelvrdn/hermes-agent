@@ -7,9 +7,10 @@ import queue
 import sys
 import threading
 import time
-import pytest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 def _ensure_discord_mock():
@@ -660,8 +661,8 @@ class TestDiscordVoiceChannelMethods:
     """Test DiscordAdapter voice channel methods (join, leave, play, etc.)."""
 
     def _make_adapter(self):
-        from plugins.platforms.discord.adapter import DiscordAdapter
         from gateway.config import Platform, PlatformConfig
+        from plugins.platforms.discord.adapter import DiscordAdapter
         config = PlatformConfig(enabled=True, extra={})
         config.token = "fake-token"
         adapter = object.__new__(DiscordAdapter)
@@ -768,8 +769,8 @@ class TestDiscordVoiceChannelMethods:
         assert adapter._voice_timeout_tasks == {}
 
     def test_discord_voice_timeout_config_loaded(self):
-        from plugins.platforms.discord.adapter import DiscordAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.discord.adapter import DiscordAdapter
 
         with patch("hermes_cli.config.read_raw_config", return_value={
             "discord": {
@@ -1017,8 +1018,8 @@ class TestVoiceTimeoutCleansRunnerState:
 
     @staticmethod
     def _make_discord_adapter():
+        from gateway.config import Platform, PlatformConfig
         from plugins.platforms.discord.adapter import DiscordAdapter
-        from gateway.config import PlatformConfig, Platform
         config = PlatformConfig(enabled=True, extra={})
         config.token = "fake-token"
         adapter = object.__new__(DiscordAdapter)
@@ -1076,8 +1077,8 @@ class TestPlaybackTimeout:
 
     @staticmethod
     def _make_discord_adapter():
+        from gateway.config import Platform, PlatformConfig
         from plugins.platforms.discord.adapter import DiscordAdapter
-        from gateway.config import PlatformConfig, Platform
         config = PlatformConfig(enabled=True, extra={})
         config.token = "fake-token"
         adapter = object.__new__(DiscordAdapter)
@@ -1136,8 +1137,8 @@ class TestVoiceChannelAwareness:
     """Tests for get_voice_channel_info() and get_voice_channel_context()."""
 
     def _make_adapter(self):
-        from plugins.platforms.discord.adapter import DiscordAdapter
         from gateway.config import PlatformConfig
+        from plugins.platforms.discord.adapter import DiscordAdapter
         config = PlatformConfig(enabled=True, extra={})
         config.token = "fake-token"
         adapter = object.__new__(DiscordAdapter)
@@ -1350,8 +1351,8 @@ class TestVoiceTTSPlayback:
 
     @staticmethod
     def _make_discord_adapter():
+        from gateway.config import Platform, PlatformConfig
         from plugins.platforms.discord.adapter import DiscordAdapter
-        from gateway.config import PlatformConfig, Platform
         config = PlatformConfig(enabled=True, extra={})
         config.token = "fake-token"
         adapter = object.__new__(DiscordAdapter)
@@ -1398,9 +1399,9 @@ class TestVoiceTTSPlayback:
 
     def _call_should_reply(self, runner, voice_mode, msg_type, response="Hello",
                            agent_msgs=None, already_sent=False):
+        from gateway.config import Platform
         from gateway.platforms.base import SessionSource
         from gateway.platforms.event import MessageEvent
-        from gateway.config import Platform
         runner._voice_mode["discord:ch1"] = voice_mode
         source = SessionSource(
             platform=Platform.DISCORD, chat_id="ch1",
@@ -1449,8 +1450,8 @@ class TestUDPKeepalive:
     @pytest.mark.asyncio
     async def test_keepalive_sends_silence_frame(self):
         """Listen loop sends silence frame via send_packet after interval."""
+        from gateway.config import Platform, PlatformConfig
         from plugins.platforms.discord.adapter import DiscordAdapter
-        from gateway.config import PlatformConfig, Platform
 
         config = PlatformConfig(enabled=True, extra={})
         config.token = "fake"
@@ -1554,6 +1555,7 @@ class TestStreamTtsTempfileFallback:
 
     def test_tempfile_handle_closed_before_playback(self, monkeypatch):
         import wave
+
         import tools.tts_tool as tts_mod
         import tools.voice_mode as vm
         from tools.tts_tool_speaker import stream_tts_to_speaker

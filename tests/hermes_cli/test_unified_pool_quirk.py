@@ -232,8 +232,8 @@ def test_smi_resolver_uses_wsl_driver_path_when_path_is_empty(monkeypatch):
 
 
 def test_memory_probe_carries_identity_without_another_process(monkeypatch):
-    from types import SimpleNamespace
     import sys
+    from types import SimpleNamespace
 
     calls = []
     name = "NVIDIA RTX Spark N1X (5120-core Blackwell RTX GPU)"

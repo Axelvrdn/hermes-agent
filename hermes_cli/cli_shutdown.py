@@ -343,7 +343,13 @@ def _finalize_single_query(cli) -> None:
     process's stale ``cli_close`` end-stamp, because phase 1 has already run it.
     """
     import cli as cli_module
-    from cli import _flush_one_shot_session_store, _notify_single_query_session_finalize, _run_cleanup, _shutdown_agent_memory_provider, _wait_for_oneshot_background_completions
+    from cli import (
+        _flush_one_shot_session_store,
+        _notify_single_query_session_finalize,
+        _run_cleanup,
+        _shutdown_agent_memory_provider,
+        _wait_for_oneshot_background_completions,
+    )
     try:
         try:
             _flush_one_shot_session_store(cli)

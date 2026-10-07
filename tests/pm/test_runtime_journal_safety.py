@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from pm.environments import install_state_dir
 from hermes_cli.runtime_state import recover_publication, runtime_lock
+from pm.environments import install_state_dir
 
 
 def test_invalid_journal_cannot_write_outside_home(tmp_path, monkeypatch):

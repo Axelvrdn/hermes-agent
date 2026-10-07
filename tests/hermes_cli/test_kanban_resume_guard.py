@@ -106,8 +106,8 @@ def test_guard_fails_open_on_probe_error(tmp_path):
 # ── CLI startup --resume / -c ────────────────────────────────────────
 
 def _make_cli(resume=None):
-    from cli import HermesCLI
     import cli as _cli_mod
+    from cli import HermesCLI
 
     _clean_config = {
         "model": {"default": "anthropic/claude-opus-4.6", "base_url": "https://openrouter.ai/api/v1",

@@ -28,14 +28,12 @@ import time
 import wave
 from unittest.mock import MagicMock, patch
 
-
+import tools.transcription_tools as tt
 from tools.transcription_tools import (
     _get_idle_unload_seconds,
-    _unload_local_model,
     _start_idle_unload_watcher,
+    _unload_local_model,
 )
-import tools.transcription_tools as tt
-
 
 # ============================================================================
 # Config resolution

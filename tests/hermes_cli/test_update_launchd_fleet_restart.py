@@ -37,7 +37,6 @@ from hermes_cli.update_cmd import (
     _warn_incomplete_gateway_fleet_restart,
 )
 
-
 pytestmark = pytest.mark.platforms("macos")  # launchd fleet restart is macOS-only; helpers use POSIX os.getuid
 
 UID = 501

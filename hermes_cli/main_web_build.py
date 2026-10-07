@@ -7,7 +7,6 @@ are imported lazily inside the functions that use them (avoids an import cycle).
 import logging
 import subprocess
 import sys
-
 from pathlib import Path
 
 # Log-record parity with the origin module.
@@ -47,7 +46,11 @@ def _sweep_stale_bytecode_if_checkout_changed() -> None:
     ``__pycache__`` retains bytecode from the previous revision, and a later process trusts the stale
     ``.pyc`` instead of the fresh source.
     """
-    from hermes_cli.main import PROJECT_ROOT, _clear_bytecode_cache, _read_git_revision_fingerprint
+    from hermes_cli.main import (
+        PROJECT_ROOT,
+        _clear_bytecode_cache,
+        _read_git_revision_fingerprint,
+    )
     try:
         fingerprint = _read_git_revision_fingerprint(PROJECT_ROOT)
         if not fingerprint:
@@ -140,7 +143,11 @@ def _build_web_ui(web_dir: Path, *, fatal: bool = False) -> bool:
 
 def _do_build_web_ui(web_dir: Path, *, fatal: bool = False) -> bool:
     """Build stale dashboard sources; failure is never reported as a usable build."""
-    from hermes_cli.source_build import build_source_web, prepare_launch_dependencies, source_build_env
+    from hermes_cli.source_build import (
+        build_source_web,
+        prepare_launch_dependencies,
+        source_build_env,
+    )
 
     if not (web_dir / "package.json").exists() or not _web_ui_build_needed(web_dir):
         return True

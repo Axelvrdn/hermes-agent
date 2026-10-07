@@ -14,7 +14,6 @@ import shlex
 import shutil
 import subprocess
 
-
 _INSTALLERS: dict[str, tuple[str, ...]] = {
     "apt-get": ("apt-get", "install", "-y", "libatomic1"),
     "dnf": ("dnf", "install", "-y", "libatomic"),

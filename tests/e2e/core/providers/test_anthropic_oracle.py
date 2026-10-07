@@ -16,7 +16,12 @@ import urllib.request
 
 import pytest
 
-from tests.fakes.providers.anthropic_messages import AnthropicMessagesServer, Reply, Text, validate_request
+from tests.fakes.providers.anthropic_messages import (
+    AnthropicMessagesServer,
+    Reply,
+    Text,
+    validate_request,
+)
 
 SIGNED = {"type": "thinking", "thinking": "weigh it", "signature": "EqSig+/=="}
 TOOL_USE = {"type": "tool_use", "id": "toolu_1", "name": "read_file", "input": {"path": "a.txt"}}

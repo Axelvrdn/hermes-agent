@@ -9,8 +9,13 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from acp.schema import (
-    AudioContentBlock, BlobResourceContents, EmbeddedResourceContentBlock, ImageContentBlock,
-    ResourceContentBlock, TextContentBlock, TextResourceContents,
+    AudioContentBlock,
+    BlobResourceContents,
+    EmbeddedResourceContentBlock,
+    ImageContentBlock,
+    ResourceContentBlock,
+    TextContentBlock,
+    TextResourceContents,
 )
 
 logger = logging.getLogger("acp_adapter.server")

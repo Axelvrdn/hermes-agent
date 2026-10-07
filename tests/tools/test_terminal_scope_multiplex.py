@@ -15,6 +15,7 @@ import os
 
 import pytest
 
+from tools import browser_tool_cloud as bt_cloud
 from tools.terminal_scope import (
     TerminalPolicyRefusal,
     TerminalPolicyUnavailable,
@@ -24,7 +25,6 @@ from tools.terminal_scope import (
     set_terminal_scope,
     terminal_env,
 )
-from tools import browser_tool_cloud as bt_cloud
 
 _LAUNCH_CWD = "/home/launch-user/private"
 _LAUNCH_VOLUMES = '["/host/secret:/data:rw"]'
@@ -150,7 +150,11 @@ def test_persistent_docker_routed_profile_keeps_one_container(tmp_path):
     SAME container as its session-bound work, and never another profile's."""
     import gateway.run as gw
     import tools.terminal_tool as tt
-    from gateway.session_context import clear_session_vars, reset_session_vars, set_session_vars
+    from gateway.session_context import (
+        clear_session_vars,
+        reset_session_vars,
+        set_session_vars,
+    )
 
     docker = "terminal:\n  backend: docker\n  container_persistent: true\n"
     keys = {}

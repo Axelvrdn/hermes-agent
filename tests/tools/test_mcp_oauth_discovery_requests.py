@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import pytest
 
-
 pytest.importorskip("mcp.client.auth.oauth2", reason="MCP SDK 1.26.0+ required")
 
 
@@ -32,7 +31,11 @@ async def _noop_callback():
 async def _make_flow(tmp_path, monkeypatch, *, registered=True):
     from tools.mcp_tool import sdk_httpx
     httpx = sdk_httpx()
-    from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
+    from mcp.shared.auth import (
+        OAuthClientInformationFull,
+        OAuthClientMetadata,
+        OAuthToken,
+    )
     from pydantic import AnyUrl
 
     from tools.mcp_oauth import HermesTokenStorage
@@ -112,6 +115,7 @@ async def test_registration_failure_after_failed_discovery_leads_with_discovery(
     host; the surfaced error must name the metadata refusal first, not only the fallback 404 (#113771),
     and must not be mistaken for a DCR allowlist refusal by the humanizer."""
     from mcp.client.auth.oauth2 import OAuthRegistrationError
+
     from tools.mcp_oauth import humanize_oauth_registration_error
 
     httpx, req, flow = await _make_flow(tmp_path, monkeypatch, registered=False)

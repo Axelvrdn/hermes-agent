@@ -154,9 +154,10 @@ def test_counter_reset_on_invalidated_descendants(conn):
 
 def test_dashboard_and_db_paths_produce_identical_outcomes(tmp_path, monkeypatch):
     fastapi = pytest.importorskip("fastapi")
-    from fastapi.testclient import TestClient
     import importlib.util
     import sys
+
+    from fastapi.testclient import TestClient
 
     home = tmp_path / ".hermes"
     home.mkdir()

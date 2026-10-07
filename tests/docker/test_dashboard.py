@@ -15,7 +15,12 @@ from __future__ import annotations
 import json
 import time
 
-from tests.docker.conftest import docker_exec, docker_exec_sh, start_container, poll_container
+from tests.docker.conftest import (
+    docker_exec,
+    docker_exec_sh,
+    poll_container,
+    start_container,
+)
 
 
 def test_dashboard_not_running_by_default(

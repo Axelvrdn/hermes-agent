@@ -3,19 +3,22 @@
 Vision capability probes, non-vision text fallbacks (cached ``vision_analyze`` descriptions), tool-result
 image stripping, and provider quirks (Anthropic dot preservation, Qwen portal message shaping).
 """
-import logging
 import asyncio
 import base64
 import copy
 import hashlib
 import json
+import logging
 import os
 import tempfile
 from pathlib import Path
 from typing import Any, List, Optional
 
 from agent.lazy_forward import forward_static as _forward_static
-from agent.tool_dispatch_helpers import _is_multimodal_tool_result, _multimodal_text_summary
+from agent.tool_dispatch_helpers import (
+    _is_multimodal_tool_result,
+    _multimodal_text_summary,
+)
 from utils import base_url_host_matches, base_url_hostname
 
 # Same logger name as the origin module so log records / caplog filters are unchanged.
@@ -134,8 +137,8 @@ class VisionMessagePrepMixin:
         """True if the active provider+model reports native vision (config override
         > models.dev; see ``image_routing._supports_vision_override``)."""
         try:
-            from hermes_cli.config import load_config
             from agent.image_routing import _lookup_supports_vision
+            from hermes_cli.config import load_config
             provider = (getattr(self, "provider", "") or "").strip()
             model = (getattr(self, "model", "") or "").strip()
             return _lookup_supports_vision(provider, model, load_config()) is True

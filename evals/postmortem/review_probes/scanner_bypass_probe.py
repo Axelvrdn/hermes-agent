@@ -11,18 +11,20 @@ Usage: python scanner_bypass_probe.py <repo_root> [<baseline_approval_detection.
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
 ROOT=Path(sys.argv[1]).resolve()  # repo root under test
 sys.path.insert(0,str(ROOT))
 home=Path(tempfile.mkdtemp(prefix='review103492-confirm-'))
 os.environ['HERMES_HOME']=str(home)
 os.environ['HERMES_INTERACTIVE']='1'
 (home/'config.yaml').write_text('approvals:\n  mode: manual\n  timeout: 1\n', encoding='utf-8')
-from tools import approval_detection as d
 from tools import approval as a
+from tools import approval_detection as d
+
 b=None
 if len(sys.argv)>2:  # optional: path to a baseline approval_detection.py (e.g. from main) to compare verdicts
     spec=importlib.util.spec_from_file_location('baseline',sys.argv[2]); b=importlib.util.module_from_spec(spec); spec.loader.exec_module(b)

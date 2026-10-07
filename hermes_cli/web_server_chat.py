@@ -2,23 +2,23 @@
 client/origin/auth gates, chat argv resolution, gateway/sidecar URL building.
 """
 
-import logging
 import asyncio
 import atexit
 import concurrent.futures
 import contextlib
 import hmac
+import logging
 import os
 import re
 import sys
 import tempfile
 import threading
 import urllib.request
-from typing import Optional
-
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from pathlib import Path
 from typing import Optional  # noqa: F811 — historical duplicate import kept
+
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+
 from hermes_cli.pty_session import PtySessionRegistry
 
 # Same logger the code used before extraction (record parity).
@@ -30,7 +30,8 @@ _log = logging.getLogger("hermes_cli.web_server")
 # Windows uses win_pty_bridge (pywinpty/ConPTY); same surface, no handler guards.
 try:
     if sys.platform.startswith("win"):
-        from hermes_cli.win_pty_bridge import WinPtyBridge as PtyBridge, PtyUnavailableError
+        from hermes_cli.win_pty_bridge import PtyUnavailableError
+        from hermes_cli.win_pty_bridge import WinPtyBridge as PtyBridge
     else:
         from hermes_cli.pty_bridge import PtyBridge, PtyUnavailableError
     _PTY_BRIDGE_AVAILABLE = True
@@ -271,7 +272,10 @@ def _ws_auth_reason(ws: "WebSocket") -> tuple[Optional[str], str]:
         # that don't bring in the dashboard_auth layer.
         from hermes_cli.dashboard_auth.audit import AuditEvent, audit_log
         from hermes_cli.dashboard_auth.ws_tickets import (
-            TicketInvalid, consume_internal_credential, consume_ticket)
+            TicketInvalid,
+            consume_internal_credential,
+            consume_ticket,
+        )
 
         def _reject(reason: str) -> None:
             audit_log(
@@ -398,10 +402,16 @@ def _resolve_chat_argv(
     passes as the explicit ``cwd`` of ``session.create`` when attached to the
     in-memory gateway, whose own cwd is the dashboard's launch dir).
     """
-    from hermes_cli.web_server_profiles import _config_profile_scope, _resolve_profile_dir
-    from hermes_cli.web_server_sessions import _open_session_db_for_profile, _session_latest_descendant
     from hermes_cli.main import PROJECT_ROOT
     from hermes_cli.main_tui_launch import _apply_tui_python_env, _make_tui_argv
+    from hermes_cli.web_server_profiles import (
+        _config_profile_scope,
+        _resolve_profile_dir,
+    )
+    from hermes_cli.web_server_sessions import (
+        _open_session_db_for_profile,
+        _session_latest_descendant,
+    )
 
     profile_dir: Optional[Path] = None
     requested = (profile or "").strip()
@@ -417,7 +427,10 @@ def _resolve_chat_argv(
         env["HERMES_HOME"] = str(profile_dir)
     try:
         from hermes_cli.config import (
-            apply_terminal_config_to_env, read_raw_config, terminal_config_owned_env_vars)
+            apply_terminal_config_to_env,
+            read_raw_config,
+            terminal_config_owned_env_vars,
+        )
 
         if profile_dir is not None:
             # Drop only the terminal keys the launch profile owns before applying

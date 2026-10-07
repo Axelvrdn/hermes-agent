@@ -28,11 +28,16 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from tests.e2e.core._pending_fixes import known_failure
 from tests.e2e.core._pm_dependencies import select_test_dependencies
-from tests.fakes.providers.catalog_fake import USAGE_IN, USAGE_OUT, CatalogFake, Recorded
+from tests.fakes.providers.catalog_fake import (
+    USAGE_IN,
+    USAGE_OUT,
+    CatalogFake,
+    Recorded,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 # Hard bound per child. A row that talks to its vendor host instead of the fake ends on its own:

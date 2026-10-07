@@ -15,7 +15,6 @@ from agent.transports.codex_event_projector import (
     _format_tool_args,
 )
 
-
 # --- Fixture: real `commandExecution` notification captured from codex 0.130.0
 COMMAND_EXEC_COMPLETED = {
     "method": "item/completed",
@@ -249,7 +248,11 @@ class TestWebSearchProjection:
     def test_web_search_is_recorded_under_the_live_card_id(self) -> None:
         # The live bubble and the stored history must share name + call id, or a
         # refreshed transcript drops the card and shows a raw JSON note instead.
-        from agent.codex_runtime import _codex_item_to_args, _codex_item_to_tool_name, _stable_call_id
+        from agent.codex_runtime import (
+            _codex_item_to_args,
+            _codex_item_to_tool_name,
+            _stable_call_id,
+        )
 
         item = {"type": "webSearch", "id": "ws-1", "query": "Hermes Agent docs"}
         result = CodexEventProjector().project({"method": "item/completed", "params": {"item": item}})

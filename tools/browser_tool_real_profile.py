@@ -12,12 +12,13 @@ import subprocess
 import sys
 import time
 from typing import Optional, Tuple
+
 from agent.proxy_bypass import loopback_request_kwargs
-from tools.browser_tool_origin import origin_module as _origin
 from tools import browser_tool_cloud as _cloud
 from tools import browser_tool_install as _install
 from tools import browser_tool_lightpanda_fallback as _lp
 from tools import browser_tool_session as _session
+from tools.browser_tool_origin import origin_module as _origin
 
 _RP = "browser.use_real_profile is on, but "
 
@@ -277,8 +278,12 @@ def _real_profile_cdp() -> tuple:
         return None, (_RP + "browser.engine is set to 'lightpanda', which cannot load a real Chromium profile. "
                       "Set browser.engine to 'auto' or 'chrome' to use real-profile browsing, or turn the toggle off.")
 
-    from hermes_cli.browser_connect import (chromium_executable, detect_default_chromium,
-                                            real_profile_copy_dir, snapshot_real_profile)
+    from hermes_cli.browser_connect import (
+        chromium_executable,
+        detect_default_chromium,
+        real_profile_copy_dir,
+        snapshot_real_profile,
+    )
 
     if not _bt._real_profile_cdp_lock.acquire(
         timeout=_bt._REAL_PROFILE_CDP_LOCK_TIMEOUT_S

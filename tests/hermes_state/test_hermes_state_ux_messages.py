@@ -4,12 +4,6 @@ import hermes_state
 from hermes_state import format_session_db_unavailable
 
 
-
-
-
-
-
-
 def test_db_unavailable_is_one_line_for_chat_surfaces_by_default():
     hermes_state._set_last_init_error("OperationalError: database is locked")
     try:

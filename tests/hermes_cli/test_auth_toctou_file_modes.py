@@ -24,7 +24,6 @@ import sys
 
 import pytest
 
-
 pytestmark = pytest.mark.platforms("posix")  # POSIX mode bits not enforced on Windows
 
 

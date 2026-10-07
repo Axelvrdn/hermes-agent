@@ -16,7 +16,6 @@ emitted when ``skill_manage`` is available — never its exact wording.
 
 from __future__ import annotations
 
-
 from agent.prompt_builder import SKILLS_GUIDANCE
 
 

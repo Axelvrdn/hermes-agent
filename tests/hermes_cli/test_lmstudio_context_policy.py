@@ -2,9 +2,7 @@ import json
 
 import pytest
 
-from hermes_cli import models
-from hermes_cli import models_local
-
+from hermes_cli import models, models_local
 
 MODEL = "publisher/model"
 BASE_URL = "http://127.0.0.1:1234/v1"

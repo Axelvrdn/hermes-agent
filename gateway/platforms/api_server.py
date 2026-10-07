@@ -13,9 +13,6 @@ import hashlib
 import hmac
 import itertools
 import json
-from contextlib import contextmanager, nullcontext, suppress
-from contextvars import ContextVar, copy_context
-from functools import wraps
 import logging
 import os
 import re
@@ -24,7 +21,10 @@ import sys
 import threading
 import time
 import uuid
+from contextlib import contextmanager, nullcontext, suppress
+from contextvars import ContextVar, copy_context
 from datetime import datetime, timezone
+from functools import wraps
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -133,34 +133,50 @@ except ImportError:
     AIOHTTP_AVAILABLE = False
     web = None  # type: ignore[assignment]
 
+from agent.i18n import t
+from agent.interrupt_compat import request_hard_interrupt
+from agent.redact import redact_sensitive_text
+from gateway.browser_control_artifacts import (
+    DEFAULT_ALLOWED_MIME_TYPES,
+    DEFAULT_ARTIFACT_TTL_SECONDS,
+    DEFAULT_MAX_ARTIFACT_BYTES,
+    ArtifactError,
+    ArtifactRateLimiter,
+    ArtifactStore,
+    ArtifactTooLarge,
+)
+from gateway.browser_control_broker import (
+    BROWSER_CONTROL_ARTIFACT_CAPABILITIES,
+    BROWSER_CONTROL_CAPABILITIES,
+    BROWSER_CONTROL_DEVELOPER_CAPABILITIES,
+    ControllerScope,
+    ControllerTicketInvalid,
+    browser_control_developer_mode,
+    browser_control_protocol_supported,
+    filter_browser_control_capabilities,
+    get_browser_control_broker,
+)
 from gateway.config import Platform, PlatformConfig
 from gateway.display_config import resolve_display_setting
 from gateway.platforms import api_server_room_dispatch as _room_dispatch
 from gateway.platforms import api_server_room_grants as _room_grants
 from gateway.platforms import api_server_runs as _api_runs
-from gateway.platforms.api_server_openai_routes import OpenAICompatRoutesMixin
-from gateway.platforms.api_server_memory_sessions import ApiServerMemorySessions
-from gateway.platforms.base import (
-    MEDIA_TAG_CLEANUP_RE, BasePlatformAdapter, SendResult, _terminal_sentinel_start, is_network_accessible,
-    validate_media_delivery_path)
-from gateway.platforms.api_server_run_idempotency import RunIdempotencyStore
-from agent.i18n import t
-from agent.redact import redact_sensitive_text
-from agent.interrupt_compat import request_hard_interrupt
-from gateway.readiness import collect_runtime_readiness
-from gateway.browser_control_artifacts import (
-    ArtifactError, ArtifactRateLimiter, ArtifactStore, ArtifactTooLarge, DEFAULT_ALLOWED_MIME_TYPES,
-    DEFAULT_MAX_ARTIFACT_BYTES, DEFAULT_ARTIFACT_TTL_SECONDS)
-from gateway.browser_control_broker import (
-    BROWSER_CONTROL_ARTIFACT_CAPABILITIES, BROWSER_CONTROL_CAPABILITIES, BROWSER_CONTROL_DEVELOPER_CAPABILITIES,
-    ControllerScope, ControllerTicketInvalid, browser_control_developer_mode,
-    browser_control_protocol_supported, filter_browser_control_capabilities, get_browser_control_broker)
-
 from gateway.platforms._shared import coerce_port as _coerce_port
 from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms.api_server_memory_sessions import ApiServerMemorySessions
+from gateway.platforms.api_server_openai_routes import OpenAICompatRoutesMixin
+from gateway.platforms.api_server_run_idempotency import RunIdempotencyStore
+from gateway.platforms.base import (
+    MEDIA_TAG_CLEANUP_RE,
+    BasePlatformAdapter,
+    SendResult,
+    _terminal_sentinel_start,
+    is_network_accessible,
+    validate_media_delivery_path,
+)
 from gateway.platforms.tcp_site import start_tcp_site
+from gateway.readiness import collect_runtime_readiness
 from hermes_state_errors import SessionActiveWriteGuardError
-
 
 logger = logging.getLogger(__name__)
 
@@ -299,7 +315,9 @@ def _clean_request_string(value: Any) -> Optional[str]:
 # model_options decoding lives in the topical sibling (line-cap offset);
 # re-exported here so importers are unaffected.
 from gateway.platforms.api_server_request_options import (  # noqa: E402
-    _request_reasoning_config, _request_service_tier)
+    _request_reasoning_config,
+    _request_service_tier,
+)
 
 
 def _apply_runtime_agent_overrides(
@@ -318,7 +336,11 @@ def _apply_runtime_agent_overrides(
 def _resolve_request_runtime_agent_kwargs(provider: str, target_model: Optional[str] = None) -> Dict[str, Any]:
     """gateway.run._resolve_runtime_agent_kwargs() for an explicit provider/model, so an API
     caller uses the same authenticated provider catalog without mutating config.yaml."""
-    from hermes_cli.runtime_provider import resolve_runtime_provider, format_runtime_provider_error, _get_model_config
+    from hermes_cli.runtime_provider import (
+        _get_model_config,
+        format_runtime_provider_error,
+        resolve_runtime_provider,
+    )
     try:
         runtime = resolve_runtime_provider(requested=provider, target_model=target_model)
     except Exception as exc:
@@ -378,7 +400,9 @@ def _project_client_message(message: Dict[str, Any]) -> Dict[str, Any]:
     """Strip compaction scaffolding: standalone handoffs become hidden empty rows (stable
     ids), merged handoffs keep only the real prior-tail content; inherited tool calls dropped."""
     from agent.compaction_display import (
-        _COMPACTION_INTERNAL_FIELDS, project_compaction_message_for_display)
+        _COMPACTION_INTERNAL_FIELDS,
+        project_compaction_message_for_display,
+    )
     if (message.get("display_kind") == "hidden"
             and (message.get("display_metadata") or {}).get("notification_category") == "diagnostic"):
         # Retain row identity and execution evidence in storage, not in the notification UI.
@@ -1059,13 +1083,17 @@ def _derive_chat_session_id(system_prompt: Optional[str], first_user_message: st
 
 _CRON_AVAILABLE = False
 try:
-    from cron.jobs import (
-        list_jobs as _cron_list, get_job as _cron_get, update_job as _cron_update,
-        remove_job as _cron_remove, pause_job as _cron_pause, resume_job as _cron_resume,
-        trigger_job as _cron_trigger)
+    from cron.jobs import get_job as _cron_get
+    from cron.jobs import list_jobs as _cron_list
+    from cron.jobs import pause_job as _cron_pause
+    from cron.jobs import remove_job as _cron_remove
+    from cron.jobs import resume_job as _cron_resume
+    from cron.jobs import trigger_job as _cron_trigger
+    from cron.jobs import update_job as _cron_update
     from cron.scheduler import (
         CronSchedulerRegistrationError as _CronSchedulerRegistrationError,
-        create_job_with_scheduler_registration as _cron_create)
+    )
+    from cron.scheduler import create_job_with_scheduler_registration as _cron_create
     _CRON_AVAILABLE = True
 except ImportError:
     _cron_list = _cron_get = _cron_create = _cron_update = None
@@ -2348,11 +2376,16 @@ class APIServerAdapter(OpenAICompatRoutesMixin, BasePlatformAdapter):
         ``gateway_session_key`` persists across transcripts (memory scope), unlike ``session_id``;
         ``route`` / ``session_model`` are mutually exclusive; ``confirmed_runtime_lock`` beats the
         session ``/model`` override, disables the fallback chain and fails closed."""
-        from run_agent import AIAgent
         from gateway.run import (
-            _checkpoint_agent_kwargs, _current_max_iterations, _resolve_runtime_agent_kwargs,
-            _resolve_gateway_model, _load_gateway_config, GatewayRunner)
+            GatewayRunner,
+            _checkpoint_agent_kwargs,
+            _current_max_iterations,
+            _load_gateway_config,
+            _resolve_gateway_model,
+            _resolve_runtime_agent_kwargs,
+        )
         from hermes_cli.tools_config import _get_platform_tools
+        from run_agent import AIAgent
         # RuntimeError is caught ONLY here (sole provider-auth raiser); the typed subclass keeps
         # run_conversation() errors distinct.
         try:
@@ -2430,8 +2463,12 @@ class APIServerAdapter(OpenAICompatRoutesMixin, BasePlatformAdapter):
     async def _handle_health_detailed(self, request: "web.Request") -> "web.Response":
         """GET /health/detailed — gateway state, platforms, PID for dashboard probing (Bearer auth)."""
         from gateway.status import (
-            derive_gateway_busy, derive_gateway_drainable, normalize_updated_at, parse_active_agents,
-            read_runtime_status)
+            derive_gateway_busy,
+            derive_gateway_drainable,
+            normalize_updated_at,
+            parse_active_agents,
+            read_runtime_status,
+        )
         runtime = read_runtime_status() or {}
         gw_state = runtime.get("gateway_state")
         gw_active = parse_active_agents(runtime.get("active_agents", 0))
@@ -2496,7 +2533,10 @@ class APIServerAdapter(OpenAICompatRoutesMixin, BasePlatformAdapter):
         include_unconfigured = _coerce_request_bool(
             request.query.get("include_unconfigured"), default=True)
         try:
-            from hermes_cli.inventory import build_model_options_payload, load_picker_context
+            from hermes_cli.inventory import (
+                build_model_options_payload,
+                load_picker_context,
+            )
 
             def _build_payload() -> Dict[str, Any]:
                 return build_model_options_payload(
@@ -2947,8 +2987,11 @@ class APIServerAdapter(OpenAICompatRoutesMixin, BasePlatformAdapter):
         try:
             from hermes_cli.config import load_config
             from hermes_cli.tools_config import (
-                _get_effective_configurable_toolsets, _get_platform_tools, _toolset_has_keys,
-                get_nous_subscription_features)
+                _get_effective_configurable_toolsets,
+                _get_platform_tools,
+                _toolset_has_keys,
+                get_nous_subscription_features,
+            )
             from toolsets import resolve_toolset
             config = load_config()
             enabled_toolsets = _get_platform_tools(config, "api_server", include_default_mcp_servers=False)
@@ -3470,7 +3513,10 @@ class APIServerAdapter(OpenAICompatRoutesMixin, BasePlatformAdapter):
         if db is None:
             return None
         home = Path(db.db_path).parent
-        from tools.bot_live_delivery import deliver_to_live_owner, find_canonical_live_owner
+        from tools.bot_live_delivery import (
+            deliver_to_live_owner,
+            find_canonical_live_owner,
+        )
 
         def _admit() -> Optional[Dict[str, Any]]:
             owner = find_canonical_live_owner(home)
@@ -4031,10 +4077,15 @@ class APIServerAdapter(OpenAICompatRoutesMixin, BasePlatformAdapter):
                         status=503,
                         headers={"Retry-After": str(60)},
                     )
-            from cron.scheduler_provider import provider_supports_split_fire, resolve_cron_scheduler
+            from cron.scheduler_provider import (
+                provider_supports_split_fire,
+                resolve_cron_scheduler,
+            )
             provider = resolve_cron_scheduler()
             loop = asyncio.get_running_loop()
-            from gateway.platforms.api_server_fire_startup import live_adapters_once_started
+            from gateway.platforms.api_server_fire_startup import (
+                live_adapters_once_started,
+            )
             refusal, adapters = await live_adapters_once_started(self, request, job_id, received_at=received_at)
             if refusal is not None:
                 return refusal

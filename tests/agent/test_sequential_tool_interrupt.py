@@ -19,9 +19,10 @@ import pytest
 import agent.tool_executor as tool_executor
 from agent.tool_executor import (
     _ManagedToolResult,
-    _ToolCancelledResult,
     _run_sequential_tool_execution_middleware,
+    _ToolCancelledResult,
 )
+
 
 class _FakeAgent:
     def __init__(self):

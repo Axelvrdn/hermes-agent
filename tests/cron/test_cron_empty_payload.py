@@ -19,6 +19,7 @@ from unittest.mock import patch
 
 import pytest
 
+
 @pytest.fixture
 def hermes_env(tmp_path, monkeypatch):
     """Isolate HERMES_HOME for each test so jobs/scripts don't leak."""
@@ -30,6 +31,7 @@ def hermes_env(tmp_path, monkeypatch):
     monkeypatch.setenv("HERMES_HOME", str(home))
 
     import importlib
+
     import hermes_constants
     importlib.reload(hermes_constants)
     import cron.jobs
@@ -360,6 +362,7 @@ DESTRUCTIVE_UPDATE_ARGS = {
 
 def _cronjob(**kwargs):
     import json as _json
+
     from tools.cronjob_tools import cronjob
 
     return _json.loads(cronjob(**kwargs))

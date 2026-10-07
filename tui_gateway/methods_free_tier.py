@@ -66,8 +66,7 @@ def _(rid, params: dict) -> dict:
     inside the mint memo's cooldown. ``{has_guest, enabled}``, plus
     ``{error, error_code, retryable, retry_after}`` when the portal refused."""
     try:
-        from hermes_cli import anon_auth
-        from hermes_cli import free_tier_bootstrap
+        from hermes_cli import anon_auth, free_tier_bootstrap
         enabled = anon_auth.guest_enabled()
         if enabled and not anon_auth.has_guest():
             if free_tier_bootstrap.current_record() is not None and not params.get("profile"):

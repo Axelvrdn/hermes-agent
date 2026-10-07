@@ -154,8 +154,8 @@ def test_warm_is_noop_for_cloud_provider_without_lazy_sdk(monkeypatch):
 def test_warm_sdk_uses_pm_availability_and_refuses_inactive_generation(tmp_path, monkeypatch, installed):
     import pm
     import pm.client
-    import pm.paths
     import pm.extras
+    import pm.paths
     from pm.environments import runtime_facts_path
 
     calls = []

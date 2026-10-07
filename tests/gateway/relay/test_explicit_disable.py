@@ -3,14 +3,14 @@
 Real profile files under a temp HERMES_HOME, the production startup hook and the
 standalone predicate. Only the connector HTTP calls are replaced.
 """
-from unittest.mock import Mock
 import json
 import os
+from unittest.mock import Mock
 
 import pytest
-import hermes_yaml as yaml
 
 import gateway.relay as relay
+import hermes_yaml as yaml
 from gateway.config import Platform, load_gateway_config
 from gateway.platform_registry import platform_registry
 from gateway.run_startup import GatewayStartupMixin

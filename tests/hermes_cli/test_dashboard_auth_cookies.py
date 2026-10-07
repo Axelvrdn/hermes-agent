@@ -298,6 +298,7 @@ def test_pkce_cookie_round_trip_preserves_all_segments():
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from conftest_dashboard_auth import StubAuthProvider  # type: ignore
+
     from hermes_cli import web_server
     from hermes_cli.dashboard_auth import clear_providers, register_provider
     from hermes_cli.dashboard_auth.cookies import parse_pkce_payload
@@ -372,10 +373,12 @@ def test_pkce_callback_works_when_next_query_includes_encoded_path():
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from urllib.parse import quote, unquote
+
     from conftest_dashboard_auth import StubAuthProvider  # type: ignore
+
     from hermes_cli import web_server
     from hermes_cli.dashboard_auth import clear_providers, register_provider
-    from urllib.parse import quote, unquote
 
     clear_providers()
     register_provider(StubAuthProvider())

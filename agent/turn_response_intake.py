@@ -6,16 +6,19 @@ continuation guards. Nothing here imports ``agent.conversation_loop`` at module 
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import logging
 import re
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from agent.provider_projection import splice_provider_projection
 from agent.trajectory import has_incomplete_scratchpad
 from agent.turn_truncation import (
-    CODEX_FALLBACK_ACTIVATED, continue_codex_incomplete, normalize_response_for_agent, partial_result,
+    CODEX_FALLBACK_ACTIVATED,
+    continue_codex_incomplete,
+    normalize_response_for_agent,
+    partial_result,
 )
 
 logger = logging.getLogger("agent.conversation_loop")
@@ -63,7 +66,8 @@ def _fire_post_api_request_hook(
     from agent.conversation_loop import _moa_reference_metrics_for_hook
 
     try:
-        from hermes_cli.lifecycle import has_hook, invoke_hook as _invoke_hook
+        from hermes_cli.lifecycle import has_hook
+        from hermes_cli.lifecycle import invoke_hook as _invoke_hook
         if has_hook("post_api_request"):
             _invoke_hook(
                 "post_api_request",

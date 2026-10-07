@@ -15,6 +15,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+
 def _make_agent(**kwargs):
     """Create a minimal AIAgent for streaming tests."""
     from run_agent import AIAgent
@@ -180,8 +181,9 @@ class TestStreamInterruptBeforeRetry:
         connection, but the old iterator still yields one more chunk before
         surfacing the connection error that triggers the retry.
         """
-        import httpx
         import time
+
+        import httpx
 
         from tests.agent.test_streaming import (
             _make_stream_chunk,

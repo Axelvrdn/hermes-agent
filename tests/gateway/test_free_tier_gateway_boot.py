@@ -8,9 +8,10 @@ first DM cannot arrive with nothing to resolve.
 
 import pytest
 
+import gateway.run_startup as run_startup
 from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.run import GatewayRunner
-import gateway.run_startup as run_startup
+
 
 @pytest.mark.asyncio
 async def test_gateway_boot_runs_the_free_tier_bootstrap_before_any_adapter_connects(monkeypatch, tmp_path):

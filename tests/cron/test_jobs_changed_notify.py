@@ -22,8 +22,8 @@ def temp_home(tmp_path, monkeypatch):
 def test_notify_helper_calls_provider_on_jobs_changed(monkeypatch):
     """cron.scheduler._notify_provider_jobs_changed resolves the provider and
     calls on_jobs_changed exactly once."""
-    import cron.scheduler_provider as sp
     import cron.scheduler as sched
+    import cron.scheduler_provider as sp
 
     calls = []
 
@@ -49,8 +49,8 @@ def test_create_registers_first_trigger_with_active_provider(
     temp_home, monkeypatch, make_cron_provider
 ):
     """A successful create is not reported until the provider sees the job."""
-    import cron.scheduler_provider as sp
     import cron.scheduler as sched
+    import cron.scheduler_provider as sp
 
     registered = []
     provider = make_cron_provider(register_job=registered.append)
@@ -70,8 +70,8 @@ def test_create_failure_preserves_job_and_hides_provider_details(
 ):
     """Registration failure is explicit without losing the durable local job."""
     import cron.jobs as jobs
-    import cron.scheduler_provider as sp
     import cron.scheduler as sched
+    import cron.scheduler_provider as sp
 
     provider = make_cron_provider(register_job=_fail_registration, name="failing")
     monkeypatch.setattr(sp, "resolve_cron_scheduler", lambda: provider)
@@ -101,8 +101,9 @@ def test_tool_create_registers_provider_before_reporting_success(
     provider = make_cron_provider(register_job=registered.append, name="recording")
     monkeypatch.setattr(sp, "resolve_cron_scheduler", lambda: provider)
 
-    from tools.cronjob_tools import cronjob
     import json
+
+    from tools.cronjob_tools import cronjob
 
     out = json.loads(
         cronjob(action="create", prompt="echo hi", schedule="every 5m", name="w")
@@ -121,8 +122,9 @@ def test_tool_create_reports_partial_registration_failure(
     provider = make_cron_provider(register_job=_fail_registration, name="failing")
     monkeypatch.setattr(sp, "resolve_cron_scheduler", lambda: provider)
 
-    from tools.cronjob_tools import cronjob
     import json
+
+    from tools.cronjob_tools import cronjob
 
     out = json.loads(cronjob(action="create", prompt="echo hi", schedule="every 5m", name="w"))
     assert out["success"] is False

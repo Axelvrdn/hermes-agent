@@ -44,7 +44,11 @@ def is_env_setting_key(key: str) -> bool:
 def _drop_config_yaml_copies(key: str) -> bool:
     """Remove same-named top-level ``config.yaml`` copies (as typed and upper-cased) so the ``.env``
     value is the only one the gateway bridge and CLI readers can disagree about."""
-    from hermes_cli.config import _write_user_config, get_config_path, require_readable_config_before_write
+    from hermes_cli.config import (
+        _write_user_config,
+        get_config_path,
+        require_readable_config_before_write,
+    )
 
     config_path = get_config_path()
     user_config = require_readable_config_before_write(config_path)

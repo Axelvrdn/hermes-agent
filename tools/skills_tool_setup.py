@@ -96,7 +96,9 @@ def _capture_required_environment_variables(
     # tools/approval.py uses) and register a callback routing to a secure secret.request overlay.
     if _is_gateway_surface() and not env_var_enabled("HERMES_INTERACTIVE"):
         try:
-            from gateway.platforms.base import GATEWAY_SECRET_CAPTURE_UNSUPPORTED_MESSAGE as hint
+            from gateway.platforms.base import (
+                GATEWAY_SECRET_CAPTURE_UNSUPPORTED_MESSAGE as hint,
+            )
         except Exception:
             hint = (f"Secure secret entry is not available. Load this skill in the local CLI to be "
                     f"prompted, or add the key to {display_hermes_home()}/.env manually.")

@@ -22,13 +22,13 @@ import pytest
 
 from gateway.run import (
     _HYGIENE_COOLDOWN_LADDER_MULTIPLIERS,
+    GatewayRunner,
     _hygiene_cooldown_for_failure,
     _record_hygiene_cooldown,
     _reset_hygiene_failure_streak,
     hygiene_compaction_recovered,
     hygiene_wait_should_extend,
 )
-from gateway.run import GatewayRunner
 from gateway.session_state import SessionState
 
 

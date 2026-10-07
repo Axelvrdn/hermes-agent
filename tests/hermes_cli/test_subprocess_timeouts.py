@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 
-
 # Parameterise over every CLI module that calls subprocess.run
 _CLI_MODULES = [
     "hermes_cli/doctor.py",

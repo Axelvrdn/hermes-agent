@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
-from pathlib import Path
 import sys
+from pathlib import Path
 from types import ModuleType
 from typing import Any
 

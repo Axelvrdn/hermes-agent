@@ -15,9 +15,9 @@ sibling sites fixed in the same sweep:
 - Codex/Responses transport: ultra → max for EVERY model, not just gpt-5.6.
 """
 
-from agent.transports import get_transport
 import agent.transports.chat_completions  # noqa: F401
 import agent.transports.codex  # noqa: F401
+from agent.transports import get_transport
 
 
 def _cc():

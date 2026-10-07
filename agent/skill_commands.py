@@ -11,7 +11,8 @@ from typing import Any, Dict, Mapping, Optional
 from hermes_constants import display_hermes_home
 from agent.initiate_setup_prompt import HEADER as INITIATE_SETUP_HEADER
 from agent.prompt_cache_boundary import register_stable_prefix
-from agent.skill_preprocessing import load_skills_config as _load_skills_config, preprocess_skill_content
+from agent.skill_preprocessing import load_skills_config as _load_skills_config
+from agent.skill_preprocessing import preprocess_skill_content
 from agent.skill_utils import AMBIGUOUS_SKILL_PREFIX
 
 logger = logging.getLogger(__name__)
@@ -230,8 +231,8 @@ def _load_skill_payload(skill_identifier: str, task_id: str | None = None) -> tu
     if not raw_identifier:
         return None
     try:
-        from tools.skills_tool import _skills_dir, skill_view
         from agent.skill_utils import normalize_skill_lookup_name
+        from tools.skills_tool import _skills_dir, skill_view
         normalized = normalize_skill_lookup_name(raw_identifier)
         loaded_skill = json.loads(skill_view(normalized, task_id=task_id, preprocess=False))
     except Exception:
@@ -262,8 +263,8 @@ def ambiguous_skill_label(identifier: str, payload: dict) -> Optional[str]:
 def _missing_skill_label(identifier: str) -> str:
     """Display form of an identifier that failed to load (failure path only: re-asks skill_view)."""
     try:
-        from tools.skills_tool import skill_view
         from agent.skill_utils import normalize_skill_lookup_name
+        from tools.skills_tool import skill_view
         payload = json.loads(skill_view(normalize_skill_lookup_name(identifier), preprocess=False))
     except Exception:
         return identifier
@@ -282,7 +283,11 @@ def _inject_skill_config(loaded_skill: dict[str, Any], parts: list[str]) -> None
     """Append a ``[Skill config: ...]`` block with resolved ``metadata.hermes.config``
     values so the agent needn't read config.yaml. Any failure leaves the message without it."""
     try:
-        from agent.skill_utils import extract_skill_config_vars, parse_frontmatter, resolve_skill_config_values
+        from agent.skill_utils import (
+            extract_skill_config_vars,
+            parse_frontmatter,
+            resolve_skill_config_values,
+        )
         raw_content = str(loaded_skill.get("raw_content") or loaded_skill.get("content") or "")
         frontmatter, _ = parse_frontmatter(raw_content)
         resolved = resolve_skill_config_values(extract_skill_config_vars(frontmatter))
@@ -443,7 +448,12 @@ def skill_command_collision_note(name: str) -> Optional[str]:
 
 def _scan_skill_md(skill_md: Path, disabled: set, seen_names: set, commands: Dict[str, Dict[str, Any]]) -> None:
     """Register one SKILL.md in *commands* (no-op when filtered or colliding)."""
-    from tools.skills_tool import _parse_frontmatter, skill_matches_apps, skill_matches_platform, skill_matches_environment
+    from tools.skills_tool import (
+        _parse_frontmatter,
+        skill_matches_apps,
+        skill_matches_environment,
+        skill_matches_platform,
+    )
     if any(part in _SCAN_SKIP_PARTS for part in skill_md.parts):
         return
     frontmatter, body = _parse_frontmatter(skill_md.read_text(encoding='utf-8-sig'))
@@ -586,7 +596,9 @@ def _scan_plugin_skill_commands(manager, metadata: list, tag: tuple) -> Dict[str
     """Build the plugin skill projection and publish it with its tag atomically."""
     global _plugin_skill_commands, _plugin_skill_commands_tag
     from tools.skills_tool import (
-        _parse_frontmatter, skill_matches_apps, skill_matches_environment,
+        _parse_frontmatter,
+        skill_matches_apps,
+        skill_matches_environment,
         skill_matches_platform,
     )
 

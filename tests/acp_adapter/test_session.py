@@ -5,8 +5,9 @@ import io
 import json
 import re
 from types import SimpleNamespace
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from acp_adapter import session as acp_session
 from acp_adapter.session import SessionManager, SessionState

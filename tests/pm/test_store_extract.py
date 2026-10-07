@@ -67,6 +67,7 @@ def test_git_unpack_executes_a_scratch_copy_never_the_cached_bytes(tmp_path, mon
     staging tree, never from the cached fetch-<sha> entry."""
     import subprocess
     from pathlib import Path
+
     import pm.packages
     from pm.packages import Git
 
@@ -100,6 +101,7 @@ def test_git_unpack_names_the_extractor_exit_code(tmp_path, monkeypatch):
 
 def test_git_unpack_timeout_is_a_package_error(tmp_path, monkeypatch):
     import subprocess
+
     import pm.packages
     from pm.package import InstallError
     from pm.packages import Git

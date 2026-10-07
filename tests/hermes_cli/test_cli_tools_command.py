@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from cli import HermesCLI
 
+
 def _make_cli(enabled_toolsets=None):
     """Build a minimal HermesCLI stub without running __init__."""
     cli_obj = HermesCLI.__new__(HermesCLI)

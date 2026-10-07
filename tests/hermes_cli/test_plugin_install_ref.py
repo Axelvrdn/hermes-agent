@@ -8,13 +8,14 @@ from pathlib import Path
 
 import pytest
 
+import hermes_yaml as yaml
+from hermes_cli.subcommands.plugins import build_plugins_parser
 from tests.hermes_cli.plugin_worker_support import (
     isolated_python as isolated_python,
+)
+from tests.hermes_cli.plugin_worker_support import (
     plugin_world as plugin_world,
 )
-import hermes_yaml as yaml
-
-from hermes_cli.subcommands.plugins import build_plugins_parser
 
 
 @pytest.fixture(autouse=True)
@@ -429,7 +430,7 @@ def test_checkout_mismatch_is_rejected(monkeypatch, tmp_path):
 
 
 def test_metadata_write_failure_rolls_back_new_install(monkeypatch, tmp_path, isolated_python):
-    from hermes_cli.plugins_cmd import _install_plugin_core, PluginOperationError
+    from hermes_cli.plugins_cmd import PluginOperationError, _install_plugin_core
     from pm import client
     from tests.pm._fixtures import worker_toolchain
 

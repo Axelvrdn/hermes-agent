@@ -16,19 +16,29 @@ import time
 from collections.abc import Mapping
 from pathlib import Path
 
+from hermes_cli._subprocess_compat import windows_hide_flags
 from hermes_constants import get_process_hermes_home
 from tools.environments.base import BaseEnvironment
 from tools.environments.base_output import _pipe_stdin
-from hermes_cli._subprocess_compat import windows_hide_flags
 from tools.environments.local_env_policy import (  # noqa: F401 — _HERMES_PROVIDER_ENV_BLOCKLIST stays importable from here
-    _ALWAYS_STRIP_FOLDED, _ALWAYS_STRIP_KEYS, _HERMES_PROVIDER_ENV_BLOCKLIST, _HERMES_PROVIDER_ENV_FORCE_PREFIX,
-    _is_hermes_internal_secret, _is_provider_env_blocklisted, _is_terminal_first_party_env,
-    _home_adapter_secret_env, _matches_terminal_first_party_prefix, _plugin_terminal_env_strip_keys,
-    _registered_adapter_secret_env, _registry_adapter_secret_env,
-    strip_profile_gate_env)
+    _ALWAYS_STRIP_FOLDED,
+    _ALWAYS_STRIP_KEYS,
+    _HERMES_PROVIDER_ENV_BLOCKLIST,
+    _HERMES_PROVIDER_ENV_FORCE_PREFIX,
+    _home_adapter_secret_env,
+    _is_hermes_internal_secret,
+    _is_provider_env_blocklisted,
+    _is_terminal_first_party_env,
+    _matches_terminal_first_party_prefix,
+    _plugin_terminal_env_strip_keys,
+    _registered_adapter_secret_env,
+    _registry_adapter_secret_env,
+    strip_profile_gate_env,
+)
 from tools.environments.local_pythonpath import (
-    _build_hermes_repo_root_aliases, _strip_hermes_owned_pythonpath_and_runtime_markers)
-
+    _build_hermes_repo_root_aliases,
+    _strip_hermes_owned_pythonpath_and_runtime_markers,
+)
 
 _IS_WINDOWS = platform.system() == "Windows"
 
@@ -403,7 +413,11 @@ def served_profile_child_env(
     ``get_secret``. ``target_home`` defaults to the active override; ``base`` replaces the
     ``hermes_subprocess_env`` snapshot."""
     from agent.secret_scope import (
-        UnscopedSecretError, build_profile_secret_scope, current_secret_scope, is_multiplex_active)
+        UnscopedSecretError,
+        build_profile_secret_scope,
+        current_secret_scope,
+        is_multiplex_active,
+    )
     from hermes_constants import apply_scratch_tmp_env, get_hermes_home_override
     env = dict(base) if base is not None else hermes_subprocess_env(inherit_credentials=inherit_credentials)
     target = str(target_home or get_hermes_home_override() or "")
@@ -466,12 +480,16 @@ def strip_launch_profile_env(env: dict, target_home: "str | Path | None" = None)
     gateway-wide multiplex flag on": the Desktop/dashboard backend serves ``?profile=B`` by
     installing a HERMES_HOME override without that flag."""
     from agent.secret_scope import _is_global_env, load_env_file
-    from hermes_constants import get_hermes_home_override, get_routing_process_hermes_home
+    from hermes_constants import (
+        get_hermes_home_override,
+        get_routing_process_hermes_home,
+    )
     target = target_home or get_hermes_home_override()
     if not target or not _is_routed_home(target):
         return env
     launch_home = get_routing_process_hermes_home()
     from hermes_cli.config import TERMINAL_CONFIG_ENV_MAP
+
     # Folded strip: on Windows the env block is case-insensitive, so residue
     # stored under a variant casing is the same variable and must go too. The
     # selection folds the same way so a lowercase ``path`` in .env is still
@@ -484,7 +502,11 @@ def strip_launch_profile_env(env: dict, target_home: "str | Path | None" = None)
     # overlay puts back exactly the ones the target's own sources supply. The administrator-managed
     # .env is NOT residue: its values are policy for every profile (``_apply_managed_env`` applies
     # it last, with override, so it beats the user's own .env) — leave them in place.
-    from hermes_cli.env_loader import launch_dotenv_keys, managed_dotenv_keys, source_supplied_names
+    from hermes_cli.env_loader import (
+        launch_dotenv_keys,
+        managed_dotenv_keys,
+        source_supplied_names,
+    )
     managed_names = {key.upper() for key in managed_dotenv_keys()}
     residue_names = {
         key.upper() for key in

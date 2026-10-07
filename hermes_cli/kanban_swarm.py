@@ -15,10 +15,10 @@ notifier, slash command and dispatcher keep working without a new service.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
 import json
 import sqlite3
 import time
+from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable, Optional
 
 from hermes_cli import kanban_db as kb

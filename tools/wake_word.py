@@ -10,7 +10,6 @@ idle (two input streams on one device is unreliable cross-platform).
 
 from __future__ import annotations
 
-from pm import install_hint
 import logging
 import os
 import queue
@@ -21,6 +20,8 @@ from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
+
+from pm import install_hint
 
 # The engine classes are re-exported on purpose: _build_engine resolves the
 # _PROVIDERS names on THIS module so a test (or plugin) can swap one engine.
@@ -302,7 +303,11 @@ def _stt_ready() -> bool:
     """Is a speech-to-text provider configured and enabled? (A wake without STT arms the
     mic but every utterance dies at transcription — same bar as ``check_voice_requirements``.)"""
     with suppress(Exception):
-        from tools.transcription_tools import _get_provider, _load_stt_config, is_stt_enabled
+        from tools.transcription_tools import (
+            _get_provider,
+            _load_stt_config,
+            is_stt_enabled,
+        )
         stt_config = _load_stt_config()
         return is_stt_enabled(stt_config) and _get_provider(stt_config) != "none"
     return False
@@ -322,7 +327,11 @@ def _tts_ready() -> bool:
     use" counts as ready and we never touch pip from here.
     """
     try:
-        from tools.tts_tool import _get_provider, _load_tts_config, check_tts_requirements
+        from tools.tts_tool import (
+            _get_provider,
+            _load_tts_config,
+            check_tts_requirements,
+        )
         provider = _get_provider(_load_tts_config())
     except Exception:
         return False
@@ -357,8 +366,8 @@ def check_wake_word_requirements(cfg: Optional[Dict[str, Any]] = None, *,
     """Report whether wake-word detection can run, with a remediation hint."""
     cfg = cfg if cfg is not None else load_wake_word_config()
     import pm
-    from pm.install import lazy_installs_allowed
     from pm.extras import extra_supported
+    from pm.install import lazy_installs_allowed
 
     supported = supported or extra_supported
     provider = _provider(cfg, supported=supported)

@@ -1,14 +1,14 @@
 """Resolve promoted source releases, never infer publication from a Git tag."""
 from __future__ import annotations
 
-from dataclasses import dataclass
-from html.parser import HTMLParser
 import json
 import logging
 import re
 import subprocess
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
+from html.parser import HTMLParser
 
 from hermes_cli.update_channel import STABLE_TAG_RE, is_canary_tag
 
@@ -112,8 +112,8 @@ def resolve_source_target(channel: str, git_cmd=None, cwd=None, *, repository=No
 
 def _refuse_retirement_downgrade(request: dict, terminal: dict, git_cmd, cwd) -> None:
     """Qualification of preview data is not permission to roll back newer source."""
-    from pathlib import Path
     import tomllib
+    from pathlib import Path
 
     if cwd is None:
         return

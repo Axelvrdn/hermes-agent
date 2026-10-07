@@ -12,7 +12,6 @@ from unittest.mock import patch
 from agent.context_compressor import ContextCompressor, resolve_model_threshold
 from agent.context_engine import ContextEngine
 
-
 # ---------------------------------------------------------------------------
 # resolve_model_threshold helper
 # ---------------------------------------------------------------------------

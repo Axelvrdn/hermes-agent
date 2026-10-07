@@ -5,12 +5,15 @@ from __future__ import annotations
 import logging
 from typing import List, Set
 
-from hermes_cli.cli_output import (
-    print_error as _print_error, print_info as _print_info, print_success as _print_success,
-    print_warning as _print_warning)
+from hermes_cli.cli_output import print_error as _print_error
+from hermes_cli.cli_output import print_info as _print_info
+from hermes_cli.cli_output import print_success as _print_success
+from hermes_cli.cli_output import print_warning as _print_warning
 from hermes_cli.colors import Colors, color
+from hermes_cli.toolset_scope import _TOOLSET_PLATFORM_RESTRICTIONS
 from hermes_cli.toolset_scope import (
-    _TOOLSET_PLATFORM_RESTRICTIONS, toolset_allowed_for_platform as _toolset_allowed_for_platform)
+    toolset_allowed_for_platform as _toolset_allowed_for_platform,
+)
 
 
 def _mcp_match_filter():
@@ -187,7 +190,10 @@ def _apply_mcp_change(config: dict, targets: List[str], action: str) -> Set[str]
 
 def _print_tools_list(enabled_toolsets: set, mcp_servers: dict, platform: str = "cli"):
     """Print a summary of enabled/disabled toolsets and MCP tool filters."""
-    from hermes_cli.tools_config import CONFIGURABLE_TOOLSETS, _get_effective_configurable_toolsets
+    from hermes_cli.tools_config import (
+        CONFIGURABLE_TOOLSETS,
+        _get_effective_configurable_toolsets,
+    )
 
     effective_all = _get_effective_configurable_toolsets()
     effective = [(k, l, d) for (k, l, d) in effective_all if _toolset_allowed_for_platform(k, platform)]
@@ -229,8 +235,8 @@ def _known_tool_platforms() -> set[str]:
 
     known = set(PLATFORMS)
     try:
-        from hermes_cli.plugins import discover_plugins
         from gateway.platform_registry import platform_registry
+        from hermes_cli.plugins import discover_plugins
         discover_plugins()  # idempotent
         known.update(platform_registry.registered_names())
     except Exception as _exc:
@@ -241,7 +247,13 @@ def _known_tool_platforms() -> set[str]:
 
 def tools_disable_enable_command(args):
     """Enable, disable, or list tools for a platform."""
-    from hermes_cli.tools_config import CONFIGURABLE_TOOLSETS, _get_platform_tools, _get_plugin_toolset_keys, load_config, save_config
+    from hermes_cli.tools_config import (
+        CONFIGURABLE_TOOLSETS,
+        _get_platform_tools,
+        _get_plugin_toolset_keys,
+        load_config,
+        save_config,
+    )
 
     action = args.tools_action
     platform = getattr(args, "platform", "cli")

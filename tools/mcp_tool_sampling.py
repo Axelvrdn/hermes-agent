@@ -8,12 +8,17 @@ import logging
 import time
 from contextvars import Context
 from typing import TYPE_CHECKING, Callable, List, Optional
-from utils import is_truthy_value
-from tools.mcp_tool_common import _MISSING, _exc_str, _safe_numeric, _sanitize_error, mcp_field, _core
-from tools.mcp_tool_schema import _normalize_mcp_input_schema
 
-if TYPE_CHECKING:  # annotations only; mcp_tool imports this module, so a real import is circular
-    pass
+from tools.mcp_tool_common import (
+    _MISSING,
+    _core,
+    _exc_str,
+    _safe_numeric,
+    _sanitize_error,
+    mcp_field,
+)
+from tools.mcp_tool_schema import _normalize_mcp_input_schema
+from utils import is_truthy_value
 
 logger = logging.getLogger("tools.mcp_tool")
 

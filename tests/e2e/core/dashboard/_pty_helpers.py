@@ -17,8 +17,8 @@ path can. Cleanup of what it records goes through ``_reaper`` like every other s
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import re
 import threading
 import time

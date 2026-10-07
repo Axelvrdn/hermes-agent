@@ -15,8 +15,6 @@ import json
 import pytest
 
 
-
-
 class TestNormalizeVoiceRecordKeyForPromptToolkit:
     """Round-9 Copilot review regression on #19835.
 

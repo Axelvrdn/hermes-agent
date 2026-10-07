@@ -119,6 +119,7 @@ def test_reap_passes_child_pid_exclude_to_scan():
 # ---------------------------------------------------------------------------
 
 import json
+
 from hermes_cli.dashboard_procs import (
     _lock_owned_serve_pids,
     _valid_lockfile_payload,

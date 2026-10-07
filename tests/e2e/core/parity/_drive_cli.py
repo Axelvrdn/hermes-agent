@@ -20,7 +20,12 @@ from __future__ import annotations
 
 import subprocess
 
-from tests.e2e.core.parity._helpers import TURN_TIMEOUT, DriveResult, ParityHome, hermes_argv
+from tests.e2e.core.parity._helpers import (
+    TURN_TIMEOUT,
+    DriveResult,
+    ParityHome,
+    hermes_argv,
+)
 from tests.fakes.fake_llm_provider import FakeLLMServer
 
 

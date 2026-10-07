@@ -16,9 +16,12 @@ sys.modules.setdefault("fal_client", types.SimpleNamespace())
 
 import httpx
 import openai
-
-from agent.sdk_transform_bypass import ESCAPE_HATCH_ENV, bypass_chat_sdk_request_transform
 from openai.resources.chat import completions as _sdk_completions
+
+from agent.sdk_transform_bypass import (
+    ESCAPE_HATCH_ENV,
+    bypass_chat_sdk_request_transform,
+)
 
 _SSE = (
     b'data: {"id":"1","object":"chat.completion.chunk","created":1,"model":"m",'

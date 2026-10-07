@@ -11,6 +11,7 @@ from __future__ import annotations
 from hermes_cli import kanban_db_dispatch as dispatch
 from hermes_cli.kanban_db import Task
 
+
 def _task(**overrides) -> Task:
     base = dict(
         id="t_goal1", title="ship it", body="acceptance: tests pass", assignee="worker",

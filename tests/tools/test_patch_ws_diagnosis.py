@@ -8,8 +8,6 @@ from tools.fuzzy_match import (
 )
 
 
-
-
 class TestWhitespaceDiagnosis:
     def test_whitespace_shaped_miss_shows_both_lines(self):
         # File uses tabs; the model sends 4 spaces AND a wrong second line so

@@ -12,12 +12,12 @@ import os
 from unittest.mock import patch
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.personality import (
     BUILTIN_PERSONALITIES,
-    available_personalities,
     active_personality_name,
+    available_personalities,
     normalize_personality_name,
     persist_personality,
     prompt_text,

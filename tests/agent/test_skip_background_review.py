@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from run_agent import AIAgent
 from agent.turn_finalizer import finalize_turn
+from run_agent import AIAgent
 
 
 def _make_agent(skip_background_review: bool = False) -> AIAgent:

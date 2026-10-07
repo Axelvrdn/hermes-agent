@@ -41,8 +41,12 @@ class ApiServerMemorySessions:
 
     def _bounds(self) -> Tuple[int, float]:
         if self._max_size is None or self._idle_ttl_secs is None:
-            from gateway.run import _AGENT_CACHE_IDLE_TTL_SECS, _AGENT_CACHE_MAX_SIZE, _load_gateway_config
             from gateway.agent_cache_pressure import resolve_agent_cache_bounds
+            from gateway.run import (
+                _AGENT_CACHE_IDLE_TTL_SECS,
+                _AGENT_CACHE_MAX_SIZE,
+                _load_gateway_config,
+            )
             configured = None
             with suppress(Exception):
                 configured = resolve_agent_cache_bounds(_load_gateway_config())

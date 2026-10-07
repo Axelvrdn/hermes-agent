@@ -21,8 +21,8 @@ import shutil
 import signal
 import subprocess
 import threading
-from pathlib import Path
 import time
+from pathlib import Path
 from typing import Callable, Optional
 
 from hermes_constants import hermes_home_key

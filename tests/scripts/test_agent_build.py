@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
+
 from tests.pm._fixtures import stage_host_python
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -165,6 +166,7 @@ def test_fixed_root_keeps_privilege_shim_and_resolves_venv_command_symlink(tmp_p
 @pytest.mark.platforms("posix")
 def test_source_metadata_keeps_declared_requirements_extras_and_entrypoints(tmp_path):
     from importlib.metadata import distributions
+
     from packaging.requirements import Requirement
 
     out, data = inputs_fixture(tmp_path)
@@ -290,9 +292,9 @@ def test_payload_smoke_uses_relocated_manifest_commands(tmp_path):
 
 @pytest.mark.platforms("posix")
 def test_stage_passes_explicit_products_to_the_single_assembler(tmp_path, monkeypatch):
-    from scripts.bundles import stage
     from scripts.build.agent import assemble
     from scripts.build.inputs import AgentInputs
+    from scripts.bundles import stage
 
     out, data = inputs_fixture(tmp_path)
     calls = []

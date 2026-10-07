@@ -23,20 +23,6 @@ from agent.context_compressor import (
 )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def test_replaced_prefixes_are_frozen_for_renormalization():
     """Every retired SUMMARY_PREFIX must be frozen into
     _HISTORICAL_SUMMARY_PREFIXES, otherwise summaries persisted by older

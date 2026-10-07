@@ -31,7 +31,7 @@ class TestAnthropicPoolExhaustedFallsBackToEnv:
             "agent.anthropic_adapter.build_anthropic_client"
         ) as mock_build:
             mock_build.return_value = MagicMock()
-            from agent.auxiliary_client import _try_anthropic, AnthropicAuxiliaryClient
+            from agent.auxiliary_client import AnthropicAuxiliaryClient, _try_anthropic
 
             client, model = _try_anthropic()
 

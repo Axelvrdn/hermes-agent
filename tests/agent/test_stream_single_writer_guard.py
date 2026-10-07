@@ -16,8 +16,6 @@ import run_agent
 from agent.stream_single_writer import claim_stream_writer, stream_writer_is_current
 
 
-
-
 class _RaisingFenceAgent:
     """An agent whose fence methods exist but blow up when called."""
 

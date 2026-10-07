@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import datetime, timezone
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Callable, Optional
 
 from hermes_constants import get_hermes_home
@@ -130,7 +130,11 @@ def read_nous_access_token() -> Optional[str]:
 
 
 def _replace_dead_guest_token(dead_state: dict, code: str = "anon_credential_dead") -> Optional[str]:
-    from hermes_cli.anon_auth import ANON_ACCOUNT_LOCKED, clear_dead_guest, ensure_portal_identity
+    from hermes_cli.anon_auth import (
+        ANON_ACCOUNT_LOCKED,
+        clear_dead_guest,
+        ensure_portal_identity,
+    )
     from hermes_cli.auth import resolve_nous_access_token
 
     clear_dead_guest(code, dead_token=dead_state.get("anon_token"))

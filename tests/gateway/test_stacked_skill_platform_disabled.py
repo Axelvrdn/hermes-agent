@@ -109,8 +109,8 @@ async def test_stacked_second_skill_disabled_for_platform_is_blocked(monkeypatch
     """The whole stacked invocation is rejected when a NON-leading stacked
     skill is disabled for the message's platform — it must not silently load
     that skill's content just because only the first skill was checked."""
-    import gateway.run as gateway_run
     import agent.skill_utils as skill_utils_mod
+    import gateway.run as gateway_run
 
     _make_skill(skills_env, "allowed-skill")
     _make_skill(skills_env, "disabled-skill")

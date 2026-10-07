@@ -15,6 +15,7 @@ from hermes_cli.update_contract import COMMIT_BUILD_UPDATE_MESSAGE
 @pytest.mark.platforms("posix")
 def test_validator_child_decodes_utf8_and_preserves_strict_errors(tmp_path, monkeypatch):
     import os
+
     from scripts.termux.validate_installed import run
 
     # Force a non-UTF-8 locale fallback without pretending to be a different OS.

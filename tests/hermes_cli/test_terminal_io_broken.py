@@ -11,7 +11,6 @@ import errno
 from unittest.mock import MagicMock
 
 
-
 def _make_cli_stub():
     from cli import HermesCLI
 

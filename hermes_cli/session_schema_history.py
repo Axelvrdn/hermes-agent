@@ -29,7 +29,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Iterator, Optional, Sequence
 
-
 Edit = tuple  # ("+", column, previous_column_or_None) | ("-", column)
 
 

@@ -28,7 +28,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, Sequence
 
-from hermes_constants import display_hermes_home, get_default_hermes_root, get_hermes_home
+from hermes_constants import (
+    display_hermes_home,
+    get_default_hermes_root,
+    get_hermes_home,
+)
 
 # Known log files (name → filename)
 LOG_FILES = {

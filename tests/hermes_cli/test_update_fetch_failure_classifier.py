@@ -9,7 +9,6 @@ stderr line must always be printed alongside the diagnosis.
 
 from hermes_cli import update_cmd
 
-
 RATE_LIMIT_STDERR = (
     "error: RPC failed; HTTP 429 curl 22 The requested URL returned error: 429\n"
     "fatal: expected flush after ref listing"
@@ -126,6 +125,7 @@ def test_update_network_git_calls_never_prompt_for_credentials():
 def test_update_and_upstream_network_calls_disable_terminal_prompts(monkeypatch, tmp_path):
     """Exercise origin fetch and fork fetch/merge/push, not their source spelling."""
     import subprocess
+
     from hermes_cli import update_cmd_git
 
     monkeypatch.setenv("GIT_TERMINAL_PROMPT", "1")

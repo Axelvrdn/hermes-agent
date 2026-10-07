@@ -3,13 +3,13 @@
 from unittest.mock import MagicMock, patch
 
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_METADATA_KEY,
-    ContextCompressor,
-    SUMMARY_PREFIX,
     _MERGED_PRIOR_CONTEXT_HEADER,
     _MERGED_SUMMARY_DELIMITER,
     _RESTART_HANDOFF_PROBE_EXTRA_MESSAGES,
     _SUMMARY_END_MARKER,
+    COMPRESSED_SUMMARY_METADATA_KEY,
+    SUMMARY_PREFIX,
+    ContextCompressor,
 )
 
 

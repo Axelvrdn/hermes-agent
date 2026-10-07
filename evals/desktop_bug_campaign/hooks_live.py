@@ -2,17 +2,18 @@
 import argparse
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-import hermes_yaml as yaml
 from websockets.sync.client import connect
+
+import hermes_yaml as yaml
 
 p = argparse.ArgumentParser()
 p.add_argument('--output', required=True)

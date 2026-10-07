@@ -8,12 +8,12 @@ the provider; only --provider → error (ambiguous).
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 import os
 import sys
 from contextlib import redirect_stderr, redirect_stdout
-import dataclasses
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -127,7 +127,10 @@ def _build_preloaded_skills_prompt(skills: object = None) -> str | None:
     if not parsed_skills:
         return None
 
-    from agent.skill_commands import build_preloaded_skills_prompt, format_missing_skills
+    from agent.skill_commands import (
+        build_preloaded_skills_prompt,
+        format_missing_skills,
+    )
 
     skills_prompt, loaded_skills, missing_skills = build_preloaded_skills_prompt(parsed_skills)
     if missing_skills:

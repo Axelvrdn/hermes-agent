@@ -7,7 +7,6 @@ from headers).
 
 from __future__ import annotations
 
-
 from agent.credits_tracker import (
     CREDITS_NOTICE_KIND,
     CREDITS_RESTORED_TTL_MS,
@@ -15,7 +14,6 @@ from agent.credits_tracker import (
     evaluate_credits_notices,
     new_credits_latch,
 )
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

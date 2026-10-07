@@ -12,10 +12,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Dict
 
+from hermes_cli.config import cfg_get
 from hermes_constants import display_hermes_home
 from utils import atomic_json_write
-from hermes_cli.config import cfg_get
-
 
 _SUBSCRIPTIONS_FILENAME = "webhook_subscriptions.json"
 _SUBSCRIPTIONS_FILE_MODE = 0o600
@@ -189,7 +188,11 @@ def _cmd_subscribe(args):
     if profile_arg is None:
         profile = existing.get("profile", "default")
     else:
-        from hermes_cli.profiles import normalize_profile_name, profile_exists, validate_profile_name
+        from hermes_cli.profiles import (
+            normalize_profile_name,
+            profile_exists,
+            validate_profile_name,
+        )
         try:
             profile = normalize_profile_name(profile_arg)
             validate_profile_name(profile)

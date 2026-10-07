@@ -27,7 +27,6 @@ import pytest
 
 import cron.scheduler as scheduler_mod
 
-
 BOOT_SHA = "a" * 40
 DISK_SHA = "b" * 40
 SKEW = (BOOT_SHA[:10], DISK_SHA[:10])

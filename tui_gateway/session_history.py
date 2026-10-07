@@ -5,8 +5,9 @@ from __future__ import annotations
 
 import re
 
-from .method_ctx import bind_module
 from agent.prompt_builder import STEER_DISPLAY_KIND
+
+from .method_ctx import bind_module
 
 # Discord routing note (gateway/run_inbound.py::discord_triggering_note) persisted as user
 # ``content`` by gateways before the authored-text fix; presentation-only heal for those rows.
@@ -185,7 +186,9 @@ def _user_image_display_text(content: Any) -> str | None:
     import base64
     import binascii
     from pathlib import Path
+
     from fastapi import HTTPException
+
     from hermes_cli.web_routers.files import _fs_regular_file
     from hermes_cli.web_server import _FS_DATA_URL_MAX_BYTES
     image_parts = content[1:1 + len(paths)]
@@ -248,7 +251,10 @@ def _expand_skill_invocation_for_replay(text: str, task_id: str) -> str:
     if not head.startswith("/"):
         return text
     try:
-        from agent.skill_commands import build_skill_invocation_message, resolve_skill_command_key
+        from agent.skill_commands import (
+            build_skill_invocation_message,
+            resolve_skill_command_key,
+        )
         cmd_key = resolve_skill_command_key(head.lstrip("/"), interactive=True)
         return text if cmd_key is None else (build_skill_invocation_message(cmd_key, arg.strip(), task_id=task_id) or text)
     except Exception:  # a skill that no longer resolves must not break the rewind

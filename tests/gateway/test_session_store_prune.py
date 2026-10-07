@@ -22,6 +22,7 @@ from unittest.mock import patch
 from gateway.config import GatewayConfig, Platform
 from gateway.session import SessionEntry, SessionStore
 
+
 def test_session_store_default_db_uses_runtime_hermes_home(tmp_path, monkeypatch):
     """SessionStore must honor runtime HERMES_HOME when opening the default DB.
 

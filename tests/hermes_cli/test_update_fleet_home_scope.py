@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import update_cmd_fleet as fleet
 from hermes_cli import dashboard_procs
+from hermes_cli import update_cmd_fleet as fleet
 
 FOREIGN_HOME = "/srv/other-account-home/.hermes"
 

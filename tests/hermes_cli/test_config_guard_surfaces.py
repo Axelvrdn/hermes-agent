@@ -10,6 +10,7 @@ import os
 
 import pytest
 
+
 @pytest.fixture(autouse=True)
 def _isolated_config_env(monkeypatch, tmp_path):
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))

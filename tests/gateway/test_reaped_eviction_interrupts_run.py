@@ -5,13 +5,12 @@ from __future__ import annotations
 import pytest
 
 from gateway.run import (
-    GatewayRunner,
     _AGENT_PENDING_SENTINEL,
     _INTERRUPT_REASON_EVICTED,
+    GatewayRunner,
     _is_control_interrupt_message,
 )
 from gateway.run_inbound import GatewayInboundMixin
-
 
 KEY = "agent:main:telegram:dm:106963"
 

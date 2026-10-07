@@ -56,7 +56,8 @@ def converged_host(tmp_path, monkeypatch):
             {"pid": pid, "hermes_home": str(home), "gateway_state": "running"}))
 
     import gateway.status as status
-    from gateway import host_attach, host_rendezvous as hr
+    from gateway import host_attach
+    from gateway import host_rendezvous as hr
     monkeypatch.setattr(status, "_read_process_cmdline", lambda p: "hermes gateway run")
     # The WIRE only: the owner's control socket answer. Everything that reads it is real.
     monkeypatch.setattr("gateway.control_socket.identify_gateway",

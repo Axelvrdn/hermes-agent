@@ -78,7 +78,10 @@ def _add_context_variants(model_ids: List[str]) -> List[str]:
     The suffix is Hermes-side only — stripped before the id hits the wire (agent/transports/codex.py,
     agent/auxiliary_client.py).
     """
-    from agent.model_metadata import CODEX_CONTEXT_VARIANT_SUFFIX, has_codex_context_variant
+    from agent.model_metadata import (
+        CODEX_CONTEXT_VARIANT_SUFFIX,
+        has_codex_context_variant,
+    )
 
     out: List[str] = []
     present = set(model_ids)
@@ -115,7 +118,10 @@ def codex_catalog_credential_identity() -> str:
     principal's key. Opaque non-JWT tokens
     fall back to the token itself (the caller hashes every part before anything is persisted).
     """
-    from hermes_cli.auth import _codex_access_token_is_expiring, resolve_codex_runtime_credentials
+    from hermes_cli.auth import (
+        _codex_access_token_is_expiring,
+        resolve_codex_runtime_credentials,
+    )
 
     try:
         creds = resolve_codex_runtime_credentials(read_only=True)
@@ -170,6 +176,7 @@ def _fetch_models_from_api(access_token: str, base_url: Optional[str] = None) ->
         if not _codex_catalog_probe_allowed(access_token, catalog_base):
             return []
         import httpx
+
         # The per-account catalog needs ChatGPT-Account-ID (else ``{"models":[]}`` with HTTP 200
         # masquerades as "no models") and, for residency-enforced workspaces, the residency header.
         from agent.codex_headers import codex_account_headers
@@ -189,7 +196,6 @@ def _read_default_model(codex_home: Path) -> Optional[str]:
     if not config_path.exists():
         return None
     try:
-        import tomllib
         import tomllib
         payload = tomllib.loads(config_path.read_text(encoding="utf-8-sig"))
     except Exception:

@@ -27,9 +27,9 @@ Falls back to a clear error message when not installed.
 
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import struct
 import sys
 from pathlib import Path
@@ -37,9 +37,13 @@ from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import (  # noqa: E402
-    DEFAULT_LOCAL_HOST, ENV_API_KEY, log, new_client_id, resolve_api_key, is_cloud_host,
+    DEFAULT_LOCAL_HOST,
+    ENV_API_KEY,
+    is_cloud_host,
+    log,
+    new_client_id,
+    resolve_api_key,
 )
-
 
 # Binary frame types from ComfyUI WebSocket protocol
 BINARY_PREVIEW_IMAGE = 1

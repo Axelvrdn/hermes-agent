@@ -377,7 +377,6 @@ def test_adapter_intake_and_central_authz_agree_on_the_same_list(monkeypatch):
     hex) is exactly the sender the central check authorizes, and an
     unlisted sender is rejected at BOTH layers."""
     from gateway.session import SessionSource as _SessionSource
-
     from tests.gateway.test_buzz_adapter import SELF_NPUB, SELF_PUBKEY
 
     monkeypatch.delenv("BUZZ_ALLOWED_USERS", raising=False)

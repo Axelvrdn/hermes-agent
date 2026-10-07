@@ -3,7 +3,9 @@
 import pytest
 from pydantic import ValidationError
 
-from tui_gateway.contracts.profiles_vault_complete_foreign_subagents import ProfilesListResult
+from tui_gateway.contracts.profiles_vault_complete_foreign_subagents import (
+    ProfilesListResult,
+)
 from tui_gateway.contracts.registry import METHODS, check_result
 
 

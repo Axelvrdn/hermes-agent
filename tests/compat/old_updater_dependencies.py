@@ -29,6 +29,7 @@ def _install_psutil_android_compat(
     """
     import tempfile
     import urllib.request
+
     from hermes_cli.psutil_android import PSUTIL_URL, prepare_patched_psutil_sdist
 
     with tempfile.TemporaryDirectory() as tmp:

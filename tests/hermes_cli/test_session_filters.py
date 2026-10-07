@@ -12,6 +12,7 @@ from hermes_cli.session_filters import (
     parse_point_in_time,
 )
 
+
 def _ns(**kwargs):
     defaults = dict(
         older_than=None, newer_than=None, before=None, after=None,

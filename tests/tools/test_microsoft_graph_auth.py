@@ -8,8 +8,8 @@ import httpx
 import pytest
 
 from tools.microsoft_graph_auth import (
-    CachedAccessToken,
     DEFAULT_GRAPH_SCOPE,
+    CachedAccessToken,
     GraphCredentials,
     MicrosoftGraphConfigError,
     MicrosoftGraphTokenError,

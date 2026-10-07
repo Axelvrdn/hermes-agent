@@ -2,12 +2,10 @@
 from types import SimpleNamespace as NS
 from unittest.mock import patch
 
-from gateway.run_turn_runner import TurnRunner
-from gateway.turn_context import TurnContext
 from gateway.config import Platform
+from gateway.run_turn_runner import TurnRunner
 from gateway.session import SessionSource
-
-
+from gateway.turn_context import TurnContext
 
 
 def test_concrete_gateway_sinks_hide_all_freeform_muted_turn_output():

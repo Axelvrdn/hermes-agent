@@ -69,7 +69,10 @@ def test_openrouter_omits_disable_the_openai_ladder_rejects(monkeypatch):
 
 
 def test_gpt61_sol_resolves_context_and_pricing_like_its_tier():
-    from agent.model_metadata import DEFAULT_CONTEXT_LENGTHS, _CODEX_OAUTH_CONTEXT_FALLBACK
+    from agent.model_metadata import (
+        _CODEX_OAUTH_CONTEXT_FALLBACK,
+        DEFAULT_CONTEXT_LENGTHS,
+    )
     from agent.usage_pricing import _OFFICIAL_DOCS_PRICING
 
     assert DEFAULT_CONTEXT_LENGTHS["gpt-6.1-sol"] == DEFAULT_CONTEXT_LENGTHS["gpt-6-sol"]
@@ -80,7 +83,10 @@ def test_gpt61_sol_resolves_context_and_pricing_like_its_tier():
 
 
 def test_gpt61_sol_900k_is_opt_in_exact_and_billed_as_the_base():
-    from agent.model_metadata import _CODEX_OAUTH_STALE_ADVERTISED_CTX, is_codex_context_variant
+    from agent.model_metadata import (
+        _CODEX_OAUTH_STALE_ADVERTISED_CTX,
+        is_codex_context_variant,
+    )
     from agent.usage_pricing import _OFFICIAL_DOCS_PRICING
 
     ids = _finalize_codex_models(["gpt-6.1-sol"])  # what live discovery hands the picker

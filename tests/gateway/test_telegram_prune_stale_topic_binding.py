@@ -27,9 +27,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-
 from hermes_state import SessionDB
-
 
 # ---------------------------------------------------------------------------
 # SessionDB.delete_telegram_topic_binding

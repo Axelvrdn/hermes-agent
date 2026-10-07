@@ -21,6 +21,7 @@ import pytest
 
 from cli import HermesCLI
 
+
 @pytest.fixture
 def bare_cli():
     """A HermesCLI with no __init__ — we only exercise the recovery helper."""

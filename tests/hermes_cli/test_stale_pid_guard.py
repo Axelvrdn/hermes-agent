@@ -16,8 +16,7 @@ from unittest import mock
 
 import pytest
 
-from hermes_cli import _subprocess_compat
-from hermes_cli import dashboard_procs
+from hermes_cli import _subprocess_compat, dashboard_procs
 
 
 def _probe_stdout(value: str) -> mock.Mock:

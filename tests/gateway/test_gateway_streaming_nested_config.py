@@ -4,7 +4,6 @@ from unittest.mock import patch
 import hermes_yaml as yaml
 
 
-
 def _load_with_yaml_dict(yaml_dict: dict, tmp_path):
     """Load a real config.yaml through the gateway's shared YAML reader."""
     from gateway.config import load_gateway_config

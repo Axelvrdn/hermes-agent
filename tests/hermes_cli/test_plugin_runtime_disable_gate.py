@@ -14,11 +14,12 @@ Covers two residual bypasses addressed in the PR:
 from __future__ import annotations
 
 import json
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from hermes_cli import web_server
+
 
 @pytest.fixture(autouse=True)
 def _reset_plugin_cache():
@@ -35,7 +36,7 @@ def test_client(monkeypatch, tmp_path):
     except ImportError:
         pytest.skip("fastapi/starlette not installed")
 
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
 
     # Isolate HERMES_HOME so config reads go to our tmp.
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "home"))

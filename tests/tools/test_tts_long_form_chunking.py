@@ -14,6 +14,7 @@ from tools.tts_tool_delivery import (
     _split_oversized_sentence,
 )
 
+
 class TestSplitTextForTts:
     def test_short_text_returns_single_chunk(self):
         result = _split_text_for_tts("Hello world.", 4096)

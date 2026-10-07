@@ -10,12 +10,11 @@ from __future__ import annotations
 
 import pytest
 
+import plugins.platforms.discord.adapter as discord_adapter
+import plugins.platforms.telegram.adapter as telegram_adapter
 from agent import i18n
 from agent.i18n import t
 from gateway.platforms.base import utf16_len
-
-import plugins.platforms.discord.adapter as discord_adapter
-import plugins.platforms.telegram.adapter as telegram_adapter
 from plugins.platforms.discord.adapter import (
     _DISCORD_APP_COMMAND_TEXT_LIMIT,
     _DISCORD_BUTTON_LABEL_LIMIT,
@@ -24,7 +23,7 @@ from plugins.platforms.discord.adapter import (
     ExecApprovalView,
     _native_slash_commands,
 )
-from plugins.platforms.telegram.adapter import TelegramAdapter, _TOAST_LIMIT
+from plugins.platforms.telegram.adapter import _TOAST_LIMIT, TelegramAdapter
 
 
 @pytest.fixture

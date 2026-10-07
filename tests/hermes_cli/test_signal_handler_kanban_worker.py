@@ -30,6 +30,7 @@ import time
 
 import pytest
 
+
 def _synthetic_worker_script() -> str:
     """A standalone script that mirrors cli.py's single-query SIGTERM handler.
 

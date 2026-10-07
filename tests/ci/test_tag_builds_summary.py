@@ -7,7 +7,14 @@ import pytest
 
 from scripts.releases import r2
 from tests.ci.desktop_release_roles import (
-    CANARY_TAG, DOWNLOADABLE_DISPATCHES, admitted, gate, needs_of, selection_gates, tag_summary, termux_builder,
+    CANARY_TAG,
+    DOWNLOADABLE_DISPATCHES,
+    admitted,
+    gate,
+    needs_of,
+    selection_gates,
+    tag_summary,
+    termux_builder,
     updater_publishers,
 )
 from tests.ci.test_commit_build_staging import shell_step

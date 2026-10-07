@@ -11,7 +11,8 @@ from __future__ import annotations
 import re
 from typing import Any, Optional
 
-from agent.redact import REDACTION_UNAVAILABLE as UNAVAILABLE, redact_for_egress
+from agent.redact import REDACTION_UNAVAILABLE as UNAVAILABLE
+from agent.redact import redact_for_egress
 
 # ── PII shapes ───────────────────────────────────────────────────────────────
 _EMAIL_RE = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")

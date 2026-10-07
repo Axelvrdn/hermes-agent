@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
+
 class TestRunReferenceSlotMaxTokens:
     """Legacy slot settings cannot override internal advisor task budgets."""
 

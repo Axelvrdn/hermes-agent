@@ -16,11 +16,11 @@ on PR #93200 — the bug is cross-process ownership, so monkeypatched helpers
 prove nothing.
 """
 
-import logging
 import contextlib
 import errno
-import subprocess
+import logging
 import sqlite3
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -29,7 +29,7 @@ import pytest
 
 import hermes_state_common
 from hermes_state import SessionDB
-from hermes_state_common import FTS_STALE_KEY, _FTS_TRIGGERS
+from hermes_state_common import _FTS_TRIGGERS, FTS_STALE_KEY
 
 pytestmark = pytest.mark.skipif(
     sys.platform == "win32", reason="POSIX flock child-process harness"
@@ -572,9 +572,9 @@ class TestDeferredFtsRetryInProcess:
         and reaches shared-registry instances."""
         import threading
 
+        import gateway.run as grun
         import hermes_state_registry
         import hermes_state_schema
-        import gateway.run as grun
 
         monkeypatch.setattr(hermes_state_schema, "_FTS_STALE_RETRY_SECONDS", 0.0)
         db_path = tmp_path / "state.db"

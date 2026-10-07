@@ -3,25 +3,26 @@
 import json
 import re
 import sqlite3
-import pytest
 import time
+from unittest.mock import MagicMock, patch
+
 import httpx
 import openai
-from unittest.mock import patch, MagicMock
+import pytest
 
+from agent.auxiliary_client import CODEX_STREAM_STALL_MARKER
+from agent.compression_marker import _COMPRESSION_MARKER_PREFIX
 from agent.context_compressor import (
-    ContextCompressor,
+    _PRUNE_MIN_CHARS,
+    COMPRESSED_SUMMARY_METADATA_KEY,
     HISTORICAL_TASK_HEADING,
     SUMMARY_PREFIX,
-    COMPRESSED_SUMMARY_METADATA_KEY,
-    _PRUNE_MIN_CHARS,
-    _summarize_tool_result,
-    _sum_clarify,
+    ContextCompressor,
     _is_summary_access_or_quota_error,
+    _sum_clarify,
+    _summarize_tool_result,
 )
-from agent.compression_marker import _COMPRESSION_MARKER_PREFIX
 from hermes_state import SessionDB
-from agent.auxiliary_client import CODEX_STREAM_STALL_MARKER
 
 _REQ = httpx.Request("POST", "http://x")
 
@@ -2041,10 +2042,10 @@ class TestCompressWithClient:
         content leaks into the next summarizer prompt.
         """
         from agent.context_compressor import (
-            SUMMARY_PREFIX,
-            _SUMMARY_END_MARKER,
             _MERGED_PRIOR_CONTEXT_HEADER,
             _MERGED_SUMMARY_DELIMITER,
+            _SUMMARY_END_MARKER,
+            SUMMARY_PREFIX,
         )
 
         merged = (

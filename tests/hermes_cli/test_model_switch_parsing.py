@@ -7,7 +7,6 @@ from hermes_cli.model_switch import (
     parse_model_switch_args,
 )
 
-
 # ---------------------------------------------------------------------------
 # parse_model_switch_args — the ONE parser
 # ---------------------------------------------------------------------------

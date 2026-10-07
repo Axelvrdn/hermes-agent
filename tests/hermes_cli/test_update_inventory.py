@@ -7,6 +7,7 @@ import pytest
 
 import hermes_cli.update_inventory as ui
 
+
 def _write_state(home: Path, pid: int, sha: str | None = None, version: str | None = None,
                  gateway_state: str = "running"):
     record = {"pid": pid, "gateway_state": gateway_state}

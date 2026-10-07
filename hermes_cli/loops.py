@@ -13,7 +13,7 @@ import json
 import logging
 import re
 import time
-from dataclasses import dataclass, field, fields, asdict
+from dataclasses import asdict, dataclass, field, fields
 from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 """Orphan callbacks own only their detachment, never a later reconnect."""
 
-from contextlib import nullcontext
 import threading
+from contextlib import nullcontext
 from types import SimpleNamespace
 from unittest.mock import Mock
 

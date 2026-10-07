@@ -6,10 +6,10 @@
 keys. Clarity upscaling is strictly per-call opt-in: default-on degraded text/CJK/faces.
 """
 
+import datetime
 import json
 import logging
 import os
-import datetime
 import threading
 import uuid
 from typing import Any, Dict, Optional
@@ -30,18 +30,36 @@ def _load_fal_client() -> Any:
 
 from tools.debug_helpers import DebugSession
 from tools.fal_common import (
-    _ManagedFalSyncClient, _extract_http_status, _managed_fal_billing_error,
-    _normalize_fal_queue_url_format, submit_managed_fal_with_rate_limit_retry,
+    _extract_http_status,
+    _managed_fal_billing_error,
+    _ManagedFalSyncClient,
+    _normalize_fal_queue_url_format,
+    submit_managed_fal_with_rate_limit_retry,
 )
 from tools.image_generation_catalog import (
-    DEFAULT_ASPECT_RATIO, DEFAULT_MODEL, FAL_MODELS, UPSCALER_CREATIVITY, UPSCALER_DEFAULT_PROMPT,
-    UPSCALER_FACTOR, UPSCALER_GUIDANCE_SCALE, UPSCALER_MODEL, UPSCALER_NEGATIVE_PROMPT,
-    UPSCALER_NUM_INFERENCE_STEPS, UPSCALER_RESEMBLANCE, UPSCALER_SAFETY_CHECKER, VALID_ASPECT_RATIOS,
+    DEFAULT_ASPECT_RATIO,
+    DEFAULT_MODEL,
+    FAL_MODELS,
+    UPSCALER_CREATIVITY,
+    UPSCALER_DEFAULT_PROMPT,
+    UPSCALER_FACTOR,
+    UPSCALER_GUIDANCE_SCALE,
+    UPSCALER_MODEL,
+    UPSCALER_NEGATIVE_PROMPT,
+    UPSCALER_NUM_INFERENCE_STEPS,
+    UPSCALER_RESEMBLANCE,
+    UPSCALER_SAFETY_CHECKER,
+    VALID_ASPECT_RATIOS,
 )
 from tools.managed_tool_gateway import resolve_managed_tool_gateway
 from tools.tool_backend_helpers import (
-    NOUS_MANAGED_PROVIDER, fal_key_is_configured, managed_nous_tools_enabled,
-    nous_tool_gateway_unavailable_message, read_selection, selection_error)
+    NOUS_MANAGED_PROVIDER,
+    fal_key_is_configured,
+    managed_nous_tools_enabled,
+    nous_tool_gateway_unavailable_message,
+    read_selection,
+    selection_error,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -748,7 +766,10 @@ def _confine_source_images(image_url, reference_image_urls, task_id, *, permitte
     if (terminal_env("TERMINAL_ENV") or "local").strip().lower() in ("", "local"):
         return image_url, reference_image_urls, None
     from model_tools import _run_async
-    from tools.image_source import ImageResolutionError, resolve_local_source_to_data_url
+    from tools.image_source import (
+        ImageResolutionError,
+        resolve_local_source_to_data_url,
+    )
 
     def resolve(ref):
         return _run_async(resolve_local_source_to_data_url(ref, task_id, permitted=permitted))

@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-
 _NON_TEXT_PART_TYPES = {"image", "image_url", "input_image", "audio", "input_audio"}
 _TEXT_KEYS = ("text", "content", "input_text", "output_text", "summary_text")
 

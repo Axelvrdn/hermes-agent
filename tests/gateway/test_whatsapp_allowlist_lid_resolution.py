@@ -19,7 +19,6 @@ from unittest.mock import AsyncMock
 from gateway.config import Platform, PlatformConfig
 from hermes_constants import get_hermes_home
 
-
 PHONE = "351912345678"
 LID = "77214955630717"
 

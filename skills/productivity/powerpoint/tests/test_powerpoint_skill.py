@@ -297,6 +297,7 @@ def test_render_all_slides(workdir):
 def test_replace_across_identically_formatted_runs(workdir):
     """A match split mid-word into equal-format runs keeps formatting."""
     import copy as cp
+
     from pptx import Presentation
     from pptx.dml.color import RGBColor
     from pptx.util import Inches, Pt

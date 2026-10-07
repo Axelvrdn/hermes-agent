@@ -25,7 +25,6 @@ import tempfile
 
 from PIL import Image, ImageDraw
 
-
 # ── Pixel drawing helpers ──────────────────────────────────────────────
 
 def _px(draw, x, y, color, size=2):

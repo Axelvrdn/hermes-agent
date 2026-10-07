@@ -17,8 +17,14 @@ from pathlib import Path
 
 from scripts.releases.draft_warning import draft_body
 from scripts.releases.versioning import (
-    SEED, attempt_ref, derive_next_version, marker_ref, next_attempt,
-    outstanding_attempts, parse_attempt_ref, parse_marker_ref,
+    SEED,
+    attempt_ref,
+    derive_next_version,
+    marker_ref,
+    next_attempt,
+    outstanding_attempts,
+    parse_attempt_ref,
+    parse_marker_ref,
 )
 
 WORKFLOW = "stable-release.yml"

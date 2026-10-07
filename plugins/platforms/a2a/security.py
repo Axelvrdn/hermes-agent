@@ -16,6 +16,7 @@ import time
 import urllib.parse
 from dataclasses import dataclass
 from typing import Optional
+
 from agent.proxy_bypass import is_loopback_host
 from gateway.platforms._shared import profile_scoped as _profile_scoped
 

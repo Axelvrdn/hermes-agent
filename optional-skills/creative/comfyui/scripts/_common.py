@@ -14,8 +14,8 @@ Stdlib-only by design (with optional `requests` upgrade if installed). Python 3.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import random
 import re

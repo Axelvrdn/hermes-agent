@@ -47,8 +47,8 @@ def _ensure_slack_mock():
 
 _ensure_slack_mock()
 
+from gateway.config import Platform, PlatformConfig
 from plugins.platforms.slack.adapter import SlackAdapter
-from gateway.config import PlatformConfig, Platform
 
 
 def _make_adapter():
@@ -626,7 +626,6 @@ class TestSlackModelPickerGatewayIntegration:
         import types
 
         import hermes_yaml as yaml
-
         from gateway.platforms.event import MessageEvent, MessageType
         from gateway.session import SessionSource
 
@@ -682,7 +681,6 @@ class TestSlackModelPickerGatewayIntegration:
     @pytest.mark.asyncio
     async def test_text_fallback_when_no_picker(self, tmp_path, monkeypatch):
         import hermes_yaml as yaml
-
         from gateway.platforms.event import MessageEvent, MessageType
         from gateway.session import SessionSource
 

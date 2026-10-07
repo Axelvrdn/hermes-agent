@@ -19,7 +19,8 @@ def test_model_tools_import_creates_no_state_db(tmp_path):
 
 
 def test_restore_runs_once_on_first_drain(monkeypatch):
-    from tools import async_delegation, process_registry as pr_mod
+    from tools import async_delegation
+    from tools import process_registry as pr_mod
     calls = []
     monkeypatch.setattr(async_delegation, "restore_undelivered_completions", lambda q: calls.append(q) or 1)
     registry = pr_mod.ProcessRegistry()
@@ -34,8 +35,13 @@ def test_first_drain_under_secondary_scope_replays_the_launch_ledger(monkeypatch
     """Under multi-profile ``hermes serve`` the first consumer is a session bound to a secondary
     profile (TUI poller / prompt_turn drain); the once-per-process replay must still read the LAUNCH
     ledger, or it is never replayed for the life of the process."""
-    from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
-    from tools import async_delegation, process_registry as pr_mod
+    from hermes_constants import (
+        get_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
+    from tools import async_delegation
+    from tools import process_registry as pr_mod
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "launch"))
     ledgers = []
     monkeypatch.setattr(async_delegation, "restore_undelivered_completions",

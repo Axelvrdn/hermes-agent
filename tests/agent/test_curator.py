@@ -78,6 +78,7 @@ def test_bundled_skills_are_off_limits_unless_opted_in(curator_env, monkeypatch)
     """Shipped skills vanishing after 30 idle days is opt-in: with no config the reader says off, and
     the same reader flips with the key. Both loaders see the same answer (DEFAULT_CONFIG agrees)."""
     import importlib
+
     import tools.skill_usage as usage
     from hermes_cli.config_defaults import DEFAULT_CONFIG
     importlib.reload(usage)  # the fixture pins _prune_builtins_enabled; reload restores the real reader
@@ -1128,7 +1129,11 @@ def test_threaded_llm_pass_keeps_callers_profile_scope(curator_env, tmp_path, mo
     """#125032: the daemon ``curator-review`` thread must inherit the caller's contextvars (home
     override + secret scope), else on a multiplexed gateway it runs unscoped against the ROOT home."""
     from agent import secret_scope as ss
-    from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
+    from hermes_constants import (
+        get_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
 
     c, root = curator_env["curator"], curator_env["home"]
     profile = tmp_path / "profiles" / "served"

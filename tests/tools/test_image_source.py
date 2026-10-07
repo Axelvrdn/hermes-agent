@@ -14,7 +14,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 # Minimal valid 1x1 PNG bytes. Resolver validation requires a decodable fixture.
 PNG = base64.b64decode(
     b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
@@ -443,6 +442,7 @@ class TestHeicDetection:
         enforce. Every malformed size must still report HEIC.
         """
         import struct
+
         from tools.vision_tools_image_prep import _detect_image_mime_type_from_bytes
         hdr = (
             struct.pack(">I", declared_size)
@@ -459,6 +459,7 @@ class TestHeicDetection:
         an attack: clamp to the available bytes rather than failing closed, so a
         genuine AVIF whose ftyp box is larger than 64 bytes is still detected."""
         import struct
+
         from tools.vision_tools_image_prep import _detect_image_mime_type_from_bytes
         hdr = (
             struct.pack(">I", 9999)
@@ -470,6 +471,7 @@ class TestHeicDetection:
         """A size that is not a multiple of 4 must not misalign the brand loop
         into reading a partial brand."""
         import struct
+
         from tools.vision_tools_image_prep import _detect_image_mime_type_from_bytes
         for size in (17, 18, 19, 21, 22, 23):
             hdr = (
@@ -503,6 +505,7 @@ class TestHeicDetection:
         pillow_heif = pytest.importorskip("pillow_heif")
         pillow_heif.register_heif_opener()
         from PIL import Image
+
         from tools import vision_tools_image_prep as vt
         isrc = _reload(monkeypatch, tmp_path / "hermes")
         monkeypatch.setenv("TERMINAL_ENV", "local")

@@ -6,17 +6,17 @@ staged toolchain directly without recursing through the worker it is building.
 from __future__ import annotations
 
 import codecs
-from collections.abc import Iterator, Mapping, Sequence
-from contextlib import contextmanager
-from dataclasses import dataclass
 import io
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
+from collections.abc import Iterator, Mapping, Sequence
+from contextlib import contextmanager
+from dataclasses import dataclass
+from pathlib import Path
 from typing import TextIO
 
 from pm.filesystem import native

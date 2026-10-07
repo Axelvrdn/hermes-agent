@@ -15,12 +15,11 @@ from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
 
 import hermes_yaml as yaml
-
-from hermes_constants import get_hermes_home, get_optional_mcps_dir
 from hermes_cli._subprocess_compat import noninteractive_git_env
-from hermes_cli.colors import Colors, color
-from hermes_cli.config import load_config, save_config, get_env_value, save_env_value
 from hermes_cli.cli_output import prompt as _prompt_input
+from hermes_cli.colors import Colors, color
+from hermes_cli.config import get_env_value, load_config, save_config, save_env_value
+from hermes_constants import get_hermes_home, get_optional_mcps_dir
 from utils import rmtree_readonly
 
 _MANIFEST_VERSION = 1
@@ -584,7 +583,9 @@ def _probe_tools(name: str) -> Optional[List[tuple]]:
     if not server_cfg:
         return None
     try:
-        from hermes_cli.mcp_config import _probe_single_server  # lazy: keep this module cheap
+        from hermes_cli.mcp_config import (
+            _probe_single_server,  # lazy: keep this module cheap
+        )
 
         tools = _probe_single_server(name, server_cfg)
         return list(tools) if tools is not None else []

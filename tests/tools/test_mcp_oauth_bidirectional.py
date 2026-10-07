@@ -32,7 +32,6 @@ import asyncio
 
 import pytest
 
-
 pytest.importorskip("mcp.client.auth.oauth2", reason="MCP SDK 1.26.0+ required")
 
 
@@ -53,7 +52,11 @@ async def test_hermes_provider_forwards_401_triggers_refresh(tmp_path, monkeypat
     # Request/Response types.
     from tools.mcp_tool import sdk_httpx
     httpx = sdk_httpx()
-    from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
+    from mcp.shared.auth import (
+        OAuthClientInformationFull,
+        OAuthClientMetadata,
+        OAuthToken,
+    )
     from pydantic import AnyUrl
 
     from tools.mcp_oauth import HermesTokenStorage
@@ -138,7 +141,11 @@ async def test_long_lived_resource_request_does_not_block_concurrent_post(
     """
     from tools.mcp_tool import sdk_httpx
     httpx = sdk_httpx()
-    from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
+    from mcp.shared.auth import (
+        OAuthClientInformationFull,
+        OAuthClientMetadata,
+        OAuthToken,
+    )
     from pydantic import AnyUrl
 
     from tools.mcp_oauth import HermesTokenStorage

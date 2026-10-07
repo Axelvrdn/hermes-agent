@@ -581,8 +581,8 @@ class TestCompressContextForwarderOwnsTimeout:
         )
 
     def test_owned_total_ceiling_reports_progress_accurately(self, monkeypatch):
-        from run_agent import AIAgent
         from agent.context_compressor import ContextCompressor
+        from run_agent import AIAgent
 
         agent = object.__new__(AIAgent)
         agent.session_id = "s1"

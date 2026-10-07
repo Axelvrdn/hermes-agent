@@ -3,8 +3,6 @@ from types import SimpleNamespace
 from agent.agent_init import _merge_custom_provider_extra_body
 
 
-
-
 def test_custom_provider_extra_body_preserves_caller_override():
     agent = SimpleNamespace(
         provider="custom",

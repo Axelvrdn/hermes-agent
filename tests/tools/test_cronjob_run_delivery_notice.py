@@ -23,6 +23,7 @@ import pytest
 
 from tools.cronjob_tools import _manual_run_delivery_note
 
+
 @pytest.fixture(autouse=True)
 def _clean_state():
     """Reset the shared async-delegation world around each test.

@@ -6,11 +6,11 @@ import atexit
 import concurrent.futures
 import threading
 
-from .method_ctx import HandlerRegistry, bind_module
-from ._env import env_int
-
 from hermes_constants import DEFAULT_INDICATOR_STYLE, INDICATOR_STYLES
 from hermes_constants import display_hermes_home as _display_hermes_home
+
+from ._env import env_int
+from .method_ctx import HandlerRegistry, bind_module
 
 _registry = HandlerRegistry()
 method = _registry.method
@@ -395,8 +395,8 @@ def _(rid, params: dict) -> dict:
     ``other_providers``)."""
     try:
         from hermes_cli.anon_auth import free_tier_route
-        from hermes_cli.main import _has_any_provider_configured
         from hermes_cli.free_tier_bootstrap import wait_for_record
+        from hermes_cli.main import _has_any_provider_configured
 
         def probe(profile, scoped):
             record = None if profile else wait_for_record()
@@ -434,9 +434,9 @@ def _(rid, params: dict) -> dict:
     fallback masking a failed connection. ``profile`` answers for THAT profile's pin and ``.env``;
     unknown -> ``ok=False``."""
     try:
-        from hermes_cli.runtime_provider import resolve_runtime_provider
         from hermes_cli.auth import has_usable_secret
         from hermes_cli.main import _has_any_provider_configured
+        from hermes_cli.runtime_provider import resolve_runtime_provider
         requested = str(params.get("provider") or "").strip() or None
 
         def probe(profile, scoped):

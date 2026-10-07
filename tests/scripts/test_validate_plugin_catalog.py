@@ -11,8 +11,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-import hermes_yaml as yaml
 import pytest
+
+import hermes_yaml as yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "validate_plugin_catalog.py"

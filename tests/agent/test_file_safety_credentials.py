@@ -105,10 +105,10 @@ def test_search_tool_filters_credential_results(fake_home, tmp_path, monkeypatch
     """Directory searches omit credential and MCP-token result entries."""
     import json
 
-    from tools.file_operations import SearchResult
-    from tools.file_operations_common import SearchMatch
     import tools.file_tools as ft
     import tools.terminal_tool as terminal_tool
+    from tools.file_operations import SearchResult
+    from tools.file_operations_common import SearchMatch
 
     auth = _create(fake_home, "auth.json")
     token = _create(fake_home, Path("mcp-tokens") / "provider.json")

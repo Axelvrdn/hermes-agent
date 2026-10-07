@@ -7,16 +7,16 @@ inside each method (``from cli import ...``) — never at module load time (impo
 
 from __future__ import annotations
 
-import logging
 import errno
+import logging
 import shutil
 import threading
 import time
+from typing import Any, Dict, Optional
 
 from agent.i18n import t
 from agent.pet import render as pet_render
 from hermes_cli.banner import _format_context_length
-from typing import Any, Dict, Optional
 
 _SB = "class:status-bar"
 _DIM = "class:status-bar-dim"
@@ -638,7 +638,8 @@ class CLIStatusBarMixin:
 
     def _turn_summary_emit(self) -> None:
         """Print the post-turn accounting line, when enabled for this surface."""
-        from cli import _DIM as _D, _RST, _cprint, logger
+        from cli import _DIM as _D
+        from cli import _RST, _cprint, logger
         collector = getattr(self, "_turn_summary_collector", None)
         if collector is None or not self._turn_summary_is_active():
             return

@@ -2,9 +2,9 @@
 """Merge multiple PDFs into one, optionally adding a bookmark per source file."""
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import os
 import sys
 

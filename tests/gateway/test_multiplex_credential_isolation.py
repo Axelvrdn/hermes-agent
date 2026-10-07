@@ -5,9 +5,9 @@ interpolation) rather than mocking it, proving the property that matters: two
 profiles with different keys never see each other's, and an unscoped read in
 multiplex mode fails closed instead of leaking.
 """
-import pytest
-
 from pathlib import Path
+
+import pytest
 
 from agent import secret_scope as ss
 
@@ -74,8 +74,8 @@ class TestProfilePathResolutionUnderMultiplexScope:
         return prof_a, prof_b
 
     def test_skills_dir_follows_multiplex_scope(self, tmp_path):
-        from gateway.run import _profile_runtime_scope
         import tools.skills_hub as sh
+        from gateway.run import _profile_runtime_scope
 
         prof_a, prof_b = self._profiles(tmp_path)
         with _profile_runtime_scope(prof_a):
@@ -209,12 +209,12 @@ def test_cold_profile_hydrates_external_source_without_global_env(
     """The first routed secondary turn must resolve its own source locally."""
     import os
 
+    from agent.secret_scope import get_secret
+    from agent.secret_sources import registry
     from agent.secret_sources.base import FetchResult
     from agent.secret_sources.registry import AppliedVar, ApplyReport, SourceReport
-    from agent.secret_sources import registry
-    from agent.secret_scope import get_secret
-    from hermes_cli import env_loader
     from gateway.run import _profile_runtime_scope
+    from hermes_cli import env_loader
 
     profile = tmp_path / "profiles" / "secondary"
     sibling = tmp_path / "profiles" / "sibling"

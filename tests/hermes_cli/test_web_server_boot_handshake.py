@@ -14,8 +14,8 @@ the event loop so a concurrent fast endpoint (/api/version) still responds.
 from __future__ import annotations
 
 import asyncio
-import time
 import threading
+import time
 from unittest.mock import patch
 
 import hermes_cli.web_server as web_server_mod
@@ -64,6 +64,7 @@ def test_lifespan_warmup_is_synchronous(monkeypatch):
 
 def test_hosted_room_recovery_cannot_block_or_abort_backend_startup(monkeypatch):
     from fastapi.testclient import TestClient
+
     from tui_gateway import methods_groups
 
     started = threading.Event()

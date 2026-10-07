@@ -19,9 +19,9 @@ import time
 from pathlib import Path
 from unittest.mock import patch
 
-import gateway.shutdown_watchdog as shutdown_watchdog_module
 import pytest
 
+import gateway.shutdown_watchdog as shutdown_watchdog_module
 from gateway.shutdown_watchdog import (
     DEFAULT_SHUTDOWN_WATCHDOG_GRACE_S,
     arm_shutdown_watchdog,
@@ -31,6 +31,7 @@ from gateway.shutdown_watchdog import (
     resolve_shutdown_watchdog_delay,
     write_loop_heartbeat,
 )
+
 
 def test_resolve_shutdown_watchdog_delay_adds_grace():
     assert resolve_shutdown_watchdog_delay(180) == 180 + DEFAULT_SHUTDOWN_WATCHDOG_GRACE_S

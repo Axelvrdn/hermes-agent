@@ -9,8 +9,8 @@ from __future__ import annotations
 
 
 def _ladder_env(monkeypatch, raw_web):
-    from tools import web_tools
     from tools import tool_backend_helpers as helpers
+    from tools import web_tools
 
     monkeypatch.setattr(web_tools, "_load_web_config", lambda: dict(raw_web))
     monkeypatch.setattr(

@@ -40,7 +40,9 @@ def _clamp_or_default(value: Any) -> int:
 
 def _get_extract_char_limit() -> int:
     """``web.extract_char_limit`` clamped to a sane range, else the default."""
-    from tools.web_tools import _load_web_config  # lazy: tests patch tools.web_tools._load_web_config
+    from tools.web_tools import (
+        _load_web_config,  # lazy: tests patch tools.web_tools._load_web_config
+    )
     return _clamp_or_default(_load_web_config().get("extract_char_limit"))
 
 
@@ -62,6 +64,7 @@ def _store_full_text(url: str, content: str) -> Optional[str]:
     read_file can page the complete text on any backend."""
     try:
         import hashlib
+
         from hermes_constants import get_hermes_dir
         from tools.web_result_cache import _host_slug
         cache_dir = get_hermes_dir("cache/web", "web_cache")

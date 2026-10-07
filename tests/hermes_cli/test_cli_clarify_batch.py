@@ -13,8 +13,8 @@ import threading
 import time
 from unittest.mock import MagicMock, patch
 
-from cli import HermesCLI
 from agent.i18n import t
+from cli import HermesCLI
 
 
 def _make_cli_stub():

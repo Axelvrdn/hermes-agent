@@ -2,22 +2,36 @@
 
 from __future__ import annotations
 
-import logging
 import argparse
 import asyncio
 import json
+import logging
 import os
 from typing import Any, Callable
 
-from hermes_constants import display_hermes_home
 from gateway.config import Platform, load_gateway_config
+from hermes_constants import display_hermes_home
 from plugins.teams_pipeline.meetings import (
-    enrich_meeting_with_call_record, fetch_preferred_transcript_text, list_recording_artifacts, resolve_meeting_reference)
+    enrich_meeting_with_call_record,
+    fetch_preferred_transcript_text,
+    list_recording_artifacts,
+    resolve_meeting_reference,
+)
 from plugins.teams_pipeline.pipeline import TeamsMeetingPipeline
-from plugins.teams_pipeline.store import TeamsPipelineStore, resolve_teams_pipeline_store_path
+from plugins.teams_pipeline.store import (
+    TeamsPipelineStore,
+    resolve_teams_pipeline_store_path,
+)
 from plugins.teams_pipeline.subscriptions import (
-    build_graph_client, maintain_graph_subscriptions, sync_graph_subscription_record, utc_timestamp)
-from tools.microsoft_graph_auth import MicrosoftGraphConfigError, MicrosoftGraphTokenProvider
+    build_graph_client,
+    maintain_graph_subscriptions,
+    sync_graph_subscription_record,
+    utc_timestamp,
+)
+from tools.microsoft_graph_auth import (
+    MicrosoftGraphConfigError,
+    MicrosoftGraphTokenProvider,
+)
 
 
 def register_cli(subparser: argparse.ArgumentParser) -> None:

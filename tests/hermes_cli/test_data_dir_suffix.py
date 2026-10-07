@@ -2,12 +2,11 @@
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 # Win32 strips a trailing space from every path component, so the literal-suffix contract is
 # only checkable with the leading space there.
@@ -60,9 +59,9 @@ print(json.dumps(result))
 
 @pytest.mark.platforms("linux", "macos", "windows")
 def test_startup_readers_use_the_suffixed_home(tmp_path, monkeypatch):
-    from hermes_constants import get_process_hermes_home
     from hermes_cli.dashboard_procs import _hermes_home_dir
     from hermes_cli.env_loader import load_hermes_dotenv
+    from hermes_constants import get_process_hermes_home
     from hermes_startup_watchdog import get_startup_watchdog_dump_path
 
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
@@ -82,8 +81,11 @@ def test_startup_readers_use_the_suffixed_home(tmp_path, monkeypatch):
 
 def test_suffix_does_not_change_explicit_or_context_home(tmp_path, monkeypatch):
     from hermes_constants import (
-        get_default_hermes_root, get_hermes_home, get_process_hermes_home,
-        reset_hermes_home_override, set_hermes_home_override,
+        get_default_hermes_root,
+        get_hermes_home,
+        get_process_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
     )
 
     monkeypatch.setattr(Path, "home", lambda: tmp_path)

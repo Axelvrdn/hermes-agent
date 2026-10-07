@@ -1,6 +1,7 @@
 """Regression tests for browser session cleanup and screenshot recovery."""
 
 from unittest.mock import patch
+
 from tools import browser_tool_lifecycle as bt_lifecycle
 
 
@@ -120,7 +121,9 @@ class TestInactivityJanitorMultiplex:
     def test_janitor_tears_down_under_owner_profile_scope(self, tmp_path, monkeypatch):
         from agent import secret_scope
         from hermes_constants import (
-            get_hermes_home, reset_hermes_home_override, set_hermes_home_override,
+            get_hermes_home,
+            reset_hermes_home_override,
+            set_hermes_home_override,
         )
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))

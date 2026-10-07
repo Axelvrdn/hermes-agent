@@ -195,7 +195,8 @@ def test_unreadable_marker_keeps_gateway_awake(hermes_home, monkeypatch):
 
 
 def test_handle_ws_connect_touches_marker(hermes_home, monkeypatch):
-    from tui_gateway import server, ws as ws_mod
+    from tui_gateway import server
+    from tui_gateway import ws as ws_mod
 
     monkeypatch.setattr(server, "_start_backend_heartbeat_refresher", lambda: None)
     monkeypatch.setattr(server, "_schedule_startup_orphan_sweep", lambda: None, raising=False)
@@ -225,7 +226,8 @@ def test_handle_ws_connect_touches_marker(hermes_home, monkeypatch):
 
 
 def test_handle_ws_inbound_frames_refresh_marker(hermes_home, monkeypatch):
-    from tui_gateway import server, ws as ws_mod
+    from tui_gateway import server
+    from tui_gateway import ws as ws_mod
 
     monkeypatch.setattr(server, "_start_backend_heartbeat_refresher", lambda: None)
     monkeypatch.setattr(server, "_schedule_startup_orphan_sweep", lambda: None, raising=False)

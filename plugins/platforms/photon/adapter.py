@@ -20,7 +20,16 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AsyncIterator,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+)
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:  # type checkers see httpx as always-imported; runtime keeps it optional
@@ -34,25 +43,37 @@ else:
         HTTPX_AVAILABLE = False
         httpx = None
 
+import contextlib
+
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms._shared import coerce_port as _coerce_port
-from gateway.platforms._shared import (
-    extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret,
-    seed_extra_from_env as _seed_extra_from_env, send_error
-)
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms._shared import send_error
 from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms.helpers import compile_mention_patterns, strip_markdown
-from gateway.platforms.helpers import MessageDeduplicator, bounded_put, cancel_task
+from gateway.platforms.helpers import (
+    MessageDeduplicator,
+    bounded_put,
+    cancel_task,
+    compile_mention_patterns,
+    strip_markdown,
+)
+from hermes_constants import find_node_executable, with_hermes_node_path
 from utils import atomic_json_write
 
 from .auth import load_project_credentials
+
 # Sidecar dir resolution is lazy (never at import): it probes the filesystem and may
 # mirror files. Tests monkeypatch sidecar_paths._SIDECAR_DIR.
-from .sidecar_paths import _NPM_ERROR_LOG_MAX_CHARS, _lock_newer_than_install, _npm_error_log, _sidecar_dir
+from .sidecar_paths import (
+    _NPM_ERROR_LOG_MAX_CHARS,
+    _lock_newer_than_install,
+    _npm_error_log,
+    _sidecar_dir,
+)
 from .sidecar_paths import dir_writable as _dir_writable
-from hermes_constants import find_node_executable, with_hermes_node_path
-import contextlib
 
 logger = logging.getLogger(__name__)
 
@@ -290,7 +311,9 @@ def _reinstall_sidecar_deps() -> None:
     except pm.InstallError as exc:
         logger.warning("[photon] cannot prepare sidecar dependencies: %s", exc)
         return
-    from hermes_cli._subprocess_compat import windows_hide_flags  # no console flash on Windows
+    from hermes_cli._subprocess_compat import (
+        windows_hide_flags,  # no console flash on Windows
+    )
 
     def _run(verb: str) -> subprocess.CompletedProcess:
         return subprocess.run(  # noqa: S603
@@ -1046,7 +1069,9 @@ class PhotonAdapter(BasePlatformAdapter):
             "PHOTON_SIDECAR_TOKEN": self._sidecar_token,
             # Exit on stdin EOF so ANY gateway death (incl. SIGKILL) can't orphan it on the port.
             "PHOTON_SIDECAR_WATCH_STDIN": "1"})
-        from hermes_cli._subprocess_compat import windows_hide_flags  # hide child console on Windows
+        from hermes_cli._subprocess_compat import (
+            windows_hide_flags,  # hide child console on Windows
+        )
         await self._apply_spectrum_patch(windows_hide_flags())
         try:
             self._sidecar_proc = subprocess.Popen(  # noqa: S603
@@ -1569,7 +1594,11 @@ def _cache_inbound_attachment(content: Dict[str, Any], name: str, mime: str, *,
     except (ValueError, TypeError) as exc:
         logger.warning("[photon] failed to decode inbound attachment bytes: %s", exc)
         return None
-    from gateway.platforms.base import cache_audio_from_bytes, cache_document_from_bytes, cache_image_from_bytes
+    from gateway.platforms.base import (
+        cache_audio_from_bytes,
+        cache_document_from_bytes,
+        cache_image_from_bytes,
+    )
     mime = (mime or "").lower()
     suffix = Path(name).suffix if name else ""  # prefer the real extension
     try:

@@ -10,6 +10,7 @@ from hermes_cli.model_setup_flows_bedrock import (
     bedrock_region_geo_prefix,
 )
 
+
 class TestRegionGeoPrefix:
     def test_known_geographies(self):
         assert bedrock_region_geo_prefix("us-east-1") == "us."

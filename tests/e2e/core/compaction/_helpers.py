@@ -30,7 +30,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
-from tests.fakes.fake_llm_provider import MODEL_ID, Error, FakeLLMServer, Hang, Text, ToolCall
+from tests.fakes.fake_llm_provider import (
+    MODEL_ID,
+    Error,
+    FakeLLMServer,
+    Hang,
+    Text,
+    ToolCall,
+)
 
 # Every compaction knob is tiny so a handful of turns crosses the trigger. The window must stay at the
 # 64K agent floor; ``threshold_tokens`` (an absolute cap) pulls the trigger far below the ratio floor.

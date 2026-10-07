@@ -82,7 +82,7 @@ class TestClassifierOverride:
         "deepseek/deepseek-r1",
     ])
     def test_all_known_reasoning_models_override(self, model):
-        from agent.error_classifier import classify_api_error, FailoverReason
+        from agent.error_classifier import FailoverReason, classify_api_error
         e, kwargs = _make_session(
             "server disconnected without sending complete message",
             model=model,
@@ -100,7 +100,7 @@ class TestClassifierOverride:
         chat models that hit true context-length errors via proxy
         disconnect).  With the override, it stays that way.
         """
-        from agent.error_classifier import classify_api_error, FailoverReason
+        from agent.error_classifier import FailoverReason, classify_api_error
         e, kwargs = _make_session(
             "server disconnected without sending complete message",
             model="gpt-4o",

@@ -71,6 +71,7 @@ async def test_injection_path_primes_before_handle_message():
     prime_routing_cache on the resolved adapter BEFORE handle_message —
     a helper nobody calls fixes nothing."""
     from unittest.mock import AsyncMock
+
     from gateway.run import GatewayRunner
 
     calls = []

@@ -81,6 +81,7 @@ def test_migration_policy(monkeypatch, capsys, case, expected):
 @pytest.mark.parametrize('named', [False, True])
 def test_update_copies_bundled_skill_bytes_to_default_active_and_sibling(tmp_path, monkeypatch, named):
     from pathlib import Path
+
     from hermes_cli import update_cmd_maint
 
     home = tmp_path / '.hermes'

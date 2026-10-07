@@ -18,7 +18,6 @@ import pytest
 
 import hermes_cli.gateway as gateway
 
-
 _ARGV = ["python", "-m", "hermes_cli.main", "gateway", "run"]
 
 

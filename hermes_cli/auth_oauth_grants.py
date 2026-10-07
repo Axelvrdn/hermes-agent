@@ -12,6 +12,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
 from hermes_cli.auth_constants import _decode_jwt_claims
 from utils import file_signature
 
@@ -724,9 +725,16 @@ class _HealPass:
 
 def _heal_forked_single_use_oauth_grants(provider_id: str) -> Optional[Dict[str, Any]]:
     from hermes_cli.auth import (
-        _auth_file_path, _auth_store_lock, _global_auth_file_path, _load_auth_store,
-        _is_same_auth_store, _oauth_heal_clean_marks, _oauth_heal_notices, _same_path,
-        _save_auth_store)
+        _auth_file_path,
+        _auth_store_lock,
+        _global_auth_file_path,
+        _is_same_auth_store,
+        _load_auth_store,
+        _oauth_heal_clean_marks,
+        _oauth_heal_notices,
+        _same_path,
+        _save_auth_store,
+    )
     root_path = _global_auth_file_path()
     if root_path is None:
         return None  # classic mode: nothing to consolidate into

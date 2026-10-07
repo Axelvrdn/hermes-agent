@@ -15,7 +15,6 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-
 CASES = {
     "string": ("**First**", "**Second**", "**First****Second**"),
     "text-parts": ([{"type": "text", "text": "**First**"}],
@@ -29,11 +28,15 @@ CASES = {
 
 def run_matrix(surfaces):
     from openai import AsyncOpenAI, OpenAI
-    from run_agent import AIAgent
+
     from agent.agent_runtime_helpers import extract_reasoning
-    from agent.auxiliary_client import _aggregate_chat_stream, _aggregate_chat_stream_async
+    from agent.auxiliary_client import (
+        _aggregate_chat_stream,
+        _aggregate_chat_stream_async,
+    )
     from agent.chat_completion_helpers import interruptible_streaming_api_call
     from agent.chat_completion_helpers_relay import RelayChatAccumulator
+    from run_agent import AIAgent
 
     active = {"message": {}, "deltas": [], "answer": "LOCAL_CAPTURE_OK"}
     requests = []

@@ -24,7 +24,11 @@ except ImportError:
     AIOHTTP_AVAILABLE = False
 
 from hermes_cli.proxy.adapters.base import UpstreamAdapter, UpstreamCredential
-from hermes_cli.proxy.sse_done import DONE_SSE_FRAME, SseDoneTracker, content_type_is_sse
+from hermes_cli.proxy.sse_done import (
+    DONE_SSE_FRAME,
+    SseDoneTracker,
+    content_type_is_sse,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,6 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-
 REALTIME_URL = "wss://api.openai.com/v1/realtime"
 
 _TERMINAL_FRAMES = {"response.done", "response.completed", "response.cancelled"}

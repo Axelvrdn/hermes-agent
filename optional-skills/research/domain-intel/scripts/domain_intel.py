@@ -14,17 +14,16 @@ All output is structured JSON. No dependencies beyond Python stdlib.
 Works on Linux, macOS, and Windows.
 """
 
-import logging
 import json
+import logging
 import re
 import socket
 import ssl
 import sys
-import urllib.request
 import urllib.parse
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
-
 
 # ─── Subdomain Discovery (crt.sh) ──────────────────────────────────────────
 

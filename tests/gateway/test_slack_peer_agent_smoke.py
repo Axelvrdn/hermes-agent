@@ -47,7 +47,6 @@ _slack_mod.SLACK_AVAILABLE = True
 
 from plugins.platforms.slack.adapter import SlackAdapter  # noqa: E402
 
-
 BOT_USER_ID = "U_TARGET_BOT"
 PEER_USER_ID = "U_PEER_BOT"
 TEAM_ID = "T_SMOKE"

@@ -25,8 +25,8 @@ limits into both inner ``AsyncHTTPTransport`` pools because httpx ignores
 client-level limits when a custom transport is supplied.
 """
 
-import logging
 import asyncio
+import logging
 import socket
 import ssl
 from unittest.mock import MagicMock

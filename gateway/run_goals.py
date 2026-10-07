@@ -288,7 +288,8 @@ class GatewayGoalsMixin:
 
         _bg_procs, _active_deleg = None, 0
         with suppress(Exception):
-            from hermes_cli.goals import count_active_delegations, gather_background_processes as _gather_bg
+            from hermes_cli.goals import count_active_delegations
+            from hermes_cli.goals import gather_background_processes as _gather_bg
             # Only THIS session's processes (gateway turns register under turn_ctx.session_id):
             # subagents' pollers must not park the parent's goal.
             _bg_procs = _gather_bg(owner_task_id=getattr(session_entry, "session_id", None) or None)
@@ -470,7 +471,10 @@ class GatewayGoalsMixin:
         store — a ``/loop`` set from a secondary profile's chat would never fire. Every served
         profile's store is scanned under its own runtime scope (same shape as ``_handoff_watcher``),
         and each hit is fired against that profile's adapters."""
-        from gateway.run import _async_profile_runtime_scope, _resolve_handoff_watch_scopes
+        from gateway.run import (
+            _async_profile_runtime_scope,
+            _resolve_handoff_watch_scopes,
+        )
         from gateway.run_idle_gates import profile_has_active_loop
         await asyncio.sleep(5)  # let platforms finish connecting
         warned_no_route: set = set()
@@ -480,7 +484,9 @@ class GatewayGoalsMixin:
             # binds its own scope instead of running on ambient env (see _scope_or_null).
             if profile_home is not None:
                 return _async_profile_runtime_scope(profile_home)
-            from tui_gateway.launch_profile_policy import async_launch_profile_scope_if_multiplexed
+            from tui_gateway.launch_profile_policy import (
+                async_launch_profile_scope_if_multiplexed,
+            )
             return async_launch_profile_scope_if_multiplexed()
 
         async def _scan_one_store(profile_name: Optional[str]) -> None:

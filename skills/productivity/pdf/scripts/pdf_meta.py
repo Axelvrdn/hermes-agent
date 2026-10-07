@@ -14,9 +14,9 @@ rewritten and may disagree in sophisticated viewers.
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import os
 import sys
 from pathlib import Path

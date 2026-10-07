@@ -49,6 +49,7 @@ class TestFallbackApiMode:
         """Pin the models.dev default endpoints the predicate compares against, so the contract
         holds without the network (a cold cache leaves ``ProviderDef.base_url`` empty)."""
         import dataclasses
+
         from hermes_cli import runtime_provider
         defaults = {
             "minimax": "https://api.minimax.io/anthropic/v1",

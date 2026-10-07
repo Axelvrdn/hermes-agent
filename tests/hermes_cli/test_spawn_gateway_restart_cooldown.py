@@ -13,6 +13,7 @@ import subprocess
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 import hermes_cli.web_server_gateway as _web_server_gateway
 
 

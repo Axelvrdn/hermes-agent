@@ -149,7 +149,7 @@ def test_the_seeded_header_is_the_handshake_version_on_the_wire():
     """Asserted through the header dict `_run_http` actually builds."""
     from unittest.mock import patch as _patch
 
-    from tools.mcp_tool import MCPServerTask, LATEST_HANDSHAKE_VERSION
+    from tools.mcp_tool import LATEST_HANDSHAKE_VERSION, MCPServerTask
 
     server = MCPServerTask("remote")
     seen: dict = {}

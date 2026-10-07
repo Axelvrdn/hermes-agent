@@ -9,32 +9,54 @@ mutate ``agent`` / ``messages`` / ``api_messages`` in place. Logger name stays
 
 from __future__ import annotations
 
-import logging
 import locale
+import logging
 import math
 import re
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-from agent.conversation_compression import COMPRESSION_RETRY_CONTEXT_REDUCED_STATUS_TEMPLATE
-from agent.fast_mode import fast_mode_unprovisioned, mark_fast_mode_unavailable
-from agent.model_metadata import is_output_cap_error, parse_available_output_tokens_from_error
-from agent.retry_utils import is_zai_coding_overload_error, zai_coding_overload_retry_ceiling
+from agent.conversation_compression import (
+    COMPRESSION_RETRY_CONTEXT_REDUCED_STATUS_TEMPLATE,
+)
 from agent.error_classifier import FailoverReason, classify_api_error
+from agent.fast_mode import fast_mode_unprovisioned, mark_fast_mode_unavailable
 from agent.message_sanitization import (
-    _looks_like_corrupt_image_rejection, _looks_like_image_content_rejection, _sanitize_messages_non_ascii,
-    _sanitize_messages_surrogates, _sanitize_structure_non_ascii, _sanitize_structure_surrogates,
-    _strip_images_from_messages, _strip_non_ascii,
+    _looks_like_corrupt_image_rejection,
+    _looks_like_image_content_rejection,
+    _sanitize_messages_non_ascii,
+    _sanitize_messages_surrogates,
+    _sanitize_structure_non_ascii,
+    _sanitize_structure_surrogates,
+    _strip_images_from_messages,
+    _strip_non_ascii,
     close_interrupted_tool_sequence,
 )
-from agent.thinking_timeout_guidance import build_thinking_timeout_guidance, is_thinking_timeout
-from agent.vision_message_prep import _provider_model_key
+from agent.model_metadata import (
+    is_output_cap_error,
+    parse_available_output_tokens_from_error,
+)
+from agent.retry_utils import (
+    is_zai_coding_overload_error,
+    zai_coding_overload_retry_ceiling,
+)
+from agent.thinking_timeout_guidance import (
+    build_thinking_timeout_guidance,
+    is_thinking_timeout,
+)
 from agent.turn_failure_copy import (
-    CONTENT_POLICY_NEXT_STEPS, content_policy_copy, exhausted_copy, limit_reset_copy, nonretryable_copy,
-    provider_label_for, site_copy, stamp_failure,
+    CONTENT_POLICY_NEXT_STEPS,
+    content_policy_copy,
+    exhausted_copy,
+    limit_reset_copy,
+    nonretryable_copy,
+    provider_label_for,
+    site_copy,
+    stamp_failure,
 )
 from agent.turn_retry_state import TurnRetryState
+from agent.vision_message_prep import _provider_model_key
 from hermes_constants import display_hermes_home
 from utils import base_url_host_matches
 
@@ -513,7 +535,10 @@ def _recover_format_errors(
     # repair: drop reasoning_details only.
     if classified.reason == FailoverReason.thinking_signature and not _retry.thinking_sig_retry_attempted:
         _retry.thinking_sig_retry_attempted = True
-        from agent.anthropic_thinking_replay import remember_rejected_thinking, tracks_rejected_thinking
+        from agent.anthropic_thinking_replay import (
+            remember_rejected_thinking,
+            tracks_rejected_thinking,
+        )
 
         if tracks_rejected_thinking(agent):
             removed = remember_rejected_thinking(agent, api_messages)
@@ -886,7 +911,10 @@ def _print_nonretryable_auth_guidance(
     agent: Any, classified: Any, *, status_code: Optional[int], provider: Any, base_url: Any, model: Any,
 ) -> None:
     """Actionable guidance for a terminal auth / billing error."""
-    from agent.conversation_loop import _print_billing_or_entitlement_guidance, _print_nous_entitlement_guidance
+    from agent.conversation_loop import (
+        _print_billing_or_entitlement_guidance,
+        _print_nous_entitlement_guidance,
+    )
 
     if classified.reason == FailoverReason.billing and _print_billing_or_entitlement_guidance(
         agent, capability="model access", provider=provider, base_url=str(base_url),
@@ -1037,7 +1065,10 @@ def nonretryable_client_error_result(
     the retry trace, print auth / billing / content-policy / TLS guidance, persist (skipped
     for likely context-overflow 400s so the failure does not grow the session), build result."""
     # Result/guidance helpers stay in the loop module (tests import + patch them there).
-    from agent.conversation_loop import _billing_failure_result, _content_policy_blocked_result
+    from agent.conversation_loop import (
+        _billing_failure_result,
+        _content_policy_blocked_result,
+    )
 
     if api_kwargs is not None:
         agent._dump_api_request_debug(api_kwargs, reason="non_retryable_client_error", error=api_error)
@@ -1174,7 +1205,9 @@ def max_retries_exhausted_result(
     ``failure_retryable`` / ``billing_block``."""
     # Result/guidance helpers stay in the loop module (tests import + patch them there).
     from agent.conversation_loop import (
-        _billing_block_dict, _billing_or_entitlement_message, _billing_terminal_label,
+        _billing_block_dict,
+        _billing_or_entitlement_message,
+        _billing_terminal_label,
         _print_billing_or_entitlement_guidance,
     )
 
@@ -1453,7 +1486,10 @@ def compute_error_backoff(
     # Imported lazily so tests that patch ``agent.retry_utils.jittered_backoff`` /
     # ``adaptive_rate_limit_backoff`` (incl. the run_agent conftest fast-backoff fixture) intercept.
     from agent.retry_utils import (
-        LIVE_RETRY_WAIT_CAP_S, RETRY_AFTER_CAP_S, adaptive_rate_limit_backoff, jittered_backoff,
+        LIVE_RETRY_WAIT_CAP_S,
+        RETRY_AFTER_CAP_S,
+        adaptive_rate_limit_backoff,
+        jittered_backoff,
         provider_retry_after_seconds,
     )
     from hermes_cli.anon_auth import on_free_model
@@ -1781,7 +1817,10 @@ def _is_genuine_nous_rate_limit(agent: Any, api_error: Exception, error_context:
     _genuine = False
     try:
         from agent.nous_rate_guard import (
-            is_genuine_nous_rate_limit, is_long_welcome_rate_limit, record_nous_rate_limit)
+            is_genuine_nous_rate_limit,
+            is_long_welcome_rate_limit,
+            record_nous_rate_limit,
+        )
         _err_resp = getattr(api_error, "response", None)
         _err_hdrs = getattr(_err_resp, "headers", None) if _err_resp else None
         from hermes_cli.anon_auth import is_anonymous_agent

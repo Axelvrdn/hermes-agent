@@ -13,7 +13,6 @@ import logging
 from concurrent.futures import Future
 from typing import Any, Coroutine, Optional
 
-
 _DEFAULT_LOGGER = logging.getLogger(__name__)
 
 

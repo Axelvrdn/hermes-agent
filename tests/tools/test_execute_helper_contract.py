@@ -9,7 +9,6 @@ from tools import code_execution_tool
 from tools.code_kernel import shutdown_all_kernels
 from tools.registry import registry
 
-
 PROBE = '''
 from __future__ import annotations
 {imports}

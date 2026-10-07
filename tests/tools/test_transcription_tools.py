@@ -6,9 +6,9 @@ end-to-end dispatch.  All external dependencies are mocked.
 """
 
 import os
-import sys
 import struct
 import subprocess
+import sys
 import types
 import wave
 from pathlib import Path
@@ -416,7 +416,10 @@ class TestLocalModelLoading:
 
     @pytest.mark.parametrize("download_error", [None, "Got: ConnectTimeout: [Errno 110] Connection timed out"])
     def test_cache_miss_falls_back_with_actionable_download_failure(self, download_error):
-        from tools.transcription_local import _create_whisper_model, _hub_cache_miss_error
+        from tools.transcription_local import (
+            _create_whisper_model,
+            _hub_cache_miss_error,
+        )
 
         LocalEntryNotFoundError = _hub_cache_miss_error()
         if download_error:
@@ -615,7 +618,10 @@ class TestModelAutoCorrection:
 
         with patch("tools.transcription_tools._HAS_OPENAI", True), \
              patch("openai.OpenAI", return_value=mock_client):
-            from tools.transcription_tools import _transcribe_groq, DEFAULT_GROQ_STT_MODEL
+            from tools.transcription_tools import (
+                DEFAULT_GROQ_STT_MODEL,
+                _transcribe_groq,
+            )
             _transcribe_groq(sample_wav, "whisper-1")
 
         call_kwargs = mock_client.audio.transcriptions.create.call_args
@@ -1140,8 +1146,8 @@ class TestExtractTranscriptText:
 
     def test_structured_error_object_raises_instead_of_repr(self):
         """#78098: a provider error object must not be stringified into its repr."""
-        from tools.transcription_common import STTResponseError
         from tools.transcription_cloud import _extract_transcript_text
+        from tools.transcription_common import STTResponseError
 
         transcription = types.SimpleNamespace(
             text=None, logprobs=None, usage=None, error="Transcription failed",
@@ -1153,16 +1159,16 @@ class TestExtractTranscriptText:
         assert "text=None" not in str(excinfo.value)
 
     def test_structured_error_body_raises_instead_of_repr(self):
-        from tools.transcription_common import STTResponseError
         from tools.transcription_cloud import _extract_transcript_text
+        from tools.transcription_common import STTResponseError
 
         with pytest.raises(STTResponseError, match="Transcription failed"):
             _extract_transcript_text({"text": None, "error": "Transcription failed"})
 
     def test_structured_response_without_text_or_error_raises(self):
         """Neither text nor a provider error: still an error, never ``str(obj)``."""
-        from tools.transcription_common import STTResponseError
         from tools.transcription_cloud import _extract_transcript_text
+        from tools.transcription_common import STTResponseError
 
         with pytest.raises(STTResponseError, match="no text"):
             _extract_transcript_text(types.SimpleNamespace(text=None, error=None))
@@ -1358,7 +1364,10 @@ class TestShellSafety:
     def test_local_command_normalizes_language_or_uses_default(
         self, monkeypatch, sample_wav, tmp_path, language, expected
     ):
-        from tools.transcription_tools import LOCAL_STT_COMMAND_ENV, _transcribe_local_command
+        from tools.transcription_tools import (
+            LOCAL_STT_COMMAND_ENV,
+            _transcribe_local_command,
+        )
 
         output_dir = tmp_path / "transcript-output"
         output_dir.mkdir()
@@ -1401,6 +1410,7 @@ class TestLocalModelLock:
 
     def test_concurrent_transcribe_loads_model_once(self, tmp_path):
         import threading
+
         from tools.transcription_tools import _transcribe_local
 
         audio = tmp_path / "test.ogg"
@@ -1570,8 +1580,8 @@ class TestTranscribeCredentialReadGuard:
         plaintext is never shipped to an external STT provider — mirroring the
         read guard added to image-gen (587be5b5b) and xAI video-gen
         (104232979)."""
-        from tools.transcription_tools import transcribe_audio
         from agent.file_safety import get_read_block_error
+        from tools.transcription_tools import transcribe_audio
 
         env_file = tmp_path / ".env"
         env_file.write_text("OPENAI_API_KEY=sk-secret\n")
@@ -1591,6 +1601,7 @@ class TestTranscribeCredentialReadGuard:
 @pytest.mark.parametrize("progress", [True, False])
 def test_command_stt_idle_timeout_preserves_transcription_contract(tmp_path, progress):
     import shlex
+
     from tools.transcription_command import _transcribe_command_stt
 
     audio = tmp_path / "audio.wav"

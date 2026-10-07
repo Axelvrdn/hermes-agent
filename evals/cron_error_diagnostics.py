@@ -10,10 +10,10 @@ import contextlib
 import io
 import json
 import os
-from pathlib import Path
 import socket
 import sys
 import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 
@@ -27,9 +27,10 @@ def main():
     with tempfile.TemporaryDirectory(prefix="cron-diagnostics-") as home:
         os.environ.update(HOME=home, HERMES_HOME=home)
         sys.path.insert(0, str(checkout))
+        from openai import OpenAI
+
         from cron import jobs, scheduler
         from hermes_cli.cli_commands_mixin import CLICommandsMixin
-        from openai import OpenAI
         from tools.cronjob_job_args import _format_job
 
         with socket.socket() as held:

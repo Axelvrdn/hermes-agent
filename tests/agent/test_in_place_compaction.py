@@ -15,7 +15,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 
-
 def _make_agent(session_db, session_id, *, in_place):
     with patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key"}):
         from run_agent import AIAgent
@@ -60,8 +59,8 @@ def _seed(db, sid, title, n=8):
 class TestInPlaceCompaction:
     def test_in_place_keeps_same_session_id(self):
         """In-place mode: id unchanged, no child row, no rename, history kept."""
-        from hermes_state import SessionDB
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
             db = SessionDB(db_path=Path(tmp) / "t.db")
@@ -125,8 +124,8 @@ class TestInPlaceCompaction:
 
     def test_in_place_alternation_preserved(self):
         """The compacted list must not introduce consecutive same-role messages."""
-        from hermes_state import SessionDB
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
             db = SessionDB(db_path=Path(tmp) / "t.db")
@@ -144,8 +143,8 @@ class TestInPlaceCompaction:
     def test_rotation_still_preflushes(self):
         """Rotation MUST pre-flush so current-turn messages survive in the
         preserved old (parent) session before it is ended (#47202)."""
-        from hermes_state import SessionDB
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
             db = SessionDB(db_path=Path(tmp) / "t.db")
@@ -167,8 +166,8 @@ class TestRotationFallbackWhenFlagOff:
         """Rotation is now the OPT-OUT fallback (default flipped to in-place in
         #38763). With in_place=False explicitly set, legacy rotation is
         unchanged — forks a renamed continuation session."""
-        from hermes_state import SessionDB
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
             db = SessionDB(db_path=Path(tmp) / "t.db")
@@ -216,8 +215,8 @@ class TestInPlaceAntiGrowthGuard:
     durably persisted the growth."""
 
     def test_in_place_refuses_growing_compression(self):
-        from hermes_state import SessionDB
         from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
             db = SessionDB(db_path=Path(tmp) / "t.db")
@@ -256,9 +255,9 @@ class TestInPlaceAntiGrowthGuard:
 
     def test_in_place_salvages_near_break_even_growth(self):
         """Fat retained tool output + todo state should be salvaged and committed."""
-        from hermes_state import SessionDB
         from agent.conversation_compression import compress_context
         from agent.model_metadata import estimate_messages_tokens_rough
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
             db = SessionDB(db_path=Path(tmp) / "t.db")

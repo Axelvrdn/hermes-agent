@@ -1,19 +1,20 @@
 """Tests for agent/display.py — build_tool_preview() and inline diff previews."""
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 import agent.display as display_module
 from agent.display import (
+    _summarize_rendered_diff_sections,
     build_tool_preview,
     capture_local_edit_snapshot,
     extract_edit_diff,
     get_cute_tool_message,
     prepare_tool_preview,
     redact_tool_args_for_display,
-    set_tool_preview_max_len,
-    _summarize_rendered_diff_sections,
     render_edit_diff_with_delta,
+    set_tool_preview_max_len,
 )
 
 

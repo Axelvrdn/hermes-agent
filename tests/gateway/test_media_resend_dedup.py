@@ -37,7 +37,11 @@ from gateway.platforms.base import (
     SendResult,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.run import GatewayRunner, _collect_auto_append_media_tags, _collect_history_media_paths
+from gateway.run import (
+    GatewayRunner,
+    _collect_auto_append_media_tags,
+    _collect_history_media_paths,
+)
 from gateway.session import SessionSource, build_session_key
 
 

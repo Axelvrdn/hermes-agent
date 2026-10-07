@@ -4,7 +4,13 @@ Run with the checkout's Python and PROBE_OUT pointing at a new empty directory.
 The subprocesses use isolated HOME/HERMES_HOME and a localhost dummy provider.
 """
 
-import os, sys, json, subprocess, pathlib, hashlib, dataclasses
+import dataclasses
+import hashlib
+import json
+import os
+import pathlib
+import subprocess
+import sys
 
 BASE = pathlib.Path(os.environ["PROBE_OUT"])
 SRC = pathlib.Path(__file__).resolve().parents[2]
@@ -122,10 +128,10 @@ if len(sys.argv) == 1:
 else:
     # Fresh credential-free process, real production imports; no prompt seams mocked.
     sys.path.insert(0, str(SRC))
-    from run_agent import AIAgent
-    from agent.system_prompt import build_system_prompt, build_system_prompt_parts
     from agent.prompt_builder import build_context_files_prompt
     from agent.prompt_caching import build_prompt_cache_plan
+    from agent.system_prompt import build_system_prompt, build_system_prompt_parts
+    from run_agent import AIAgent
 
     agent = AIAgent(
         api_key="offline-not-a-credential",

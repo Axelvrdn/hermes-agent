@@ -15,8 +15,8 @@ import pytest
 def client(monkeypatch, _isolate_hermes_home):
     starlette = pytest.importorskip("starlette.testclient")
     import hermes_state
-    from hermes_constants import get_hermes_home
     from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
+    from hermes_constants import get_hermes_home
 
     monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
     test_client = starlette.TestClient(app)

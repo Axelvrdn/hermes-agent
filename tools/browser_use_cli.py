@@ -309,8 +309,11 @@ def _find_screenshot(stdout: str, since: float) -> Optional[str]:
 def _native_screenshot_result(result: Dict[str, Any], path: str) -> Optional[Dict[str, Any]]:
     """Build a multimodal tool result attaching path for vision models"""
     try:
-        from tools.vision_tools import (_EMBED_MAX_DIMENSION,
-                                        _resize_image_for_vision, _should_use_native_vision_fast_path)
+        from tools.vision_tools import (
+            _EMBED_MAX_DIMENSION,
+            _resize_image_for_vision,
+            _should_use_native_vision_fast_path,
+        )
         from tools.vision_tools_history_budget import resolve_embed_target_bytes
         if not _should_use_native_vision_fast_path():
             return None
@@ -348,8 +351,8 @@ def _resolve_lightpanda_cdp(env: dict, task_id: Optional[str], session_name: str
     nothing of higher precedence claimed the session). Each cache key gets its own process via the
     legacy ``_get_session_info()`` (cache, reaper, atexit): private browser, own-tab preamble skipped."""
     try:
-        from tools.browser_tool_session import _get_session_info
         from tools.browser_tool_lightpanda_fallback import _using_lightpanda_engine
+        from tools.browser_tool_session import _get_session_info
         if not _using_lightpanda_engine():
             return None
     except Exception as e:  # stubbed browser_tool in tests / engine lookup failure
@@ -377,7 +380,9 @@ def _reach_sandbox_cdp(cdp: str) -> str:
         if not _browser_in_sandbox():
             return cdp
         from urllib.parse import urlsplit, urlunsplit
-        from tools.bot_desktop import runtime as _bd_runtime, sandbox_host
+
+        from tools.bot_desktop import runtime as _bd_runtime
+        from tools.bot_desktop import sandbox_host
         from tools.environments import streams
         parts = urlsplit(cdp)
         if parts.hostname not in ("127.0.0.1", "localhost") or not parts.port:
@@ -401,8 +406,8 @@ def _resolve_managed_chromium_cdp(env: dict, task_id: Optional[str], session_nam
     preflight/auto-install) on EVERY call: it launches the browser cold, follows a relaunch, and refreshes
     the agent-browser daemon's idle timer, which never sees the harness's direct CDP traffic."""
     try:
-        from tools.browser_tool_session import _run_browser_command
         from tools.browser_tool import _get_open_command_timeout
+        from tools.browser_tool_session import _run_browser_command
     except Exception as e:  # pragma: no cover — stubbed browser_tool in tests
         logger.debug("managed chromium resolution unavailable: %s", e)
         return None
@@ -441,9 +446,9 @@ def _resolve_backend_cdp(env: dict, task_id: Optional[str], session_name: str = 
     if _has_cdp_env(env):
         return None
     try:
+        from tools.browser_tool_cdp import _get_cdp_override
         from tools.browser_tool_cloud import _get_cloud_provider
         from tools.browser_tool_session import _get_session_info
-        from tools.browser_tool_cdp import _get_cdp_override
     except Exception as e:  # pragma: no cover — stubbed browser_tool in tests
         logger.debug("browser_tool backend resolution unavailable: %s", e)
         return None
@@ -518,7 +523,10 @@ def _attach_vault_supervisor(env: dict, task_id: Optional[str]) -> None:
         return
     try:
         from tools.browser_supervisor import SUPERVISOR_REGISTRY
-        from tools.browser_tool_cdp import _get_dialog_policy_config, _resolve_cdp_override
+        from tools.browser_tool_cdp import (
+            _get_dialog_policy_config,
+            _resolve_cdp_override,
+        )
         policy, timeout_s = _get_dialog_policy_config()
         SUPERVISOR_REGISTRY.get_or_start(task_id=task_id or "default", cdp_url=_resolve_cdp_override(cdp),
                                          dialog_policy=policy, dialog_timeout_s=timeout_s)

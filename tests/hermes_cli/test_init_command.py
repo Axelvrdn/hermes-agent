@@ -11,6 +11,7 @@ from hermes_cli.init_command import (
     build_init_prompt_for_cwd,
 )
 
+
 class TestBuildInitPrompt:
 
     def test_includes_extra_notes_verbatim(self):

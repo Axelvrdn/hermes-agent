@@ -59,8 +59,8 @@ def _local_target(claims: dict[str, Any] | None, _api_request_profile) -> tuple[
 
 def _local_room_catalog(self, profile: str, installation_id: str) -> tuple[dict, dict]:
     """Return ``(execution_policy, catalog)`` for this gateway's *profile*."""
-    from gateway.hosted_room_peer import PROTOCOL_VERSION, catalog_mapping
     from gateway.hosted_room_execution_policy import execution_policy_mapping
+    from gateway.hosted_room_peer import PROTOCOL_VERSION, catalog_mapping
     with self._profile_scope(profile):
         execution_policy = execution_policy_mapping(target_profile=profile)
     catalog = catalog_mapping(
@@ -177,8 +177,11 @@ async def _handle_room_member_grant_refresh(
             _openai_error, "Grant refresh accepts only ttl_seconds.",
             code="invalid_room_grant_refresh", status=400)
     try:
-        from gateway.hosted_room_peer import MAX_DISPATCH_GRANT_TTL_SECONDS, issue_room_grant
         from gateway.hosted_room_execution_policy import execution_policy_mapping
+        from gateway.hosted_room_peer import (
+            MAX_DISPATCH_GRANT_TTL_SECONDS,
+            issue_room_grant,
+        )
         # A status-only bearer must never mint dispatch authority: renewal needs live "dispatch".
         claims = self._room_grant_claims(request, permission="dispatch")
         profile, installation_id = _local_target(claims, _api_request_profile)

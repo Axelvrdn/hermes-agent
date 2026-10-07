@@ -15,14 +15,13 @@ cmdline substring also matches log tails, editors, and greps that merely
 mention the session (#116883), so it is not accepted as kill evidence.
 """
 
+import os
+import socket
 import subprocess
 import sys
 import time
 
 import pytest
-
-import os
-import socket
 
 from plugins.platforms.whatsapp.adapter import (
     _kill_stale_bridge_by_pidfile,

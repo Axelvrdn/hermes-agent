@@ -12,14 +12,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 pytest.importorskip("mcp.client.auth.oauth2")
 from tools import mcp_tool_loop as _mcp_loop  # noqa: E402
 
 
 def test_is_auth_error_detects_oauth_flow_error():
-    from tools.mcp_tool_errors import _is_auth_error
     from mcp.client.auth import OAuthFlowError
+
+    from tools.mcp_tool_errors import _is_auth_error
 
     assert _is_auth_error(OAuthFlowError("expired")) is True
 
@@ -29,9 +29,10 @@ def test_call_tool_handler_returns_needs_reauth_on_unrecoverable_401(monkeypatch
     handler returns a structured needs_reauth error (not a generic failure)."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
 
-    from tools.mcp_tool_handlers import _make_tool_handler
-    from tools.mcp_oauth_manager import get_manager, reset_manager_for_tests
     from mcp.client.auth import OAuthFlowError
+
+    from tools.mcp_oauth_manager import get_manager, reset_manager_for_tests
+    from tools.mcp_tool_handlers import _make_tool_handler
 
     reset_manager_for_tests()
 

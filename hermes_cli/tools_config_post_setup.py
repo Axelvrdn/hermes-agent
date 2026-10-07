@@ -9,9 +9,10 @@ import shutil
 import sys
 from typing import Set
 
-from hermes_cli.cli_output import (
-    print_error as _print_error, print_info as _print_info, print_success as _print_success,
-    print_warning as _print_warning)
+from hermes_cli.cli_output import print_error as _print_error
+from hermes_cli.cli_output import print_info as _print_info
+from hermes_cli.cli_output import print_success as _print_success
+from hermes_cli.cli_output import print_warning as _print_warning
 from hermes_cli.config import get_env_value
 from hermes_cli.tools_config_cua import _cua_driver_install_ready, install_cua_driver
 from tools.transcription_common import DEFAULT_LOCAL_MODEL, STT_MODEL_CATALOG
@@ -63,9 +64,13 @@ def _post_setup_agent_browser(post_setup_key: str) -> None:
     # Every non-Camofox backend drives through the Browser Use CLI — install it here too.
     _ensure_browser_use_cli()
     try:
-        from tools.browser_tool_install import (
-            _browser_install_hint, _chromium_installed, _running_in_docker, _find_agent_browser)
         from hermes_constants import is_termux
+        from tools.browser_tool_install import (
+            _browser_install_hint,
+            _chromium_installed,
+            _find_agent_browser,
+            _running_in_docker,
+        )
     except Exception as exc:  # pragma: no cover — defensive
         _print_warning(f"    Could not check Chromium status: {exc}")
         return
@@ -222,9 +227,10 @@ def _post_setup_xai_grok() -> None:
 
     _print_info("    xAI needs credentials. Choose one:")
     try:
-        from hermes_cli.setup import prompt_choice, prompt as _setup_prompt
-        from hermes_cli.setup_tts import _run_xai_oauth_login_from_setup
         from hermes_cli.config import save_env_value
+        from hermes_cli.setup import prompt as _setup_prompt
+        from hermes_cli.setup import prompt_choice
+        from hermes_cli.setup_tts import _run_xai_oauth_login_from_setup
     except Exception as exc:
         _print_warning(f"    Could not load setup helpers: {exc}")
         _info_lines("Run later: hermes auth add xai-oauth   (or set XAI_API_KEY)")
@@ -300,7 +306,9 @@ def _post_setup_openai_codex() -> None:
 
 
 def _xai_credentials_ready() -> bool:
-    from hermes_cli.tools_config import _xai_credentials_present  # facade binding: tests patch it there
+    from hermes_cli.tools_config import (
+        _xai_credentials_present,  # facade binding: tests patch it there
+    )
     return _xai_credentials_present()
 
 
@@ -338,8 +346,12 @@ def valid_post_setup_keys() -> Set[str]:
     plugin-registered providers). This is the allowlist ``post-setup`` and the dashboard endpoint
     validate against, so a caller cannot drive ``_run_post_setup`` with an arbitrary key."""
     from hermes_cli.tools_config import (
-        TOOL_CATEGORIES, _plugin_browser_providers, _plugin_image_gen_providers,
-        _plugin_video_gen_providers, _plugin_web_search_providers)
+        TOOL_CATEGORIES,
+        _plugin_browser_providers,
+        _plugin_image_gen_providers,
+        _plugin_video_gen_providers,
+        _plugin_web_search_providers,
+    )
 
     keys: Set[str] = set()
     for cat in TOOL_CATEGORIES.values():

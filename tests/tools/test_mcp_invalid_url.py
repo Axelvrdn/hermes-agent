@@ -20,6 +20,7 @@ import pytest
 
 from tools.mcp_tool_errors import InvalidMcpUrlError, _validate_remote_mcp_url
 
+
 class TestValidUrlsAccepted:
     """Every valid http(s) URL must pass through untouched (stripped of whitespace)."""
 

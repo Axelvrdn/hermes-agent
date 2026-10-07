@@ -22,7 +22,6 @@ import pytest
 
 from agent.proxy_sources import iron_proxy as ip
 
-
 # ---------------------------------------------------------------------------
 # Per-test isolation
 # ---------------------------------------------------------------------------
@@ -467,8 +466,8 @@ def test_docker_egress_node_options_uses_sentinel(hermes_home, monkeypatch):
     ``_HERMES_EGRESS_NODE_OPTIONS_APPEND`` so DockerEnvironment can
     append-merge with the operator's existing NODE_OPTIONS."""
 
-    from tools.environments.docker import _egress_proxy_args_for_docker
     from hermes_cli.config import load_config, save_config
+    from tools.environments.docker import _egress_proxy_args_for_docker
 
     state = ip._proxy_state_dir()
     ca = state / "ca.crt"

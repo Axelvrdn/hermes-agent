@@ -230,7 +230,10 @@ def _input_image_part(part: Dict[str, Any], role: str = "user", *, keep_empty_ur
         return None
     url = str(url or "")
     # Lazy import: the prep module only depends on hermes_constants at import time (no cycle).
-    from tools.vision_tools_image_prep import rasterize_svg_data_url, unsupported_inline_image_media_type
+    from tools.vision_tools_image_prep import (
+        rasterize_svg_data_url,
+        unsupported_inline_image_media_type,
+    )
     mime = unsupported_inline_image_media_type(url)
     if mime == "image/svg+xml":
         # Rasterize so the model still sees the drawing; the placeholder is the fallback only
@@ -707,8 +710,8 @@ def _native_responses_replay_items(
     if getattr(agent, "api_mode", None) != "codex_responses" or not isinstance(messages, list):
         return None
     route = classify_responses_route(agent)._asdict()
-    from agent.native_compaction import native_compaction_context_management
     from agent.fast_mode import effective_request_overrides
+    from agent.native_compaction import native_compaction_context_management
     if not native_compaction_context_management(agent, **route):
         return None
     # The wire model may be rewritten per request (fast mode); provenance must match what the transport stamps.

@@ -4,11 +4,11 @@ from __future__ import annotations
 import csv
 import io
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import zipfile
+from pathlib import Path
 
 try:
     from .retag_wheel import record_hash

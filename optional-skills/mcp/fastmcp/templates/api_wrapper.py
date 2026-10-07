@@ -6,7 +6,6 @@ from typing import Any
 import httpx
 from fastmcp import FastMCP
 
-
 mcp = FastMCP("__SERVER_NAME__")
 
 API_BASE_URL = os.getenv("API_BASE_URL", "https://api.example.com")

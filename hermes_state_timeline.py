@@ -9,7 +9,6 @@ from agent.compaction_display import project_compaction_message_for_display
 from agent.context_compressor import user_originated_turn_view
 from hermes_state_messages import DISPLAY_VISIBLE_SQL
 
-
 _SYNTHETIC_PROMPT = re.compile(
     r"^\s*(?:\[IMPORTANT: Background process |\[ASYNC (?:DELEGATION )?(?:BATCH )?COMPLETE\b|"
     r"A background fan-out of \d+ subagent\(s\) you dispatched earlier has finished\.|"

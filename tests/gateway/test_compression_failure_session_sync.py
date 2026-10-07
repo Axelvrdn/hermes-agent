@@ -9,7 +9,6 @@ import gateway.run as gateway_run
 from gateway.config import Platform
 from gateway.session import SessionSource
 
-
 SESSION_KEY = "agent:main:telegram:dm:12345"
 
 

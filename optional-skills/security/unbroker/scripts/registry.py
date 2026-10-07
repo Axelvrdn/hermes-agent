@@ -18,10 +18,10 @@ the only network call and can be bypassed by passing csv_text directly to refres
 """
 from __future__ import annotations
 
-import logging
 import csv
 import datetime
 import io
+import logging
 import re
 import urllib.request
 from pathlib import Path

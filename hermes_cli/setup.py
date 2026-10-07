@@ -6,26 +6,36 @@ resolve shared prompt/config helpers lazily through this module so test patches 
 ``hermes_cli.setup.<name>`` keep working.
 """
 
+import copy
 import importlib.util
 import logging
 import os
 import re
 import sys
-import copy
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
 from typing import Callable
 
-from hermes_cli.curses_ui import MenuNavigationEvent, MenuNavigationStart
+from hermes_cli.cli_output import print_error, print_info, print_success, print_warning
+from hermes_cli.colors import Colors, color
+
 # Config helpers are re-exported (tests patch them on this module). display_hermes_home is
 # imported lazily at call sites (stale-module safety during hermes update).
 from hermes_cli.config import (
-    cfg_get, DEFAULT_CONFIG, get_hermes_home, get_config_path, get_env_path, load_config, save_config,
-    save_env_value, remove_env_value, get_env_value, ensure_hermes_home,
+    DEFAULT_CONFIG,
+    cfg_get,
+    ensure_hermes_home,
+    get_config_path,
+    get_env_path,
+    get_env_value,
+    get_hermes_home,
+    load_config,
+    remove_env_value,
+    save_config,
+    save_env_value,
 )
-from hermes_cli.colors import Colors, color
-from hermes_cli.cli_output import print_error, print_info, print_success, print_warning
+from hermes_cli.curses_ui import MenuNavigationEvent, MenuNavigationStart
 from hermes_cli.secret_prompt import masked_secret_prompt
 
 logger = logging.getLogger(__name__)
@@ -188,7 +198,10 @@ def _handle_setup_menu_navigation(event: MenuNavigationEvent, value: object = No
 @contextmanager
 def _setup_navigation_scope():
     """Install and reliably restore the setup menu navigation context."""
-    from hermes_cli.curses_ui import reset_menu_navigation_handler, set_menu_navigation_handler
+    from hermes_cli.curses_ui import (
+        reset_menu_navigation_handler,
+        set_menu_navigation_handler,
+    )
     token = _SETUP_NAVIGATION.set(_SetupNavigationState())
     menu_token = set_menu_navigation_handler(_handle_setup_menu_navigation)
     try:
@@ -567,7 +580,9 @@ def _record_send_consent_change(*, enabled: bool) -> None:
     and the sender, so wizard, relay and mid-pass callers cannot disagree."""
     try:
         from hermes_cli.observability.shared_metrics import SharedMetricsStore
-        from hermes_cli.observability.shared_metrics_sender import reconcile_send_consent
+        from hermes_cli.observability.shared_metrics_sender import (
+            reconcile_send_consent,
+        )
         from hermes_cli.sqlite_util import write_txn
         with SharedMetricsStore()._connection() as connection, write_txn(connection):
             reconcile_send_consent(connection, enabled)
@@ -579,13 +594,15 @@ def _record_send_consent_change(*, enabled: bool) -> None:
 # Extracted sections, re-exported so callers and test patches keep resolving through
 # hermes_cli.setup. They import this module lazily inside bodies, so this is cycle-free.
 
-from hermes_cli.setup_tts import setup_tts  # noqa: E402
-from hermes_cli.setup_terminal import setup_terminal_backend  # noqa: E402
+from hermes_cli.setup_migration import (  # noqa: E402
+    _offer_openclaw_migration,
+    _skip_configured_section,
+)
 from hermes_cli.setup_platforms import setup_gateway  # noqa: E402
-from hermes_cli.setup_summary import _print_setup_summary  # noqa: E402,F401
-from hermes_cli.setup_migration import _offer_openclaw_migration, _skip_configured_section  # noqa: E402
 from hermes_cli.setup_quick import _run_portal_one_shot, _run_quick_setup  # noqa: E402
-
+from hermes_cli.setup_summary import _print_setup_summary  # noqa: E402,F401
+from hermes_cli.setup_terminal import setup_terminal_backend  # noqa: E402
+from hermes_cli.setup_tts import setup_tts  # noqa: E402
 
 # ── Main Wizard Orchestrator ──
 
@@ -758,7 +775,9 @@ def _run_setup_wizard_impl(args):
 def _record_setup_completed(config: dict) -> None:
     """Count a wizard run that finished. Every setup flow ends here, so the one-time
     shared-metrics offer runs first: a user who opts in now is counted; the API checks enablement."""
-    from hermes_cli.observability.shared_metrics_consent import offer_consent_if_undecided
+    from hermes_cli.observability.shared_metrics_consent import (
+        offer_consent_if_undecided,
+    )
 
     offer_consent_if_undecided(config)
     from hermes_cli.observability.shared_metrics_events import record_setup_completed

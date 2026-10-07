@@ -27,7 +27,14 @@ from pathlib import Path
 import pytest
 
 from tests.e2e.core.providers._catalog_helpers import (
-    Known, Row, decoy_keys, discover_catalog, gate, hermetic_env, known_gate, write_home,
+    Known,
+    Row,
+    decoy_keys,
+    discover_catalog,
+    gate,
+    hermetic_env,
+    known_gate,
+    write_home,
 )
 from tests.fakes.providers.catalog_fake import CatalogFake, bare_path
 

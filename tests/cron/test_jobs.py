@@ -1,32 +1,32 @@
 """Tests for cron/jobs.py — schedule parsing, job CRUD, and due-job detection."""
 
 import threading
-import pytest
 from datetime import datetime, timedelta, timezone
 
+import pytest
+
 from cron.jobs import (
-    parse_duration,
-    parse_schedule,
-    compute_next_run,
-    create_job,
-    load_jobs,
-    save_jobs,
-    get_job,
-    list_jobs,
-    update_job,
-    pause_job,
-    resume_job,
-    remove_job,
-    mark_job_run,
+    _hermes_now,
     advance_next_run,
     claim_dispatch,
     claim_job_for_fire,
-    heartbeat_run_claim,
+    compute_next_run,
+    create_job,
     get_due_jobs,
+    get_job,
+    heartbeat_run_claim,
+    list_jobs,
+    load_jobs,
+    mark_job_run,
+    parse_duration,
+    parse_schedule,
+    pause_job,
+    remove_job,
+    resume_job,
     save_job_output,
-    _hermes_now,
+    save_jobs,
+    update_job,
 )
-
 
 # =========================================================================
 # parse_duration
@@ -442,6 +442,7 @@ class TestJobCRUD:
         """A hand-edited "completed" (null, string, float, negative, Infinity) must not kill
         mark_job_run or the whole store, and must not be carried forward by update_job."""
         import json
+
         from cron.jobs import JOBS_FILE, get_job, mark_job_run, update_job
 
         job = create_job(prompt="t", schedule="every 1h", repeat=3)
@@ -1296,7 +1297,8 @@ class TestBadNextRunAtRecovery:
         get_due_jobs must succeed and return the healthy job; the bad record
         must be repaired (next_run_at cleared so recovery can set a sane value).
         """
-        from datetime import timezone, timedelta as td
+        from datetime import timedelta as td
+        from datetime import timezone
         now = datetime.now(timezone.utc)
         past = (now - td(seconds=30)).isoformat()
         future = (now + td(days=1)).isoformat()
@@ -1350,7 +1352,8 @@ class TestPerJobScanContainment:
         """Simulate a FUTURE malformed-field variant none of the shape
         normalizers repair, by making grace computation raise for one job
         only. The per-job guard must skip it and still return the sibling."""
-        from datetime import timezone, timedelta as td
+        from datetime import timedelta as td
+        from datetime import timezone
         from unittest.mock import patch as mock_patch
 
         now = datetime.now(timezone.utc)
@@ -1608,6 +1611,7 @@ class TestJobsJsonUtf8Bom:
     def test_load_jobs_accepts_utf8_bom(self, tmp_cron_dir):
         """BOM'd jobs.json loads — the pre-fix crash repro."""
         import json
+
         from cron.jobs import JOBS_FILE, load_jobs
 
         payload = {
@@ -1674,6 +1678,7 @@ class TestJobsJsonIdKeyedMap:
     def test_load_jobs_flattens_id_keyed_map(self, tmp_cron_dir):
         """The pre-fix repro: load_jobs() returns a list, not the raw dict."""
         import json
+
         from cron.jobs import JOBS_FILE, load_jobs
 
         JOBS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -1687,6 +1692,7 @@ class TestJobsJsonIdKeyedMap:
     def test_list_jobs_survives_id_keyed_map(self, tmp_cron_dir):
         """The reported traceback path (hermes cron list / cronjob list tool)."""
         import json
+
         from cron.jobs import JOBS_FILE, list_jobs
 
         JOBS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -1699,6 +1705,7 @@ class TestJobsJsonIdKeyedMap:
     def test_id_keyed_map_repaired_to_list_on_disk(self, tmp_cron_dir):
         """Loading rewrites the store into the canonical {"jobs": [...]} form."""
         import json
+
         from cron.jobs import JOBS_FILE, load_jobs
 
         JOBS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -1717,6 +1724,7 @@ class TestJobsJsonIdKeyedMap:
     def test_empty_id_keyed_map_returns_empty_list(self, tmp_cron_dir):
         """An empty ``jobs`` map must not crash and yields no jobs."""
         import json
+
         from cron.jobs import JOBS_FILE, load_jobs
 
         JOBS_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -1727,6 +1735,7 @@ class TestJobsJsonIdKeyedMap:
     def test_map_value_without_inline_id_adopts_key(self, tmp_cron_dir):
         """A value lacking an inline "id" gets the map key as its id."""
         import json
+
         from cron.jobs import JOBS_FILE, load_jobs
 
         payload = {
@@ -1766,6 +1775,7 @@ class TestJobsJsonIdKeyedMap:
         """Junk (non-dict) values in the map are skipped, never crash."""
         import json
         import logging
+
         from cron.jobs import JOBS_FILE, list_jobs, load_jobs
 
         payload = {
@@ -1807,6 +1817,7 @@ class TestJobsJsonIdKeyedMap:
         parsed the file; an all-junk list or a scalar jobs field must be repaired on disk too,
         without logging raw values."""
         import json
+
         import cron.jobs as jobs_mod
         from cron.jobs import JOBS_FILE, load_jobs, update_job
 

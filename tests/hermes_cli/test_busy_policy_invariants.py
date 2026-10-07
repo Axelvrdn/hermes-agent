@@ -13,6 +13,7 @@ from hermes_cli.commands import (
     is_interrupt_then_dispatch,
 )
 
+
 def test_bypass_set_is_derived_from_registry():
     expected = frozenset(
         cmd.name for cmd in COMMAND_REGISTRY if cmd.busy_policy != "reject"

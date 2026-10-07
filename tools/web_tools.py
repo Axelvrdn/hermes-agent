@@ -12,19 +12,41 @@ Debug: ``WEB_TOOLS_DEBUG=true`` writes ``logs/web_tools_debug_<UUID>.json``.
 import json
 import logging
 import os
-from typing import List, Any, Optional
+from typing import Any, List, Optional
+
 # Per-vendor client cache slots; plugins read/write these via tools.web_tools (tests reset them to None).
 _firecrawl_client = _firecrawl_client_config = _parallel_client = _async_parallel_client = _exa_client = None
 
-from plugins.web.firecrawl.provider import _is_tool_gateway_ready, check_firecrawl_api_key
+from plugins.web.firecrawl.provider import (
+    _is_tool_gateway_ready,
+    check_firecrawl_api_key,
+)
 from tools.debug_helpers import DebugSession
-from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, read_selection, selection_exists
+from tools.tool_backend_helpers import (
+    NOUS_MANAGED_PROVIDER,
+    read_selection,
+    selection_exists,
+)
 from tools.url_safety import async_is_safe_url
-from tools.web_tools_rescue import _managed_search_fallback, _rescue_eligible, _rescue_search
-from tools.web_tools_truncate import _effective_char_limit, _trim_results, _truncate_results, convert_base64_images_to_links
 from tools.web_tools_extract import (
-    _extract_safe_urls, _merge_in_order, _no_provider_error, _resolve_extract_provider, _result_entry,
-    _strict_selection_error, _validate_extract_urls,
+    _extract_safe_urls,
+    _merge_in_order,
+    _no_provider_error,
+    _resolve_extract_provider,
+    _result_entry,
+    _strict_selection_error,
+    _validate_extract_urls,
+)
+from tools.web_tools_rescue import (
+    _managed_search_fallback,
+    _rescue_eligible,
+    _rescue_search,
+)
+from tools.web_tools_truncate import (
+    _effective_char_limit,
+    _trim_results,
+    _truncate_results,
+    convert_base64_images_to_links,
 )
 
 logger = logging.getLogger(__name__)
@@ -170,7 +192,10 @@ def _managed_web_search() -> bool:
     backend = _autodetect_backend()
     if backend == "firecrawl":
         return not (_has_env("FIRECRAWL_API_KEY") or _has_env("FIRECRAWL_API_URL")) and _is_tool_gateway_ready()
-    from tools.managed_tool_gateway import peek_nous_access_token, resolve_free_search_gateway
+    from tools.managed_tool_gateway import (
+        peek_nous_access_token,
+        resolve_free_search_gateway,
+    )
     return backend is None and resolve_free_search_gateway(token_reader=peek_nous_access_token) is not None
 
 
@@ -320,7 +345,8 @@ def web_search_tool(query: str, limit: int = 5) -> str:
             return tool_error("Interrupted", success=False)
         # Sync only — every provider's search() is sync.
         _ensure_web_plugins_loaded()
-        from agent.web_search_registry import get_active_search_provider, get_provider as _wsp_get_provider
+        from agent.web_search_registry import get_active_search_provider
+        from agent.web_search_registry import get_provider as _wsp_get_provider
         backend = _get_search_backend()
         provider = _wsp_get_provider(backend) if backend else None
         if provider is None or not provider.supports_search():
@@ -492,7 +518,10 @@ def check_web_api_key() -> bool:
     # Plugin path. Discovery must run first: check_fn fires at tool-registration time, before any dispatch.
     try:
         _ensure_web_plugins_loaded()
-        from agent.web_search_registry import get_active_search_provider, get_active_extract_provider
+        from agent.web_search_registry import (
+            get_active_extract_provider,
+            get_active_search_provider,
+        )
         for provider in (get_active_search_provider(), get_active_extract_provider()):
             if provider is not None and getattr(provider, "name", None) in _WEB_CHECK_SKIP:
                 # The registry's single-eligible / legacy walk picked a built-in that _get_backend

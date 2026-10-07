@@ -15,7 +15,6 @@ import threading
 from pathlib import Path
 from typing import Dict, Optional
 
-
 # Stale-module bridge: this module binds ``utils.file_signature`` at import time, so a fresh
 # import in a post-pull updater process (pre-handoff purge keeps root modules cached) dies
 # unless the stale ``utils`` is dropped first. See hermes_cli.stale_modules.
@@ -135,7 +134,11 @@ def apply_managed_overlay(config: dict) -> dict:
         if not managed:
             return config
         # Imported lazily to avoid an import cycle (config imports managed_scope).
-        from hermes_cli.config import _deep_merge, _expand_env_vars, _normalize_root_model_keys
+        from hermes_cli.config import (
+            _deep_merge,
+            _expand_env_vars,
+            _normalize_root_model_keys,
+        )
         managed_expanded = _normalize_root_model_keys(_expand_env_vars(managed))
         # _normalize_root_model_keys only promotes the string when root provider/base_url
         # keys exist to migrate; handle the bare case here (matches cli.py) so _deep_merge

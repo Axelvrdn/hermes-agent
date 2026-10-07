@@ -22,7 +22,6 @@ import logging
 import hermes_cli.auth as auth_mod
 import hermes_cli.auth_nous as auth_nous
 from agent.credential_pool import CredentialPool, PooledCredential
-
 from tests.hermes_cli.test_auth_nous_provider import _invoke_jwt, _setup_nous_auth
 
 

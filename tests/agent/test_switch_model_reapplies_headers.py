@@ -9,8 +9,8 @@ sentinel (403 without it).
 
 from unittest.mock import MagicMock, patch
 
-from run_agent import AIAgent
 from agent.context_compressor import ContextCompressor
+from run_agent import AIAgent
 
 
 def _make_agent(provider="copilot", base_url="https://api.githubcopilot.com") -> AIAgent:

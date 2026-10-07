@@ -11,6 +11,7 @@ import threading
 import time
 from pathlib import Path
 from typing import Any, MutableMapping, Optional
+
 from gateway.platforms.event import MessageEvent
 from utils import atomic_json_write
 

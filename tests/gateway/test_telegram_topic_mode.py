@@ -11,16 +11,16 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from agent.context_compressor import (
-    HISTORICAL_TASK_HEADING,
-    SUMMARY_PREFIX,
     _MERGED_PRIOR_CONTEXT_HEADER,
     _MERGED_SUMMARY_DELIMITER,
     _SUMMARY_END_MARKER,
+    HISTORICAL_TASK_HEADING,
+    SUMMARY_PREFIX,
 )
-from hermes_state import SessionDB
 from gateway.config import GatewayConfig, HomeChannel, Platform, PlatformConfig
 from gateway.platforms.event import MessageEvent
 from gateway.session import SessionEntry, SessionSource, build_session_key
+from hermes_state import SessionDB
 
 
 def _make_source(*, thread_id: str | None = None) -> SessionSource:

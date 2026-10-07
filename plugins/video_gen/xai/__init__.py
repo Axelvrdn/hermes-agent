@@ -259,7 +259,11 @@ async def _submit_xai_video_payload(api_key: str, base_url: str, endpoint: str, 
     """POST ``payload`` to ``/videos/{endpoint}``, poll ``/videos/{request_id}`` to a terminal status, shape the response."""
     prompt, resolved_model = payload["prompt"], payload["model"]
     try:
-        from tools.xai_http import build_xai_storage_options, maybe_mark_xai_storage_notice_seen, read_xai_imagine_storage_config
+        from tools.xai_http import (
+            build_xai_storage_options,
+            maybe_mark_xai_storage_notice_seen,
+            read_xai_imagine_storage_config,
+        )
         storage_options = build_xai_storage_options("video_gen", filename_prefix="hermes-xai-video", extension="mp4")
         storage_notice = maybe_mark_xai_storage_notice_seen("video_gen")
         storage_cfg = read_xai_imagine_storage_config("video_gen")

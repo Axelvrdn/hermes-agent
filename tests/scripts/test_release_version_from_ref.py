@@ -7,7 +7,12 @@ import json
 
 import pytest
 
-from scripts.releases.versioning import derive_next_version, next_attempt, tag_record, version_from_tag
+from scripts.releases.versioning import (
+    derive_next_version,
+    next_attempt,
+    tag_record,
+    version_from_tag,
+)
 
 SEED = "0.21.5"
 
@@ -54,7 +59,12 @@ def test_attempt_ref_rejects_other_shapes(ref):
 
 
 def test_attempt_and_marker_refs_round_trip():
-    from scripts.releases.versioning import attempt_ref, marker_ref, parse_attempt_ref, parse_marker_ref
+    from scripts.releases.versioning import (
+        attempt_ref,
+        marker_ref,
+        parse_attempt_ref,
+        parse_marker_ref,
+    )
 
     assert parse_attempt_ref(attempt_ref("0.21.5", 3)) == ("0.21.5", 3)
     assert parse_marker_ref(marker_ref("0.21.5", 3)) == ("0.21.5", 3)

@@ -104,7 +104,6 @@ async def test_adapter_stamps_per_frame_platform_from_inbound(monkeypatch):
     from gateway.relay.adapter import RelayAdapter
     from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
     from gateway.session import SessionSource
-
     from tests.gateway.relay.stub_connector import StubConnector
 
     descriptor = CapabilityDescriptor(

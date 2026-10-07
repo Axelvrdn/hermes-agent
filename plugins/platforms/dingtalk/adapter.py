@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Set
 try:
     import dingtalk_stream
     from dingtalk_stream import ChatbotMessage
-    from dingtalk_stream.frames import CallbackMessage, AckMessage
+    from dingtalk_stream.frames import AckMessage, CallbackMessage
 
     DINGTALK_STREAM_AVAILABLE = True
 except Exception:  # noqa: BLE001
@@ -35,8 +35,10 @@ except ImportError:
     httpx = None  # type: ignore[assignment]
 
 try:
-    from alibabacloud_dingtalk.card_1_0 import client as dingtalk_card_client, models as dingtalk_card_models
-    from alibabacloud_dingtalk.robot_1_0 import client as dingtalk_robot_client, models as dingtalk_robot_models
+    from alibabacloud_dingtalk.card_1_0 import client as dingtalk_card_client
+    from alibabacloud_dingtalk.card_1_0 import models as dingtalk_card_models
+    from alibabacloud_dingtalk.robot_1_0 import client as dingtalk_robot_client
+    from alibabacloud_dingtalk.robot_1_0 import models as dingtalk_robot_models
     from alibabacloud_tea_openapi import models as open_api_models
     from alibabacloud_tea_util import models as tea_util_models
 
@@ -46,17 +48,23 @@ except Exception:
     dingtalk_card_client = dingtalk_card_models = dingtalk_robot_client = dingtalk_robot_models = None
     open_api_models = tea_util_models = None
 
-from gateway.config import Platform, PlatformConfig
-from gateway.platforms.helpers import MessageDeduplicator, compile_mention_patterns
 from agent.i18n import t
+from gateway.config import Platform, PlatformConfig
+from gateway.platforms._shared import apply_yaml_bridge as _apply_yaml_bridge
+from gateway.platforms._shared import (
+    decode_json_list_literal as _decode_json_list_literal,
+)
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import send_error
 from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.platforms.event import MessageEvent
-from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, decode_json_list_literal as _decode_json_list_literal,
-    extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret, send_error
+from gateway.platforms.helpers import MessageDeduplicator, compile_mention_patterns
+from plugins.platforms.dingtalk.inbound import (
+    collect_download_codes,
+    extract_media,
+    extract_text,
 )
-from plugins.platforms.dingtalk.inbound import collect_download_codes, extract_media, extract_text
-
 
 logger = logging.getLogger(__name__)
 
@@ -165,9 +173,11 @@ def ensure_dingtalk_deps() -> bool:
     try:
         from pm.extras import ensure_import
         ensure_import("dingtalk")
-        import dingtalk_stream as _ds, httpx as _httpx  # noqa: E401
+        import dingtalk_stream as _ds  # noqa: E401
+        import httpx as _httpx
         from dingtalk_stream import ChatbotMessage as _CM
-        from dingtalk_stream.frames import CallbackMessage as _CBM, AckMessage as _AM
+        from dingtalk_stream.frames import AckMessage as _AM
+        from dingtalk_stream.frames import CallbackMessage as _CBM
     except Exception:
         return False
     dingtalk_stream, ChatbotMessage, CallbackMessage, AckMessage, httpx = _ds, _CM, _CBM, _AM, _httpx
@@ -230,7 +240,9 @@ class DingTalkAdapter(BasePlatformAdapter):
                 logger.warning("[%s] " + problem, self.name)
                 return False
         try:
-            from gateway.platforms._http_client_limits import platform_httpx_limits  # tighter keepalive: idle CLOSE_WAIT drains promptly
+            from gateway.platforms._http_client_limits import (
+                platform_httpx_limits,  # tighter keepalive: idle CLOSE_WAIT drains promptly
+            )
             self._http_client = httpx.AsyncClient(timeout=30.0, limits=platform_httpx_limits())
             self._stream_client = dingtalk_stream.DingTalkStreamClient(dingtalk_stream.Credential(self._client_id, self._client_secret))
             if CARD_SDK_AVAILABLE:
@@ -776,9 +788,9 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
 
 def interactive_setup() -> None:
     """Configure DingTalk — QR scan (recommended) or manual credential entry."""
+    from hermes_cli.cli_output import print_header, print_success, print_warning, prompt
     from hermes_cli.config import save_env_value
     from hermes_cli.setup import prompt_choice
-    from hermes_cli.cli_output import prompt, print_header, print_success, print_warning
     from hermes_cli.setup_platforms import declines_reconfigure
     print_header("DingTalk")
     if declines_reconfigure("DingTalk", "Reconfigure DingTalk?", "DINGTALK_CLIENT_ID"):

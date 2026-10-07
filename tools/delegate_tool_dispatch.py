@@ -9,15 +9,28 @@ import contextvars
 import json
 import logging
 import time
-from concurrent.futures import FIRST_COMPLETED, wait as _cf_wait
+from concurrent.futures import FIRST_COMPLETED
+from concurrent.futures import wait as _cf_wait
 from dataclasses import dataclass, replace
 from typing import Any, Dict, List, Optional
 
-from hermes_cli.observability.shared_metrics_loop import begin_delegation_run, finish_delegation_unit
+from hermes_cli.observability.shared_metrics_loop import (
+    begin_delegation_run,
+    finish_delegation_unit,
+)
 from tools.async_delegation import _new_delegation_id, record_unit_child
-from tools.delegate_tool_child_run import _attach_child, _detach_child, _fabricated_entry, _signal_child_stop
+from tools.delegate_tool_child_run import (
+    _attach_child,
+    _detach_child,
+    _fabricated_entry,
+    _signal_child_stop,
+)
 from tools.delegate_tool_progress import (
-    SUBAGENT_FAILURE_STATUSES, _print_completion_line, _quiet, describe_subagent_failure, format_batch_tag,
+    SUBAGENT_FAILURE_STATUSES,
+    _print_completion_line,
+    _quiet,
+    describe_subagent_failure,
+    format_batch_tag,
 )
 from tools.delegate_tool_registry import _capture_gateway_steer_authority
 from tools.delegate_tool_results import _finalize_child_results
@@ -81,7 +94,10 @@ def _capture_origin() -> tuple[str, str, Any, Any, bool]:
     _origin_ui_session_id = ""
     _origin_session_history_delivery = False
     with _quiet(None):
-        from gateway.session_context import get_session_env, session_history_delivery_supported
+        from gateway.session_context import (
+            get_session_env,
+            session_history_delivery_supported,
+        )
         _origin_ui_session_id = get_session_env("HERMES_UI_SESSION_ID", "")
         _origin_session_history_delivery = session_history_delivery_supported()
     return (_origin_wake_sid, _origin_ui_session_id, *_capture_gateway_steer_authority(_origin_ui_session_id), _origin_session_history_delivery)

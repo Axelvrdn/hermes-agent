@@ -143,7 +143,10 @@ def _pid_is_sentinel_owner(pid: Any, start_time: Any, create_time: Any) -> bool:
 def _suspected_oom(mem: Dict[str, Any]) -> bool:
     """Heuristic only (classification stays with the reader); thresholds are
     memory_status' "critical" tier so a live warning and a post-mortem verdict agree."""
-    from gateway.memory_status import _CRITICAL_AVAILABLE_FRACTION, _CRITICAL_AVAILABLE_KIB
+    from gateway.memory_status import (
+        _CRITICAL_AVAILABLE_FRACTION,
+        _CRITICAL_AVAILABLE_KIB,
+    )
 
     total, avail = mem.get("mem_total_kib"), mem.get("mem_available_kib")
     if not isinstance(avail, int):

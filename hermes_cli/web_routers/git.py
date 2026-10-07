@@ -18,7 +18,6 @@ from fastapi import APIRouter, HTTPException, Request
 from hermes_cli import web_git as _web_git
 from hermes_cli._subprocess_compat import bounded_probe_run
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_files import _fs_path, _hosted_fs_path_allowed, _hosted_fs_read_guard
 from hermes_cli.web_models import (
     GitBranchSwitchBody,
     GitCommitBody,
@@ -27,6 +26,11 @@ from hermes_cli.web_models import (
     GitPrListBody,
     GitWorktreeAddBody,
     GitWorktreeRemoveBody,
+)
+from hermes_cli.web_server_files import (
+    _fs_path,
+    _hosted_fs_path_allowed,
+    _hosted_fs_read_guard,
 )
 
 router = APIRouter()

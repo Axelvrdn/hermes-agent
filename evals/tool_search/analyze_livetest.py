@@ -11,7 +11,6 @@ import json
 import sys
 from pathlib import Path
 
-
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "out"
 

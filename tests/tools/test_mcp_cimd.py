@@ -29,10 +29,10 @@ pytest.importorskip(
 )
 
 from tools.mcp_oauth import (  # noqa: E402 — after the SDK availability gate
-    HermesTokenStorage,
     _CIMD_CLIENT_METADATA_URL,
     _CIMD_PORTS,
     _CIMD_REDIRECT_HOSTS,
+    HermesTokenStorage,
     _build_client_metadata,
     _configure_callback_port,
     _is_valid_cimd_url,
@@ -488,6 +488,7 @@ def test_sdk_chooses_cimd_only_when_the_server_advertises_it(
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     _set_interactive_stdin(monkeypatch)
     from mcp.client.auth.utils import should_use_client_metadata_url
+
     from tools.mcp_oauth import build_oauth_auth
 
     provider = build_oauth_auth("srv", "https://mcp.example.com/mcp", {})

@@ -14,7 +14,6 @@ from unittest.mock import MagicMock
 import pytest
 
 
-
 def _ensure_slack_mock(monkeypatch):
     """Install lightweight Slack modules when optional Slack deps are absent."""
     if "slack_bolt" in sys.modules and hasattr(sys.modules["slack_bolt"], "__file__"):

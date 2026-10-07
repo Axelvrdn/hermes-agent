@@ -21,7 +21,6 @@ import threading
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
-
 # Log-record parity with the origin module.
 logger = logging.getLogger("cron.scheduler")
 
@@ -286,8 +285,8 @@ def _seed_cron_session(
     The seeded key must equal the reply's ``build_session_key``: chat_type, user_id, thread_id and
     scope_id (Slack team id) are all part of it, so callers pass exactly what the reply carries."""
     from gateway.config import Platform
-    from gateway.session import SessionSource
     from gateway.mirror import mirror_to_session
+    from gateway.session import SessionSource
     seeded_session_id: Optional[str] = None
     session_store = getattr(adapter, "_session_store", None)
     if session_store is not None:
@@ -434,7 +433,7 @@ def _get_config_home_channel(platform_name: str):
     The ``<PLATFORM>_HOME_CHANNEL`` env var is only a best-effort mirror; relay-fronted platforms
     may exist solely in config.yaml, so reading only the env mirror would drop their delivery."""
     try:
-        from gateway.config import load_gateway_config, Platform
+        from gateway.config import Platform, load_gateway_config
         return load_gateway_config().get_home_channel(Platform(platform_name.lower()))
     except Exception:
         logger.debug(
@@ -645,7 +644,10 @@ def _resolve_single_delivery_target(
     if ":" in deliver_value:
         platform_name, rest = deliver_value.split(":", 1)
         platform_key = platform_name.lower()
-        from tools.send_message_tool import prepare_send_message_platforms, resolve_send_target
+        from tools.send_message_tool import (
+            prepare_send_message_platforms,
+            resolve_send_target,
+        )
         prepare_send_message_platforms()
         # pass_unresolved_references: no model in the loop to react; an unknown-to-directory target
         # must reach the adapter as written or the job's output is silently lost.
@@ -784,10 +786,13 @@ def _deliver_to_bot_chat(job: dict, content: str, profile: str, *, deferred: Opt
     import json
     import tempfile
     import uuid
-    from hermes_constants import get_hermes_home
+
     from hermes_cli.profiles import get_profile_dir
+    from hermes_constants import get_hermes_home
     from tools.bot_live_delivery import (
-        deliver_to_live_owner, find_canonical_live_owner, read_delivery_result,
+        deliver_to_live_owner,
+        find_canonical_live_owner,
+        read_delivery_result,
     )
 
     job_id = job.get("id", "?")
@@ -1128,9 +1133,12 @@ def _send_media_via_adapter(
     """Send MEDIA files as native attachments (routed by extension, as in
     _process_message_background). Returns per-file error strings so a dropped attachment surfaces
     in run status, not just the gateway log."""
-    from gateway.platforms.base import (
-        BasePlatformAdapter, should_send_media_as_audio, validate_media_delivery_path)
     from agent.async_utils import safe_schedule_threadsafe
+    from gateway.platforms.base import (
+        BasePlatformAdapter,
+        should_send_media_as_audio,
+        validate_media_delivery_path,
+    )
     job_ref = {"id": job.get("id", "?")}
     errors: list = []
     requested = [(str(p), v) for p, v in (media_files or [])]
@@ -1372,6 +1380,7 @@ def _resolve_target_transport(
             # neither its absence nor ``enabled: false`` may veto the shared transport; only its
             # non-credential settings (continuable surface, reply mode) are kept (#89302, #103701).
             from dataclasses import replace
+
             from gateway.config import PlatformConfig
             own = config.platforms.get(platform)
             transport = DeliveryTransport(
@@ -1783,7 +1792,12 @@ def _queue_for_live_reconnect(t: _TargetDelivery, content: str, media_files: lis
     carries text only; dropped attachments are reported."""
     try:
         from gateway.delivery_ledger import (
-            compute_obligation_id, is_reconnect_only, ledger_enabled, mark_failed, record_obligation)
+            compute_obligation_id,
+            is_reconnect_only,
+            ledger_enabled,
+            mark_failed,
+            record_obligation,
+        )
         if not is_reconnect_only(t.live_error) or not ledger_enabled():
             return
         session_key = f"cron:{t.platform_name}:{t.chat_id}" + (f":{t.thread_id}" if t.thread_id else "")
@@ -2032,10 +2046,10 @@ def _deliver_result(
     else:
         delivery_content = content
 
-    from gateway.platforms.base import BasePlatformAdapter
     # Bridge media-policy config into the env vars the path validator reads. The gateway does this
     # at boot; standalone runs (`hermes cron run`) did not, silently dropping files. Idempotent.
     from gateway.media_policy import apply_media_policy_env
+    from gateway.platforms.base import BasePlatformAdapter
     apply_media_policy_env(user_cfg)
     media_files, cleaned_delivery_content = BasePlatformAdapter.extract_media(delivery_content)
     # Redact at this single chokepoint, BEFORE the live-adapter / standalone send lanes below.

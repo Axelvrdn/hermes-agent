@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from hermes_cli import web_server
 import hermes_cli.web_server_chat as _web_server_chat
+from hermes_cli import web_server
 
 
 class FakeBridge:
@@ -231,6 +231,7 @@ async def test_legacy_marker_dropped_when_cancel_lands_mid_close(pty_keepalive_h
     running must not skip the marker discard."""
     import threading
     import time
+
     from starlette.testclient import TestClient
 
     close_started = threading.Event()

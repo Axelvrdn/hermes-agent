@@ -32,7 +32,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any, Callable, Union, Self
+from typing import Any, Callable, Self, Union
 
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.completion_create_params import CompletionCreateParamsStreaming

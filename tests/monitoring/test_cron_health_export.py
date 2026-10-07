@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+
 def _metric(snapshot, name):
     return next(metric for metric in snapshot.metrics if metric.name == name)
 
@@ -37,6 +38,7 @@ def test_execution_projection_is_opaque_bounded_and_content_free():
 def test_cron_store_writability_is_exported(monkeypatch, tmp_path):
     """A degraded store exports writable=0 with its skipped runs, a cleared one writable=1."""
     import errno
+
     from agent.monitoring.cron_health import build_cron_health_snapshot
     from cron import store_health
     monkeypatch.setattr(store_health, "_degraded", {})

@@ -36,8 +36,8 @@ def served_root(tmp_path, monkeypatch):
     # tests/conftest.py hook in #118097 once that lands).
     (tmp_path / "locks").mkdir()
     monkeypatch.setenv("HERMES_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
-    import hermes_constants
     import gateway.status as status
+    import hermes_constants
     monkeypatch.setattr(hermes_constants, "_default_hermes_root_memo", None)
     # Liveness is a VERIFIED identity: this pytest process stands in for the default gateway only
     # because its command line reads as one; any other PID keeps its real command line.
@@ -132,9 +132,13 @@ def test_recycled_pid_does_not_lend_a_stale_record_its_served_profiles(served_ro
     line is not a gateway's) must not make its ``served_profiles`` authoritative: bare PID existence
     once did, so `hermes -p coder gateway start` exited 78 for a multiplexer that was long gone."""
     import subprocess
+
     import gateway.status as status
     from hermes_cli.gateway import named_profile_served_by_running_multiplexer
-    from hermes_cli.gateway_multiplex_served import live_default_gateway_pid, recorded_served_profiles
+    from hermes_cli.gateway_multiplex_served import (
+        live_default_gateway_pid,
+        recorded_served_profiles,
+    )
     child = subprocess.Popen(["sleep", "60"])
     try:
         stale_start = (status._get_process_start_time(child.pid) or 10**9) - 4242
@@ -184,9 +188,9 @@ def test_service_verbs_do_not_start_a_second_gateway(served_root, monkeypatch, v
 
 
 def test_satellite_gateway_identity_does_not_imply_cron_health(served_root, monkeypatch):
+    import hermes_cli.cron as cr
     import hermes_cli.gateway as gw
     import hermes_cli.status as st
-    import hermes_cli.cron as cr
     monkeypatch.setattr(gw, "find_gateway_pids", lambda *a, **k: [])
     monkeypatch.setattr(gw, "get_gateway_runtime_snapshot",
                         lambda system=False: gw.GatewayRuntimeSnapshot(manager="systemd (user)"))
@@ -217,7 +221,10 @@ def test_dashboard_liveness_ladder_reports_served_profile_running(served_root):
     """`/api/status?profile=X` and `/api/messaging/platforms?profile=X` share this ladder: a served
     profile has no gateway.pid/gateway_state.json, so without the multiplexer rung the dashboard said
     "stopped" while `hermes -p X status` said running. Alpha's `<X>:<platform>` entries project as its own."""
-    from gateway.status import profile_platforms_from_multiplexer, resolve_gateway_liveness
+    from gateway.status import (
+        profile_platforms_from_multiplexer,
+        resolve_gateway_liveness,
+    )
     (served_root / "gateway_state.json").write_text(json.dumps({
         "pid": os.getpid(), "hermes_home": str(served_root), "gateway_state": "running",
         "served_profiles": ["default", "coder"],
@@ -239,7 +246,11 @@ def test_dashboard_lifecycle_verbs_target_the_multiplexer(served_root, monkeypat
     the action log); `stop` parks, `start` refuses while unparked; a profile with its own gateway is
     managed normally."""
     from hermes_cli import web_server_gateway
-    from hermes_cli.web_server_gateway import _gateway_subcommand, _profile_action_environment, multiplexed_profile_refusal
+    from hermes_cli.web_server_gateway import (
+        _gateway_subcommand,
+        _profile_action_environment,
+        multiplexed_profile_refusal,
+    )
     # No stub: a served profile's liveness answers "running" on the MULTIPLEXER's pid, and that must
     # not read as a gateway of its own (stubbing it False hid exactly that).
     # This process's own HERMES_HOME is coder's; the restart child must still run under the DEFAULT
@@ -280,7 +291,10 @@ def test_the_multiplexer_restart_names_the_root_even_under_a_sticky_active_profi
     from pathlib import Path
 
     from hermes_cli.main import _apply_profile_override
-    from hermes_cli.web_server_gateway import _gateway_subcommand, _profile_action_environment
+    from hermes_cli.web_server_gateway import (
+        _gateway_subcommand,
+        _profile_action_environment,
+    )
     monkeypatch.setenv("HERMES_HOME", str(served_root))  # the dashboard runs as the default profile
     (served_root / "active_profile").write_text("coder")
     monkeypatch.setattr(Path, "home", lambda: served_root.parent)

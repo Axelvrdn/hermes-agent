@@ -16,8 +16,6 @@ from tests.docker.conftest import (
 )
 
 
-
-
 def test_dashboard_service_resets_home(
     built_image: str, container_name: str,
 ) -> None:

@@ -2,14 +2,15 @@
 
 Narrow regressions for the in-memory ownership portion of #88688.
 """
-from concurrent.futures import Future
 import threading
 import time
+from concurrent.futures import Future
 from unittest.mock import patch
 
 import pytest
 
-from cron import jobs, scheduler as sched
+from cron import jobs
+from cron import scheduler as sched
 from tools import cronjob_tools as tools
 
 

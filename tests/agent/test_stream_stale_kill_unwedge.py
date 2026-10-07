@@ -30,7 +30,6 @@ import pytest
 import run_agent
 from agent import chat_completion_helpers as helpers
 
-
 # ── unit: the kill reaches the killed attempt's socket, never closes it ──
 
 

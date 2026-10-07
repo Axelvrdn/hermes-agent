@@ -23,10 +23,10 @@ import pytest
 
 from hermes_cli.profile_distribution import (
     DEFAULT_DIST_OWNED,
+    MANIFEST_FILENAME,
     DistributionError,
     DistributionManifest,
     EnvRequirement,
-    MANIFEST_FILENAME,
     _env_template_from_manifest,
     _looks_like_git_url,
     _parse_semver,
@@ -39,7 +39,6 @@ from hermes_cli.profile_distribution import (
     update_distribution,
     write_manifest,
 )
-
 
 # ---------------------------------------------------------------------------
 # Isolated profile env (matches tests/hermes_cli/test_profiles.py)
@@ -369,7 +368,13 @@ class TestInstall:
 
     def test_install_pauses_shipped_cron_jobs_and_skips_runtime_state(self, profile_env):
         """Distribution cron definitions are inert until the installer explicitly resumes them."""
-        from cron.jobs import get_due_jobs, is_job_runnable, list_jobs, update_job, use_cron_store
+        from cron.jobs import (
+            get_due_jobs,
+            is_job_runnable,
+            list_jobs,
+            update_job,
+            use_cron_store,
+        )
 
         staged = _make_staging_dir(profile_env, "cron_src")
         with use_cron_store(staged):
@@ -525,7 +530,14 @@ class TestUpdate:
 
     def test_update_merges_cron_jobs_without_losing_local_state(self, profile_env):
         """Updating one shipped definition cannot replace the profile's whole cron store."""
-        from cron.jobs import create_job, list_jobs, pause_job, resume_job, update_job, use_cron_store
+        from cron.jobs import (
+            create_job,
+            list_jobs,
+            pause_job,
+            resume_job,
+            update_job,
+            use_cron_store,
+        )
 
         staged = _make_staging_dir(profile_env, "cron_update")
         with use_cron_store(staged):
@@ -866,7 +878,7 @@ class TestProfileInfoDistribution:
 
 
     def test_malformed_manifest_does_not_break_list(self, profile_env):
-        from hermes_cli.profiles import create_profile, list_profiles, get_profile_dir
+        from hermes_cli.profiles import create_profile, get_profile_dir, list_profiles
         create_profile(name="brokenmeta", no_alias=True)
         # Write a distribution.yaml that isn't a valid mapping
         (get_profile_dir("brokenmeta") / "distribution.yaml").write_text(

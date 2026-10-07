@@ -20,6 +20,7 @@ import pytest
 
 from tui_gateway import server
 
+
 @pytest.fixture()
 def bad_bytes_cmd(tmp_path):
     """A shell command running a child that writes bytes invalid in UTF-8 (and in most

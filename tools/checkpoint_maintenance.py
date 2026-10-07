@@ -7,12 +7,23 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from hermes_cli.gitlock import clear_stale_tmp_packs
-from utils import rmtree_readonly
 from tools.checkpoint_manager import (
-    _GIT_TIMEOUT, _LEGACY_PREFIX, _PRUNE_MARKER_NAME, _REFS_PREFIX, _STORE_DIRNAME,
-    _dir_size_bytes, _index_path, _list_projects, _pre_v2_shadow_repos,
-    _project_meta_path, _ref_name, _resolve_checkpoint_base, _run_git, _store_path,
+    _GIT_TIMEOUT,
+    _LEGACY_PREFIX,
+    _PRUNE_MARKER_NAME,
+    _REFS_PREFIX,
+    _STORE_DIRNAME,
+    _dir_size_bytes,
+    _index_path,
+    _list_projects,
+    _pre_v2_shadow_repos,
+    _project_meta_path,
+    _ref_name,
+    _resolve_checkpoint_base,
+    _run_git,
+    _store_path,
 )
+from utils import rmtree_readonly
 
 logger = logging.getLogger(__name__)
 
@@ -341,7 +352,7 @@ def _prune_checkpoints(
             else:
                 result["deleted_stale"] += 1
 
-        from tools.checkpoint_pruning import Pruner, PruneError
+        from tools.checkpoint_pruning import PruneError, Pruner
 
         pruner = Pruner(_run_git, store, str(base), _GIT_TIMEOUT, _dir_size_bytes, _REFS_PREFIX)
         try:

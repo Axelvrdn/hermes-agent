@@ -3,8 +3,9 @@ import json
 from unittest.mock import patch
 
 import pytest
+
 from agent.status_output import StatusOutputMixin
-from agent.turn_overflow import _Recovery, _recover_payload_too_large
+from agent.turn_overflow import _recover_payload_too_large, _Recovery
 from agent.turn_retry_state import TurnRetryState
 
 
@@ -44,8 +45,8 @@ def policy(request, tmp_path, monkeypatch):
 
 @pytest.mark.parametrize("local", [False, True])
 def test_outer_loop_diagnostic_preserves_verdict_and_trace(policy, local, capsys, caplog):
-    from agent.turn_loop_errors import handle_outer_loop_error
     import agent.conversation_loop as loop
+    from agent.turn_loop_errors import handle_outer_loop_error
     agent = Agent()
     # Traceback classification executes normally using a real frame filename.
     with patch.object(loop, "_LOCAL_PROCESSING_MODULES", {"test_recovery_diagnostic_producers"} if local else set()):
@@ -65,8 +66,8 @@ def test_outer_loop_diagnostic_preserves_verdict_and_trace(policy, local, capsys
 
 
 def test_missing_requirements_keeps_tool_inventory(policy, monkeypatch, capsys):
-    from agent.agent_init import _load_tools
     import model_tools
+    from agent.agent_init import _load_tools
     agent = Agent()
     agent.quiet_mode = agent.save_trajectories = agent._use_prompt_caching = False
     agent.ephemeral_system_prompt = None

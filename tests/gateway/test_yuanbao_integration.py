@@ -11,17 +11,19 @@ test_yuanbao_integration.py - Yuanbao 模块集成测试
   - Toolset 注册
 """
 
-import sys
 import os
+import sys
 
 # 确保 hermes-agent 根目录在 sys.path 中
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
-import pytest
 from unittest.mock import MagicMock, patch
-from gateway.config import Platform, PlatformConfig, GatewayConfig
+
+import pytest
+
+from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.platforms.yuanbao import YuanbaoAdapter
 
 
@@ -184,7 +186,6 @@ class TestGatewayRunnerRegistration:
 # ===========================================================
 
 import asyncio
-
 
         # No new task should be created because already reconnecting
 

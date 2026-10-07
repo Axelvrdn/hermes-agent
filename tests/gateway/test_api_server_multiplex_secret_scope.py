@@ -94,6 +94,7 @@ async def test_profile_middleware_binds_auth_before_handler(
 ):
     from aiohttp import web
     from aiohttp.test_utils import TestClient, TestServer
+
     from gateway.config import GatewayConfig
     from gateway.platforms.api_server import _api_request_profile
 

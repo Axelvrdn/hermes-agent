@@ -24,6 +24,7 @@ def curator_env(tmp_path, monkeypatch):
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     import importlib
+
     import hermes_constants
     importlib.reload(hermes_constants)
     from agent import curator
@@ -125,6 +126,7 @@ def curator_env_with_cron(curator_env, monkeypatch):
     (home / "cron" / "output").mkdir(exist_ok=True)
 
     import importlib
+
     import cron.jobs as jobs_mod
     importlib.reload(jobs_mod)
     monkeypatch.setattr(jobs_mod, "HERMES_DIR", home)

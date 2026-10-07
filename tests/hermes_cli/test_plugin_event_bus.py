@@ -28,7 +28,6 @@ from hermes_cli.plugins import (
     PluginManifest,
 )
 
-
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
 

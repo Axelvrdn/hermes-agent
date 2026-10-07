@@ -16,14 +16,36 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Tuple
 
 from tools.plugin_guard_context import (
-    STEP_DOWN, catalog_cap, is_agent_facing, is_base64_media, is_ci_workflow, is_coin_name_only, is_data_decode,
-    is_doc_prose, is_google_installed_app_secret, is_hex_in_char_class, is_inert_fixture_line,
-    is_json_prose_value, is_locale_catalog,
-    is_loopback_continuation, is_loopback_only, is_pip_install_in_prose_literal, is_regex_alternation_token,
-    is_self_uninstall_doc, is_test_tree, logical_line, prose_cap)
+    STEP_DOWN,
+    catalog_cap,
+    is_agent_facing,
+    is_base64_media,
+    is_ci_workflow,
+    is_coin_name_only,
+    is_data_decode,
+    is_doc_prose,
+    is_google_installed_app_secret,
+    is_hex_in_char_class,
+    is_inert_fixture_line,
+    is_json_prose_value,
+    is_locale_catalog,
+    is_loopback_continuation,
+    is_loopback_only,
+    is_pip_install_in_prose_literal,
+    is_regex_alternation_token,
+    is_self_uninstall_doc,
+    is_test_tree,
+    logical_line,
+    prose_cap,
+)
 from tools.skills_guard import (
-    Finding, ScanResult, SUSPICIOUS_BINARY_EXTENSIONS, _determine_verdict, format_scan_report,
-    scan_file)
+    SUSPICIOUS_BINARY_EXTENSIONS,
+    Finding,
+    ScanResult,
+    _determine_verdict,
+    format_scan_report,
+    scan_file,
+)
 
 PLUGIN_SCANNER_VERSION = "plugin-guard-v9"
 

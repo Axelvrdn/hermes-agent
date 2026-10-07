@@ -62,7 +62,12 @@ class TestNtNamespaceGuard(unittest.TestCase):
         from pathlib import Path
 
         from agent import context_references, copilot_acp_client, tool_executor
-        from tools.file_tools import patch_tool, read_file_tool, search_tool, write_file_tool
+        from tools.file_tools import (
+            patch_tool,
+            read_file_tool,
+            search_tool,
+            write_file_tool,
+        )
 
         bad = "\\??\\UNC\\attacker.example\\share\\x"
         with patch("agent.file_safety.Path") as fs_path, \

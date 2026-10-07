@@ -57,7 +57,11 @@ def test_timeline_pages_project_human_prompts_without_tool_payloads(timeline_sto
 
 @pytest.mark.parametrize("legacy", [False, True])
 def test_compacted_timeline_and_jump_share_display_order_and_visibility(timeline_store, legacy):
-    from agent.context_compressor import COMPRESSION_CONTINUATION_USER_CONTENT, SUMMARY_PREFIX, _SUMMARY_END_MARKER
+    from agent.context_compressor import (
+        _SUMMARY_END_MARKER,
+        COMPRESSION_CONTINUATION_USER_CONTENT,
+        SUMMARY_PREFIX,
+    )
 
     db, client, _ = timeline_store
     sid = "timeline-root"
@@ -174,6 +178,7 @@ def test_exact_owner_lineage_validation_and_bounded_jump(timeline_store):
 def test_timeline_sql_never_reads_tool_columns_or_writes(timeline_store, monkeypatch):
     import sqlite3
     from contextlib import contextmanager
+
     from hermes_state_timeline import get_session_timeline
 
     db, _, home = timeline_store

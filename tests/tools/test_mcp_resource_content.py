@@ -11,7 +11,6 @@ from types import SimpleNamespace
 
 import pytest
 
-
 PDF_BYTES = b"%PDF-1.4 fake pdf payload for tests"
 
 
@@ -146,7 +145,8 @@ class TestErrorPathResourceText:
     @pytest.fixture()
     def _handler(self, monkeypatch):
         import asyncio
-        from unittest.mock import AsyncMock, MagicMock, patch as mock_patch
+        from unittest.mock import AsyncMock, MagicMock
+        from unittest.mock import patch as mock_patch
 
         from tools import mcp_tool
         from tools import mcp_tool_handlers as _mcp_handlers

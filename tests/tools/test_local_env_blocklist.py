@@ -10,7 +10,11 @@ from unittest.mock import patch
 
 import pytest
 
-from tests.tools._child_env_fixtures import child_env, observe_child, observe_terminal  # noqa: F401
+from tests.tools._child_env_fixtures import (  # noqa: F401
+    child_env,
+    observe_child,
+    observe_terminal,
+)
 from tools.environments import local
 from tools.environments import local_pythonpath as pp
 from tools.environments.local_env_policy import _HERMES_PROVIDER_ENV_BLOCKLIST
@@ -216,6 +220,7 @@ def test_a_partial_scan_is_rescanned_on_the_next_spawn(child_env, monkeypatch):
     """A manifest read that fails once (same file signature afterwards) must not pin the partial
     result: the next spawn reads it and strips the secret."""
     import builtins
+
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     home = child_env / "profiles" / "a"
     plugin_dir = home / "plugins" / "chatx"
@@ -324,6 +329,7 @@ def test_unreadable_bundled_manifest_fails_the_policy_instead_of_dropping_it(mon
     """The import-time read keeps the bundled secret set only when every bundled manifest was
     read; otherwise the policy's strict re-read raises rather than building without them."""
     import builtins
+
     import hermes_cli.config as cfg
     target = next(path for _name, path, _kind, _st in cfg._platform_manifest_paths(source="bundled") if path)
     real_open = builtins.open
@@ -447,7 +453,7 @@ def test_builders_strip_runtime_markers_and_owned_paths(child_env, monkeypatch, 
     ("nonterminal", None, None),
 ])
 def test_force_prefix_is_not_plugin_passthrough(child_env, monkeypatch, builder, base_force, extra_force):
-    from tools.env_passthrough import register_env_passthrough, is_env_passthrough
+    from tools.env_passthrough import is_env_passthrough, register_env_passthrough
     register_env_passthrough(["OPENAI_API_KEY", "AUXILIARY_VISION_API_KEY", "SERVICE_TOKEN"])
     assert not is_env_passthrough("OPENAI_API_KEY")
     assert not is_env_passthrough("AUXILIARY_VISION_API_KEY")
@@ -480,7 +486,7 @@ def test_buzz_context_and_plain_process_value(child_env, monkeypatch, managed, p
     from agent import secret_scope as ss
     from gateway.session_context import _SESSION_PLATFORM
     from tools.code_execution_env import _scrub_child_env
-    from tools.env_passthrough import register_env_passthrough, is_env_passthrough
+    from tools.env_passthrough import is_env_passthrough, register_env_passthrough
     buzz = {"BUZZ_PRIVATE_KEY": "fake-process", "BUZZ_AUTH_TAG": "fake-tag", "BUZZ_RELAY_URL": "fake-relay"}
     for k, v in buzz.items():
         monkeypatch.setenv(k, v)
@@ -1034,8 +1040,8 @@ class TestNativeEnvironmentContracts:
     def test_configured_home_alias_matches_launcher_output(self, tmp_path, monkeypatch):
         """The real producer spelling is derived and consumed end to end."""
         import tools.environments.local as local
-        from tools.environments import local_pythonpath
         from hermes_cli.gateway_windows import _preserve_hermes_home_path
+        from tools.environments import local_pythonpath
 
         physical_home = tmp_path / "physical-home"
         physical_root = _physical_repo_root(tmp_path)
@@ -1083,8 +1089,8 @@ class TestNativeEnvironmentContracts:
         repo-root entry is stripped.
         """
         import tools.environments.local as local
-        from tools.environments import local_pythonpath
         from hermes_cli.profiles import resolve_profile_env
+        from tools.environments import local_pythonpath
 
         physical_home = tmp_path / "physical-home"
         physical_root = physical_home / "hermes-agent"
@@ -1326,7 +1332,10 @@ class TestProfileScopedPassthrough:
     def test_make_run_env_uses_active_profile_for_passthrough(self, monkeypatch):
         """Allowlisted values must come from the routed profile, not os.environ."""
         from agent import secret_scope as ss
-        from tools.env_passthrough import clear_env_passthrough, register_env_passthrough
+        from tools.env_passthrough import (
+            clear_env_passthrough,
+            register_env_passthrough,
+        )
         from tools.environments.local import _make_run_env
 
         clear_env_passthrough()
@@ -1346,7 +1355,10 @@ class TestProfileScopedPassthrough:
     def test_make_run_env_omits_missing_scoped_passthrough(self, monkeypatch):
         """A missing routed secret must not fall back to the default profile."""
         from agent import secret_scope as ss
-        from tools.env_passthrough import clear_env_passthrough, register_env_passthrough
+        from tools.env_passthrough import (
+            clear_env_passthrough,
+            register_env_passthrough,
+        )
         from tools.environments.local import _make_run_env
 
         clear_env_passthrough()

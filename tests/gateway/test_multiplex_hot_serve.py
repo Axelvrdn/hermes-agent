@@ -220,8 +220,8 @@ async def test_profile_control_verbs_round_trip_and_refusals(tmp_path, monkeypat
 @pytest.mark.platforms("linux")
 @pytest.mark.asyncio
 async def test_profile_lifecycle_over_real_control_socket(tmp_path, monkeypatch):
-    from gateway.run import _start_gateway_start_control_socket
     from gateway import control_socket
+    from gateway.run import _start_gateway_start_control_socket
     runner, home = _runner(tmp_path, monkeypatch)
     secondary = _mkprofile(home, "worker")
     with patch("hermes_cli.profiles.get_active_profile_name", return_value="default"):

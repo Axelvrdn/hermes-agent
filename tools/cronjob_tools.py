@@ -2,6 +2,7 @@
 (schema/context bloat avoided); `cronjob()` stays callable for direct Python callers."""
 
 import contextlib
+import copy
 import json
 import logging
 import sys
@@ -10,8 +11,6 @@ import time
 from concurrent.futures import Future
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-
-import copy
 
 from hermes_constants import display_hermes_home
 
@@ -44,8 +43,8 @@ from cron.jobs import (
     resolve_job_ref,
     resume_job,
     trigger_job,
-    update_job)
-from tools.cronjob_prompt_scan import _scan_cron_prompt
+    update_job,
+)
 from tools.cronjob_job_args import (
     _apply_continuity,
     _canonical_skills,
@@ -63,7 +62,9 @@ from tools.cronjob_job_args import (
     _validate_bot_chat_deliver,
     _validate_context_from_refs,
     _validate_cron_base_url,
-    _validate_cron_script_path)
+    _validate_cron_script_path,
+)
+from tools.cronjob_prompt_scan import _scan_cron_prompt
 from tools.registry import registry, tool_error
 
 
@@ -162,7 +163,9 @@ def _primary_routed_delivery_platforms(job: Dict[str, Any]) -> set:
     ``profile_routes``: routed here, with no credential of its own to send standalone."""
     try:
         from cron.scheduler import _resolve_delivery_targets
-        from cron.scheduler_preflight import _delivery_platform_routed_from_primary_gateway
+        from cron.scheduler_preflight import (
+            _delivery_platform_routed_from_primary_gateway,
+        )
         routed = {t["platform"] for t in _resolve_delivery_targets(job) or []
                   if t.get("platform") and _delivery_platform_routed_from_primary_gateway(t["platform"])}
         if not routed:
@@ -333,7 +336,11 @@ def _run_claimed_job(job: Dict[str, Any], extra_prompt: Optional[str] = None) ->
     running_future = Future()
     running_future.set_running_or_notify_cancel()
     try:
-        from cron.scheduler import release_running_job, run_one_job, try_register_running_job
+        from cron.scheduler import (
+            release_running_job,
+            run_one_job,
+            try_register_running_job,
+        )
 
         # In-flight dedupe: the fire claim's TTL is routinely outlived by real jobs, so
         # register in the scheduler's shared running set (same guard the ticker uses;
@@ -372,7 +379,9 @@ def _run_claimed_job(job: Dict[str, Any], extra_prompt: Optional[str] = None) ->
             # only — the same grant the ticker's ``tick_adapters_for`` makes, never the full map.
             if getattr(runner, "_is_shared_bot_satellite", lambda _p: False)(profile):
                 from cron.scheduler_preflight import (
-                    SharedRouteAdapters, _primary_profile_routes_for_current_home)
+                    SharedRouteAdapters,
+                    _primary_profile_routes_for_current_home,
+                )
 
                 adapters = SharedRouteAdapters(adapters, _primary_profile_routes_for_current_home())
         gateway_loop = getattr(runner, "_gateway_loop", None) if runner is not None else None
@@ -583,7 +592,10 @@ def _try_dispatch_background_run(
         logger.debug("Suppressed exception: %s", _exc, exc_info=True)
 
     try:
-        from tools.async_delegation import _current_origin_session_id, dispatch_async_delegation
+        from tools.async_delegation import (
+            _current_origin_session_id,
+            dispatch_async_delegation,
+        )
         origin_session_id = _current_origin_session_id()
     except Exception as e:
         logger.warning(
@@ -679,7 +691,10 @@ def _action_create(a: Dict[str, Any]) -> str:
     if a["continuity"] is not None:
         context_from = _apply_continuity(context_from, a["continuity"])
 
-    from cron.scheduler import CronSchedulerRegistrationError, create_job_with_scheduler_registration
+    from cron.scheduler import (
+        CronSchedulerRegistrationError,
+        create_job_with_scheduler_registration,
+    )
     try:
         job = create_job_with_scheduler_registration(
             prompt=prompt or "", schedule=a["schedule"], name=a["name"], repeat=a["repeat"],

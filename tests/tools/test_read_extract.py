@@ -20,13 +20,12 @@ import zipfile
 from pathlib import PurePosixPath
 from unittest import mock
 
+from tools.file_tools import read_file_tool
 from tools.read_extract import (
     ExtractionError,
     extract_document_text,
     is_extractable_document,
 )
-from tools.file_tools import read_file_tool
-
 
 # ---------------------------------------------------------------------------
 # Fixture builders — construct minimal valid OOXML / notebook files.

@@ -12,8 +12,8 @@ from pathlib import Path
 import pytest
 
 from hermes_cli.update_channel import (
-    CHANNEL_MAIN,
     CHANNEL_CANARY,
+    CHANNEL_MAIN,
     CHANNEL_STABLE,
     default_channel,
     install_id,
@@ -43,6 +43,7 @@ def _config_for(root: Path, channel: str) -> dict:
 
 def test_dynamic_channel_parser_and_per_install_round_trip(tmp_path, monkeypatch):
     import argparse
+
     import hermes_yaml as yaml
     from hermes_cli.subcommands.update import build_update_parser
 

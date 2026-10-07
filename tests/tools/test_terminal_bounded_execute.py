@@ -11,8 +11,8 @@ from __future__ import annotations
 import time
 from types import SimpleNamespace
 
-from tools.environments.local import LocalEnvironment
 import tools.environments.base as base_mod
+from tools.environments.local import LocalEnvironment
 
 
 def test_execute_returns_when_wait_loop_never_returns(monkeypatch):
@@ -49,7 +49,7 @@ def test_execute_returns_when_wait_loop_never_returns(monkeypatch):
 
 def test_execute_parent_interrupt_still_kills_wait_on_deadline_worker(monkeypatch):
     """/stop targets the tool-worker tid; the deadline worker must honor it."""
-    from tools.interrupt import set_interrupt, is_interrupted
+    from tools.interrupt import is_interrupted, set_interrupt
 
     env = LocalEnvironment()
     fake_proc = SimpleNamespace(pid=None, poll=lambda: None, stdout=None)

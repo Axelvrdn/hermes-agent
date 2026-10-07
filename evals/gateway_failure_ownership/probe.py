@@ -1,6 +1,16 @@
-import os, sys, json, asyncio, threading, tempfile, sqlite3, socket, subprocess, tracemalloc, errno
+import asyncio
+import errno
+import json
+import os
+import socket
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import threading
+import tracemalloc
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from types import SimpleNamespace
 
 ROOT = Path(sys.argv[1]).resolve()
@@ -135,15 +145,13 @@ class Peer(BaseHTTPRequestHandler):
 
 server = ThreadingHTTPServer(("127.0.0.1", 0), Peer)
 threading.Thread(target=server.serve_forever, daemon=True).start()
-from run_agent import AIAgent
-from hermes_state import SessionDB
-from gateway.session import SessionStore, AsyncSessionStore, SessionSource
+import gateway.run as gateway_run
 from gateway.config import GatewayConfig, Platform
 from gateway.platforms.event import MessageEvent
 from gateway.run import GatewayRunner
-
-
-import gateway.run as gateway_run
+from gateway.session import AsyncSessionStore, SessionSource, SessionStore
+from hermes_state import SessionDB
+from run_agent import AIAgent
 
 fault = None
 faults = []

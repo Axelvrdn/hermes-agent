@@ -1,6 +1,7 @@
 """Tests for multi-match location listing in patch ambiguity errors."""
 
-from tools.fuzzy_match import fuzzy_find_and_replace, _format_match_locations
+from tools.fuzzy_match import _format_match_locations, fuzzy_find_and_replace
+
 
 class TestFormatMatchLocations:
 

@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import shlex
 import signal
 import subprocess
 import time
+from pathlib import Path
 
 import pytest
 
@@ -14,7 +14,12 @@ fcntl = pytest.importorskip("fcntl")
 pytestmark = pytest.mark.platforms("linux")
 
 from tests.scripts.desktop_update.test_desktop_update_posix_handoff_protocol import _env
-from tests.scripts.desktop_update.test_desktop_update_posix_marker import POSIX, _calls, _custodian, _install
+from tests.scripts.desktop_update.test_desktop_update_posix_marker import (
+    POSIX,
+    _calls,
+    _custodian,
+    _install,
+)
 
 
 @pytest.mark.parametrize("claim", ["missing", "foreign"])

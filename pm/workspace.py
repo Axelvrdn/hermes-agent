@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 from pm import paths
 from pm.package import InstallError
-from pm.plugin_declarations import read_python_declaration, manifest_version_error
+from pm.plugin_declarations import manifest_version_error, read_python_declaration
 
 _MEMBER_EXCLUDE = frozenset({".git", ".venv", "venv", "node_modules", "__pycache__"})
 

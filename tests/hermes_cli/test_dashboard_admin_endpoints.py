@@ -8,6 +8,7 @@ visible to the CLI data layer), not specific catalog values.
 """
 
 import pytest
+
 import hermes_cli.config as _cfg_mod
 import hermes_cli.web_server_files as _web_server_files
 import hermes_cli.web_server_gateway as _web_server_gateway
@@ -19,8 +20,8 @@ def _client():
     except ImportError:
         pytest.skip("fastapi/starlette not installed")
     import hermes_state
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
     from hermes_constants import get_hermes_home
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
     client = TestClient(app)
     client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN
@@ -271,8 +272,8 @@ class ScopedProvMemoryProvider(MemoryProvider):
         ``is_available`` reads the launch profile's credential must still resolve it from the
         launch home's ``.env`` instead of rendering "unavailable" with no visible error
         (``probe_availability`` swallows the ``UnscopedSecretError``)."""
-        from hermes_constants import get_hermes_home
         from hermes_cli.web_server_dashboard import _invalidate_plugins_hub_cache
+        from hermes_constants import get_hermes_home
         from tui_gateway.launch_profile_policy import activate_multi_profile_hosting
 
         home = get_hermes_home()
@@ -732,7 +733,7 @@ class TestSkillsHubScanEndpoint:
 
 
     def test_scan_returns_verdict_and_policy(self, monkeypatch):
-        from tools.skills_guard import ScanResult, Finding
+        from tools.skills_guard import Finding, ScanResult
 
         monkeypatch.setattr(
             "tools.skills_hub_search.create_source_router", list

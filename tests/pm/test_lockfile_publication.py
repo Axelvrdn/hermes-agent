@@ -1,10 +1,10 @@
 """Independent pin editors preserve winners and reject changed evidence."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import threading
+from pathlib import Path
 
 import pytest
 

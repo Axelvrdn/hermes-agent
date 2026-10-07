@@ -145,7 +145,15 @@ def _obtain_telegram_token():
 
 def _setup_telegram():
     """Configure Telegram bot credentials and allowlist."""
-    from hermes_cli.setup import _info, print_info, print_header, print_success, prompt, prompt_yes_no, save_env_value
+    from hermes_cli.setup import (
+        _info,
+        print_header,
+        print_info,
+        print_success,
+        prompt,
+        prompt_yes_no,
+        save_env_value,
+    )
     print_header("Telegram")
     if declines_reconfigure("Telegram", "Reconfigure Telegram?", "TELEGRAM_BOT_TOKEN"):
         _telegram_allowlist_nudge()
@@ -189,7 +197,13 @@ def _setup_telegram():
 # plugin path). #41112 / #3823.
 def _setup_bluebubbles():
     """Configure BlueBubbles iMessage gateway."""
-    from hermes_cli.setup import _info, print_header, print_success, prompt, prompt_yes_no
+    from hermes_cli.setup import (
+        _info,
+        print_header,
+        print_success,
+        prompt,
+        prompt_yes_no,
+    )
     print_header("BlueBubbles (iMessage)")
     if declines_reconfigure("BlueBubbles", "Reconfigure BlueBubbles?", "BLUEBUBBLES_SERVER_URL"):
         return
@@ -224,7 +238,14 @@ def _setup_bluebubbles():
 
 def _setup_webhooks():
     """Configure webhook integration."""
-    from hermes_cli.setup import _info, print_header, print_success, print_warning, prompt, save_env_value
+    from hermes_cli.setup import (
+        _info,
+        print_header,
+        print_success,
+        print_warning,
+        prompt,
+        save_env_value,
+    )
     print_header("Webhooks")
     if declines_reconfigure("Webhooks", "Reconfigure webhooks?", "WEBHOOK_ENABLED"):
         return
@@ -269,7 +290,7 @@ def _is_progress(status: str) -> bool:
 
 def _warn_missing_home_channels() -> None:
     """Platforms with a token but no home channel."""
-    from hermes_cli.setup import get_env_value, _info, print_warning
+    from hermes_cli.setup import _info, get_env_value, print_warning
     missing_home = [
         plat for plat, token_var, home_vars in _HOME_CHANNEL_CHECKS
         if get_env_value(token_var) and not any(get_env_value(v) for v in home_vars)]
@@ -286,12 +307,17 @@ def _warn_missing_home_channels() -> None:
 def _restart_running_gateway(any_messaging: bool, supports_systemd: bool) -> None:
     """Already running: offer a restart only when this pass may have changed platform config —
     a restart interrupts any active session, so it stays behind a prompt."""
-    from hermes_cli.setup import print_error, prompt_yes_no
-    from hermes_cli.gateway import (
-        systemd_restart, launchd_restart, UserSystemdUnavailableError, SystemScopeRequiresRootError,
-        _system_scope_wizard_would_need_root, _print_system_scope_remediation,
-    )
     import platform as _platform
+
+    from hermes_cli.gateway import (
+        SystemScopeRequiresRootError,
+        UserSystemdUnavailableError,
+        _print_system_scope_remediation,
+        _system_scope_wizard_would_need_root,
+        launchd_restart,
+        systemd_restart,
+    )
+    from hermes_cli.setup import print_error, prompt_yes_no
     if supports_systemd and _system_scope_wizard_would_need_root():
         _print_system_scope_remediation("restart")
         return
@@ -320,8 +346,14 @@ def _restart_running_gateway(any_messaging: bool, supports_systemd: bool) -> Non
 
 def setup_gateway(config: dict):
     """Configure messaging platform integrations."""
-    from hermes_cli.setup import _info, print_header, print_info, print_success, prompt_checklist
-    from hermes_cli.gateway import _all_platforms, _platform_status, _configure_platform
+    from hermes_cli.gateway import _all_platforms, _configure_platform, _platform_status
+    from hermes_cli.setup import (
+        _info,
+        print_header,
+        print_info,
+        print_success,
+        prompt_checklist,
+    )
     print_header("Messaging Platforms")
     _info("Connect to messaging platforms to chat with Hermes from anywhere.",
           "Toggle with Space, confirm with Enter.", None)
@@ -350,7 +382,11 @@ def setup_gateway(config: dict):
     # mode (cron keeps running; adapters come up once tokens are added via `hermes import` /
     # `hermes setup gateway`). Gating it on messaging config left install-then-import machines
     # with cron jobs and bot tokens but no process to serve them.
-    from hermes_cli.gateway import _is_service_running, supports_systemd_services, ensure_gateway_service
+    from hermes_cli.gateway import (
+        _is_service_running,
+        ensure_gateway_service,
+        supports_systemd_services,
+    )
     supports_systemd = supports_systemd_services()
     print()
     if _is_service_running():

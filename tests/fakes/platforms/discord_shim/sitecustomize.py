@@ -16,9 +16,9 @@ _api = os.environ.get("HERMES_STANDIN_DISCORD_API")
 _gw = os.environ.get("HERMES_STANDIN_DISCORD_GATEWAY")
 if _api:
     try:
-        import yarl
         import discord.gateway
         import discord.http
+        import yarl
 
         discord.http.Route.BASE = _api.rstrip("/")
         if _gw:

@@ -13,6 +13,7 @@ from agent.onboarding import (
     mark_seen,
 )
 
+
 class TestIsSeen:
     def test_empty_config_unseen(self):
         assert is_seen({}, BUSY_INPUT_FLAG) is False

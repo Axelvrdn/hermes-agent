@@ -1,6 +1,7 @@
 """Tests for get_tool_emoji in agent/display.py — skin + registry integration."""
 
-from unittest.mock import patch as mock_patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch as mock_patch
 
 from agent.display import get_tool_emoji
 

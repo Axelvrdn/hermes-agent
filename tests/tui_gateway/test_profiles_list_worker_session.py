@@ -21,6 +21,7 @@ import pytest
 
 import tui_gateway.server as srv
 
+
 @pytest.fixture
 def home(tmp_path, monkeypatch):
     h = tmp_path / ".hermes"

@@ -12,9 +12,9 @@ from hermes_cli.dashboard_auth import ws_tickets
 
 
 def test_install_worker_keeps_the_requested_profile_scope(tmp_path, monkeypatch):
+    import tui_gateway.server as server
     from hermes_constants import get_hermes_home
     from tools.bot_desktop import install, runtime
-    import tui_gateway.server as server
 
     named = tmp_path / "profiles" / "named"
     named.mkdir(parents=True)
@@ -89,8 +89,8 @@ def test_observe_mints_the_viewer_id_and_status_never_discloses_the_holder(monke
     """A client cannot choose its viewer id (it would impersonate the holder and co-drive or release
     their lease), and no snapshot or broadcast carries the raw holder id — only a hash the holder
     itself can match."""
-    from tools.bot_desktop import lease, runtime
     import tui_gateway.server as server
+    from tools.bot_desktop import lease, runtime
 
     monkeypatch.setattr(runtime, "rfb_socket_path", lambda: tmp_path / "rfb.sock")
     lease._reset_for_tests()

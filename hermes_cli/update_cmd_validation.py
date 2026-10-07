@@ -3,6 +3,7 @@
 import json
 import subprocess
 from pathlib import Path
+
 from hermes_cli._launchers import runtime_command
 
 # Modules imported on every startup. Unlike _UPDATE_CRITICAL_FILES (only parsed) these are
@@ -19,9 +20,10 @@ def _critical_module_import_failures(
     keeps import side effects out of the updater's ``sys.modules``.
     Generic import-time exceptions are tolerated unless ``report_runtime_errors=True``.
     """
+    import secrets
+
     from hermes_cli.update_cmd import _UPDATE_CRITICAL_MODULES
     from hermes_constants import FIRST_PARTY_MODULE_ROOTS
-    import secrets
     marker = f"__HERMES_IMPORT_HEALTH_{secrets.token_hex(16)}__"
     probe = (
         "import importlib, json, sys\n"

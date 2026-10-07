@@ -8,7 +8,6 @@ import types
 
 import pytest
 
-
 _VARS = ("HERMES_SAFE_MODE", "HERMES_IGNORE_USER_CONFIG", "HERMES_IGNORE_RULES")
 
 

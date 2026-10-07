@@ -11,7 +11,6 @@ import pytest
 
 import hermes_cli.gateway as gateway
 
-
 _BREAKAWAY_MARKER = "_HERMES_GATEWAY_BREAKAWAY"
 
 
@@ -989,6 +988,7 @@ def test_find_windows_gateway_services_ignores_task_scheduler_ancestor(monkeypat
     gateway's supervisor, so a task-launched gateway is a plain process (#97208); the same tree under a
     Hermes-owned service (by binary path) stays SCM-supervised."""
     import psutil
+
     import hermes_cli.gateway_windows as gateway_windows
 
     monkeypatch.setattr(gateway_windows, "hermes_service_roots", lambda: (r"C:\hermes\hermes-agent",))
@@ -1065,7 +1065,6 @@ def test_find_profile_gateway_processes_strict_propagates_profile_listing_failur
         gateway.find_profile_gateway_processes(strict=True)
 
 from pathlib import Path
-
 
 # ---------------------------------------------------------------------------
 # Steward-keyed gateway posture: apt-termux sealed installs

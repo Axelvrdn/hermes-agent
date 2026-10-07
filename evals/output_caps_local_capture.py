@@ -4,12 +4,12 @@ Run from a checkout with HERMES_HOME pointing to a disposable directory.
 """
 import json
 import os
-from pathlib import Path
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
-from openai import OpenAI
 from anthropic import Anthropic
+from openai import OpenAI
 
 captures = []
 
@@ -54,13 +54,13 @@ home.mkdir(parents=True, exist_ok=True)
 config = {"model": {"default": "fixture", "provider": "fixture-local", "max_tokens": 17}, "providers": {"fixture-local": {"api": url + "/v1", "api_key": "fixture", "max_output_tokens": 19}}}
 (home / "config.yaml").write_text(json.dumps(config))
 os.environ["HERMES_MAX_TOKENS"] = "13"
-from gateway.run import _resolve_runtime_agent_kwargs
-from gateway.platforms.api_server import _resolve_request_runtime_agent_kwargs
-from hermes_cli.runtime_provider import resolve_runtime_provider
-from hermes_cli.moa_config import _normalize_preset
-from agent.transports.chat_completions import ChatCompletionsTransport
 from agent.transports.anthropic import AnthropicTransport
 from agent.transports.bedrock import BedrockTransport
+from agent.transports.chat_completions import ChatCompletionsTransport
+from gateway.platforms.api_server import _resolve_request_runtime_agent_kwargs
+from gateway.run import _resolve_runtime_agent_kwargs
+from hermes_cli.moa_config import _normalize_preset
+from hermes_cli.runtime_provider import resolve_runtime_provider
 
 messages = [{"role": "user", "content": "fixture"}]
 client = OpenAI(api_key="fixture", base_url=url + "/v1", max_retries=0)
@@ -76,6 +76,7 @@ for label, params in [("compatible-claude", {"anthropic_max_output": 65536}), ("
     results[label] = captures[-1]
 from providers import get_provider_profile
 from run_agent import AIAgent
+
 agent = AIAgent(model="fixture", provider="custom", base_url=url + "/v1", api_key="fixture", quiet_mode=True, skip_memory=True, skip_context_files=True, enabled_toolsets=[])
 actual_kwargs = agent._build_api_kwargs(messages, tools_for_api=[])
 client.chat.completions.create(**actual_kwargs)
@@ -85,6 +86,7 @@ client.chat.completions.create(**kwargs)
 results["registered-custom-profile"] = captures[-1]
 from agent.auxiliary_client import _compression_fast_lane_controls
 from tools.delegate_tool_config import _resolve_delegation_credentials
+
 route = {"provider": "custom", "model": "fixture", "reasoning_effort": "none", "max_output_tokens": 47}
 compression_cap, _ = _compression_fast_lane_controls(
     "compression", actual_provider="custom", actual_model="fixture", requested_provider="custom",

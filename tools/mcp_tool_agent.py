@@ -2,10 +2,11 @@
 AIAgent's tools/tool names, preserving the cached tools[] prefix across rebuilds,
 and re-injecting post-build tools."""
 
-import logging
 import json
+import logging
 import threading
 from typing import Optional
+
 from tools.mcp_tool_common import _core
 
 logger = logging.getLogger("tools.mcp_tool")
@@ -270,7 +271,11 @@ def _reinject_authorized_dynamic_tools(agent, tools_list: list, name_set: set) -
     """``message_agent`` is injected by an auth gate, never registered, so a registry-derived
     rebuild drops it. Scrub any stale copy from the STAGED pair and re-add it only when the live
     gate re-authorizes, so the publisher exposes a coherent ``(tools, valid_tool_names)``."""
-    from tools.bot_mode_dm import MESSAGE_AGENT_TOOL_NAME, message_agent_authorized, message_agent_tool_schema
+    from tools.bot_mode_dm import (
+        MESSAGE_AGENT_TOOL_NAME,
+        message_agent_authorized,
+        message_agent_tool_schema,
+    )
 
     tools_list[:] = [entry for entry in tools_list if _def_name(entry) != MESSAGE_AGENT_TOOL_NAME]
     name_set.discard(MESSAGE_AGENT_TOOL_NAME)
@@ -300,7 +305,9 @@ def _reinject_post_build_tools(agent, tools_list: list, name_set: set) -> set:
     try:
         get_mem_schemas = _schema_getter("_memory_manager", "get_all_tool_schemas")
         if get_mem_schemas is not None:
-            from agent.memory_manager import memory_provider_tools_enabled  # same gate inject_memory_provider_tools uses
+            from agent.memory_manager import (
+                memory_provider_tools_enabled,  # same gate inject_memory_provider_tools uses
+            )
             if memory_provider_tools_enabled(
                     enabled, getattr(agent, "disabled_toolsets", None), memory_tool_present="memory" in name_set):
                 for schema in get_mem_schemas():

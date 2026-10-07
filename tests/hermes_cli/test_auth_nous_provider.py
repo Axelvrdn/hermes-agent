@@ -13,7 +13,6 @@ import pytest
 
 from hermes_cli.auth import AuthError
 
-
 # =============================================================================
 # _resolve_verify: CA bundle path validation
 # =============================================================================
@@ -25,6 +24,7 @@ class TestResolveVerifyFallback:
 
     def test_missing_ca_bundle_in_auth_state_falls_back(self):
         import ssl
+
         from hermes_cli.auth import _resolve_verify
 
         result = _resolve_verify(auth_state={
@@ -71,6 +71,7 @@ class TestResolveVerifyFallback:
 
     def test_string_false_in_auth_state_does_not_disable_tls_verify(self):
         import ssl
+
         from hermes_cli.auth import _resolve_verify
 
         result = _resolve_verify(auth_state={"tls": {"insecure": "false"}})
@@ -434,8 +435,8 @@ class TestLoginNousSkipKeepsCurrent:
         import hermes_cli.auth as auth_mod
         import hermes_cli.auth_nous as auth_nous
         import hermes_cli.models as models_mod
-        from hermes_cli import models_pricing
         import hermes_cli.nous_subscription as ns
+        from hermes_cli import models_pricing
 
         fake_auth_state = {
             "access_token": "fake-nous-token",
@@ -475,6 +476,7 @@ class TestLoginNousSkipKeepsCurrent:
     def test_skip_keep_current_preserves_provider_and_model(self, tmp_path, monkeypatch):
         """User picks Skip → config.yaml untouched, Nous creds still saved."""
         import argparse
+
         import hermes_yaml as yaml
         from hermes_cli.auth import PROVIDER_REGISTRY, _login_nous
 
@@ -506,6 +508,7 @@ class TestLoginNousSkipKeepsCurrent:
     def test_picking_model_switches_to_nous(self, tmp_path, monkeypatch):
         """User picks a Nous model → provider flips to nous with that model."""
         import argparse
+
         import hermes_yaml as yaml
         from hermes_cli.auth import PROVIDER_REGISTRY, _login_nous
 
@@ -533,6 +536,7 @@ class TestLoginNousSkipKeepsCurrent:
         """Fresh install (no prior active_provider) → Skip clears active_provider
         instead of leaving it as nous."""
         import argparse
+
         import hermes_yaml as yaml
         from hermes_cli.auth import PROVIDER_REGISTRY, _login_nous
 
@@ -600,7 +604,7 @@ def test_persist_nous_credentials_idempotent_no_duplicate_pool_entries(tmp_path,
     materialise the pool entry under the canonical ``device_code`` source, so
     two persists still leave the pool with exactly one row.
     """
-    from hermes_cli.auth import persist_nous_credentials, NOUS_DEVICE_CODE_SOURCE
+    from hermes_cli.auth import NOUS_DEVICE_CODE_SOURCE, persist_nous_credentials
 
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir(parents=True, exist_ok=True)
@@ -943,8 +947,8 @@ def test_try_import_shared_rehydrates_on_success(shared_store_env, monkeypatch):
     returns a fresh access_token JWT, and the returned dict has
     every field persist_nous_credentials() needs.
     """
-    from hermes_cli import auth as auth_mod
     import hermes_cli.auth_nous as auth_nous
+    from hermes_cli import auth as auth_mod
 
     auth_mod._write_shared_nous_state(_full_state_fixture())
     fresh_jwt = _invoke_jwt(seconds=7200)
@@ -977,7 +981,7 @@ class TestStalePortalBaseUrlMigration:
     """_migrate_stale_nous_portal_url auto-corrects stale portal_base_url on load."""
 
     def test_migrates_stale_portal_url_on_load(self, tmp_path, monkeypatch):
-        from hermes_cli.auth import _load_auth_store, DEFAULT_NOUS_PORTAL_URL
+        from hermes_cli.auth import DEFAULT_NOUS_PORTAL_URL, _load_auth_store
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
         auth_file = tmp_path / "auth.json"
@@ -1001,8 +1005,8 @@ class TestStalePortalBaseUrlMigration:
         self, tmp_path, monkeypatch,
     ):
         """An allowlisted production host is still unsafe over plain HTTP."""
-        from hermes_cli import auth as auth_mod
         import hermes_cli.auth_nous as auth_nous
+        from hermes_cli import auth as auth_mod
 
         hermes_home = tmp_path / "hermes"
         monkeypatch.setenv("HERMES_HOME", str(hermes_home))

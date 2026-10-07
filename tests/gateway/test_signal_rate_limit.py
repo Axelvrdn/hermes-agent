@@ -8,6 +8,7 @@ from gateway.platforms.signal_rate_limit import (
     _reset_scheduler,
 )
 
+
 @pytest.fixture(autouse=True)
 def _reset_signal_scheduler():
     """Drop the process-wide scheduler so each test gets a clean bucket."""

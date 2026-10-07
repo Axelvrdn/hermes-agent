@@ -8,9 +8,9 @@ These tests pin the new behavior: reads and writes land in the REQUESTED
 profile's HERMES_HOME, and the dashboard's own profile stays untouched.
 """
 import pytest
-import hermes_yaml as yaml
-import gateway.status as _gw_status
 
+import gateway.status as _gw_status
+import hermes_yaml as yaml
 
 _VALID_WORKER_BOT_TOKEN = "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ_1234"
 _VALID_BODY_BOT_TOKEN = "987654321:ZYXWVUTSRQPONMLKJIHGFEDCBA_4321"
@@ -19,8 +19,8 @@ _VALID_BODY_BOT_TOKEN = "987654321:ZYXWVUTSRQPONMLKJIHGFEDCBA_4321"
 @pytest.fixture
 def isolated_profiles(tmp_path, monkeypatch, _isolate_hermes_home):
     """Isolated default home + one named profile, each with its own .env."""
-    from hermes_constants import get_hermes_home
     from hermes_cli import profiles
+    from hermes_constants import get_hermes_home
 
     default_home = get_hermes_home()
     profiles_root = default_home / "profiles"
@@ -47,8 +47,8 @@ def client(monkeypatch, isolated_profiles):
         pytest.skip("fastapi/starlette not installed")
 
     import hermes_state
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
     from hermes_constants import get_hermes_home
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
     monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
     # The dashboard process's os.environ may carry root-install credentials;
@@ -233,7 +233,10 @@ class TestMultiplexPortBindingGuard:
     def test_rejects_only_mirrored_listeners_on_secondary(
         self, client, isolated_profiles
     ):
-        from gateway.config import PORT_BINDING_PLATFORM_VALUES, SHARED_LISTENER_MIRROR_PLATFORMS
+        from gateway.config import (
+            PORT_BINDING_PLATFORM_VALUES,
+            SHARED_LISTENER_MIRROR_PLATFORMS,
+        )
 
         _enable_multiplex(isolated_profiles["default"])
         assert SHARED_LISTENER_MIRROR_PLATFORMS  # guard set must not be empty

@@ -8,8 +8,8 @@ clear denial for models that respect tool errors plus a visible audit trail.
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from contextlib import suppress
+from pathlib import Path
 from typing import Optional
 
 
@@ -80,7 +80,11 @@ def _guard_homes(path: str = "") -> set[str]:
     account's home, which joins the set so ``~root/.ssh/authorized_keys`` stays denied."""
     homes = {os.path.expanduser("~")}
     with suppress(Exception):
-        from hermes_constants import get_real_home, get_subprocess_home, _profile_home_path
+        from hermes_constants import (
+            _profile_home_path,
+            get_real_home,
+            get_subprocess_home,
+        )
 
         for candidate in (get_real_home(), get_subprocess_home(), _profile_home_path()):
             if candidate:

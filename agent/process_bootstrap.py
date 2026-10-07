@@ -15,10 +15,9 @@ import sys
 import threading
 from typing import Any, Optional
 
+from agent.proxy_bypass import first_proxy_env_value, should_bypass_proxy
 from hermes_bootstrap import _happy_eyeballs_create_connection
 from utils import base_url_hostname, normalize_proxy_url
-from agent.proxy_bypass import first_proxy_env_value, should_bypass_proxy
-
 
 _OPENAI_CLS_CACHE = None
 

@@ -30,7 +30,11 @@ def _azure_entra_credentials(cfg_entra: Dict[str, Any]) -> Any:
     ``build_anthropic_client`` injects the bearer via an httpx hook)."""
     AuthError = _rp().AuthError
     try:
-        from agent.azure_identity_adapter import SCOPE_AI_AZURE_DEFAULT, EntraIdentityConfig, build_token_provider
+        from agent.azure_identity_adapter import (
+            SCOPE_AI_AZURE_DEFAULT,
+            EntraIdentityConfig,
+            build_token_provider,
+        )
     except Exception as exc:
         raise AuthError(
             "Could not load the Azure Foundry Entra ID adapter. "
@@ -209,10 +213,19 @@ def _resolve_bedrock_runtime(requested_provider: str, model_cfg: Dict[str, Any],
     Claude → AnthropicBedrock SDK (prompt caching, thinking budgets); others → Converse API.
     AWS_BEARER_TOKEN_BEDROCK auth is unsupported by AnthropicBedrock (SigV4 only), so bearer users
     go through Converse regardless of model."""
-    from agent.bedrock_adapter import (bedrock_openai_base_url, bedrock_openai_uses_mantle, has_aws_credentials,
-                                       is_anthropic_bedrock_model, resolve_aws_auth_env_var, resolve_bedrock_bearer_token,
-                                       resolve_bedrock_runtime_region, bedrock_guardrail_config)
-    from hermes_cli.config import load_config  # direct (not the origin delegate), as before
+    from agent.bedrock_adapter import (
+        bedrock_guardrail_config,
+        bedrock_openai_base_url,
+        bedrock_openai_uses_mantle,
+        has_aws_credentials,
+        is_anthropic_bedrock_model,
+        resolve_aws_auth_env_var,
+        resolve_bedrock_bearer_token,
+        resolve_bedrock_runtime_region,
+    )
+    from hermes_cli.config import (
+        load_config,  # direct (not the origin delegate), as before
+    )
     rp = _rp()
     # Explicitly selected bedrock trusts boto3's credential chain (IMDS, ECS/Lambda roles, SSO)
     # which the env-var check can't detect.

@@ -17,7 +17,10 @@ import time
 
 import pytest
 
-from tests.hermes_cli.test_update_pause_record import _child, _reap_children  # noqa: F401 - autouse reaper
+from tests.hermes_cli.test_update_pause_record import (  # noqa: F401 - autouse reaper
+    _child,
+    _reap_children,
+)
 
 _UNIT = {"kind": "systemd", "scope": "user", "unit": "hermes-gateway-p2probe.service", "pid": 4242}
 

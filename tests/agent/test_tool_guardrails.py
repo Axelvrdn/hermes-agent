@@ -241,10 +241,6 @@ def test_identical_call_streak_never_halts_when_hard_stop_disabled_or_for_poller
 from agent.tool_guardrails import LoopCapConfig  # noqa: E402
 
 
-
-
-
-
 def test_loop_cap_zero_disables_and_junk_falls_back():
     # 0 is a legitimate "unlimited" value; negatives / junk fall back to default.
     assert LoopCapConfig.from_mapping({"max_web_searches": 0}).max_web_searches == 0

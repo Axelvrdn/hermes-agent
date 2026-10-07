@@ -578,6 +578,7 @@ def test_pre_handoff_updater_stale_graph_imports_post_update_modules(tmp_path):
     # The current test environment deliberately lacks PyYAML; provision the legacy direct
     # requirement in an isolated PM environment rather than mutating the test interpreter.
     from packaging.requirements import Requirement
+
     from pm import ensure_environment
 
     legacy_yaml = [r for r in old_deps if Requirement(r).name.lower() == "pyyaml"]

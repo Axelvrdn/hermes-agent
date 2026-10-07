@@ -14,6 +14,7 @@ Currently:
 
 import pytest
 
+
 class TestMatrixHiddenOnWindows:
 
     @pytest.mark.platforms("windows")

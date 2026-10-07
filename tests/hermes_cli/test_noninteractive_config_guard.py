@@ -10,6 +10,7 @@ from argparse import Namespace
 
 import pytest
 
+
 def _args(**overrides) -> Namespace:
     values = {
         "command": "chat",

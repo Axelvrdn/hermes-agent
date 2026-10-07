@@ -11,7 +11,6 @@ import pytest
 
 from hermes_cli.nous_account import NousPortalAccountInfo
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TOOLS_DIR = REPO_ROOT / "tools"
 PLUGINS_DIR = REPO_ROOT / "plugins"

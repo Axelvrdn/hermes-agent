@@ -19,10 +19,17 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from agent.secret_sources._cache import CachedFetch, SecretCache, fingerprint as _fingerprint
+from agent.secret_sources._cache import CachedFetch, SecretCache
+from agent.secret_sources._cache import fingerprint as _fingerprint
 from agent.secret_sources.base import (
-    ErrorKind, FetchResult, SecretSource, classify_cli_error, coerce_float,
-    get_source_environment, is_valid_env_name, run_cli,
+    ErrorKind,
+    FetchResult,
+    SecretSource,
+    classify_cli_error,
+    coerce_float,
+    get_source_environment,
+    is_valid_env_name,
+    run_cli,
 )
 
 logger = logging.getLogger(__name__)

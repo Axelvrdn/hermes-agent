@@ -4,8 +4,8 @@ from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from gateway.config import GatewayConfig, Platform, load_gateway_config
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.session import SessionSource

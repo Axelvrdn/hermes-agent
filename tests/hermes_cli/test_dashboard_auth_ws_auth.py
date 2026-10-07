@@ -17,11 +17,10 @@ import time
 from types import SimpleNamespace
 
 import pytest
-
 from fastapi.testclient import TestClient
 
-from hermes_cli import web_server
 import hermes_cli.web_server_chat as _web_server_chat
+from hermes_cli import web_server
 from hermes_cli.dashboard_auth import clear_providers, register_provider
 from hermes_cli.dashboard_auth.ws_tickets import (
     _reset_for_tests,
@@ -30,7 +29,6 @@ from hermes_cli.dashboard_auth.ws_tickets import (
     mint_ticket,
 )
 from tests.hermes_cli.conftest_dashboard_auth import StubAuthProvider, _sign
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

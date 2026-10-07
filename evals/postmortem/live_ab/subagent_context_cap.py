@@ -1,14 +1,18 @@
 """Live: build a real child through delegate_tool's spawn path (real imports, temp HERMES_HOME) and read the
 trigger it resolves on a 1M-window model. Run against main and the branch."""
-import os, sys, tempfile, shutil
+import os
+import shutil
+import sys
+import tempfile
+
 root = sys.argv[1]
 sys.path.insert(0, root)
 home = tempfile.mkdtemp(prefix="hh-")
 os.environ["HERMES_HOME"] = home
 os.environ["HERMES_STREAM_RETRIES"] = "0"
 try:
-    from run_agent import AIAgent
     import tools.delegate_tool as dt
+    from run_agent import AIAgent
     parent = AIAgent(api_key="k", base_url="https://example.com/v1", provider="test-provider",
                      model="anthropic/claude-fable-5.1", quiet_mode=True, skip_context_files=True, skip_memory=True)
     # find the child-construction function by name

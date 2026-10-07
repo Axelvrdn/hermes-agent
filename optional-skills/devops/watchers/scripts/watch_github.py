@@ -31,7 +31,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from _watermark import Watermark, format_items_as_markdown  # type: ignore
 
-
 VALID_SCOPES = ("issues", "pulls", "releases", "commits")
 
 

@@ -4,9 +4,9 @@ evm_client.py — EVM blockchain CLI tool for the Hermes Agent project.
 Zero external dependencies. Uses stdlib only: urllib, json, argparse, time, os, sys, typing.
 """
 
-import logging
 import argparse
 import json
+import logging
 import os
 import sys
 import time

@@ -4,17 +4,29 @@ import json
 import sys
 import time
 from types import SimpleNamespace
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agent.prompt_caching import apply_anthropic_cache_control
 from agent.anthropic_adapter import build_anthropic_client, build_anthropic_kwargs
-from agent.anthropic_credentials import _is_oauth_token, _refresh_oauth_token, _write_claude_code_credentials, is_claude_code_token_valid, read_claude_code_credentials, resolve_anthropic_token, run_oauth_setup_token
+from agent.anthropic_credentials import (
+    _is_oauth_token,
+    _refresh_oauth_token,
+    _write_claude_code_credentials,
+    is_claude_code_token_valid,
+    read_claude_code_credentials,
+    resolve_anthropic_token,
+    run_oauth_setup_token,
+)
+from agent.anthropic_message_convert import (
+    _to_plain_data,
+    convert_messages_to_anthropic,
+    convert_tools_to_anthropic,
+    normalize_model_name,
+)
 from agent.credential_pool import PooledCredential
-from agent.anthropic_message_convert import _to_plain_data, convert_messages_to_anthropic, convert_tools_to_anthropic, normalize_model_name
+from agent.prompt_caching import apply_anthropic_cache_control
 from agent.transports import get_transport
-
 
 # ---------------------------------------------------------------------------
 # Auth helpers
@@ -966,9 +978,9 @@ class TestBuildAnthropicKwargs:
         legacy list stays on the manual path.
         """
         from agent.anthropic_adapter import (
+            _forbids_sampling_params,
             _supports_adaptive_thinking,
             _supports_xhigh_effort,
-            _forbids_sampling_params,
         )
         # New / unknown Claude models → modern contract by default.
         for m in (
@@ -987,9 +999,9 @@ class TestBuildAnthropicKwargs:
         be misclassified as adaptive by the default-to-modern rule. Kimi is
         the deliberate exception — see test_kimi_family_uses_adaptive_path."""
         from agent.anthropic_adapter import (
+            _forbids_sampling_params,
             _supports_adaptive_thinking,
             _supports_xhigh_effort,
-            _forbids_sampling_params,
         )
         for m in ("minimax-m2", "qwen3-max", "glm-4.6"):
             assert _supports_adaptive_thinking(m) is False, m
@@ -1307,8 +1319,8 @@ class TestToolChoice:
 # ---------------------------------------------------------------------------
 
 from agent.anthropic_adapter import (
-    _resolve_positive_anthropic_max_tokens,
     _resolve_anthropic_messages_max_tokens,
+    _resolve_positive_anthropic_max_tokens,
 )
 
 

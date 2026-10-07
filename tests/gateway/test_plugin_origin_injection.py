@@ -10,11 +10,16 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
-import hermes_yaml as yaml
 
 import gateway.run as gateway_run
+import hermes_yaml as yaml
 from gateway.config import GatewayConfig, Platform, PlatformConfig
-from gateway.platforms.base import BasePlatformAdapter, MessageEvent, MessageType, SendResult
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    MessageEvent,
+    MessageType,
+    SendResult,
+)
 from gateway.profile_routing import parse_profile_routes
 from gateway.run import GatewayRunner
 from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest

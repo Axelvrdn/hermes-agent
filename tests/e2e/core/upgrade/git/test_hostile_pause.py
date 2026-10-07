@@ -54,8 +54,8 @@ import pytest
 
 import hermes_yaml as yaml
 from tests.e2e.core.upgrade import _helpers as H
-from tests.e2e.core.upgrade.git import _git_world as G
 from tests.e2e.core.upgrade import _install_helpers as I
+from tests.e2e.core.upgrade.git import _git_world as G
 from tests.e2e.core.upgrade.handoff._nshost import NamespaceHost
 
 pytestmark = G.PYTESTMARK

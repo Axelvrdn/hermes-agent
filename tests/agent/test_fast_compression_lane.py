@@ -414,9 +414,9 @@ def test_timing_hooks_propagate_to_protected_call_worker_thread():
     source both active).
     """
     from agent.auxiliary_client import (
-        _aux_thread_local_hook,
         _aux_dispatch,
         _aux_provider_response,
+        _aux_thread_local_hook,
         _notify_aux_dispatch,
         _notify_aux_provider_response,
         _run_protected_sync_provider_call,

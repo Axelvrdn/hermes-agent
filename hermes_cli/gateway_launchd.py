@@ -6,7 +6,6 @@ intercepting the moved code.
 """
 from __future__ import annotations
 
-from pathlib import Path
 import contextlib
 import json
 import os
@@ -14,6 +13,7 @@ import shlex
 import subprocess
 import sys
 import time
+from pathlib import Path
 from xml.sax.saxutils import escape
 
 

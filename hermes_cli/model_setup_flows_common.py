@@ -20,7 +20,9 @@ _HTTP = ("http://", "https://")
 
 def _note_setup_failure(failure_class: str) -> None:
     """Why a flow returns without a pick, for the provider-setup metric (no-op outside a tracked flow)."""
-    from hermes_cli.observability.shared_metrics_setup import note_provider_setup_failure
+    from hermes_cli.observability.shared_metrics_setup import (
+        note_provider_setup_failure,
+    )
 
     note_provider_setup_failure(failure_class)
 
@@ -256,7 +258,10 @@ def _prune_replaced_custom_model_config_credentials(base_url: str, *, provider_n
     custom pools: after an explicit custom-endpoint switch an old pool still carrying that source
     points at the previous endpoint and could be selected before the fresh config."""
     try:
-        from agent.credential_pool import CUSTOM_POOL_PREFIX, custom_provider_pool_key_candidates
+        from agent.credential_pool import (
+            CUSTOM_POOL_PREFIX,
+            custom_provider_pool_key_candidates,
+        )
         from hermes_cli.auth import read_credential_pool, write_credential_pool
 
         # A keyed ``providers.<key>`` endpoint stores under the durable slug while

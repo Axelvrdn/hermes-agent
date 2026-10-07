@@ -504,6 +504,7 @@ class TestCrossProfileRead:
         other._conn.commit()
 
         from collections import namedtuple
+
         from hermes_cli import profiles as profiles_mod
         Info = namedtuple("Info", "name path")
         monkeypatch.setattr(profiles_mod, "get_profile_dir", lambda n: tmp_path / "default_home")

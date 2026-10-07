@@ -14,7 +14,10 @@ import re
 from functools import partial
 from typing import Any, Callable, Iterable
 
-from agent.agent_runtime_helpers_placeholders import _INTERRUPTED_PLACEHOLDER, hidden_interrupt_placeholder_row
+from agent.agent_runtime_helpers_placeholders import (
+    _INTERRUPTED_PLACEHOLDER,
+    hidden_interrupt_placeholder_row,
+)
 from agent.message_metadata import DB_ROW_SNAPSHOT
 from agent.vision_message_prep import _provider_model_key
 
@@ -690,7 +693,9 @@ def stale_thinking_reaches_wire(api_mode: Any, provider: Any, model: Any, base_u
     ``codex_responses`` never reads the text keys (continuity rides the encrypted sidecar).
     """
     if (api_mode or "") == "anthropic_messages":
-        from agent.anthropic_thinking_policy import native_anthropic_preserves_prior_thinking
+        from agent.anthropic_thinking_policy import (
+            native_anthropic_preserves_prior_thinking,
+        )
         if native_anthropic_preserves_prior_thinking(base_url, model):
             return True
     return (api_mode or "") != "codex_responses" and needs_reasoning_echo(provider, model, base_url)

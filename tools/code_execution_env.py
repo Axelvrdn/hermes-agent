@@ -59,7 +59,11 @@ def _scrub_child_env(source_env, is_passthrough=None, is_windows=None):
     OS-essential allowlist passes by exact name.
     """
     try:
-        from tools.env_passthrough import is_env_passthrough, resolve_passthrough_value, scoped_passthrough_additions
+        from tools.env_passthrough import (
+            is_env_passthrough,
+            resolve_passthrough_value,
+            scoped_passthrough_additions,
+        )
     except Exception:
         is_env_passthrough = lambda _: False  # noqa: E731
         resolve_passthrough_value = lambda _name, _fallback: None  # noqa: E731
@@ -101,7 +105,8 @@ def _scrub_child_env(source_env, is_passthrough=None, is_windows=None):
     # a process boundary: strip dispatcher-owned Kanban vars AFTER the scrub so an explicit
     # passthrough cannot re-grant a delegated child the parent's board mutation capability.
     from agent.delegation_context import (
-        DELEGATED_CHILD_ENV_MARKER, delegated_child_subprocess_env,
+        DELEGATED_CHILD_ENV_MARKER,
+        delegated_child_subprocess_env,
     )
     scoped = delegated_child_subprocess_env(source_env)
     # Preserve location only when carrying the descendant fence, not for arbitrary
@@ -116,7 +121,11 @@ def _scrub_child_env(source_env, is_passthrough=None, is_windows=None):
 def _build_child_env(*, rpc_endpoint: str, rpc_token: str, tmpdir: str,
                      child_python: str) -> Dict[str, str]:
     """Build the scrubbed child environment both execution paths share."""
-    from hermes_constants import apply_scratch_tmp_env, apply_subprocess_home_env, get_hermes_home_override
+    from hermes_constants import (
+        apply_scratch_tmp_env,
+        apply_subprocess_home_env,
+        get_hermes_home_override,
+    )
     child_env = _scrub_child_env(os.environ)
     child_env["HERMES_RPC_SOCKET"] = rpc_endpoint
     child_env["HERMES_RPC_TOKEN"] = rpc_token
@@ -154,13 +163,16 @@ def _build_child_env(*, rpc_endpoint: str, rpc_token: str, tmpdir: str,
     # must not inherit Hermes dependencies (#74817). PM's own interpreter, however, can be a
     # bare bundled Python whose dependencies live in the selected generation, not sys.prefix.
     from tools.environments.local_pythonpath import (
-        _strip_hermes_owned_pythonpath, _validated_runtime_venv, _same_path,
+        _same_path,
+        _strip_hermes_owned_pythonpath,
+        _validated_runtime_venv,
     )
     _runtime_path = None
     if child_python == sys.executable:
         runtime_venv = _validated_runtime_venv(child_env)
         if runtime_venv is not None:
             from pathlib import Path
+
             from pm.environments import site_packages
             candidate = site_packages(runtime_venv)
             # Restore only a dependency path the launcher actually supplied, not a newly

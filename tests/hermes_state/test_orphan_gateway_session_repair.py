@@ -19,7 +19,6 @@ import pytest
 
 from hermes_state import SessionDB
 
-
 PEER = {
     "source": "telegram",
     "user_id": "6308981865",

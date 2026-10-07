@@ -6,8 +6,8 @@ Split out of ``tools/terminal_tool.py``; every public/patched name is re-importe
 so ``tools.terminal_tool.<name>`` keeps resolving (and monkeypatching) as before.
 """
 
-import logging
 import json
+import logging
 import os
 import posixpath
 import re

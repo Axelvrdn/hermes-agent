@@ -8,13 +8,14 @@ so ``tools.terminal_tool.<name>`` keeps resolving (and monkeypatching) as before
 """
 
 import glob
-import logging
 import inspect
+import logging
 import shutil
 import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
+
 from tools.environments.singularity import _get_scratch_dir
 from tools.terminal_tool_backends import (
     _container_config_from_config,
@@ -129,7 +130,10 @@ def _unregister_env(task_id: str):
     Modal/Docker teardown can block 10-15s and would stall every concurrent
     terminal/file tool call."""
     from tools.terminal_tool import (
-        _active_environments, _creation_locks, _creation_locks_lock, _env_lock,
+        _active_environments,
+        _creation_locks,
+        _creation_locks_lock,
+        _env_lock,
         _last_activity,
     )
     with _env_lock:
@@ -143,7 +147,10 @@ def _unregister_env(task_id: str):
 def _cleanup_inactive_envs(lifetime_seconds: int = 300):
     """Clean up environments that have been inactive for longer than lifetime_seconds."""
     from tools.terminal_tool import (
-        _active_environments, _creation_locks, _creation_locks_lock, _env_lock,
+        _active_environments,
+        _creation_locks,
+        _creation_locks_lock,
+        _env_lock,
         _last_activity,
     )
     current_time = time.time()
@@ -175,7 +182,11 @@ def _cleanup_inactive_envs(lifetime_seconds: int = 300):
 
 def get_active_env(task_id: str):
     """Return the active BaseEnvironment for *task_id*, or None."""
-    from tools.terminal_tool import _active_environments, _env_lock, _resolve_container_task_id
+    from tools.terminal_tool import (
+        _active_environments,
+        _env_lock,
+        _resolve_container_task_id,
+    )
     lookup = _resolve_container_task_id(task_id)
     with _env_lock:
         return _active_environments.get(lookup) or _active_environments.get(task_id)
@@ -196,9 +207,17 @@ def ensure_task_env(task_id: Optional[str] = None):
     bring the env up on demand, reusing the same creation machinery as the terminal tool.
     """
     from tools.terminal_tool import (
-        _active_environments, _creation_locks, _creation_locks_lock, _env_lock,
-        _get_env_config, _last_activity, _resolve_container_task_id,
-        _resolve_task_host_cwd, _select_image, _start_cleanup_thread, resolve_task_overrides,
+        _active_environments,
+        _creation_locks,
+        _creation_locks_lock,
+        _env_lock,
+        _get_env_config,
+        _last_activity,
+        _resolve_container_task_id,
+        _resolve_task_host_cwd,
+        _select_image,
+        _start_cleanup_thread,
+        resolve_task_overrides,
     )
     config = _get_env_config()
     env_type = config["env_type"]
@@ -314,7 +333,10 @@ def _evict_environment_for_task(task_id: Optional[str]) -> None:
     """Drop any cached env for *task_id* (and its collapsed key) after an
     infrastructure failure, so later calls don't reuse a dead connection."""
     from tools.terminal_tool import (
-        _active_environments, _env_lock, _last_activity, _resolve_container_task_id,
+        _active_environments,
+        _env_lock,
+        _last_activity,
+        _resolve_container_task_id,
     )
     keys = {_resolve_container_task_id(task_id)}
     if task_id:

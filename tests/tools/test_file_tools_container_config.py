@@ -1,6 +1,7 @@
 """Tests for docker container_config key propagation in file_tools."""
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import tools.file_tools as file_tools
 
 

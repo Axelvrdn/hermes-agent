@@ -12,8 +12,15 @@ import httpx
 from agent.retry_utils import parse_retry_after_seconds
 from tools.skills_hub import _guarded_http_stream
 from tools.skills_hub_models import (
-    GuardedFetchMixin, SkillBundle, SkillMeta, SkillSource, _cache_metas, _cached_metas, _get_json,
-    _validate_bundle_rel_path, hub,
+    GuardedFetchMixin,
+    SkillBundle,
+    SkillMeta,
+    SkillSource,
+    _cache_metas,
+    _cached_metas,
+    _get_json,
+    _validate_bundle_rel_path,
+    hub,
 )
 
 logger = logging.getLogger("tools.skills_hub")

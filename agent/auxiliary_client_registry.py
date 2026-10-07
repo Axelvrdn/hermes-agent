@@ -51,14 +51,20 @@ def _resolve_minimax_oauth_arm(req: _ResolveRequest) -> _ResolveResult:
     tool-name wire transforms, identity rewrites, response prefix stripping); those are
     api.anthropic.com-only (#114967).
     """
-    from hermes_cli.auth_constants import AuthError
-
-    from agent.auxiliary_client import (
-        AnthropicAuxiliaryClient, _AuxProbeClientStub, _aux_probe_active,
-        _get_aux_model_for_provider, _normalize_resolved_model, _route_client,
-    )
     from agent.anthropic_credentials import anthropic_route_is_oauth
-    from hermes_cli.auth import get_provider_auth_state, resolve_minimax_oauth_runtime_credentials
+    from agent.auxiliary_client import (
+        AnthropicAuxiliaryClient,
+        _aux_probe_active,
+        _AuxProbeClientStub,
+        _get_aux_model_for_provider,
+        _normalize_resolved_model,
+        _route_client,
+    )
+    from hermes_cli.auth import (
+        get_provider_auth_state,
+        resolve_minimax_oauth_runtime_credentials,
+    )
+    from hermes_cli.auth_constants import AuthError
 
     # Probe mode answers "resolvable?" for availability gates and must not touch the
     # network: read the raw persisted state (access_token + inference_base_url present →
@@ -105,7 +111,9 @@ def _resolve_minimax_oauth_arm(req: _ResolveRequest) -> _ResolveResult:
     final_model = _normalize_resolved_model(
         req.model or _get_aux_model_for_provider(req.provider) or "MiniMax-M3", req.provider,
     )
-    from agent.anthropic_adapter import build_anthropic_client  # SDK-absent boundary, like _try_anthropic
+    from agent.anthropic_adapter import (
+        build_anthropic_client,  # SDK-absent boundary, like _try_anthropic
+    )
     try:
         real_client = build_anthropic_client(token_provider, base_url)
     except ImportError:

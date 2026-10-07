@@ -1,17 +1,19 @@
 """The post-swap import boundary must never revive retired installers."""
 
-from copy import deepcopy
 import importlib
 import importlib.util
-from pathlib import Path
 import subprocess
 import sys
+from copy import deepcopy
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from tests.compat.old_updater_support import (
     fresh_child as fresh_child,
+)
+from tests.compat.old_updater_support import (
     no_external_work as no_external_work,
 )
 

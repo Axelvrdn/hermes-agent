@@ -14,8 +14,6 @@ from pathlib import Path
 
 import hermes_constants
 
-
-
 # ---------------------------------------------------------------------------
 # get_subprocess_home()
 # ---------------------------------------------------------------------------
@@ -109,7 +107,7 @@ class TestGetSubprocessHome:
         monkeypatch.setenv("HOME", str(profile_home))
         monkeypatch.setenv("HERMES_REAL_HOME", str(real_home))
 
-        from hermes_constants import get_subprocess_home, get_real_home
+        from hermes_constants import get_real_home, get_subprocess_home
 
         assert get_real_home() == str(real_home)
         assert get_subprocess_home() == str(real_home)

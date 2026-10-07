@@ -4,32 +4,36 @@ Extracted from ``hermes_cli.web_server``; helpers/state that tests monkeypatch o
 ``web_server`` stay there and are late-bound (cycle-safe).
 """
 
+import asyncio
 import base64
 import binascii
 import contextlib
+import json
 import logging
+import os
 import queue
 import tempfile
 import threading
-import asyncio
-import json
-import os
 import urllib.parse
 import urllib.request
-from fastapi import APIRouter
-from hermes_cli.web_routers._common import http_failure
+from typing import Any, Dict, Optional
+
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_chat import _ws_auth_ok, _ws_request_is_allowed
-from hermes_cli.web_server_gateway import _read_dashboard_json_response, _split_text_for_speak_stream
-from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 from hermes_cli.web_models import (
     AudioTranscriptionRequest,
     STTLeaseRequest,
-    TTSSpeakRequest,
     TTSLeaseRequest,
+    TTSSpeakRequest,
     VoiceLiveSessionRequest,
 )
-from typing import Any, Dict, Optional
+from hermes_cli.web_routers._common import http_failure
+from hermes_cli.web_server_chat import _ws_auth_ok, _ws_request_is_allowed
+from hermes_cli.web_server_gateway import (
+    _read_dashboard_json_response,
+    _split_text_for_speak_stream,
+)
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -627,7 +631,11 @@ async def speak_stream_ws(ws: "WebSocket") -> None:
 
     def _resolve():
         from tools.tts_streaming import resolve_streaming_provider
-        from tools.tts_tool import _get_provider, _load_tts_config, _resolve_max_text_length
+        from tools.tts_tool import (
+            _get_provider,
+            _load_tts_config,
+            _resolve_max_text_length,
+        )
         with _config_profile_scope(profile):
             cfg = _load_tts_config()
             streamer = resolve_streaming_provider(cfg)

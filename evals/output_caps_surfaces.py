@@ -73,6 +73,7 @@ def exercise_surfaces(agent, captures, url, home, config):
     assert results["internal-review-budget"][0]["body"]["max_tokens"] == 43
 
     import boto3
+
     from agent.transports.bedrock import BedrockTransport
     native = boto3.client("bedrock-runtime", region_name="us-east-1", endpoint_url=url,
                           aws_access_key_id="fixture", aws_secret_access_key="fixture")

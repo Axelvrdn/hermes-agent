@@ -19,7 +19,6 @@ import pytest
 
 from tests.tools.conftest import register_all_web_providers
 
-
 # ---------------------------------------------------------------------------
 # BraveFreeWebSearchProvider unit tests
 # ---------------------------------------------------------------------------
@@ -156,6 +155,7 @@ class TestBraveFreeSearchOnlyErrors:
 
     def test_web_extract_returns_search_only_error(self, monkeypatch):
         import asyncio
+
         from tools import web_tools
 
         monkeypatch.setattr(web_tools, "_load_web_config", lambda: {"backend": "brave-free"})

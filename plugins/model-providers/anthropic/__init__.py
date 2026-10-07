@@ -21,7 +21,11 @@ class AnthropicProfile(ProviderProfile):
         (default page 20, smaller than the live catalog), so follow ``has_more``/``last_id``."""
         if not api_key:
             return None
-        from hermes_cli.models import _ANTHROPIC_MODELS_MAX_PAGES, _anthropic_models_url, _anthropic_next_cursor
+        from hermes_cli.models import (
+            _ANTHROPIC_MODELS_MAX_PAGES,
+            _anthropic_models_url,
+            _anthropic_next_cursor,
+        )
 
         def _page(after_id: str | None):
             req = urllib.request.Request(_anthropic_models_url(base_url, after_id=after_id))

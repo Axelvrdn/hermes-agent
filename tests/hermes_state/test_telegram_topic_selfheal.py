@@ -13,7 +13,6 @@ from pathlib import Path
 
 from hermes_state import SessionDB
 
-
 CHAT = "208214988"
 
 

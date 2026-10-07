@@ -1,7 +1,7 @@
 """Behavioral coverage for terminal cron jobs and explicit one-shot re-arm."""
 
-from datetime import datetime, timedelta, timezone
 import copy
+from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 import pytest

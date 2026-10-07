@@ -1,18 +1,18 @@
 """TLS assertions reach real client transports, never the host certificate store."""
 from __future__ import annotations
 
+import ssl
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from ipaddress import ip_address
-import ssl
 from threading import Thread
 
+import httpx
+import pytest
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
-import httpx
-import pytest
 from truststore._ssl_constants import _original_SSLContext
 
 from agent import model_metadata, process_bootstrap, ssl_verify
@@ -70,6 +70,7 @@ def local_tls(tmp_path, monkeypatch):
 @pytest.mark.parametrize("probe", ["metadata", "catalog"])
 def test_provider_ca_reaches_the_real_probe_transport(local_tls, monkeypatch, probe):
     import certifi
+
     from hermes_cli import models
 
     url, bundle = local_tls

@@ -6,117 +6,232 @@ main -> update_cmd -> update_cmd_*; ``_m()`` resolves ``hermes_cli.main`` at cal
 """
 
 import logging
-from contextlib import suppress
 import os
 import shlex
 import shutil  # noqa: F401  (tests patch update_cmd.shutil.*; split modules resolve it here)
 import subprocess
 import sys
 import time as _time
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import NoReturn
 
+from hermes_cli import update_cmd_check as _check
+from hermes_cli import update_cmd_commit as _commit
+from hermes_cli import update_cmd_config as _completion_config
+from hermes_cli import update_cmd_posix_pause as _posix_pause
+from hermes_cli import update_handoff as _update_handoff
+from hermes_cli import update_receipt as _completion_receipt
+from hermes_cli._early_recovery import (
+    git_operation_in_progress,
+    interrupted_pull_marker,
+    is_object_id,
+)
+from hermes_cli._old_updater import stop_for_relaunch
+
 # Old updaters load _no_prompt_git_kwargs from here after the checkout swap (frozen surface).
 from hermes_cli._subprocess_compat import no_prompt_git_kwargs as _no_prompt_git_kwargs
-from hermes_cli.config import get_hermes_home  # noqa: F401  (re-exported; patched via update_cmd)
-from hermes_cli import update_handoff as _update_handoff
-from hermes_cli.update_cmd_common import _best_effort, _record_stop
-# Captured BEFORE a checkout swap: parent transport/lifecycle never imports new code.
-from hermes_cli.update_completion import run_completion
-from hermes_cli.update_channel import adopt_retired_channel
-from pm.receipt import accept_worker_receipt as _accept_completion_pm_receipt
-from hermes_cli import update_receipt as _completion_receipt, update_cmd_config as _completion_config
-from hermes_cli._old_updater import stop_for_relaunch
-from hermes_cli._early_recovery import git_operation_in_progress, interrupted_pull_marker, is_object_id
-from hermes_cli import update_cmd_commit as _commit
-from hermes_cli import update_cmd_posix_pause as _posix_pause
-from hermes_cli.update_cmd_pause_gate import _checkout_move, _moves_for  # noqa: F401  (re-export)
-from hermes_cli import update_cmd_check as _check
+from hermes_cli.config import (
+    get_hermes_home,  # noqa: F401  (re-exported; patched via update_cmd)
+)
+from hermes_cli.old_updater_deps import (  # noqa: F401 — frozen updater surface (tests/compat + test_old_updater_shims)
+    _capture_active_lazy_features,
+    _npm_lockfile_changed,
+    _path_uid,
+    _rebuild_desktop_after_update,
+    _refresh_active_lazy_features,
+    _refresh_active_memory_provider_dependencies,
+    _update_node_dependencies,
+)
 
 # Re-exports: every split-module name stays reachable (and monkeypatchable) as update_cmd.<name>.
 from hermes_cli.update_abort_recovery import (  # noqa: F401
-    _abort_recovery_is_complete, _qualified_serve_skips, _recover_gateway_restart_after_abort,
-    _serve_unit_recovery_available, _surviving_pre_update_serve_runtimes,
-    _warn_stale_serve_runtimes)
-from hermes_cli.update_cmd_windows import (  # noqa: F401
-    _HOLDER_VALUE_FLAGS_FALLBACK,
-    _cold_start_windows_gateway_after_update, _desktop_owns_gateway_lifecycle,
-    _detect_venv_python_processes, _hermes_holder_subcommand, _holder_value_flags,
-    _holder_value_flags_cache, _looks_like_desktop_control_plane,
-    _pause_windows_gateways_for_update,
-    _refresh_bootstrap_cache_scripts, _refresh_windows_gateway_launchers,
-    _refuse_gateway_ancestor_tree_kill,
-    _restore_windows_gateway_service, _resume_windows_gateways_after_update,
-    _resume_windows_gateways_and_merge_outcome, _self_and_non_gateway_ancestor_pids,
-    _start_windows_gateway_service,
-    _stop_windows_gateway_service, _venv_launcher_ancestors,
-    _wait_for_windows_update_gateway_exit, _write_update_planned_stop_marker)
+    _abort_recovery_is_complete,
+    _qualified_serve_skips,
+    _recover_gateway_restart_after_abort,
+    _serve_unit_recovery_available,
+    _surviving_pre_update_serve_runtimes,
+    _warn_stale_serve_runtimes,
+)
+from hermes_cli.update_channel import adopt_retired_channel
+from hermes_cli.update_cmd_common import _best_effort, _record_stop
+from hermes_cli.update_cmd_config import (  # noqa: F401
+    _LAST_SIBLING_SNAPSHOTS,
+    _check_and_apply_config_migration,
+    _migrate_sibling_profile_configs,
+    _print_items,
+    _reload_config_modules,
+    _run_config_check_fresh,
+    _run_migrate_config_fresh,
+)
 from hermes_cli.update_cmd_fleet import (  # noqa: F401
-    _FLEET_RESTART_PENDING_NAME, _FRESH_RESTART_SUPERVISORS, _GatewayRestartOutcome,
+    _FLEET_RESTART_PENDING_NAME,
+    _FRESH_RESTART_SUPERVISORS,
     _clear_fleet_restart_pending_marker,
-    _current_checkout_sha, _drain_or_signal_gateway_for_update, _fleet_probe_expected_runtimes,
-    _fleet_restart_pending_marker_path, _fleet_restart_skip_reason, _for_each_systemd_gateway_unit,
-    _gateway_recovery_partition, _gateway_service_matches_profile, _pending_fleet_restart_needed,
-    _receipt_looks_unfinished, _receipt_reports_stale_runtime, _resolve_manage_cmd,
-    _restart_gateway_fleet_after_update, _restart_launchd_gateway_after_update,
-    _restart_macos_launchd_gateways, _restart_phase_failure_is_incomplete,
+    _current_checkout_sha,
+    _drain_or_signal_gateway_for_update,
+    _fleet_probe_expected_runtimes,
+    _fleet_restart_pending_marker_path,
+    _fleet_restart_skip_reason,
+    _for_each_systemd_gateway_unit,
+    _gateway_recovery_partition,
+    _gateway_service_matches_profile,
+    _GatewayRestartOutcome,
+    _pending_fleet_restart_needed,
+    _receipt_looks_unfinished,
+    _receipt_reports_stale_runtime,
+    _resolve_manage_cmd,
+    _restart_gateway_fleet_after_update,
+    _restart_launchd_gateway_after_update,
+    _restart_macos_launchd_gateways,
+    _restart_phase_failure_is_incomplete,
     _restart_systemd_gateway_units,
     _run_pending_fleet_restart,
-    _service_unit_supports_graceful_sigusr1_restart, _surviving_gateway_pids_after_failed_restart,
-    _systemctl, _systemctl_reset_and_restart,
-    _wait_for_service_active, _warn_gateway_restart_phase_aborted,
-    _warn_incomplete_gateway_fleet_restart, _warn_pending_fleet_restart,
-    _warn_pending_fleet_restart_on_startup, _write_fleet_restart_pending_marker,
-    _write_gateway_update_exit_code)
+    _service_unit_supports_graceful_sigusr1_restart,
+    _surviving_gateway_pids_after_failed_restart,
+    _systemctl,
+    _systemctl_reset_and_restart,
+    _wait_for_service_active,
+    _warn_gateway_restart_phase_aborted,
+    _warn_incomplete_gateway_fleet_restart,
+    _warn_pending_fleet_restart,
+    _warn_pending_fleet_restart_on_startup,
+    _write_fleet_restart_pending_marker,
+    _write_gateway_update_exit_code,
+)
 from hermes_cli.update_cmd_fleet_verify import _verify_fleet_after_update  # noqa: F401
-from hermes_cli.update_cmd_zip import (  # noqa: F401
-    _ZIP_PRESERVED_TOP_LEVEL, _ZIP_STAGING_ARTIFACT_SUFFIXES, _abort_zip_update_if_dirty_tree,
-    _atomic_replace_dir, _commit_staged_replacements, _discard_staged,
-    _is_zip_preserved_entry_status_line, _is_zip_staging_artifact_status_line, _stage_replacement,
-    _update_via_zip, _zip_overlay_block_reason)
-from hermes_cli.update_cmd_stash import (  # noqa: F401
-    _AUTOSTASH_NAME_PREFIX, _AUTOSTASH_WARN_AGE_DAYS, _clear_pending_autostash,
-    _discard_stashed_changes,
-    _git_untracked_paths, _park_stashed_changes, _print_stash_cleanup_guidance,
-    _reject_unsafe_stash_restore, _resolve_stash_selector, _restore_stashed_changes,
-    _restored_python_paths, _stash_apply_failed_only_on_existing_untracked,
-    _stash_local_changes_if_needed, _unrestored_autostash_notice,
-    _warn_orphaned_update_autostashes)
-from hermes_cli.update_cmd_config import (  # noqa: F401
-    _LAST_SIBLING_SNAPSHOTS, _check_and_apply_config_migration, _migrate_sibling_profile_configs,
-    _print_items, _reload_config_modules, _run_config_check_fresh, _run_migrate_config_fresh)
-from hermes_cli.update_cmd_validation import (  # noqa: F401 — frozen updater surface (tests/compat)
-    _UPDATE_CRITICAL_MODULES, _critical_module_import_failures,
-    _validate_critical_modules_import)
-from hermes_cli.old_updater_deps import (  # noqa: F401 — frozen updater surface (tests/compat + test_old_updater_shims)
-    _capture_active_lazy_features, _npm_lockfile_changed, _path_uid,
-    _rebuild_desktop_after_update, _refresh_active_lazy_features,
-    _refresh_active_memory_provider_dependencies, _update_node_dependencies)
 from hermes_cli.update_cmd_git import (  # noqa: F401
-    OFFICIAL_REPO_URL, OFFICIAL_REPO_URLS, SKIP_UPSTREAM_PROMPT_FILE, _ORPHAN_RESCUE_REFS_TO_KEEP,
-    _ORPHAN_RESCUE_REF_MAX_AGE_DAYS, _add_upstream_remote, _assess_parked_branch_switch,
-    _branch_head_label, _branch_head_suffix, _classify_fetch_failure, _count_commits_between,
-    _discard_lockfile_churn, _ensure_non_trampoline_git, _get_origin_url, _git_is_trampoline,
-    _has_upstream_remote, _is_fork, _locate_real_git, _mark_skip_upstream_prompt,
-    _normalize_managed_eol, _park_detached_head, _portable_git_candidates, _print_fetch_failure,
-    _print_parked_branch_kept_notice, _print_parked_branch_skip_warning,
-    _prune_orphan_rescue_refs, _push_synced_fork, _should_skip_upstream_prompt, _sync_fork_with_upstream,
-    _sync_with_upstream_if_needed, UpstreamTargetBroken)
+    _ORPHAN_RESCUE_REF_MAX_AGE_DAYS,
+    _ORPHAN_RESCUE_REFS_TO_KEEP,
+    OFFICIAL_REPO_URL,
+    OFFICIAL_REPO_URLS,
+    SKIP_UPSTREAM_PROMPT_FILE,
+    UpstreamTargetBroken,
+    _add_upstream_remote,
+    _assess_parked_branch_switch,
+    _branch_head_label,
+    _branch_head_suffix,
+    _classify_fetch_failure,
+    _count_commits_between,
+    _discard_lockfile_churn,
+    _ensure_non_trampoline_git,
+    _get_origin_url,
+    _git_is_trampoline,
+    _has_upstream_remote,
+    _is_fork,
+    _locate_real_git,
+    _mark_skip_upstream_prompt,
+    _normalize_managed_eol,
+    _park_detached_head,
+    _portable_git_candidates,
+    _print_fetch_failure,
+    _print_parked_branch_kept_notice,
+    _print_parked_branch_skip_warning,
+    _prune_orphan_rescue_refs,
+    _push_synced_fork,
+    _should_skip_upstream_prompt,
+    _sync_fork_with_upstream,
+    _sync_with_upstream_if_needed,
+)
 from hermes_cli.update_cmd_maint import (  # noqa: F401
-    _PRE_UPDATE_SNAPSHOT_KEEP, _PRE_UPDATE_SNAPSHOT_MAX_FILE_SIZE, _clear_stale_sqlite_sidecars,
-    _checkout_version, _ensure_acp_launcher, _ensure_fhs_path_guard, _finish_dashboard_update_cleanup,
-    _format_time_ago, _post_update_sqlite_runtime_status, _print_bundled_skills_sync_report,
-    _print_curator_first_run_notice, _print_curator_recent_run_notice,
-    _print_fts_optimize_available_notice, _print_update_completion, _print_update_summary,
+    _PRE_UPDATE_SNAPSHOT_KEEP,
+    _PRE_UPDATE_SNAPSHOT_MAX_FILE_SIZE,
+    _checkout_version,
+    _clear_stale_sqlite_sidecars,
+    _ensure_acp_launcher,
+    _ensure_fhs_path_guard,
+    _finish_dashboard_update_cleanup,
+    _format_time_ago,
+    _post_update_sqlite_runtime_status,
     _prepare_updated_checkout,
-    _print_verified_update_completion, _purge_stale_hermes_modules, _read_project_version,
-    _reload_process_scan_modules, _reload_updated_runtime_modules,
-    _resolve_pre_update_backup_mode, _restore_state_db_from_snapshot,
-    _run_post_update_maintenance, _run_pre_update_backup,
+    _print_bundled_skills_sync_report,
+    _print_curator_first_run_notice,
+    _print_curator_recent_run_notice,
+    _print_fts_optimize_available_notice,
+    _print_update_completion,
+    _print_update_summary,
+    _print_verified_update_completion,
+    _purge_stale_hermes_modules,
+    _read_project_version,
+    _reload_process_scan_modules,
+    _reload_updated_runtime_modules,
+    _resolve_pre_update_backup_mode,
+    _restore_state_db_from_snapshot,
+    _run_post_update_maintenance,
+    _run_pre_update_backup,
     _sweep_bytecode_after_update,
-    _update_complete_message, _verify_and_restore_one_state_db,
-    _verify_and_restore_state_dbs_post_update)
+    _update_complete_message,
+    _verify_and_restore_one_state_db,
+    _verify_and_restore_state_dbs_post_update,
+)
+from hermes_cli.update_cmd_pause_gate import (  # noqa: F401  (re-export)
+    _checkout_move,
+    _moves_for,
+)
+from hermes_cli.update_cmd_stash import (  # noqa: F401
+    _AUTOSTASH_NAME_PREFIX,
+    _AUTOSTASH_WARN_AGE_DAYS,
+    _clear_pending_autostash,
+    _discard_stashed_changes,
+    _git_untracked_paths,
+    _park_stashed_changes,
+    _print_stash_cleanup_guidance,
+    _reject_unsafe_stash_restore,
+    _resolve_stash_selector,
+    _restore_stashed_changes,
+    _restored_python_paths,
+    _stash_apply_failed_only_on_existing_untracked,
+    _stash_local_changes_if_needed,
+    _unrestored_autostash_notice,
+    _warn_orphaned_update_autostashes,
+)
+from hermes_cli.update_cmd_validation import (  # noqa: F401 — frozen updater surface (tests/compat)
+    _UPDATE_CRITICAL_MODULES,
+    _critical_module_import_failures,
+    _validate_critical_modules_import,
+)
+from hermes_cli.update_cmd_windows import (  # noqa: F401
+    _HOLDER_VALUE_FLAGS_FALLBACK,
+    _cold_start_windows_gateway_after_update,
+    _desktop_owns_gateway_lifecycle,
+    _detect_venv_python_processes,
+    _hermes_holder_subcommand,
+    _holder_value_flags,
+    _holder_value_flags_cache,
+    _looks_like_desktop_control_plane,
+    _pause_windows_gateways_for_update,
+    _refresh_bootstrap_cache_scripts,
+    _refresh_windows_gateway_launchers,
+    _refuse_gateway_ancestor_tree_kill,
+    _restore_windows_gateway_service,
+    _resume_windows_gateways_after_update,
+    _resume_windows_gateways_and_merge_outcome,
+    _self_and_non_gateway_ancestor_pids,
+    _start_windows_gateway_service,
+    _stop_windows_gateway_service,
+    _venv_launcher_ancestors,
+    _wait_for_windows_update_gateway_exit,
+    _write_update_planned_stop_marker,
+)
+from hermes_cli.update_cmd_zip import (  # noqa: F401
+    _ZIP_PRESERVED_TOP_LEVEL,
+    _ZIP_STAGING_ARTIFACT_SUFFIXES,
+    _abort_zip_update_if_dirty_tree,
+    _atomic_replace_dir,
+    _commit_staged_replacements,
+    _discard_staged,
+    _is_zip_preserved_entry_status_line,
+    _is_zip_staging_artifact_status_line,
+    _stage_replacement,
+    _update_via_zip,
+    _zip_overlay_block_reason,
+)
+
+# Captured BEFORE a checkout swap: parent transport/lifecycle never imports new code.
+from hermes_cli.update_completion import run_completion
+from pm.receipt import accept_worker_receipt as _accept_completion_pm_receipt
+
 logger = logging.getLogger(__name__)
 
 
@@ -387,6 +502,7 @@ def _gateway_prompt(prompt_text: str, default: str = "", timeout: float = 300.0)
     """
     import json as _json
     import uuid as _uuid
+
     from hermes_constants import get_hermes_home
 
     if _posix_pause.gateways_paused():  # the gateway that would relay it is stopped for the update
@@ -581,6 +697,7 @@ def _run_logged_subprocess(cmd, *, cwd=None, env=None):
     """Stream combined build output to update.log, retaining it for failure reporting."""
     import codecs
     import io
+
     from hermes_cli._subprocess_compat import kill_process_tree, windows_hide_flags
 
     child_env = dict(os.environ if env is None else env)
@@ -620,9 +737,8 @@ def _source_update_channel(args=None, *, channel=None, branch_explicit=False) ->
     if transient is not None:
         from hermes_cli.release_channels import validate_name
         return validate_name(transient)
-    from hermes_cli.update_channel import resolve_update_channel
-
     from hermes_cli.config import get_config_path, require_readable_config_before_write
+    from hermes_cli.update_channel import resolve_update_channel
 
     config = require_readable_config_before_write(get_config_path())
     return resolve_update_channel(config, _m().PROJECT_ROOT)
@@ -882,7 +998,8 @@ def _reconcile_diverged_checkout(git_cmd, branch: str, pre_pull_sha, *, target_r
     has_common_ancestor = bool(
         merge_base_result.returncode == 0 and merge_base_result.stdout.strip())
     if pre_pull_sha:
-        from datetime import datetime as _dt, timezone
+        from datetime import datetime as _dt
+        from datetime import timezone
         # SHA suffix so two updates in the same second get distinct refs.
         kind = "diverged" if has_common_ancestor else "orphan"
         rescue_ref = (
@@ -1562,7 +1679,10 @@ def _begin_update_receipt_and_plan(args):
     # plan is the worklist, not just a printout).
     _pre_update_plan = None
     with _best_effort('Update plan phase failed: %s'):
-        from hermes_cli.update_inventory import collect_runtime_inventory, record_plan_in_receipt
+        from hermes_cli.update_inventory import (
+            collect_runtime_inventory,
+            record_plan_in_receipt,
+        )
         _pre_update_plan = collect_runtime_inventory()
         record_plan_in_receipt(_pre_update_plan)
         if _pre_update_plan.runtimes:
@@ -1841,11 +1961,11 @@ def _cmd_update_impl(args, gateway_mode: bool):
     target_repository = None
     selected_channel = _source_update_channel(args)
     if not getattr(args, "branch", None):
+        from copy import deepcopy
+
+        from hermes_cli.config import require_readable_config_before_write
         from hermes_cli.release_channels import retrying_reads
         from hermes_cli.source_releases import resolve_source_target
-
-        from copy import deepcopy
-        from hermes_cli.config import require_readable_config_before_write
         from hermes_cli.update_channel import channel_record
 
         original_record = deepcopy(channel_record(require_readable_config_before_write(
@@ -1893,7 +2013,10 @@ def _cmd_update_impl(args, gateway_mode: bool):
         _check.report_pack_tidy(_m().PROJECT_ROOT)
         # Shallow installer checkouts collect one `.git/shallow` graft per past depth-1 fetch
         # (#105951); stale grafts break merge-base and push this run into the divergence path.
-        from hermes_cli.gitlock import repair_broken_shallow_boundaries, prune_stale_shallow_grafts
+        from hermes_cli.gitlock import (
+            prune_stale_shallow_grafts,
+            repair_broken_shallow_boundaries,
+        )
         repaired = repair_broken_shallow_boundaries(_m().PROJECT_ROOT)
         if repaired:
             print(f"  (restored {repaired} broken shallow boundary(ies))")
@@ -1916,7 +2039,10 @@ def _cmd_update_impl(args, gateway_mode: bool):
             fetch_args = ["fetch", "--no-tags", "origin", target_ref]
         else:
             fetch_args = ["fetch", "origin", _check.tracking_refspec("origin", branch)]
-        from hermes_cli.gitlock import fetch_with_partial_clone_recovery, is_partial_clone_pack_objects_crash
+        from hermes_cli.gitlock import (
+            fetch_with_partial_clone_recovery,
+            is_partial_clone_pack_objects_crash,
+        )
         # Marking the unmarked packs clears the git 2.53+ partial-clone pack-objects crash (#124272).
         fetch_result = fetch_with_partial_clone_recovery(
             lambda gc, a: _git_run(gc, a, network=True), git_cmd, fetch_args, _m().PROJECT_ROOT)

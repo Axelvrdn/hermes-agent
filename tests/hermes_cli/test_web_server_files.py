@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import pytest
 from starlette.testclient import TestClient
 
-from hermes_cli import web_server, web_server_files
 import hermes_cli.web_routers.files as _rt_files
+from hermes_cli import web_server, web_server_files
 
 
 def _client_with_app_state():
@@ -155,6 +155,7 @@ def test_download_authenticates_via_query_token(forced_files_client):
 
 def test_download_resolves_paths_in_the_originating_profile_session(local_files_client, monkeypatch):
     from pathlib import Path
+
     from hermes_state import SessionDB
 
     client, home = local_files_client

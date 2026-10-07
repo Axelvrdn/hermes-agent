@@ -1,16 +1,18 @@
 """Retired import names hand off old updater work without claiming success."""
 
+import os
+import sys
 from contextvars import ContextVar
 from copy import deepcopy
 from dataclasses import dataclass
-import os
-import sys
 from types import SimpleNamespace
 
 import pytest
 
 from tests.compat.old_updater_support import (
     fresh_child as fresh_child,
+)
+from tests.compat.old_updater_support import (
     no_external_work as no_external_work,
 )
 

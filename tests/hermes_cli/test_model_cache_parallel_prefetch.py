@@ -68,8 +68,9 @@ class TestUpdateProviderCacheEntry:
 
     def test_concurrent_writes_no_lost_entries(self, tmp_path, monkeypatch):
         """Multiple threads writing different providers concurrently — all land."""
-        import hermes_cli.models as mod
         import concurrent.futures
+
+        import hermes_cli.models as mod
 
         cache_path = tmp_path / "provider_models_cache.json"
         monkeypatch.setattr(mod, "_provider_models_cache_path", lambda: cache_path)

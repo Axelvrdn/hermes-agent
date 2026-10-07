@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import logging
 import datetime
 import json
+import logging
 import os
 import uuid
 from typing import Any, Dict, Optional
-
 
 DEFAULT_XAI_BASE_URL = "https://api.x.ai/v1"
 MAX_XAI_STORAGE_EXPIRES_AFTER_SECONDS = 30 * 24 * 60 * 60

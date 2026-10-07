@@ -21,15 +21,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from hermes_cli import main as hermes_main
-import hermes_cli.main_web_build as main_web_build
 import hermes_cli.main_install_repair as main_install_repair
-from hermes_cli import update_cmd
+import hermes_cli.main_web_build as main_web_build
 import hermes_cli.update_cmd_fleet as update_cmd_fleet
-from hermes_cli.update_receipt import COMMAND_BOUNDARY_STOP_REASON
-from hermes_constants import get_hermes_home
 import hermes_cli.update_host_obligation as host_obligation
 from gateway import host_rendezvous
+from hermes_cli import main as hermes_main
+from hermes_cli import update_cmd
+from hermes_cli.update_receipt import COMMAND_BOUNDARY_STOP_REASON
+from hermes_constants import get_hermes_home
 
 pytestmark = pytest.mark.usefixtures("isolated_source_completion")
 
@@ -429,10 +429,12 @@ def test_clean_update_escalates_surviving_serve_as_unaccounted(
     borrowing the gateway's restart, and (3) under contract C3 (the code is
     committed) end ``success`` with an owed ``gateway_restart`` follow-up and
     the restart obligation still armed — never a silent clean success."""
-    from hermes_cli.update_inventory import (
-        RuntimeRecord, UpdatePlan, _restart_mechanism,
-    )
     import hermes_cli.update_inventory as ui
+    from hermes_cli.update_inventory import (
+        RuntimeRecord,
+        UpdatePlan,
+        _restart_mechanism,
+    )
 
     args = _update_args()
     _patch_update_deps(monkeypatch, tmp_path, _make_head_moved_side_effect())
@@ -506,11 +508,13 @@ def test_clean_update_defers_desktop_owned_serve_and_clears_marker(
     Desktop open ends ``partial``/exit 1 and re-arms ``fleet_restart_pending``
     with nothing that could ever discharge it. It is surfaced (``deferred``,
     relaunch hint) rather than dropped."""
-    from hermes_cli.update_inventory import (
-        RuntimeRecord, UpdatePlan, _restart_mechanism,
-    )
-    import hermes_cli.update_inventory as ui
     import hermes_cli.process_identity as pi
+    import hermes_cli.update_inventory as ui
+    from hermes_cli.update_inventory import (
+        RuntimeRecord,
+        UpdatePlan,
+        _restart_mechanism,
+    )
 
     args = _update_args()
     _patch_update_deps(monkeypatch, tmp_path, _make_head_moved_side_effect())

@@ -5,12 +5,14 @@ from dataclasses import asdict
 
 import pytest
 
-from hermes_cli import process_identity
+from hermes_cli import process_identity, update_receipt
 from hermes_cli import update_cmd_fleet as fleet
 from hermes_cli import update_cmd_fleet_verify as fleet_verify
-from hermes_cli import update_receipt
 from hermes_cli.update_inventory import RuntimeRecord, UpdatePlan
-from hermes_cli.update_serve_obligations import defer_manual_serve, retain_receipt_manual_serves
+from hermes_cli.update_serve_obligations import (
+    defer_manual_serve,
+    retain_receipt_manual_serves,
+)
 from hermes_constants import get_hermes_home
 
 
@@ -151,6 +153,7 @@ def test_historical_retention_is_independent_of_plan_order(monkeypatch, capsys, 
 @pytest.mark.parametrize("gateway_state", ["current", "stale"])
 def test_historical_retention_failure_warns_and_survives_rotation(monkeypatch, capsys, failure, gateway_state):
     from pathlib import Path
+
     from hermes_cli import update_serve_obligations as obligations
 
     manual = asdict(RuntimeRecord(kind="serve", profile="work", pid=900, supervisor="manual-serve", restart_via="respawn-argv", detail={"create_time": 1000.0}))

@@ -5,9 +5,9 @@ Plugin admission owns writes; discovery never edits a profile's selection.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any, Optional
-import logging
 
 LOG = logging.getLogger(__name__)
 
@@ -35,8 +35,9 @@ def read_home_selection(home: Path) -> Optional[dict[str, Any]]:
         raise ValueError(f"could not read plugin selection: {config_path}") from exc
 
     # Missing YAML support is a broken runtime, not an empty plugin selection.
-    import utils
     from ruamel.yaml.error import YAMLError
+
+    import utils
 
     try:
         config = utils.fast_safe_load(text)

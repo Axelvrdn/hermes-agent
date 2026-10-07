@@ -4,7 +4,6 @@ OpenAI-style internals. Auth: API keys (``sk-ant-api*``) -> x-api-key; OAuth set
 payload conversion and credentials live in ``agent/anthropic_{endpoints,message_convert,
 credentials}.py``; import them from there."""
 
-from pm import install_hint
 import logging
 import math
 import os
@@ -14,22 +13,28 @@ import subprocess
 from contextlib import suppress
 from typing import Any, Dict, List, Optional
 
-from utils import normalize_proxy_env_vars
-
 from agent.anthropic_credentials import _is_oauth_token
 from agent.anthropic_endpoints import (
-    _base_url_needs_context_1m_beta, _is_azure_anthropic_endpoint, _is_kimi_coding_endpoint,
-    _is_minimax_anthropic_endpoint, _is_nous_portal_endpoint, _is_opencode_endpoint,
-    _is_third_party_anthropic_endpoint, _model_name_is_kimi_family, _normalize_base_url_text,
+    _base_url_needs_context_1m_beta,
+    _is_azure_anthropic_endpoint,
+    _is_kimi_coding_endpoint,
+    _is_minimax_anthropic_endpoint,
+    _is_nous_portal_endpoint,
+    _is_opencode_endpoint,
+    _is_third_party_anthropic_endpoint,
+    _model_name_is_kimi_family,
+    _normalize_base_url_text,
     _requires_bearer_auth,
 )
 from agent.anthropic_message_convert import (
-    convert_messages_to_anthropic, convert_tools_to_anthropic, normalize_model_name,
+    convert_messages_to_anthropic,
+    convert_tools_to_anthropic,
+    normalize_model_name,
 )
 from agent.errors import EmptyStreamError
-
 from hermes_cli.version_info import get_version_info
-
+from pm import install_hint
+from utils import normalize_proxy_env_vars
 
 # ``import anthropic`` is deliberately NOT at module top: the SDK costs ~220 ms of imports and
 # every usage site is a cold user-triggered path. ``...`` = not yet tried; None = tried, missing.
@@ -510,7 +515,10 @@ def build_anthropic_bedrock_client(region: str):
     ``context-1m-2025-08-07`` are attached: without the latter Bedrock caps Opus 4.6/4.7 at 200K.
     A configured ``bedrock.guardrail`` rides as InvokeModel headers so every client built here
     (primary, auxiliary, per-request rebuild) enforces it."""
-    from agent.bedrock_adapter import bedrock_guardrail_headers, scoped_aws_session_kwargs
+    from agent.bedrock_adapter import (
+        bedrock_guardrail_headers,
+        scoped_aws_session_kwargs,
+    )
     sdk = _require_sdk("the Bedrock provider")
     if not hasattr(sdk, "AnthropicBedrock"):
         raise ImportError("anthropic.AnthropicBedrock not available. Run: hermes pm repair")

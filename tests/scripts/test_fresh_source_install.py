@@ -7,18 +7,19 @@ builds its unchanged runtime recipe and the tiny app, then publishes launchers.
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import sysconfig
 import tarfile
 import tomllib
+from pathlib import Path
 
 import pytest
 
 from pm.store import current_target
-from tests.pm._fixtures import _wheel, served as served
+from tests.pm._fixtures import _wheel
+from tests.pm._fixtures import served as served
 
 ROOT = Path(__file__).resolve().parents[2]
 

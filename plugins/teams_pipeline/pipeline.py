@@ -24,9 +24,14 @@ from plugins.teams_pipeline.meetings import (
     list_recording_artifacts,
     looks_like_transcript_id,
     parse_graph_meeting_resource,
-    resolve_meeting_reference)
+    resolve_meeting_reference,
+)
 from plugins.teams_pipeline.models import (
-    MeetingArtifact, TeamsMeetingPipelineJob, TeamsMeetingRef, TeamsMeetingSummaryPayload)
+    MeetingArtifact,
+    TeamsMeetingPipelineJob,
+    TeamsMeetingRef,
+    TeamsMeetingSummaryPayload,
+)
 from plugins.teams_pipeline.store import TeamsPipelineStore
 from tools.transcription_tools import transcribe_audio
 

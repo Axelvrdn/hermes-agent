@@ -26,6 +26,7 @@ import pytest
 
 from gateway.platforms.base import BasePlatformAdapter
 
+
 class _StubAdapter(BasePlatformAdapter):
     """Minimal concrete subclass for testing _acquire_platform_lock."""
 

@@ -7,7 +7,11 @@ import logging
 from collections import Counter
 from typing import Any
 
-from acp.schema import AvailableCommand, AvailableCommandsUpdate, UnstructuredCommandInput
+from acp.schema import (
+    AvailableCommand,
+    AvailableCommandsUpdate,
+    UnstructuredCommandInput,
+)
 
 from acp_adapter.session import SessionState, _expand_acp_enabled_toolsets
 
@@ -149,9 +153,10 @@ class SlashCommandsMixin:
 
     def _cmd_tools(self, args: str, state: SessionState) -> str:
         try:
-            from model_tools import get_tool_definitions
             from types import SimpleNamespace
+
             from agent.memory_manager import inject_memory_provider_tools
+            from model_tools import get_tool_definitions
 
             toolsets = _expand_acp_enabled_toolsets(getattr(state.agent, "enabled_toolsets", None))
             tools = get_tool_definitions(
@@ -250,9 +255,15 @@ class SlashCommandsMixin:
 
     def _cmd_compress(self, args: str, state: SessionState) -> str:
         """``/compress [here [N] | <focus>] [--preview] [--aggressive]`` through the shared core."""
-        from agent.conversation_compression import finalize_context_engine_compression_notification
+        from agent.conversation_compression import (
+            finalize_context_engine_compression_notification,
+        )
         from agent.conversation_compression_manual import (
-            AGGRESSIVE_UNSUPPORTED, compress_now, parse_compress_args, render_compress_result)
+            AGGRESSIVE_UNSUPPORTED,
+            compress_now,
+            parse_compress_args,
+            render_compress_result,
+        )
 
         if not state.history:
             return "Nothing to compress — conversation is empty."

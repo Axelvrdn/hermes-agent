@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 
 
-
 def test_pets_cli_quoted_false_disables_and_toggle_enables(tmp_path, monkeypatch):
     """Quoted `display.pet.enabled: "false"` must read as disabled.
 
@@ -13,7 +12,6 @@ def test_pets_cli_quoted_false_disables_and_toggle_enables(tmp_path, monkeypatch
     reported an active pet and /pet toggle DISABLED instead of enabling.
     """
     import hermes_yaml as yaml
-
     from hermes_cli.pets import _has_active_pet, toggle_pet_display
 
     home = tmp_path / ".hermes"

@@ -117,6 +117,7 @@ class TestCronStatusMissingHeartbeat:
     def test_missing_heartbeat_green_when_gateway_just_started(self, tmp_cron_dir, capsys, monkeypatch):
         import io
         from contextlib import redirect_stdout
+
         import hermes_cli.cron as cron_cli
         from cron.jobs import create_job
 

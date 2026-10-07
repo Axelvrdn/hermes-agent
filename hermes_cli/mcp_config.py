@@ -8,19 +8,19 @@ import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
+from hermes_cli.colors import Colors, color
 from hermes_cli.config import (
     cfg_get,
+    get_env_value,
+    get_hermes_home,  # noqa: F401 — used by test mocks
     load_config,
     save_config,
-    get_env_value,
     save_env_value,
-    get_hermes_home,  # noqa: F401 — used by test mocks
 )
-from hermes_cli.colors import Colors, color
-from hermes_constants import display_hermes_home
 from hermes_cli.mcp_security import validate_mcp_server_entry
-from tools.mcp_tool_config import _ENV_VAR_PATTERN
+from hermes_constants import display_hermes_home
 from tools.mcp_tool_common import _env_ref_name, mcp_server_enabled
+from tools.mcp_tool_config import _ENV_VAR_PATTERN
 
 logger = logging.getLogger(__name__)
 
@@ -400,8 +400,8 @@ def _resolve_mcp_server_config(config: dict) -> dict:
     probe sent the literal placeholder and auth-requiring servers (e.g. n8n) returned 401 — while runtime
     tool loading worked because it interpolates. (#37792)
     """
-    from tools.mcp_tool_config import _interpolate_env_vars
     from agent.secret_scope import current_secret_scope
+    from tools.mcp_tool_config import _interpolate_env_vars
 
     if current_secret_scope() is None:
         try:
@@ -426,10 +426,10 @@ def _probe_single_server(
         rejected.failure_class = "config_rejected"  # type: ignore[attr-defined]
         raise rejected
 
-    from tools.mcp_tool_loop import _ensure_mcp_loop, _run_on_mcp_loop
+    from tools.mcp_tool_common import _parse_boolish
     from tools.mcp_tool_discovery import _connect_server
     from tools.mcp_tool_lifecycle import _stop_mcp_loop_if_idle
-    from tools.mcp_tool_common import _parse_boolish
+    from tools.mcp_tool_loop import _ensure_mcp_loop, _run_on_mcp_loop
 
     config = _resolve_mcp_server_config(config)
     if connect_timeout is None:
@@ -478,6 +478,7 @@ def _probe_single_server(
                 # the desktop can estimate per-call token cost. Best-effort, absent on failure.
                 try:
                     import json as _json
+
                     from tools.mcp_tool_schema import _convert_mcp_schema
 
                     details["schema_chars"] = {
@@ -802,7 +803,11 @@ def probe_failure_class(exc: BaseException) -> str:
 
     if tagged := tagged_failure_class(exc):
         return tagged
-    from tools.mcp_tool_errors import _is_auth_error, _iter_exception_nodes, _unwrap_exception_group
+    from tools.mcp_tool_errors import (
+        _is_auth_error,
+        _iter_exception_nodes,
+        _unwrap_exception_group,
+    )
     from tools.mcp_tool_node_abi import NodeAbiMismatchError
     try:
         root = _unwrap_exception_group(exc)
@@ -818,7 +823,11 @@ def probe_failure_class(exc: BaseException) -> str:
 
 def _probe_failure_next_step(name: str, exc: BaseException) -> str:
     """The one command that fixes the common probe failures (sign-in, missing command, everything else)."""
-    from tools.mcp_tool_errors import _format_connect_error, _is_auth_error, _unwrap_exception_group
+    from tools.mcp_tool_errors import (
+        _format_connect_error,
+        _is_auth_error,
+        _unwrap_exception_group,
+    )
     from tools.mcp_tool_node_abi import NodeAbiMismatchError
     root = _unwrap_exception_group(exc)
     if _is_auth_error(root) or getattr(getattr(root, "response", None), "status_code", None) in (401, 403):

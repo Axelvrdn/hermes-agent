@@ -80,8 +80,7 @@ def test_resolve_mcp_invocation_sanitizes_env(monkeypatch):
     monkeypatch.setenv("PATH", "/usr/bin:/bin")
     monkeypatch.delenv("HERMES_CUA_TELEMETRY", raising=False)
 
-    from tools.computer_use import cua_backend
-    from tools.computer_use import cua_backend_driver
+    from tools.computer_use import cua_backend, cua_backend_driver
 
     captured = {}
     _patch_windows_hide_flags(monkeypatch, cua_backend)
@@ -101,8 +100,7 @@ def test_runtime_contract_check_sanitizes_env(monkeypatch):
     monkeypatch.setenv("PATH", "/usr/bin:/bin")
     monkeypatch.delenv("HERMES_CUA_TELEMETRY", raising=False)
 
-    from tools.computer_use import cua_backend
-    from tools.computer_use import cua_backend_driver
+    from tools.computer_use import cua_backend, cua_backend_driver
 
     captured = {}
     _patch_windows_hide_flags(monkeypatch, cua_backend)

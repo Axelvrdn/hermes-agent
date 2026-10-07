@@ -1,12 +1,12 @@
 """Minor-style updates follow advertised artifacts without dropping other pins."""
 from __future__ import annotations
 
-from argparse import Namespace
 import hashlib
 import importlib
 import io
 import json
 import zipfile
+from argparse import Namespace
 
 import pytest
 

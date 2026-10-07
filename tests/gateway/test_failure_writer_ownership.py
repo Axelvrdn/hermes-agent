@@ -36,6 +36,7 @@ def test_gateway_failure_writer_preserves_accepted_turn_identity(tmp_path):
 def test_failure_owner_follows_only_live_lineage_markers(tmp_path):
     import asyncio
     import sqlite3
+
     from gateway.config import GatewayConfig, Platform
     from gateway.platforms.event import MessageEvent
     from gateway.run import GatewayRunner
@@ -133,6 +134,7 @@ def test_context_overflow_exception_persists_nothing(tmp_path):
     """Exception-path overflow (400/500 on a long session) must not write the user row or a
     boundary — the same no-grow rule as the persist path (#1630)."""
     import asyncio
+
     from gateway.config import GatewayConfig, Platform
     from gateway.platforms.event import MessageEvent
     from gateway.run import GatewayRunner
@@ -170,6 +172,7 @@ def test_context_overflow_error_reply_carries_no_partial_effect_notice():
     """Overflow is a deterministic rejection (#107567); the reply must stay the /compress
     guidance alone rather than inherit the indeterminate "actions may have run" warning."""
     import asyncio
+
     from gateway.config import Platform
     from gateway.platforms.event import MessageEvent
     from gateway.run import GatewayRunner
@@ -201,6 +204,7 @@ def test_fresh_session_agent_flushed_failed_turn_is_closed(tmp_path):
     still land — ``session_meta`` is stripped before the model sees history, so an open user row
     behind it is exactly the #107070 replay shape."""
     import asyncio
+
     from gateway.config import GatewayConfig, Platform
     from gateway.platforms.event import MessageEvent
     from gateway.run import GatewayRunner

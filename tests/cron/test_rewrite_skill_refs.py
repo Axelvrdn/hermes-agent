@@ -223,7 +223,7 @@ class TestRewriteSkillRefsPersistence:
 
 
     def test_noop_does_not_rewrite_file(self, cron_env):
-        from cron.jobs import create_job, rewrite_skill_refs, JOBS_FILE
+        from cron.jobs import JOBS_FILE, create_job, rewrite_skill_refs
 
         create_job(prompt="", schedule="every 1h", skills=["keep"])
         mtime_before = JOBS_FILE.stat().st_mtime_ns

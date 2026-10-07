@@ -12,7 +12,9 @@ from hermes_cli.observability import relay_shared_metrics
 from hermes_cli.observability import shared_metrics_loop as loop
 from hermes_cli.observability.shared_metrics import SharedMetricsStore
 from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-from tests.hermes_cli.test_relay_shared_metrics_runtime import direct_runtime  # noqa: F401
+from tests.hermes_cli.test_relay_shared_metrics_runtime import (
+    direct_runtime,  # noqa: F401
+)
 
 _LOOP_METRICS = {
     "hermes.memory.op.count", "hermes.curator.run.count", "hermes.delegation.run.count",
@@ -44,7 +46,11 @@ def _memory_store():
 
 def test_memory_tool_counts_each_operation_with_its_outcome_and_origin(home):
     from tools.memory_tool import memory_tool
-    from tools.skill_provenance import BACKGROUND_REVIEW, reset_current_write_origin, set_current_write_origin
+    from tools.skill_provenance import (
+        BACKGROUND_REVIEW,
+        reset_current_write_origin,
+        set_current_write_origin,
+    )
 
     store = _memory_store()
     assert json.loads(memory_tool("add", content="prefers tabs", store=store))["success"]

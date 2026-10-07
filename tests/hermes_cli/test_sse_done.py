@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import json
 
-from hermes_cli.proxy.sse_done import DONE_SSE_FRAME, SseDoneTracker, content_type_is_sse
+from hermes_cli.proxy.sse_done import (
+    DONE_SSE_FRAME,
+    SseDoneTracker,
+    content_type_is_sse,
+)
 
 
 def _data_line(obj) -> bytes:

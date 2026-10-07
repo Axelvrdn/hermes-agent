@@ -601,8 +601,13 @@ class InProcessSession:
     def compress(self, args: str = "") -> Any:
         """Mirror ``hermes_cli.cli_session_mixin`` ``/compress``: install ``after_messages``, follow a
         rotated session id, re-flush the handoff on rotation, finalize the engine notification."""
-        from agent.conversation_compression import finalize_context_engine_compression_notification
-        from agent.conversation_compression_manual import compress_now, parse_compress_args
+        from agent.conversation_compression import (
+            finalize_context_engine_compression_notification,
+        )
+        from agent.conversation_compression_manual import (
+            compress_now,
+            parse_compress_args,
+        )
 
         before_sid = self.sid
         result = compress_now(self.agent, self.history, parse_compress_args(args), task_id=before_sid)

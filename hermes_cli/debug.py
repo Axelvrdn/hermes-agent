@@ -14,8 +14,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Optional
 
-from hermes_constants import get_hermes_home
 from hermes_cli.debug_redaction import redact_debug_support_text
+from hermes_constants import get_hermes_home
 from utils import atomic_json_write
 
 logger = logging.getLogger(__name__)

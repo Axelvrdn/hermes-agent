@@ -9,7 +9,6 @@ sanitize/merge pass already coalesces consecutive user messages.
 
 from __future__ import annotations
 
-
 from tui_gateway.server import _append_model_switch_marker
 
 

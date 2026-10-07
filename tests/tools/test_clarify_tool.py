@@ -3,10 +3,10 @@
 import json
 
 from tools.clarify_tool import (
-    clarify_tool,
+    CLARIFY_SCHEMA,
     MAX_CHOICES,
     MAX_QUESTIONS,
-    CLARIFY_SCHEMA,
+    clarify_tool,
 )
 
 

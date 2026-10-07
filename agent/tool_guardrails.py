@@ -13,9 +13,11 @@ from collections import deque
 from dataclasses import asdict, dataclass, field, fields
 from typing import Any, Mapping
 
+from agent.tool_result_classification import (
+    file_mutation_result_landed,
+    is_guardrail_refusal,
+)
 from utils import safe_json_loads
-from agent.tool_result_classification import file_mutation_result_landed, is_guardrail_refusal
-
 
 IDEMPOTENT_TOOL_NAMES = frozenset({
     "read_file", "search_files", "web_search", "web_extract", "session_search", "skill_view", "skills_list",

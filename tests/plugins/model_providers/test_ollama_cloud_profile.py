@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import pytest
 
+
 @pytest.fixture
 def ollama_cloud_profile():
     """Resolve the registered Ollama Cloud profile.

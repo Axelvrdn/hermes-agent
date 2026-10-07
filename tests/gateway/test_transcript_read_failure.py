@@ -29,6 +29,7 @@ from gateway.config import GatewayConfig
 from gateway.session import SessionStore
 from gateway.session_transcript import TranscriptReadError
 
+
 @pytest.fixture
 def store(tmp_path):
     return SessionStore(sessions_dir=tmp_path / "gw", config=GatewayConfig())

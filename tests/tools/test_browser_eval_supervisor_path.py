@@ -11,8 +11,8 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from tools import browser_tool_session as bt_session
 
+from tools import browser_tool_session as bt_session
 
 # ---------------------------------------------------------------------------
 # Fast-path dispatch: tools.browser_tool._browser_eval
@@ -195,6 +195,7 @@ class TestEvaluateRuntimeResponseShaping:
     def test_no_session_attached_returns_error(self):
         import asyncio
         import threading
+
         from tools.browser_supervisor import CDPSupervisor
 
         sup = object.__new__(CDPSupervisor)

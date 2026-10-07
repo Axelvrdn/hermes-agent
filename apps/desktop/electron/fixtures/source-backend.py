@@ -10,11 +10,11 @@ from __future__ import annotations
 import importlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import zipfile
+from pathlib import Path
 
 
 def main() -> None:
@@ -56,15 +56,15 @@ def main() -> None:
     subprocess.run([uv, "lock", "--project", str(root), "--python", sys.executable],
                    check=True, stdout=sys.stderr, timeout=30)
     import pm
-    from pm import paths
-    from pm.lock import Facts
-    from pm.store import current_target, tree_digest
-    from pm.environments import selected_venv
     from hermes_cli._launchers import ensure_install_launchers
+    from pm import paths
+    from pm.environments import selected_venv
+    from pm.lock import Facts
 
     # PM's worker runs on PM's own staged runtime (truststore, ruamel), never on
     # the application interpreter; only the tool acquisition is substituted.
     from pm.runtime_stage import stage_runtime
+    from pm.store import current_target, tree_digest
 
     worker = root / "pm" / "worker.py"
     worker_python = stage_runtime(Path(uv), Path(sys.executable), temp / "pm-runtime")

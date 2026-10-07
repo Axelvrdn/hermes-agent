@@ -22,11 +22,14 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from hermes_constants import get_hermes_home
 from hermes_startup_watchdog import report_startup_progress
-from hermes_state_holders import read_only_db_uri
 from hermes_state_common import (
-    _acquire_db_flock, _clear_lock_holder_record, _describe_lock_holder, _read_lock_holder_record,
+    _acquire_db_flock,
+    _clear_lock_holder_record,
+    _describe_lock_holder,
+    _read_lock_holder_record,
     is_advisory_lock_contention,
 )
+from hermes_state_holders import read_only_db_uri
 
 # Log-record parity with the origin module (caplog tests pin "hermes_state").
 logger = logging.getLogger("hermes_state")
@@ -603,7 +606,10 @@ def _reapply_durability_barriers(conn: sqlite3.Connection) -> bool:
     """Best-effort (re)application of the macOS write barriers; True if accepted.
     Call before ``VACUUM``/``REINDEX`` once the schema parses: a connection opened
     on a malformed schema could not take them at open time. Never raises."""
-    from hermes_state_wal import _apply_macos_checkpoint_barrier, _enforce_macos_synchronous_full
+    from hermes_state_wal import (
+        _apply_macos_checkpoint_barrier,
+        _enforce_macos_synchronous_full,
+    )
     try:
         _apply_macos_checkpoint_barrier(conn)
         _enforce_macos_synchronous_full(conn)
@@ -619,7 +625,10 @@ def apply_durability_barriers(conn: sqlite3.Connection) -> bool:
     from hermes_state_wal import _apply_synchronous_pragma
     ok = _reapply_durability_barriers(conn)
     with contextlib.suppress(Exception):
-        from hermes_cli.config import cfg_get, load_config_readonly  # local: avoids an import cycle
+        from hermes_cli.config import (  # local: avoids an import cycle
+            cfg_get,
+            load_config_readonly,
+        )
         if (raw_synchronous := cfg_get(load_config_readonly(), "database", "synchronous", default=None)) is not None:
             _apply_synchronous_pragma(conn, raw_synchronous, db_label="state.db (guest)")
     return ok

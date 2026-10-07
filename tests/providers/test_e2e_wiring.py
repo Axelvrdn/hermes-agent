@@ -6,6 +6,7 @@ via shared module state).
 """
 
 import pytest
+
 from agent.transports.chat_completions import ChatCompletionsTransport
 from providers import get_provider_profile
 

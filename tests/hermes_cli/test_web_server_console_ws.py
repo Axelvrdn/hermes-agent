@@ -197,7 +197,11 @@ def test_console_cancel_stops_forked_agent_request_before_reporting(console_clie
 def test_interrupt_scope_cancels_agents_that_start_after_the_cancel():
     """A turn that begins after the host cancelled must be interrupted on entry, else a cancel racing
     agent construction leaves a live request behind."""
-    from agent.interrupt_scope import InterruptScope, bind_interrupt_scope, track_in_interrupt_scope
+    from agent.interrupt_scope import (
+        InterruptScope,
+        bind_interrupt_scope,
+        track_in_interrupt_scope,
+    )
 
     class Agent:
         def __init__(self):

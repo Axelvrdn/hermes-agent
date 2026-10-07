@@ -1,8 +1,8 @@
 """The tick-to-worker handoff must have no retirement-sized gap after can_dispatch."""
 
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
-import threading
 
 
 def test_passed_gate_tick_and_queued_job_remain_busy_until_real_worker_exit(tmp_path, monkeypatch):

@@ -3,7 +3,6 @@ from __future__ import annotations
 import textwrap
 
 
-
 def _write_config(tmp_path, body: str) -> None:
     (tmp_path / "config.yaml").write_text(textwrap.dedent(body), encoding="utf-8")
 
@@ -72,6 +71,7 @@ def test_resolved_api_call_timeout_priority(monkeypatch, tmp_path):
     _write_config(tmp_path, "")
     # Clear the cached config load
     import importlib
+
     from hermes_cli import config as cfg_mod
     importlib.reload(cfg_mod)
     from hermes_cli import timeouts as to_mod

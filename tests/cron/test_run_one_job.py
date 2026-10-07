@@ -149,7 +149,10 @@ def test_run_one_job_exception_delivers_failure_alert(monkeypatch):
     assert len(delivered) == 1 and delivered[0][0] == "j3"
     # The notice carries the classifier verdict's gloss from the copy table (whatever its wording),
     # never the raw HTTP code as the lead, plus a retry command.
-    from cron.scheduler_failure_copy import _provider_failure_cause, classify_cron_failure_reason
+    from cron.scheduler_failure_copy import (
+        _provider_failure_cause,
+        classify_cron_failure_reason,
+    )
     gloss = _provider_failure_cause(classify_cron_failure_reason("Gemini HTTP 503 (UNAVAILABLE)"))
     assert gloss and gloss in delivered[0][1]
     assert not delivered[0][1].lstrip("⚠️ ").startswith("Gemini HTTP 503")

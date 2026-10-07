@@ -4,10 +4,11 @@ import time
 from types import SimpleNamespace
 
 import pytest
-from run_agent import AIAgent
-from tui_gateway import server
+
 from hermes_cli.cli_stream_mixin import CLIStreamMixin
-from tests.agent.test_credits_tracker import HEALTHY_HEADERS, DEPLETED_HEADERS
+from run_agent import AIAgent
+from tests.agent.test_credits_tracker import DEPLETED_HEADERS, HEALTHY_HEADERS
+from tui_gateway import server
 
 
 class CLI(CLIStreamMixin):

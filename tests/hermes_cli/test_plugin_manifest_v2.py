@@ -10,12 +10,12 @@ import logging
 from types import SimpleNamespace
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.plugins import (
+    SUPPORTED_MANIFEST_VERSION,
     PluginManager,
     PluginManifest,
-    SUPPORTED_MANIFEST_VERSION,
     resolve_plugin_load_order,
     validate_config_schema,
 )
@@ -420,6 +420,7 @@ class TestRequiresHermes:
     def test_unsatisfied_requires_hermes_skips_without_importing(self, hermes_home, monkeypatch):
         """A too-new ``requires_hermes`` records an error and never runs register(); a satisfied one loads."""
         import sys
+
         from hermes_cli import plugins_manifest
         monkeypatch.setattr(plugins_manifest, "running_hermes_version", lambda: "1.2.3")
         _write_plugin(hermes_home / "plugins", "future", manifest_extra={"requires_hermes": ">=99.0"},

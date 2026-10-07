@@ -24,7 +24,6 @@ from gateway.config import Platform
 from gateway.platforms.base import BasePlatformAdapter
 from gateway.session import SessionSource, build_session_key
 
-
 UID = "8693894969"
 
 

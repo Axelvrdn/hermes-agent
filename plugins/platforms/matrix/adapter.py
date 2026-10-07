@@ -25,11 +25,10 @@ add a third member so it has >2 joined members.
 
 from __future__ import annotations
 
-import asyncio
 import array
+import asyncio
 import inspect
 import json
-from contextlib import suppress
 import logging
 import mimetypes
 import os
@@ -38,24 +37,32 @@ import shutil
 import subprocess
 import sys
 import time
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from contextlib import suppress
 from dataclasses import dataclass, field
-
 from html import escape as _html_escape
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Dict, Optional, Set
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from agent.i18n import t
 from agent.secret_scope import get_secret
-from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, extra_or_secret as _extra_or_secret,
-    get_scoped_secret as _get_scoped_secret, send_error
-)
+from gateway.platforms._shared import apply_yaml_bridge as _apply_yaml_bridge
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import send_error
 
 try:
     from mautrix.types import (
-        ContentURI, EventID, EventType, PresenceState, RoomCreatePreset, RoomID, TrustState, UserID)
+        ContentURI,
+        EventID,
+        EventType,
+        PresenceState,
+        RoomCreatePreset,
+        RoomID,
+        TrustState,
+        UserID,
+    )
 except ImportError:
     # Import-safe stubs without mautrix: check_matrix_requirements() gates production use, but
     # tests exercise adapter methods so the attributes must exist.
@@ -72,13 +79,23 @@ except ImportError:
 
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import (
-    gateway_trust_env, BasePlatformAdapter, ExecApprovalPrompt,
-    SendResult, resolve_proxy_url, proxy_kwargs_for_aiohttp, _ssrf_redirect_guard,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    _ssrf_redirect_guard,
+    gateway_trust_env,
+    proxy_kwargs_for_aiohttp,
+    resolve_proxy_url,
+    transcode_to_ogg_opus,
 )
-from gateway.platforms.base import transcode_to_ogg_opus
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
 from gateway.platforms.helpers import ThreadParticipationTracker
-from plugins.platforms.matrix.voice_mention import ParkedVoices, VoiceGate, has_voice_marker, is_voice_event
+from plugins.platforms.matrix.voice_mention import (
+    ParkedVoices,
+    VoiceGate,
+    has_voice_marker,
+    is_voice_event,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -499,10 +516,10 @@ def _check_e2ee_deps() -> bool:
     ``Database.create``). See #31116.
     """
     try:
+        import aiosqlite  # noqa: F401
+        import asyncpg  # noqa: F401
         from mautrix.crypto import OlmMachine  # noqa: F401
         from mautrix.crypto.store.asyncpg import PgCryptoStore  # noqa: F401
-        import asyncpg  # noqa: F401
-        import aiosqlite  # noqa: F401
         return True
     except (ImportError, AttributeError):
         return False
@@ -758,7 +775,15 @@ def ensure_matrix_deps() -> bool:
 
     def _import():
         from mautrix.types import (
-            ContentURI, EventID, EventType, PresenceState, RoomCreatePreset, RoomID, TrustState, UserID)
+            ContentURI,
+            EventID,
+            EventType,
+            PresenceState,
+            RoomCreatePreset,
+            RoomID,
+            TrustState,
+            UserID,
+        )
         return {
             "ContentURI": ContentURI,
             "EventID": EventID,
@@ -3168,8 +3193,15 @@ def _standalone_payloads(message: str) -> list[Dict[str, Any]]:
 
 def interactive_setup() -> None:
     """Interactive credential setup (setup_fn); CLI helpers are lazy-imported."""
+    from hermes_cli.cli_output import (
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+        prompt_yes_no,
+    )
     from hermes_cli.config import get_env_value, remove_env_value, save_env_value
-    from hermes_cli.cli_output import prompt, prompt_yes_no, print_header, print_info, print_success, print_warning
     from hermes_cli.setup_platforms import declines_reconfigure
     print_header("Matrix")
     if declines_reconfigure("Matrix", "Reconfigure Matrix?", "MATRIX_ACCESS_TOKEN", "MATRIX_PASSWORD"):

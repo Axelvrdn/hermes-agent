@@ -6,8 +6,6 @@ from gateway.status_phrases import (
 )
 
 
-
-
 def test_status_phrase_does_not_leak_raw_preview_or_args():
     msg = choose_status_phrase(
         "status",

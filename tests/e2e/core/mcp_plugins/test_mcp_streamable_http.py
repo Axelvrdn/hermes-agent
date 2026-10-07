@@ -24,6 +24,7 @@ from typing import Any
 
 import pytest
 
+from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core.mcp_plugins._helpers import (
     FINAL,
     HttpMcpServer,
@@ -42,7 +43,6 @@ from tests.e2e.core.mcp_plugins._helpers import (
     tool_results,
 )
 from tests.e2e.core.mcp_plugins._plugin_helpers import reap_tagged, tui_host
-from tests.e2e.core._pending_fixes import known_gate
 from tests.fakes.fake_llm_provider import Text
 
 pytestmark = [

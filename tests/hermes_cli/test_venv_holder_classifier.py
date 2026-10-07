@@ -6,6 +6,7 @@ from hermes_cli.update_cmd import (
     _hermes_holder_subcommand,
 )
 
+
 class TestHolderSubcommand:
     @pytest.mark.parametrize(
         ("cmdline", "expected"),

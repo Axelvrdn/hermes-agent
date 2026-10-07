@@ -7,10 +7,9 @@ Scan tracked text, including extensionless scripts and embedded shell payloads.
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import re
 import subprocess
-
+from pathlib import Path
 
 FIXED_BASH = re.compile(rb"#![ \t]*/(?:usr/)?bin/bash\b")
 

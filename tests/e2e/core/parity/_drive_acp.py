@@ -17,7 +17,13 @@ import threading
 import time
 from typing import Any
 
-from tests.e2e.core.parity._helpers import TURN_TIMEOUT, DriveResult, ParityHome, hermes_argv, terminate
+from tests.e2e.core.parity._helpers import (
+    TURN_TIMEOUT,
+    DriveResult,
+    ParityHome,
+    hermes_argv,
+    terminate,
+)
 from tests.fakes.fake_llm_provider import FakeLLMServer
 
 ACP_TOOLSET = "hermes-acp"  # acp_adapter/session.py::_expand_acp_enabled_toolsets default

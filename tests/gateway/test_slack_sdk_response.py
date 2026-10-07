@@ -17,7 +17,6 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-
 # Import the real response class first: the mock installer below fills
 # sys.modules with MagicMocks, which would mask an installed slack_sdk.
 try:

@@ -15,8 +15,8 @@ Covers the pieces added when boards became a first-class concept:
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -32,7 +32,6 @@ if str(_WORKTREE) not in sys.path:
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
 from hermes_cli import kanban_db_dispatch as kbd
-
 
 # ---------------------------------------------------------------------------
 # Fixture

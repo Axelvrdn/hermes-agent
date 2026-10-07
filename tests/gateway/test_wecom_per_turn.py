@@ -1,7 +1,9 @@
 """Tests for per-turn stream isolation and concurrent consumer scenarios."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
+
 from gateway.config import PlatformConfig
 
 
@@ -205,8 +207,8 @@ class TestNativeFallbackStreamClose:
         WeCom typing bubble. If the first content frame fails, we must still
         finalize based on _native_stream_opened, not _native_last_pushed_len.
         """
-        from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
         from gateway.platforms.base import BasePlatformAdapter
+        from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
         class MockAdapter(BasePlatformAdapter):
             MAX_MESSAGE_LENGTH = 4096
@@ -284,8 +286,8 @@ class TestNativeFallbackStreamClose:
     @pytest.mark.asyncio
     async def test_native_fallback_closes_stream_on_success(self):
         """When native fails mid-stream, best-effort finalize succeeds."""
-        from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
         from gateway.platforms.base import BasePlatformAdapter
+        from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
         class MockAdapter(BasePlatformAdapter):
             MAX_MESSAGE_LENGTH = 4096
@@ -341,8 +343,8 @@ class TestNativeFallbackStreamClose:
     @pytest.mark.asyncio
     async def test_native_fallback_falls_to_send_on_finalize_fail(self):
         """When native fails and finalize also fails, falls through to send()."""
-        from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
         from gateway.platforms.base import BasePlatformAdapter
+        from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
         class MockAdapter(BasePlatformAdapter):
             MAX_MESSAGE_LENGTH = 4096

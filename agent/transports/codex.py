@@ -11,11 +11,15 @@ import re
 from typing import Any, Callable, Optional
 
 from agent.reasoning_effort import (
-    CODEX_ASTRA_EFFORTS, CODEX_LEGACY_EFFORTS,
-    XAI_GROK46_EFFORTS, XAI_LEGACY_EFFORTS, clamp_effort, is_astra_model,
+    CODEX_ASTRA_EFFORTS,
+    CODEX_LEGACY_EFFORTS,
+    XAI_GROK46_EFFORTS,
+    XAI_LEGACY_EFFORTS,
+    clamp_effort,
     # Same declared vocabulary + shared clamp as the main Codex transport (agent.reasoning_effort):
     # per-model — "max" availability varies; "minimal"/"ultra" clamp to a listed level.
     codex_supported_efforts,
+    is_astra_model,
 )
 from agent.transports.base import ProviderTransport
 from agent.transports.types import NormalizedResponse, ToolCall
@@ -483,7 +487,10 @@ def _is_post_tool_replay(messages: Optional[list[dict[str, Any]]]) -> bool:
     replayed, so only the *trailing* messages are checked (a whole-history scan
     would make suppression sticky). Call ids resolve like ``_chat_messages_to_responses_input``.
     """
-    from agent.codex_responses_adapter import _canonical_call_id_from_fc, _split_responses_tool_id
+    from agent.codex_responses_adapter import (
+        _canonical_call_id_from_fc,
+        _split_responses_tool_id,
+    )
 
     def _pair_ids(raw: Any, explicit: Any = None) -> set:
         embedded_call_id, item_id = _split_responses_tool_id(raw)
@@ -640,7 +647,10 @@ class ResponsesApiTransport(ProviderTransport):
 
     def convert_messages(self, messages: list[dict[str, Any]], **kwargs) -> Any:
         """Convert OpenAI chat messages to Responses API input items."""
-        from agent.codex_responses_adapter import _chat_messages_to_responses_input, _wire_model_identity
+        from agent.codex_responses_adapter import (
+            _chat_messages_to_responses_input,
+            _wire_model_identity,
+        )
 
         self._last_issuer_model = _wire_model_identity(kwargs.get("model"))
         return _chat_messages_to_responses_input(
@@ -713,7 +723,9 @@ class ResponsesApiTransport(ProviderTransport):
         )
 
         # Lazy: provider plugins import this transport during model_metadata init.
-        from agent.model_metadata import strip_codex_context_variant_suffix as _strip_ctx_variant
+        from agent.model_metadata import (
+            strip_codex_context_variant_suffix as _strip_ctx_variant,
+        )
         request_overrides = params.get("request_overrides") or {}
         # An override may rewrite the wire model; provenance must be stamped with what actually goes out.
         wire_model = _strip_ctx_variant(request_overrides.get("model", model))

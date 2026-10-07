@@ -16,15 +16,17 @@ tail) by handling the user-side confirmation tail.
 """
 
 import time
-import pytest
 from typing import Dict, List
+
+import pytest
 
 from agent.replay_cleanup import (
     is_dangerous_confirmation as _is_dangerous_confirmation,
+)
+from agent.replay_cleanup import (
     strip_stale_dangerous_confirmations as _strip_stale_dangerous_confirmations,
 )
 from gateway.run import _build_gateway_agent_history
-
 
 # High-risk confirmation patterns. A user message matching one of these
 # (case-insensitive) is considered a "confirmation text" and is subject

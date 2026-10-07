@@ -1,9 +1,9 @@
 """Data-only deletion separates user state from the runtime that must survive."""
 from __future__ import annotations
 
+import stat
 from dataclasses import dataclass
 from pathlib import Path
-import stat
 
 from pm.filesystem import is_junction
 
@@ -16,9 +16,9 @@ class DataRemovalPlan:
 
 
 def plan_data_removal(home: Path, project: Path, userdata: Path | None = None) -> DataRemovalPlan:
+    from hermes_cli.steward import is_bundled_payload
     from hermes_constants import get_default_hermes_root
     from pm.environments import base_venv, installs_root, store_root
-    from hermes_cli.steward import is_bundled_payload
     from tools.checkpoint_pruning import store_lock_path
 
     home = home.resolve()

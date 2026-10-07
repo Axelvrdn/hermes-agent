@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 from typing import Any, Optional
 
-
 TERMINAL_SETUP_AUTH_METHOD_ID = "hermes-setup"
 
 

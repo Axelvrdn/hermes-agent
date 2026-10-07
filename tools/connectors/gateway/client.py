@@ -21,7 +21,6 @@ from tools.connectors.gateway.errors import (
     ToolGatewayError,
     parse_gateway_error,
 )
-
 from tools.connectors.gateway.merge import PlannedCall
 
 logger = logging.getLogger(__name__)

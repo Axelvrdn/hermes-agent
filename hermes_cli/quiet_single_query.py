@@ -158,7 +158,10 @@ def run_reported_turn(argv: list, *, env: MutableMapping[str, str], report_path:
 @contextlib.contextmanager
 def bind_quiet_session_key(session_id: str):
     """Bind the approval/session key to *this* quiet session for the enclosing ``with`` block."""
-    from tools.approval_context import reset_current_session_key, set_current_session_key
+    from tools.approval_context import (
+        reset_current_session_key,
+        set_current_session_key,
+    )
 
     token = set_current_session_key(session_id or "default")
     try:
@@ -205,8 +208,8 @@ def continue_quiet_notify_completions(
     texts run, the loop stops (the finalize linger still covers it once, bounded, via the
     budget handshake below).
     """
-    from tools.process_registry import process_registry
     from tools.async_delegation import claim_event_delivery, complete_event_delivery
+    from tools.process_registry import process_registry
 
     last: Any = None
     key = session_id or ""

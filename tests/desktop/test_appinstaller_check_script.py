@@ -22,7 +22,6 @@ from pathlib import Path
 
 import pytest
 
-
 HERMES_PYTHON = sys.executable
 REPO = Path(__file__).resolve().parents[2]
 MODULE = "hermes_cli.windows_appinstaller_update"

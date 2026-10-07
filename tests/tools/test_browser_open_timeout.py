@@ -6,10 +6,10 @@ from unittest.mock import Mock
 import pytest
 
 import tools.browser_tool as bt
-from tools import browser_tool_session as bt_session
-from tools import browser_tool_lifecycle as bt_lifecycle
 from tools import browser_tool_cloud as bt_cloud
 from tools import browser_tool_install as bt_install
+from tools import browser_tool_lifecycle as bt_lifecycle
+from tools import browser_tool_session as bt_session
 
 
 @pytest.fixture(autouse=True)

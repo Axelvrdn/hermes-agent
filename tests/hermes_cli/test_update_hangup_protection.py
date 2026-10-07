@@ -12,9 +12,16 @@ import io
 import signal
 import sys
 
-
-from hermes_cli.main_dashboard import _UpdateOutputStream, _finalize_update_output, _install_hangup_protection
-from hermes_cli.update_cmd import _log_only_write, _print_update_completion, _run_logged_subprocess
+from hermes_cli.main_dashboard import (
+    _finalize_update_output,
+    _install_hangup_protection,
+    _UpdateOutputStream,
+)
+from hermes_cli.update_cmd import (
+    _log_only_write,
+    _print_update_completion,
+    _run_logged_subprocess,
+)
 
 
 def test_update_completion_includes_bounded_action_identity(monkeypatch, capsys):

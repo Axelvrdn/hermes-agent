@@ -12,7 +12,6 @@ from typing import Any, Iterable
 
 from agent.compression_marker import elide
 
-
 _MAX_CHANGED_PATHS_IN_NUDGE = 8
 _MAX_STATUS_SUMMARY_CHARS = 1200
 

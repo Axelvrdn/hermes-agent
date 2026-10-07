@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -85,6 +85,7 @@ def test_unattended_update_refuses_newly_declared_python_dependencies(installed)
     slip them into the shared environment without one. With nobody to ask (dashboard, gateway
     ``plugins.auto_apply``) the update is refused and nothing — code, env, metadata — moves."""
     import shutil
+
     from hermes_cli import plugins_cmd
     from pm.environments import selected_venv
 
@@ -109,6 +110,7 @@ def test_interactive_update_asks_before_installing_new_python_dependencies(
     dependency together, no leaves both untouched."""
     import shutil
     from types import SimpleNamespace
+
     from hermes_cli import plugins_cmd
     from hermes_cli.plugins_transaction import update_plugin
     from pm.environments import selected_venv
@@ -171,8 +173,8 @@ def test_update_rebuilds_an_accepted_node_sidecar_when_its_manifest_moves(instal
 @pytest.mark.parametrize("failure", ["dependencies", "version", "publication", "manifest"])
 def test_failed_update_keeps_code_metadata_config_and_environment(installed, monkeypatch, failure):
     from hermes_cli import plugins_cmd
-    from pm.environments import selected_venv
     from pm import paths
+    from pm.environments import selected_venv
     from pm.lock import Facts
 
     root, home, repo, target, state = installed
@@ -207,9 +209,10 @@ def test_failed_update_keeps_code_metadata_config_and_environment(installed, mon
 @pytest.mark.parametrize("installed", ["catalog", "custom"], indirect=True)
 def test_successful_update_publishes_matching_code_and_durable_workspace(installed):
     import tomllib
+
     from hermes_cli import plugins_cmd
-    from pm.environments import selected_venv
     from pm import paths
+    from pm.environments import selected_venv
     from pm.lock import Facts
     from pm.packages import Venv
 

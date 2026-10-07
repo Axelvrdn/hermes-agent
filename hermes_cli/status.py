@@ -1,11 +1,11 @@
 """Status command for hermes CLI."""
 
-import logging
+import importlib.util
 import json
+import logging
 import os
 import sys
 import time
-import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -17,9 +17,13 @@ from hermes_cli.config import get_env_path, get_env_value, get_hermes_home, load
 from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE, DEFAULT_VERCEL_IMAGE
 from hermes_cli.models import provider_label
 from hermes_cli.runtime_provider import resolve_requested_provider
-from hermes_cli.vercel_auth import describe_vercel_auth
 from hermes_cli.status_auth import (  # renderers wired into _SECTIONS below
-    _render_api_keys, _render_apikey_providers, _render_auth_providers, _render_nous_gateway)
+    _render_api_keys,
+    _render_apikey_providers,
+    _render_auth_providers,
+    _render_nous_gateway,
+)
+from hermes_cli.vercel_auth import describe_vercel_auth
 from hermes_constants import OPENROUTER_MODELS_URL
 
 
@@ -219,7 +223,10 @@ def _render_gateway(ctx):
     _section("Gateway Service")
     try:
         from hermes_cli.gateway import (
-            get_gateway_runtime_snapshot, _format_gateway_pids, named_profile_served_by_running_multiplexer)
+            _format_gateway_pids,
+            get_gateway_runtime_snapshot,
+            named_profile_served_by_running_multiplexer,
+        )
         from hermes_cli.gateway_multiplex_served import multiplexer_served_secondaries
         snapshot = get_gateway_runtime_snapshot()
         # A satellite profile has no gateway.pid of its own; the default multiplexer is its live process.
@@ -308,7 +315,10 @@ def _render_sessions(ctx):
     # runtime/active_sessions.json by hand.
     try:
         from hermes_cli.active_sessions import (
-            active_session_registry_snapshot, format_age, resolve_max_concurrent_sessions)
+            active_session_registry_snapshot,
+            format_age,
+            resolve_max_concurrent_sessions,
+        )
         cap = resolve_max_concurrent_sessions(ctx.config)
     except Exception:
         cap = None
@@ -376,7 +386,10 @@ def _authenticated_provider_names() -> list:
 
 
 def _gateway_state() -> tuple:
-    from hermes_cli.gateway import get_gateway_runtime_snapshot, named_profile_served_by_running_multiplexer
+    from hermes_cli.gateway import (
+        get_gateway_runtime_snapshot,
+        named_profile_served_by_running_multiplexer,
+    )
     if get_gateway_runtime_snapshot().running:
         return True, "running"
     if named_profile_served_by_running_multiplexer():  # satellite profile: no gateway.pid of its own

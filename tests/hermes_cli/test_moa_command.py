@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from cli import HermesCLI
 
+
 def _make_cli():
     cli = HermesCLI.__new__(HermesCLI)
     cli.config = {

@@ -48,7 +48,10 @@ def extension_controller_available(action: str) -> bool:
     Runs during tool-schema assembly inside the request's session context;
     consults the process-local broker directly and fails closed on any gap."""
     try:
-        from gateway.browser_control_broker import browser_control_enabled, get_browser_control_broker
+        from gateway.browser_control_broker import (
+            browser_control_enabled,
+            get_browser_control_broker,
+        )
 
         if not browser_control_enabled():
             return False
@@ -117,7 +120,10 @@ def routed_browser_handler(
     """Lazy registry-handler route wrapper for ``browser_*`` tools.
     Feature off (or gateway unimportable) ⇒ the legacy handler runs unchanged."""
     try:
-        from gateway.browser_control_broker import browser_control_enabled, get_browser_control_broker
+        from gateway.browser_control_broker import (
+            browser_control_enabled,
+            get_browser_control_broker,
+        )
     except Exception as exc:  # pragma: no cover - defensive, gateway always present
         logger.debug("browser extension router unavailable (%s); using legacy backend", exc)
         return fallback()

@@ -6,24 +6,28 @@ import os
 import shutil
 import subprocess
 import time
-import pytest
 from pathlib import Path
 
+import pytest
+
+from tools.checkpoint_maintenance import (
+    clear_all,
+    clear_legacy,
+    maybe_auto_prune_checkpoints,
+    prune_checkpoints,
+    store_status,
+)
 from tools.checkpoint_manager import (
     CheckpointManager,
-    _init_store,
-    _run_git,
     _git_env,
+    _init_store,
     _project_hash,
-    _store_path,
-    _ref_name,
     _project_meta_path,
+    _ref_name,
+    _run_git,
+    _store_path,
     _touch_project,
 )
-from tools.checkpoint_maintenance import (
-    clear_all, clear_legacy, maybe_auto_prune_checkpoints, prune_checkpoints, store_status,
-)
-
 
 # =========================================================================
 # Fixtures

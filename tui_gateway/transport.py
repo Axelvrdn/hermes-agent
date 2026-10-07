@@ -9,8 +9,6 @@ A :class:`Transport` forwards a JSON-serialisable dict to its peer, so one dispa
 
 from __future__ import annotations
 
-from collections import deque
-from dataclasses import dataclass, field
 import contextlib
 import contextvars
 import errno
@@ -18,6 +16,8 @@ import json
 import logging
 import os
 import threading
+from collections import deque
+from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, Protocol, runtime_checkable
 
 # Errno values that mean "the peer is gone" rather than "the host has a real I/O problem". Anything

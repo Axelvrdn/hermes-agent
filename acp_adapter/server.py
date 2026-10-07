@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
 import contextlib
 import contextvars
 import logging
@@ -12,33 +11,82 @@ import threading
 from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Callable, Deque, Optional
 
 import acp
 from acp.schema import (
-    AgentCapabilities, AgentMessageChunk, AuthenticateResponse, ClientCapabilities, ForkSessionResponse,
-    Implementation, InitializeResponse, ListSessionsResponse, LoadSessionResponse, McpServerHttp, McpServerSse,
-    McpServerStdio, ModelInfo, NewSessionResponse, PromptCapabilities, PromptResponse, ResumeSessionResponse,
-    SessionCapabilities, SessionForkCapabilities, SessionInfo, SessionInfoUpdate, SessionListCapabilities,
-    SessionMode, SessionModeState, SessionModelState, SessionResumeCapabilities, SetSessionConfigOptionResponse,
-    SetSessionModeResponse, SetSessionModelResponse, TextContentBlock, Usage, UsageUpdate, UserMessageChunk,
+    AgentCapabilities,
+    AgentMessageChunk,
+    AuthenticateResponse,
+    ClientCapabilities,
+    ForkSessionResponse,
+    Implementation,
+    InitializeResponse,
+    ListSessionsResponse,
+    LoadSessionResponse,
+    McpServerHttp,
+    McpServerSse,
+    McpServerStdio,
+    ModelInfo,
+    NewSessionResponse,
+    PromptCapabilities,
+    PromptResponse,
+    ResumeSessionResponse,
+    SessionCapabilities,
+    SessionForkCapabilities,
+    SessionInfo,
+    SessionInfoUpdate,
+    SessionListCapabilities,
+    SessionMode,
+    SessionModelState,
+    SessionModeState,
+    SessionResumeCapabilities,
+    SetSessionConfigOptionResponse,
+    SetSessionModelResponse,
+    SetSessionModeResponse,
+    TextContentBlock,
+    Usage,
+    UsageUpdate,
+    UserMessageChunk,
 )
 
-from acp_adapter.auth import TERMINAL_SETUP_AUTH_METHOD_ID, build_auth_methods, detect_provider
+from acp_adapter.auth import (
+    TERMINAL_SETUP_AUTH_METHOD_ID,
+    build_auth_methods,
+    detect_provider,
+)
 from acp_adapter.commands import SlashCommandsMixin, _estimate_tokens
-from acp_adapter.content import PromptBlock, _content_blocks_to_openai_user_content, _extract_text
+from acp_adapter.content import (
+    PromptBlock,
+    _content_blocks_to_openai_user_content,
+    _extract_text,
+)
 from acp_adapter.events import (
-    AssistantMessageIdAllocator, _build_plan_update_from_todo_result, _send_update, flush_open_tool_calls,
-    make_message_cb, make_step_cb, make_thinking_cb, make_tool_progress_cb,
+    AssistantMessageIdAllocator,
+    _build_plan_update_from_todo_result,
+    _send_update,
+    flush_open_tool_calls,
+    make_message_cb,
+    make_step_cb,
+    make_thinking_cb,
+    make_tool_progress_cb,
 )
 from acp_adapter.model_catalog import build_model_state, encode_model_choice
 from acp_adapter.permissions import make_approval_callback
 from acp_adapter.provenance import session_provenance_meta
-from acp_adapter.session import SessionManager, SessionState, _expand_acp_enabled_toolsets
+from acp_adapter.session import (
+    SessionManager,
+    SessionState,
+    _expand_acp_enabled_toolsets,
+)
 from acp_adapter.tools import build_tool_complete, build_tool_start, coerce_tool_args
-from agent.context_compressor import (COMPRESSED_SUMMARY_METADATA_KEY, ContextCompressor)
+from agent.context_compressor import COMPRESSED_SUMMARY_METADATA_KEY, ContextCompressor
 from agent.interrupt_compat import request_hard_interrupt
-from tools.approval_context import reset_hermes_interactive_context, set_hermes_interactive_context
+from tools.approval_context import (
+    reset_hermes_interactive_context,
+    set_hermes_interactive_context,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -447,8 +495,8 @@ class HermesACPAgent(SlashCommandsMixin, acp.Agent):
             logger.warning("Session %s: failed to register ACP MCP servers", state.session_id, exc_info=True)
             return
         try:
-            from model_tools import get_tool_definitions
             from agent.memory_manager import inject_memory_provider_tools
+            from model_tools import get_tool_definitions
 
             agent = state.agent
             agent.enabled_toolsets = _expand_acp_enabled_toolsets(
@@ -785,7 +833,10 @@ class HermesACPAgent(SlashCommandsMixin, acp.Agent):
                 return lambda: terminal_tool.set_approval_callback(previous)
 
             def _edit_approval() -> Callable[[], None]:
-                from acp_adapter.edit_approval import reset_edit_approval_requester, set_edit_approval_requester
+                from acp_adapter.edit_approval import (
+                    reset_edit_approval_requester,
+                    set_edit_approval_requester,
+                )
 
                 token = set_edit_approval_requester(edit_approval_requester)
                 return lambda: reset_edit_approval_requester(token)

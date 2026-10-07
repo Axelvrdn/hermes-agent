@@ -3,6 +3,7 @@ from contextlib import nullcontext
 from copy import deepcopy
 
 import pytest
+
 from tests.agent.test_iteration_budget_warning import _agent
 
 
@@ -18,7 +19,10 @@ from tests.agent.test_iteration_budget_warning import _agent
 def test_checkpoint_requires_opt_in_or_dispatcher_completion_scope(
     tmp_path, monkeypatch, ratio, scope, expected, kanban_notice
 ):
-    from agent.delegation_context import delegated_child_context, non_dispatcher_owned_context
+    from agent.delegation_context import (
+        delegated_child_context,
+        non_dispatcher_owned_context,
+    )
     from agent.turn_iteration_prep import prepare_iteration
 
     if scope != "ordinary":

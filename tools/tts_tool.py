@@ -8,9 +8,9 @@ Sibling ``tts_tool_*`` modules hold backends/delivery/lifecycle; they read the s
 here (config, provider resolution, lazy SDK importers) through ``_origin()`` at call time.
 """
 
-from pm import install_hint
 import asyncio
 import contextlib
+import copy
 import datetime
 import importlib.util
 import json
@@ -19,11 +19,10 @@ import os
 import re
 import tempfile
 from pathlib import Path
-from typing import Callable, Dict, Any, List, Optional
-
-import copy
+from typing import Any, Callable, Dict, List, Optional
 
 from hermes_constants import display_hermes_home
+from pm import install_hint
 
 logger = logging.getLogger(__name__)
 
@@ -34,22 +33,48 @@ def _resolve_provider_key(env_var: str, provider_id: str) -> str:
     return resolve_provider_secret(env_var, provider_id)
 
 
-from tools.tts_command_provider import (
-    BUILTIN_TTS_PROVIDERS, _configured_command_tts_output_path, _generate_command_tts,
-    _get_command_tts_output_format, _is_command_tts_voice_compatible, _resolve_command_provider_config)
 from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER
+from tools.tts_command_provider import (
+    BUILTIN_TTS_PROVIDERS,
+    _configured_command_tts_output_path,
+    _generate_command_tts,
+    _get_command_tts_output_format,
+    _is_command_tts_voice_compatible,
+    _resolve_command_provider_config,
+)
 from tools.tts_tool_delivery import (
-    _resolve_max_text_length, _build_audio_delivery_files, _convert_to_opus, _remove_quietly,
-    _repair_ogg_container, _resolve_audio_delivery_profile, _split_text_for_tts)
-from tools.tts_tool_providers import (
-    _generate_edge_tts, _generate_elevenlabs, _generate_gemini_tts, _generate_minimax_tts,
-    _generate_mistral_tts, _generate_xai_tts, _resolve_minimax_tts_runtime)
-from tools.tts_tool_local import _generate_kittentts, _generate_neutts, _generate_piper_tts
+    _build_audio_delivery_files,
+    _convert_to_opus,
+    _remove_quietly,
+    _repair_ogg_container,
+    _resolve_audio_delivery_profile,
+    _resolve_max_text_length,
+    _split_text_for_tts,
+)
+from tools.tts_tool_local import (
+    _generate_kittentts,
+    _generate_neutts,
+    _generate_piper_tts,
+)
+from tools.tts_tool_openai import (
+    _generate_deepinfra_tts,
+    _generate_openai_tts,
+    _has_openai_audio_backend,
+)
 from tools.tts_tool_plugins import (
-    _dispatch_to_plugin_provider, _plugin_provider_is_available,
-    _plugin_provider_is_voice_compatible)
-from tools.tts_tool_openai import _generate_deepinfra_tts, _generate_openai_tts, _has_openai_audio_backend
-
+    _dispatch_to_plugin_provider,
+    _plugin_provider_is_available,
+    _plugin_provider_is_voice_compatible,
+)
+from tools.tts_tool_providers import (
+    _generate_edge_tts,
+    _generate_elevenlabs,
+    _generate_gemini_tts,
+    _generate_minimax_tts,
+    _generate_mistral_tts,
+    _generate_xai_tts,
+    _resolve_minimax_tts_runtime,
+)
 
 _PM_FEATURE_ALIASES = {"tts.edge": "edge-tts", "tts.elevenlabs": "tts-premium", "tts.mistral": "mistral"}
 
@@ -596,8 +621,8 @@ def _ready_after_first_use_install(provider: str) -> bool:
     if key_env and not _resolve_provider_key(key_env, provider):
         return False
     try:
-        from pm.install import lazy_installs_allowed
         from pm.extras import extra_supported
+        from pm.install import lazy_installs_allowed
     except Exception:
         return False
     return extra_supported(feature) and bool(lazy_installs_allowed())
@@ -619,6 +644,7 @@ def check_tts_requirements() -> bool:
 
 # --- Registry ---
 from tools.registry import registry, tool_error
+
 
 def _output_path_description(home: str) -> str:
     return f"Optional custom file path to save the audio. Defaults to {home}/audio_cache/<timestamp>.mp3"

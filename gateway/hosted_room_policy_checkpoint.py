@@ -16,7 +16,6 @@ from typing import Any, Callable, Mapping
 from gateway import hosted_rooms
 from gateway.hosted_rooms_common import DbPath, compact_json, fenced_update
 
-
 MAX_ACTIVE_POLICY_EVENTS = 64
 MAX_THREAD_TRANSCRIPT_EVENTS = 24
 _TRANSCRIPT_SCHEMA_VERSION = 1

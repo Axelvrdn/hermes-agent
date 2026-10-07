@@ -110,8 +110,10 @@ class CodexAppServerClient:
 
         cmd = [codex_bin, "app-server", *(extra_args or [])]
         from agent.delegation_context import (
-            DELEGATED_CHILD_ENV_MARKER, KANBAN_ENV_KEYS,
-            delegated_child_subprocess_env, is_dispatcher_owned_worker_context,
+            DELEGATED_CHILD_ENV_MARKER,
+            KANBAN_ENV_KEYS,
+            delegated_child_subprocess_env,
+            is_dispatcher_owned_worker_context,
         )
         # Native shell children remain unowned. Only Hermes' managed MCP tool
         # endpoint acts for this worker; grant it scope via its existing per-server

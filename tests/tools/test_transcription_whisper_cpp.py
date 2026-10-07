@@ -11,8 +11,8 @@ import pytest
 
 
 def test_models_download_once_per_profile_and_reject_bad_bytes(tmp_path, monkeypatch):
-    from pm.downloader import HashError
     from pm import downloader
+    from pm.downloader import HashError
     from tools import transcription_whisper_cpp as cpp
 
     served = tmp_path / "served"
@@ -62,12 +62,12 @@ def test_models_download_once_per_profile_and_reject_bad_bytes(tmp_path, monkeyp
 
 
 def test_local_resolution_is_passive_and_command_override_wins(tmp_path, monkeypatch):
-    from tools import transcription_local as local
-    from tools import transcription_tools as stt
-    from tools import transcription_whisper_cpp as cpp
     import pm
     from pm.packages import WhisperCppCpu
     from pm.store import ALL_TARGETS
+    from tools import transcription_local as local
+    from tools import transcription_tools as stt
+    from tools import transcription_whisper_cpp as cpp
 
     package = WhisperCppCpu()
     assert [t for t in ALL_TARGETS if package.missing_reason(t) is None] == ["win32-arm64"]

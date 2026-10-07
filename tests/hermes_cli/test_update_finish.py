@@ -9,14 +9,13 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -430,9 +429,9 @@ def _npm_graph(source):
 
 @pytest.mark.platforms("posix")
 def test_selected_child_builds_and_finalizes_under_parent_lock(completion):
+    import hermes_yaml
     from hermes_cli.config_defaults import DEFAULT_CONFIG
     from hermes_cli.update_lock import UpdateLock
-    import hermes_yaml
 
     source, home, request, context, result, run = completion
     node = _npm_graph(source)
@@ -478,9 +477,9 @@ def test_real_compiler_failure_is_owed_build_and_completion_continues(completion
     """Contract C3 for the historical takeover child: the code is committed, so a failed product
     build is an owed ``build`` follow-up, never a failed update. Maintenance (config migration)
     and the fleet restart still run, the exit is 0, and the tail stays pending until it builds."""
+    import hermes_yaml
     from hermes_cli.config_defaults import DEFAULT_CONFIG
     from hermes_cli.venv_sync import completion_pending_path
-    import hermes_yaml
 
     source, home, request, context, result, run = completion
     _npm_graph(source)

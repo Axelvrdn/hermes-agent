@@ -29,8 +29,16 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from hermes_cli.plugin_host_wire import (
-    Channel, Opaque, PROTOCOL_VERSION, PluginHostUnsupported, bind_serving_request, decode, describe_signature,
-    encode, is_async_callable, serving_request,
+    PROTOCOL_VERSION,
+    Channel,
+    Opaque,
+    PluginHostUnsupported,
+    bind_serving_request,
+    decode,
+    describe_signature,
+    encode,
+    is_async_callable,
+    serving_request,
 )
 
 logger = logging.getLogger("hermes_cli.plugin_host_child")
@@ -98,7 +106,9 @@ class RemotePluginContext:
         if name.startswith("_"):
             raise AttributeError(name)
         from hermes_cli.plugin_isolation import (
-            HOST_REMOTE_FACADES, HOST_SKIPPED_CTX_METHODS, HOST_UNSUPPORTED_CTX_METHODS,
+            HOST_REMOTE_FACADES,
+            HOST_SKIPPED_CTX_METHODS,
+            HOST_UNSUPPORTED_CTX_METHODS,
         )
         if name in HOST_UNSUPPORTED_CTX_METHODS:
             def unsupported(*_args: Any, **_kwargs: Any) -> Any:

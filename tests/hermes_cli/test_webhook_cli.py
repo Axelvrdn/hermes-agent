@@ -2,18 +2,20 @@
 
 import json
 import os
-import pytest
 import stat
 import threading
 from argparse import Namespace
 
+import pytest
+
 from hermes_cli.webhook import (
-    webhook_command,
     _get_webhook_base_url,
     _load_subscriptions,
     _mutate_subscriptions,
     _subscriptions_path,
+    webhook_command,
 )
+
 
 @pytest.fixture(autouse=True)
 def _isolate(tmp_path, monkeypatch):

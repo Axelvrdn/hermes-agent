@@ -3,7 +3,6 @@
 from agent.codex_responses_adapter import _chat_messages_to_responses_input
 from agent.native_compaction import prune_pre_checkpoint_items
 
-
 _IMAGE_URL = "data:image/png;base64,AAAA"
 _CHAT_IMAGE_PART = {"type": "image_url", "image_url": {"url": _IMAGE_URL}}
 _RESPONSES_IMAGE_PART = {"type": "input_image", "image_url": _IMAGE_URL}

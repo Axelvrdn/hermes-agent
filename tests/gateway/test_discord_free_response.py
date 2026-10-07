@@ -2,11 +2,11 @@
 
 import asyncio
 import os
+import sys
 import time
 from datetime import datetime, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
-import sys
 
 import pytest
 

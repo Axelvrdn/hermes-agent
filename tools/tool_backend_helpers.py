@@ -34,7 +34,9 @@ def nous_tool_gateway_unavailable_message(capability: str = "the Nous Tool Gatew
     """Return account-aware guidance for an unavailable Nous Tool Gateway path."""
     try:
         from hermes_cli.nous_account import (
-            format_nous_portal_entitlement_message, get_nous_portal_account_info)
+            format_nous_portal_entitlement_message,
+            get_nous_portal_account_info,
+        )
         message = format_nous_portal_entitlement_message(
             get_nous_portal_account_info(force_fresh=force_fresh), capability=capability,
             in_chat=True)

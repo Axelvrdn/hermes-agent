@@ -14,7 +14,11 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from agent.provider_registry import ProviderRegistry, configured_provider_name, is_available_safe
+from agent.provider_registry import (
+    ProviderRegistry,
+    configured_provider_name,
+    is_available_safe,
+)
 from agent.video_gen_provider import VideoGenProvider
 
 logger = logging.getLogger(__name__)

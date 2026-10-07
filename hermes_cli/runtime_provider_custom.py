@@ -11,8 +11,8 @@ import logging
 import os
 from typing import Any, Callable, Dict, Optional, Tuple
 
-from hermes_cli.providers import custom_provider_aliases, custom_provider_slug
 from agent.secret_scope import get_secret_str
+from hermes_cli.providers import custom_provider_aliases, custom_provider_slug
 from utils import base_url_hostname
 
 logger = logging.getLogger("hermes_cli.runtime_provider")
@@ -583,7 +583,10 @@ def _resolve_named_custom_runtime(*, requested_provider: str, explicit_api_key: 
     # api_mode from the model and normalize /v1 like the built-in paths.
     family = _opencode_family_for_custom(requested_provider, base_url)
     if family is not None and not custom_provider.get("api_mode"):
-        from hermes_cli.models import normalize_opencode_base_url, opencode_model_api_mode
+        from hermes_cli.models import (
+            normalize_opencode_base_url,
+            opencode_model_api_mode,
+        )
         effective_model = str(target_model or custom_provider.get("model") or rp._get_model_config().get("default") or "").strip()
         if effective_model:
             result["api_mode"] = opencode_model_api_mode(family, effective_model)

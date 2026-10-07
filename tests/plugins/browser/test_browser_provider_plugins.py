@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -174,9 +173,8 @@ class TestPickerIntegration:
 
     def test_picker_rows_match_registered_plugins(self) -> None:
         _ensure_plugins_loaded()
-        from hermes_cli.tools_config import _plugin_browser_providers
-
         from agent.browser_registry import list_providers
+        from hermes_cli.tools_config import _plugin_browser_providers
 
         rows = _plugin_browser_providers()
         names = sorted(r.get("browser_provider") for r in rows)

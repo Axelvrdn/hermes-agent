@@ -7,6 +7,7 @@ child runs the in-process ticker), and prompts waiting on a human. Anything unre
 ``None`` and the caller treats it as busy.
 """
 
+import json
 import os
 import socket
 import subprocess
@@ -15,7 +16,6 @@ import threading
 import time
 import urllib.error
 import urllib.request
-import json
 from pathlib import Path
 
 import pytest

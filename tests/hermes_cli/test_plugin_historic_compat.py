@@ -4,9 +4,9 @@ from __future__ import annotations
 import base64
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -135,8 +135,9 @@ def test_old_publication_recovers_in_stdlib_using_supplied_row_and_journal(publi
 
 
 def test_old_publication_rolls_back_a_first_install(publication):
-    from hermes_cli import plugins_transaction
     import shutil
+
+    from hermes_cli import plugins_transaction
 
     project, row, journal, _ = publication
     shutil.rmtree(row["backup"])

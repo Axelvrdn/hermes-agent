@@ -15,12 +15,6 @@ from hermes_cli.config import (
 )
 
 
-
-
-
-
-
-
 def test_value_containing_colon_is_not_a_source_ref(monkeypatch):
     """URL-ish or uppercase-colon refs are legacy bare names, not sources —
     only a lowercase ident prefix counts as a SecretRef source."""

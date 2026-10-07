@@ -1,16 +1,16 @@
 """Exercise offline PM staging with real wheels, not the application's environment."""
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tomllib
 import urllib.request
+from pathlib import Path
 
+import pytest
 from packaging.tags import sys_tags
 from packaging.utils import parse_wheel_filename
-import pytest
 
 from pm.runtime import runtime_environment
 from scripts.bundles.payload import seal_pm_runtime

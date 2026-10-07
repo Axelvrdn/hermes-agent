@@ -11,7 +11,6 @@ import threading
 import time
 
 import pytest
-
 from acp.schema import TextContentBlock
 
 from acp_adapter.server import HermesACPAgent

@@ -16,8 +16,8 @@ Stdlib + pytest + unittest.mock only. No live cua-driver, no network.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 from typing import Any, Dict, Optional
 from unittest.mock import patch
 
@@ -233,7 +233,10 @@ def _interactive_session(monkeypatch):
     """Interactive CLI presence for the shared gate plus a fresh approval session key; grants made here are
     wiped from ``tools.approval``'s store afterwards so nothing leaks between tests."""
     from tools import approval
-    from tools.approval_context import reset_current_session_key, set_current_session_key
+    from tools.approval_context import (
+        reset_current_session_key,
+        set_current_session_key,
+    )
 
     monkeypatch.setenv("HERMES_INTERACTIVE", "1")
     monkeypatch.setattr(approval, "save_permanent_allowlist", lambda patterns: None)

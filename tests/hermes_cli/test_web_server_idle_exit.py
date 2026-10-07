@@ -3,12 +3,17 @@ connected for the grace window and no turn is running (#101626): it is detached 
 purpose, so the client count IS its liveness signal."""
 
 import logging
+
 from fastapi import FastAPI, WebSocket
 from starlette.testclient import TestClient
 
 import hermes_cli.web_server as ws_mod
 from hermes_cli.web_server_idle_exit import (
-    IdleClientTracker, should_exit_idle, start_idle_watchdog, wrap_asgi_with_ws_tracking)
+    IdleClientTracker,
+    should_exit_idle,
+    start_idle_watchdog,
+    wrap_asgi_with_ws_tracking,
+)
 
 
 def test_ws_sessions_are_counted_at_the_asgi_boundary_for_any_route():

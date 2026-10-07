@@ -13,8 +13,8 @@ terminal). Never raises.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import re
 import sys

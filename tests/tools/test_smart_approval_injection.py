@@ -14,8 +14,11 @@ Defenses under test:
 import unittest
 from unittest.mock import MagicMock, patch
 
-from tools.approval_smart import _strip_line_comment, _strip_shell_comments, _smart_approve
-
+from tools.approval_smart import (
+    _smart_approve,
+    _strip_line_comment,
+    _strip_shell_comments,
+)
 
 # ── _strip_line_comment ──────────────────────────────────────────────────
 

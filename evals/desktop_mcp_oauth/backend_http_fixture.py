@@ -18,7 +18,6 @@ import hashlib
 import json
 import logging
 import os
-from pathlib import Path
 import secrets
 import subprocess
 import sys
@@ -26,6 +25,7 @@ import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 
@@ -182,9 +182,10 @@ def run_probe(repo, receipt):
     sys.path.insert(0, str(repo))
     logging.disable(logging.CRITICAL)
     import httpx
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
-    from tui_gateway import mcp_oauth_sessions as sessions
+
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.mcp_oauth import HermesTokenStorage
+    from tui_gateway import mcp_oauth_sessions as sessions
 
     owner = Path(os.environ["HERMES_HOME"])
     other = owner.parent / "other-profile"

@@ -2,14 +2,16 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tarfile
+from pathlib import Path
 
 import pytest
 
-from tests.pm._fixtures import build_worker as build_worker, client as client, isolated_python as isolated_python
+from tests.pm._fixtures import build_worker as build_worker
+from tests.pm._fixtures import client as client
+from tests.pm._fixtures import isolated_python as isolated_python
 
 
 @pytest.mark.platforms("macos")

@@ -4,17 +4,18 @@ that Lightpanda cannot serve (screenshots, empty snapshots, failed commands).
 Facade-owned state is read through ``_bt`` (``tools.browser_tool``, resolved per call) — no import cycle.
 """
 
-import logging
 import json
+import logging
 import os
 import shutil
 import subprocess
 from typing import Any, Dict, List, Optional, Tuple
-from tools.browser_tool_origin import origin_module as _origin
+
 from tools import browser_tool_cdp as _cdp
 from tools import browser_tool_cloud as _cloud
 from tools import browser_tool_install as _install
 from tools import browser_tool_session as _session
+from tools.browser_tool_origin import origin_module as _origin
 
 # Commands where Chrome can meaningfully produce a different result. Session-management
 # commands (close, record) are tied to the engine's daemon and can't be retried elsewhere.
@@ -58,7 +59,10 @@ def lightpanda_engine_status() -> Tuple[bool, str]:
     if not _bt._is_browser_use_cli_mode():
         return True, "built-in browser tools: agent-browser --engine lightpanda"
     try:
-        from tools.browser_use_cli import _read_browser_cfg, is_legacy_browser_use_cloud_config
+        from tools.browser_use_cli import (
+            _read_browser_cfg,
+            is_legacy_browser_use_cloud_config,
+        )
         if is_legacy_browser_use_cloud_config(_read_browser_cfg()):
             return False, "Browser Use cloud (BROWSER_USE_API_KEY) is selected"
     except Exception as e:

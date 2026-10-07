@@ -59,7 +59,11 @@ def _run_capability_consent(console, plugin_id: str, declared: list, *, context:
     or in ANY non-interactive context — they stay ungranted (fail closed) and the plugin must
     degrade via ``ctx.has_capability()``. Consent + audit, NOT a sandbox.
     """
-    from hermes_cli.plugin_capabilities import CAPABILITY_REGISTRY, pending_capabilities, record_consent
+    from hermes_cli.plugin_capabilities import (
+        CAPABILITY_REGISTRY,
+        pending_capabilities,
+        record_consent,
+    )
     pending = pending_capabilities(plugin_id, declared)
     if not pending:
         # Refresh the consent hash so a later declaration change is detected.

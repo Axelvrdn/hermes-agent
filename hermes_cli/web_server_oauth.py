@@ -3,8 +3,8 @@ Anthropic/Copilot/Claude-Code status probes.
 """
 
 import contextlib
-import logging
 import functools
+import logging
 import os
 import threading
 import time
@@ -48,7 +48,10 @@ def _anthropic_oauth_status() -> Dict[str, Any]:
     ``claude-code`` entry, and counting it here would shadow a real ANTHROPIC_API_KEY.
     """
     try:
-        from agent.anthropic_credentials import read_hermes_oauth_credentials, _get_hermes_oauth_file
+        from agent.anthropic_credentials import (
+            _get_hermes_oauth_file,
+            read_hermes_oauth_credentials,
+        )
         hermes_creds = read_hermes_oauth_credentials()
     except Exception:
         hermes_creds = None
@@ -120,7 +123,10 @@ def _external_process_cli_command(provider_id: str, default: str) -> str:
     """Render an external-process provider's sign-in command with the CLI actually configured
     (``HERMES_COPILOT_ACP_COMMAND`` / ``COPILOT_CLI_PATH``); others get ``default`` untouched."""
     try:
-        from hermes_cli.auth import PROVIDER_REGISTRY, get_external_process_provider_status
+        from hermes_cli.auth import (
+            PROVIDER_REGISTRY,
+            get_external_process_provider_status,
+        )
         pconfig = PROVIDER_REGISTRY.get(provider_id)
         if not pconfig or pconfig.auth_type != "external_process":
             return default
@@ -208,7 +214,9 @@ def _oauth_poller(label: str):
                 else:
                     _log.info("oauth/device: %s login completed (session=%s)", label, session_id)
             except Exception as e:
-                from hermes_cli.observability.shared_metrics_setup import note_oauth_failure
+                from hermes_cli.observability.shared_metrics_setup import (
+                    note_oauth_failure,
+                )
                 _log.warning("%s device-code poll failed (session=%s): %s", label, session_id, e)
                 note_oauth_failure(sess, e)
                 with _oauth_sessions_lock:
@@ -300,10 +308,15 @@ def _nous_plain_poller(session_id: str, sess: Dict[str, Any]) -> None:
     A sign-in that carries the free tier's connectors runs through ``anon_auth.run_sign_in`` and
     ``_nous_promotion_poller`` instead; this is the "connect another Nous account" path.
     """
-    from hermes_cli.web_server_profiles import _profile_scope
-    from hermes_cli.auth import _poll_for_token, persist_nous_credentials, refresh_nous_oauth_from_state
-    from hermes_cli import anon_auth
     import httpx
+
+    from hermes_cli import anon_auth
+    from hermes_cli.auth import (
+        _poll_for_token,
+        persist_nous_credentials,
+        refresh_nous_oauth_from_state,
+    )
+    from hermes_cli.web_server_profiles import _profile_scope
     portal_base_url, client_id = sess["portal_base_url"], sess["client_id"]
 
     def _cancelled() -> bool:
@@ -365,12 +378,16 @@ def _minimax_poller(session_id: str, sess: Dict[str, Any]) -> None:
     ``device_code``. Builds the same auth_state as the CLI's ``_minimax_oauth_login`` and persists
     via ``_minimax_save_auth_state`` so the system ends up as after ``hermes auth add minimax-oauth``.
     Region is fixed to "global" here; cn-region operators use the CLI's ``--region cn``."""
-    from hermes_cli.web_server_profiles import _profile_scope
-    from hermes_cli.auth import (
-        _minimax_poll_token, _minimax_resolve_token_expiry_unix, _minimax_save_auth_state,
-        MINIMAX_OAUTH_GLOBAL_INFERENCE, MINIMAX_OAUTH_SCOPE,
-    )
     import httpx
+
+    from hermes_cli.auth import (
+        MINIMAX_OAUTH_GLOBAL_INFERENCE,
+        MINIMAX_OAUTH_SCOPE,
+        _minimax_poll_token,
+        _minimax_resolve_token_expiry_unix,
+        _minimax_save_auth_state,
+    )
+    from hermes_cli.web_server_profiles import _profile_scope
     portal_base_url, client_id = sess["portal_base_url"], sess["client_id"]
     with httpx.Client(
         timeout=httpx.Timeout(15.0), headers={"Accept": "application/json"}, follow_redirects=True
@@ -410,12 +427,16 @@ def _minimax_poller(session_id: str, sess: Dict[str, Any]) -> None:
 @_oauth_poller("xai")
 def _xai_device_poller(session_id: str, sess: Dict[str, Any]) -> None:
     """Background poller for xAI's OAuth device-code flow."""
-    from hermes_cli.web_server_profiles import _profile_scope
     import httpx
+
     from hermes_cli.auth import (
-        _save_xai_oauth_tokens, _xai_oauth_discovery, _xai_oauth_poll_device_token,
-        mark_provider_active_if_unset, unsuppress_credential_source,
+        _save_xai_oauth_tokens,
+        _xai_oauth_discovery,
+        _xai_oauth_poll_device_token,
+        mark_provider_active_if_unset,
+        unsuppress_credential_source,
     )
+    from hermes_cli.web_server_profiles import _profile_scope
 
     discovery = _xai_oauth_discovery(20.0)
     with httpx.Client(timeout=httpx.Timeout(20.0), headers={"Accept": "application/json"}) as client:

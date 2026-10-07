@@ -1,10 +1,9 @@
 """Tests for agent.retry_utils jittered backoff."""
 
 import threading
-
-import agent.retry_utils as retry_utils
 from types import SimpleNamespace
 
+import agent.retry_utils as retry_utils
 from agent.retry_utils import adaptive_rate_limit_backoff, jittered_backoff
 
 
@@ -81,8 +80,8 @@ def test_zai_overload_retry_ceiling_exceeds_short_attempts():
     long-backoff tier is unreachable and the whole schedule is dead code
     (the original bug: default api_max_retries == short_attempts == 3)."""
     from agent.retry_utils import (
-        zai_coding_overload_retry_ceiling,
         _ZAI_CODING_OVERLOAD_LONG_BACKOFF,
+        zai_coding_overload_retry_ceiling,
     )
 
     short_attempts = 3
@@ -145,6 +144,7 @@ class TestParseRetryAfterSeconds:
     def test_http_date(self):
         from datetime import datetime, timedelta, timezone
         from email.utils import format_datetime
+
         from agent.retry_utils import parse_retry_after_seconds
 
         future = datetime.now(timezone.utc) + timedelta(seconds=90)

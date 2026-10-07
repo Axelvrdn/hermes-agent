@@ -10,7 +10,11 @@ for loopback URLs only.
 import pytest
 
 import tools.browser_tool as bt
-from agent.proxy_bypass import add_loopback_no_proxy, loopback_connect_kwargs, loopback_request_kwargs
+from agent.proxy_bypass import (
+    add_loopback_no_proxy,
+    loopback_connect_kwargs,
+    loopback_request_kwargs,
+)
 
 
 @pytest.fixture

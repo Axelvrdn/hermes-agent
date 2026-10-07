@@ -7,17 +7,18 @@ Tests the new --gateway mode for hermes update, including:
 - _restore_stashed_changes() with input_fn parameter
 """
 
+import asyncio
 import json
 import os
 import time
-import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from gateway.config import Platform
 from gateway.platforms.event import MessageEvent
 from gateway.session import SessionSource
+
 
 def _make_event(text="/update", platform=Platform.TELEGRAM,
                 user_id="12345", chat_id="67890"):
@@ -343,6 +344,7 @@ class TestCmdUpdateGatewayMode:
         """With --gateway, stash restore uses _gateway_prompt instead of input()."""
         import subprocess
         from types import SimpleNamespace
+
         from hermes_cli import main, update_cmd
 
         root = tmp_path / "checkout"

@@ -6,9 +6,9 @@ import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock
 
 from gateway.platforms.base import CachedMedia
 from gateway.platforms.event import MessageType

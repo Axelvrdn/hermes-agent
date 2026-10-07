@@ -27,8 +27,18 @@ from typing import Any
 
 import pytest
 
-from tests.e2e.core.history._helpers import NO_BACKGROUND_REVIEW, OFFLINE_CONFIG, canon, prefix_breaks
-from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall, write_hermes_home
+from tests.e2e.core.history._helpers import (
+    NO_BACKGROUND_REVIEW,
+    OFFLINE_CONFIG,
+    canon,
+    prefix_breaks,
+)
+from tests.fakes.fake_llm_provider import (
+    FakeLLMServer,
+    Text,
+    ToolCall,
+    write_hermes_home,
+)
 
 SKILL_BODY = "Follow these steps carefully. " * 300
 

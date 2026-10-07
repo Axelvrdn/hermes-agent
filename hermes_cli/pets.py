@@ -130,7 +130,13 @@ def _cmd_show(args) -> int:
     import time
 
     from agent.pet import store
-    from agent.pet.constants import DEFAULT_SCALE, LOOP_MS, STATE_ROWS, PetState, resolve_cols
+    from agent.pet.constants import (
+        DEFAULT_SCALE,
+        LOOP_MS,
+        STATE_ROWS,
+        PetState,
+        resolve_cols,
+    )
     from agent.pet.render import build_renderer
 
     cfg = _pet_config()

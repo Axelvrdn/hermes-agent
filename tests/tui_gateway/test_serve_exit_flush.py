@@ -23,6 +23,7 @@ import pytest
 
 from tui_gateway import server
 
+
 class _FlushAgent:
     """Minimal agent exposing the real ``_persist_session`` flush contract."""
 

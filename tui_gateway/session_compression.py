@@ -4,8 +4,8 @@ onto server.py's globals (method_ctx.bind_module) and reference them bare."""
 
 from __future__ import annotations
 
-import logging
 import contextlib
+import logging
 
 from utils import is_truthy_value
 
@@ -33,6 +33,7 @@ def _compressor_ctor_default(name: str, fallback: Any) -> Any:
     """
     try:
         import inspect
+
         from agent.context_compressor import ContextCompressor
         default = inspect.signature(ContextCompressor.__init__).parameters[name].default
         return fallback if default is inspect.Parameter.empty else default
@@ -62,7 +63,11 @@ def _derived_default_threshold_percent(agent: Any, compression: dict) -> float:
         pct = 0.50
     try:
         from agent.agent_init import _resolve_compression_threshold
-        from agent.auxiliary_client import _compression_threshold_for_model, _is_codex_gpt54_or_gpt55, _is_codex_spark
+        from agent.auxiliary_client import (
+            _compression_threshold_for_model,
+            _is_codex_gpt54_or_gpt55,
+            _is_codex_spark,
+        )
         model, provider = getattr(agent, "model", "") or "", getattr(agent, "provider", "") or ""
         autoraise_enabled = str(compression.get("codex_gpt55_autoraise", True)).lower() in {"true", "1", "yes"}
         pct, _notice = _resolve_compression_threshold(
@@ -98,7 +103,10 @@ def _apply_live_compression_config(agent: Any, cfg: dict | None) -> None:
     cfg = cfg if isinstance(cfg, dict) else {}
     compression = cfg.get("compression") if isinstance(cfg.get("compression"), dict) else {}
     model_cfg = cfg.get("model") if isinstance(cfg.get("model"), dict) else {}
-    from agent.agent_init import config_context_length_for_runtime, set_config_context_length
+    from agent.agent_init import (
+        config_context_length_for_runtime,
+        set_config_context_length,
+    )
     enabled_raw = compression.get("enabled", True)
     agent.compression_enabled = enabled_raw if isinstance(enabled_raw, bool) else str(enabled_raw).lower() in {"true", "1", "yes"}
     agent.codex_responses_native_compaction = is_truthy_value(compression.get("codex_responses_native", False))
@@ -269,9 +277,15 @@ def _compress_session_history(
     ``/compress``; the shared core (``agent.conversation_compression_manual``) parses boundary forms
     (``here [N]``, ``up to here``, ``--keep N``) so a partial compress triggers on EVERY route instead of a
     FULL compress focused on the literal text. ``--preview`` returns without touching history."""
-    from agent.conversation_compression import finalize_context_engine_compression_notification
+    from agent.conversation_compression import (
+        finalize_context_engine_compression_notification,
+    )
     from agent.conversation_compression_manual import (
-        AGGRESSIVE_UNSUPPORTED, MIN_MESSAGES, compress_now, parse_compress_args)
+        AGGRESSIVE_UNSUPPORTED,
+        MIN_MESSAGES,
+        compress_now,
+        parse_compress_args,
+    )
     agent = session["agent"]
     # Snapshot under the lock so the LLM-bound compression call does NOT hold history_lock for the
     # request — otherwise prompt.submit etc. block on the dispatcher loop while compaction runs.

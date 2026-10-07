@@ -7,8 +7,8 @@ because the dangling tool-call tail was replayed on every resume).
 """
 
 from agent.replay_cleanup import (
-    strip_dangling_tool_call_tail,
     sanitize_replay_history,
+    strip_dangling_tool_call_tail,
 )
 
 

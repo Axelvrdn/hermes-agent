@@ -25,7 +25,14 @@ Usage:
 
 NEVER prints secret values — only lengths, scope, expiry, and HTTP status.
 """
-import json, os, sys, time, argparse, urllib.request, urllib.error, urllib.parse
+import argparse
+import json
+import os
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
 UA = "python-httpx/0.27"  # CF blocks default urllib UA on many providers
 

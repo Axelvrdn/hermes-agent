@@ -2,8 +2,8 @@
 """
 
 import asyncio
-import logging
 import ipaddress
+import logging
 import os
 import signal
 import subprocess
@@ -12,6 +12,7 @@ import threading
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
+
 from utils import atomic_json_write
 
 if TYPE_CHECKING:  # pragma: no cover - annotation only

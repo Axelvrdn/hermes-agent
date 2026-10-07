@@ -10,9 +10,9 @@ The invariant under test: config.yaml ``model`` must equal the pre-picker primar
 """
 import argparse
 import errno
+import fcntl
 import json
 import os
-from pathlib import Path
 import pty
 import re
 import select
@@ -23,7 +23,7 @@ import sys
 import tempfile
 import termios
 import time
-import fcntl
+from pathlib import Path
 
 PRIMARY = {"provider": "openrouter", "default": "primary/model-a",
            "base_url": "https://openrouter.ai/api/v1", "api_mode": "chat_completions"}

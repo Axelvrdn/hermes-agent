@@ -14,7 +14,6 @@ from pathlib import Path
 
 import pytest
 
-
 _VALID_BOT_TOKEN = "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ_1234"
 
 
@@ -39,11 +38,11 @@ def _gateway_state(home: Path) -> None:
 def client(monkeypatch, _isolate_hermes_home):
     from starlette.testclient import TestClient
 
-    import hermes_state
-    import hermes_constants
     import gateway.status as _gw_status
+    import hermes_constants
+    import hermes_state
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
     from hermes_constants import get_hermes_home
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
     home = get_hermes_home()
     monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", home / "state.db")

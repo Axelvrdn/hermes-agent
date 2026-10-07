@@ -23,6 +23,7 @@ def test_manifest_only_member_is_named_after_its_plugin_dir_and_stays_unique(tmp
     a bare path hash left the user with nothing to disable. Two same-named plugins from
     different homes must still be distinct members."""
     import tomllib
+
     from pm.workspace import _workspace_member
 
     members = []
@@ -46,6 +47,7 @@ def test_pyproject_member_is_renamed_by_its_key_and_stays_unique(tmp_path):
     …". Rename metadata-only members by their unique key, like manifest-only
     ones; a buildable member keeps the name its package metadata reports."""
     import tomllib
+
     from pm.workspace import _workspace_member
 
     members = []
@@ -73,6 +75,7 @@ def test_buildable_pyproject_member_keeps_its_declared_name(tmp_path):
     its backend produces, so renaming it breaks the build ("Package metadata name
     … does not match given name"); only metadata-only members may be renamed."""
     import tomllib
+
     from pm.workspace import _workspace_member
 
     plugin = tmp_path / "home" / "plugins" / "replay"

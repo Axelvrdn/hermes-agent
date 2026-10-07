@@ -7,6 +7,7 @@ Verifies worktree creation, cleanup, .worktreeinclude handling,
 import logging
 import os
 import subprocess
+
 import pytest
 
 from hermes_cli import worktree_ops

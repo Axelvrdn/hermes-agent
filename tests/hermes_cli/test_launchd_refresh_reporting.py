@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 from hermes_cli import gateway as gw
 
+
 def _stale_plist(tmp_path, monkeypatch, *, registered: bool):
     plist_path = tmp_path / "com.hermes.plist"
     plist_path.write_text("<old/>", encoding="utf-8")

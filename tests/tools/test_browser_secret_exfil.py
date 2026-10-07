@@ -3,6 +3,7 @@
 import json
 import socket
 from unittest.mock import patch
+
 import pytest
 
 
@@ -108,8 +109,8 @@ class TestWebExtractSecretExfil:
 
     @pytest.mark.asyncio
     async def test_normalizes_non_ascii_url_before_extract_provider(self, monkeypatch):
-        from agent.web_search_provider import WebSearchProvider
         from agent import web_search_registry
+        from agent.web_search_provider import WebSearchProvider
         from tools import web_tools
 
         class FakeExtractProvider(WebSearchProvider):
@@ -168,6 +169,7 @@ class TestBrowserSnapshotRedaction:
     def test_stored_snapshot_redacts_secrets(self):
         """Secrets in a snapshot must be masked in the stored full-text file."""
         from pathlib import Path
+
         from tools.browser_tool_snapshot import _store_full_snapshot
 
         fake_key = "sk-" + "FAKESECRETVALUE1234567890ABCDEF"

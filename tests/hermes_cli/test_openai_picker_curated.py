@@ -20,9 +20,7 @@ Bug 2 — OpenRouter appeared authenticated whenever OPENAI_API_KEY was set
 
 from unittest.mock import patch
 
-
 from hermes_cli import models as M
-
 
 # --- Bug 1: default OpenAI endpoint filters to curated agentic models -------
 

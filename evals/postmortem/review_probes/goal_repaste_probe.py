@@ -10,14 +10,13 @@ import copy
 import io
 import json
 import os
-from pathlib import Path
 import queue
 import socket
 import sqlite3
 import sys
 import tempfile
-import tempfile
 import threading
+from pathlib import Path
 from unittest.mock import patch
 
 repo, tag = sys.argv[1:3]
@@ -33,11 +32,11 @@ os.environ['TZ'] = 'UTC'
 # Fail closed: these probes must never invoke a provider or external network.
 socket.socket.connect = lambda *a, **k: (_ for _ in ()).throw(RuntimeError('network prohibited in review probe'))
 from cli import HermesCLI
-from hermes_cli import cli_commands_mixin, goals
-from gateway.slash_commands_goals import GatewayGoalCommandsMixin
 from gateway.config import Platform
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.session import SessionSource
+from gateway.slash_commands_goals import GatewayGoalCommandsMixin
+from hermes_cli import cli_commands_mixin, goals
 from tui_gateway import server
 
 assert str(Path(cli_commands_mixin.__file__).resolve()).startswith(repo)

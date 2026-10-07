@@ -19,6 +19,7 @@ from hermes_cli.models import (
     provider_model_ids,
 )
 
+
 class TestGenericProviderLiveCuratedMerge:
     """provider_model_ids merges live + curated for generic api_key providers."""
 

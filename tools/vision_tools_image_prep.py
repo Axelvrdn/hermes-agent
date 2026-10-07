@@ -109,7 +109,10 @@ def _supported_media_types() -> frozenset:
     so the set is narrowed there and normalization converts those formats to PNG."""
     try:
         from agent.auxiliary_client import _runtime_main_value as _v
-        from hermes_cli.local_runtime.capabilities import ACCEPTED_IMAGE_MIMES, is_managed_provider
+        from hermes_cli.local_runtime.capabilities import (
+            ACCEPTED_IMAGE_MIMES,
+            is_managed_provider,
+        )
         if is_managed_provider(str(_v("provider") or ""), str(_v("base_url") or "")):
             return ACCEPTED_IMAGE_MIMES
     except Exception as _exc:  # best-effort narrowing only
@@ -130,8 +133,8 @@ def _rasterize_svg_to_png(svg_path: Path, out_path: Path) -> bool:
     except Exception as _exc:
         logger.debug("Suppressed exception: %s", _exc, exc_info=True)
     try:
-        from svglib.svglib import svg2rlg  # type: ignore
         from reportlab.graphics import renderPM  # type: ignore
+        from svglib.svglib import svg2rlg  # type: ignore
         drawing = svg2rlg(str(svg_path))
         if drawing is not None:
             renderPM.drawToFile(drawing, str(out_path), fmt="PNG")
@@ -257,7 +260,8 @@ def _validate_raster_image_decodable(
     only inspect containers: a timed-out download can look like a valid PNG with a truncated pixel
     stream. Without Pillow the image passes unvalidated rather than rejecting everything."""
     try:
-        from PIL import Image as _PILImage, ImageSequence as _PILImageSequence
+        from PIL import Image as _PILImage
+        from PIL import ImageSequence as _PILImageSequence
     except ImportError:
         return None
     try:

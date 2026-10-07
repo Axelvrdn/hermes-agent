@@ -10,9 +10,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 from hermes_cli.config import cfg_get
-from tools.browser_tool_origin import origin as _bt
 from tools import browser_tool_cloud as _cloud
 from tools import browser_tool_lightpanda_fallback as _lp
+from tools.browser_tool_origin import origin as _bt
 
 
 def _vision_mode_label() -> str:
@@ -40,6 +40,7 @@ def _lightpanda_vision_preroute(
     fb_path = fb_result.get("data", {}).get("path", "")
     if fb_path and os.path.exists(fb_path):
         import uuid as uuid_mod
+
         from hermes_constants import get_hermes_dir
 
         screenshots_dir = get_hermes_dir("cache/screenshots", "browser_screenshots")
@@ -118,7 +119,9 @@ def _analyze_screenshot_with_aux_llm(screenshot_path: Path, question: str) -> st
     except Exception as _exc:
         logging.debug("Suppressed exception: %s", _exc, exc_info=True)
 
-    from agent.auxiliary_client import call_llm  # lazy: heavy client, only needed on the vision path
+    from agent.auxiliary_client import (
+        call_llm,  # lazy: heavy client, only needed on the vision path
+    )
 
     call_kwargs = {
         "task": "vision", "temperature": vision_temperature, "timeout": vision_timeout,
@@ -132,7 +135,11 @@ def _analyze_screenshot_with_aux_llm(screenshot_path: Path, question: str) -> st
     try:
         response = call_llm(**call_kwargs)
     except Exception as _api_err:
-        from tools.vision_tools import _is_image_size_error, _resize_image_for_vision, _RESIZE_TARGET_BYTES
+        from tools.vision_tools import (
+            _RESIZE_TARGET_BYTES,
+            _is_image_size_error,
+            _resize_image_for_vision,
+        )
         if not (_is_image_size_error(_api_err) and len(data_url) > _RESIZE_TARGET_BYTES):
             raise
         _bt.logger.info("Vision API rejected screenshot (%.1f MB); auto-resizing to ~%.0f MB and retrying...",
@@ -141,5 +148,7 @@ def _analyze_screenshot_with_aux_llm(screenshot_path: Path, question: str) -> st
         call_kwargs["messages"][0]["content"][1]["image_url"]["url"] = data_url
         response = call_llm(**call_kwargs)
 
-    from agent.redact import redact_sensitive_text  # the LLM may have read secrets off the screenshot
+    from agent.redact import (
+        redact_sensitive_text,  # the LLM may have read secrets off the screenshot
+    )
     return redact_sensitive_text((response.choices[0].message.content or "").strip())

@@ -17,7 +17,6 @@ import pytest
 from agent.lsp.client import _STREAM_LIMIT, LSPClient
 from agent.lsp.protocol import LSPProtocolError, LSPRequestError
 
-
 MOCK_SERVER = str(Path(__file__).parent / "_mock_lsp_server.py")
 
 

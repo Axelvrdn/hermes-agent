@@ -17,7 +17,6 @@ import pytest
 
 from hermes_cli import uninstall
 
-
 ZSHRC = (
     "export EDITOR=vim\n"
     "alias ll='ls -la'\n"

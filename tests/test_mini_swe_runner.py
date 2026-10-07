@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+
 def test_run_task_kimi_omits_temperature():
     """Kimi models should NOT have client-side temperature overrides.
 

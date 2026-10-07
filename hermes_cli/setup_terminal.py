@@ -7,13 +7,16 @@ import logging
 import os
 import shutil
 from pathlib import Path
+
+from hermes_cli import nous_subscription
 from tools import tool_backend_helpers
 from tools.environments.docker import docker_runtime_name, find_docker
-from hermes_cli import nous_subscription
 
 logger = logging.getLogger("hermes_cli.setup")
 
-from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE as _SANDBOX_IMAGE, DEFAULT_VERCEL_IMAGE
+from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE as _SANDBOX_IMAGE
+from hermes_cli.config_defaults import DEFAULT_VERCEL_IMAGE
+
 _RUN_KW = dict(capture_output=True, text=True, encoding="utf-8", errors="replace")
 
 

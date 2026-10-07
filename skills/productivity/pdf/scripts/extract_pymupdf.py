@@ -9,8 +9,9 @@ Usage:
     python extract_pymupdf.py document.pdf --tables
     python extract_pymupdf.py document.pdf --metadata
 """
-import sys
 import json
+import sys
+
 
 def extract_text(path, pages=None):
     import pymupdf
@@ -37,8 +38,9 @@ def extract_tables(path):
             print(df.to_markdown(index=False))
 
 def extract_images(path, output_dir):
-    import pymupdf
     from pathlib import Path
+
+    import pymupdf
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     doc = pymupdf.open(path)
     count = 0

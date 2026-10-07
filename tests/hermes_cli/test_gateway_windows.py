@@ -12,7 +12,6 @@ import hermes_cli.gateway as gateway
 import hermes_cli.gateway_windows as gateway_windows
 import hermes_cli.setup as setup
 
-
 _BREAKAWAY_MARKER = "_HERMES_GATEWAY_BREAKAWAY"
 
 
@@ -477,6 +476,7 @@ def test_reconcile_warns_when_legacy_entry_cannot_be_removed(monkeypatch, tmp_pa
     """#80569: no task, legacy .cmd locked. The .vbs gets written but the .cmd survives, so both fire
     at logon; reconcile must warn instead of reporting a migration, and doctor --fix must not count it."""
     import sys
+
     from hermes_cli import doctor_platform
     from hermes_cli.doctor_report import Finding
 

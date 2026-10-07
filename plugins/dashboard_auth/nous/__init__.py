@@ -27,7 +27,8 @@ from plugins.dashboard_auth._shared import (
     resolve_env_or_cfg,
     session_from_claims,
     validate_redirect_uri,
-    verify_jwt)
+    verify_jwt,
+)
 
 logger = logging.getLogger(__name__)
 _TAG = "dashboard-auth-nous"

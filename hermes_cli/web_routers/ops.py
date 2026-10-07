@@ -22,18 +22,33 @@ from fastapi.responses import FileResponse
 
 from hermes_cli.config import redact_key
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_files import _path_is_under
-from hermes_cli.web_server_gateway import _restart_gateway_after
-from hermes_cli.web_server_memory import _normalize_memory_provider_name, _require_memory_provider_ready
 from hermes_cli.web_models import (
-    BackupRequest, CredentialPoolAdd, HookCreate, HookDelete, ImportRequest, MemoryProviderSelect,
-    MemoryReset, PairingApprove, PairingRevoke, WebhookCreate, WebhookEnabledToggle,
+    BackupRequest,
+    CredentialPoolAdd,
+    HookCreate,
+    HookDelete,
+    ImportRequest,
+    MemoryProviderSelect,
+    MemoryReset,
+    PairingApprove,
+    PairingRevoke,
+    WebhookCreate,
+    WebhookEnabledToggle,
 )
 from hermes_cli.web_routers._common import (
-    config_scoped_to_thread, config_write_scope, destructive_profile, http_failure,
+    config_scoped_to_thread,
+    config_write_scope,
+    destructive_profile,
+    http_failure,
     spawn_profile_action,
 )
 from hermes_cli.web_routers.files import stream_upload_to_path
+from hermes_cli.web_server_files import _path_is_under
+from hermes_cli.web_server_gateway import _restart_gateway_after
+from hermes_cli.web_server_memory import (
+    _normalize_memory_provider_name,
+    _require_memory_provider_ready,
+)
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -373,6 +388,7 @@ async def list_credential_pool(profile: Optional[str] = None):
 @router.post("/api/credentials/pool")
 async def add_credential_pool_entry(body: CredentialPoolAdd, profile: Optional[str] = None):
     import uuid
+
     from agent.credential_pool import (
         AUTH_TYPE_API_KEY,
         CUSTOM_POOL_PREFIX,
@@ -411,7 +427,10 @@ async def add_credential_pool_entry(body: CredentialPoolAdd, profile: Optional[s
             # (mirrors `hermes auth add`).
             if not provider.startswith(CUSTOM_POOL_PREFIX):
                 try:
-                    from hermes_cli.auth import _load_auth_store, unsuppress_credential_source
+                    from hermes_cli.auth import (
+                        _load_auth_store,
+                        unsuppress_credential_source,
+                    )
 
                     suppressed = _load_auth_store().get("suppressed_sources", {})
                     for src in list(suppressed.get(provider, []) or []):
@@ -668,8 +687,8 @@ async def list_hooks(profile: Optional[str] = None):
     """Configured shell hooks with consent (allowlist) status, whether the
     script is currently executable, and the valid hook events for the form."""
     def _run():
-        from hermes_cli.config import load_config as _load_config
         from agent import shell_hooks
+        from hermes_cli.config import load_config as _load_config
 
         valid_events = []
         with contextlib.suppress(Exception):

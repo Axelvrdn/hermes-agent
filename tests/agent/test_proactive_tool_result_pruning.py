@@ -12,8 +12,8 @@ Mirrors the construction/patching conventions in test_context_compressor.py.
 from unittest.mock import patch
 
 from agent.context_compressor import (
-    ContextCompressor,
     _PRUNED_TOOL_PLACEHOLDER,
+    ContextCompressor,
     _estimate_msg_budget_tokens,
 )
 

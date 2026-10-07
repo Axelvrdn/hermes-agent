@@ -7,9 +7,7 @@ test_kanban_tools.py.
 """
 from __future__ import annotations
 
-
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Shared fixture — mirrors test_kanban_tools.py
@@ -48,9 +46,9 @@ def worker_env(monkeypatch, tmp_path):
 
 def test_kanban_comment_body_scrubbed_github_pat(worker_env):
     """ghp_ PAT in comment body must be masked before DB write."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
     secret = "ghp_" + "A" * 40
     kt._handle_comment({"task_id": worker_env, "body": f"token: {secret}"})
     conn = kbc.connect()
@@ -66,9 +64,9 @@ def test_kanban_comment_body_scrubbed_github_pat(worker_env):
 
 def test_kanban_block_reason_scrubbed_jwt(worker_env):
     """JWT in block reason must be masked before DB write."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
     # Minimal valid-ish JWT (header.payload.sig)
     jwt = (
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
@@ -94,9 +92,9 @@ def test_kanban_block_reason_scrubbed_jwt(worker_env):
 
 def test_kanban_comment_no_secret_passthrough(worker_env):
     """Plain text without credential patterns must pass through unchanged."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
     plain = "hello from the pipeline — no secrets here"
     kt._handle_comment({"task_id": worker_env, "body": plain})
     conn = kbc.connect()
@@ -115,9 +113,9 @@ def test_kanban_comment_no_secret_passthrough(worker_env):
 def test_scrub_respects_force_flag_regardless_of_config(worker_env, monkeypatch):
     """force=True must fire even when HERMES_REDACT_SECRETS=false is set."""
     monkeypatch.setenv("HERMES_REDACT_SECRETS", "false")
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
     secret = "ghp_" + "C" * 40
     kt._handle_comment({"task_id": worker_env, "body": f"token: {secret}"})
     conn = kbc.connect()
@@ -135,9 +133,9 @@ def test_scrub_respects_force_flag_regardless_of_config(worker_env, monkeypatch)
 
 def test_kanban_complete_result_field_scrubbed(worker_env):
     """Legacy result field must be scrubbed just like summary."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
     secret = "sk-" + "D" * 48
     kt._handle_complete({"result": f"finished with key={secret}"})
     conn = kbc.connect()

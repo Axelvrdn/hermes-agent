@@ -1,12 +1,12 @@
 """Optional dependency refreshes run in PM's repository with its installed tools."""
-from argparse import Namespace
 import importlib
 import json
 import os
-from pathlib import Path
 import shutil
 import sys
 import tempfile
+from argparse import Namespace
+from pathlib import Path
 
 import pytest
 

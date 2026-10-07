@@ -11,15 +11,15 @@ and pushed compactions to 7-11 minutes on slow aux routes):
     still appended.
 """
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from agent.context_compressor import (
-    ContextCompressor,
     _LEAN_ANCHOR_HEADING,
     _LEAN_RECOVERY_HEADING,
     _LEAN_SESSION_LOG_HEADING,
+    ContextCompressor,
 )
 
 

@@ -16,7 +16,7 @@ import secrets
 import struct
 import time
 import urllib.parse
-from typing import Optional, Any
+from typing import Any, Optional
 
 import httpx
 

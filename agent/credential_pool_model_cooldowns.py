@@ -9,7 +9,7 @@ auth, billing and payment failures keep benching the whole credential with.
 from __future__ import annotations
 
 import time
-from typing import Any, Dict, Iterable, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional
 
 if TYPE_CHECKING:
     from agent.credential_pool import PooledCredential
@@ -63,7 +63,10 @@ class CredentialPoolModelCooldownMixin:
     ) -> bool:
         """Anthropic per-model 429s, and a Codex ChatGPT-account model entitlement 400: the
         account cannot use *model*, but the credential stays valid for every other model (#71970)."""
-        from agent.credential_pool import FAILURE_REASON_BILLING, FAILURE_REASON_BILLING_UNVERIFIED
+        from agent.credential_pool import (
+            FAILURE_REASON_BILLING,
+            FAILURE_REASON_BILLING_UNVERIFIED,
+        )
 
         if not model:
             return False

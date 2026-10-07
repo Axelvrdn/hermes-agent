@@ -11,7 +11,6 @@ from dataclasses import dataclass, field, fields
 from datetime import datetime, timezone
 from typing import Any, Literal, Optional
 
-
 NousAccountInfoSource = Literal["jwt", "account_api", "inference_key", "none", "error"]
 
 # Free tool-pool coverage categories, byte-aligned with the Portal's TOOL_COVERAGE_CATEGORIES
@@ -331,7 +330,7 @@ def nous_policy_present() -> Optional[bool]:
     ``None`` is unknown (older mint / unreadable claim) and must not be reported as "no policy".
     """
     try:
-        from hermes_cli.auth import get_provider_auth_state, _decode_jwt_claims
+        from hermes_cli.auth import _decode_jwt_claims, get_provider_auth_state
 
         access_token = (get_provider_auth_state("nous") or {}).get("access_token")
         if not _nonblank(access_token):

@@ -28,10 +28,10 @@ marker filter.)
 
 from __future__ import annotations
 
-import logging
 import asyncio
 import base64
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -40,7 +40,6 @@ import time
 from pathlib import Path
 
 import pytest
-
 
 pytestmark = [
     pytest.mark.integration,

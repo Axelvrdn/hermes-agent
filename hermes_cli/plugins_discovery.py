@@ -14,15 +14,24 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from hermes_constants import get_hermes_home
 from hermes_cli.config import cfg_get
 from hermes_cli.plugin_capabilities import VALID_CAPABILITY_IDS
-from hermes_cli.plugin_capabilities import parse_declared_capabilities as _parse_declared_capabilities
-from hermes_cli.plugins_manifest import (
-    PluginManifest, _detect_kind_from_source, manifest_key, _resolve_module_source,
-    parse_manifest_file, portable_plugin_manifest,
+from hermes_cli.plugin_capabilities import (
+    parse_declared_capabilities as _parse_declared_capabilities,
 )
-from hermes_cli.relay_plugin_cutover import LEGACY_RELAY_PLUGIN_KEYS, RELAY_PLUGINS_CONFIG_ENV
+from hermes_cli.plugins_manifest import (
+    PluginManifest,
+    _detect_kind_from_source,
+    _resolve_module_source,
+    manifest_key,
+    parse_manifest_file,
+    portable_plugin_manifest,
+)
+from hermes_cli.relay_plugin_cutover import (
+    LEGACY_RELAY_PLUGIN_KEYS,
+    RELAY_PLUGINS_CONFIG_ENV,
+)
+from hermes_constants import get_hermes_home
 
 logger = logging.getLogger("hermes_cli.plugins")
 
@@ -190,7 +199,9 @@ def collect_directory_manifests() -> List[PluginManifest]:
     """Read directory manifests in full-discovery order (bundled top-level, bundled/platforms, user, opt-in
     project) without loading or mutating anything, so startup probes share the exact precedence/containment
     rules of the real discovery sweep."""
-    from hermes_cli import plugins as _origin  # patched names resolve through the origin
+    from hermes_cli import (
+        plugins as _origin,  # patched names resolve through the origin
+    )
     manifests: List[PluginManifest] = []
 
     def _scan(label: str, directory: Path, source: str, skip_names: Optional[Set[str]] = None) -> None:

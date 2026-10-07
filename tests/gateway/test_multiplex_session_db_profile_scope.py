@@ -434,7 +434,7 @@ def test_runner_session_db_follows_the_active_profile_scope(multiplex_homes):
     """
     import threading
 
-    from gateway.run import GatewayRunner, _SESSION_DB_UNPINNED
+    from gateway.run import _SESSION_DB_UNPINNED, GatewayRunner
 
     root, profile = multiplex_homes
     runner = object.__new__(GatewayRunner)

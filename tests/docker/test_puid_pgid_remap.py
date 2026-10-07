@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from tests.docker.conftest import docker_exec_sh, start_container
 
+
 def test_puid_pgid_remaps_hermes_user(
     built_image: str, container_name: str,
 ) -> None:

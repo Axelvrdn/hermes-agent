@@ -12,10 +12,16 @@ import os
 import urllib.parse
 
 from hermes_cli.cli_output import line_input
-from hermes_cli.providers import custom_provider_slug
 from hermes_cli.model_setup_flows_common import (
-    _HTTP, _ask, _commit_model_config, _load_config_model_section,
-    _prune_replaced_custom_model_config_credentials, _radiolist, _say)
+    _HTTP,
+    _ask,
+    _commit_model_config,
+    _load_config_model_section,
+    _prune_replaced_custom_model_config_credentials,
+    _radiolist,
+    _say,
+)
+from hermes_cli.providers import custom_provider_slug
 
 
 def _parse_context_length(text: str):
@@ -40,7 +46,10 @@ def _report_context_length_detection(model_name: str, base_url: str, api_key: st
     is NOT written to config, which would freeze a probe result into a permanent override.
     """
     try:
-        from agent.model_metadata import DEFAULT_FALLBACK_CONTEXT, get_model_context_length
+        from agent.model_metadata import (
+            DEFAULT_FALLBACK_CONTEXT,
+            get_model_context_length,
+        )
         from hermes_cli.banner import _format_context_length
         detected = get_model_context_length(model_name, base_url=base_url, api_key=api_key or "")
     except Exception:  # a failing probe must never block the save
@@ -96,9 +105,13 @@ def _pick_detected_model(detected_models: list) -> str:
 def _model_flow_custom(config):
     """Custom endpoint: collect URL, API key, and model name; also saved to ``custom_providers`` so
     it appears in the provider menu on subsequent runs."""
-    from hermes_cli.main_provider_setup import _auto_provider_name, _prompt_custom_api_mode_selection, _save_custom_provider
     from hermes_cli.auth import _save_model_choice, deactivate_provider
     from hermes_cli.config import custom_endpoint_key_env, get_env_value, save_env_value
+    from hermes_cli.main_provider_setup import (
+        _auto_provider_name,
+        _prompt_custom_api_mode_selection,
+        _save_custom_provider,
+    )
     from hermes_cli.secret_prompt import masked_secret_prompt
     current_url = get_env_value("OPENAI_BASE_URL") or ""
     current_key = get_env_value("OPENAI_API_KEY") or ""
@@ -233,15 +246,17 @@ def _configured_model_ids(cfg_models) -> list[str]:
 def _discover_named_custom_models(provider_info: dict, api_key: str, configured_models: list, explicit_catalog: bool):
     """Live catalog probe for a named custom endpoint (native ``/api/tags`` for Ollama).
     Returns ``(models, native_catalog_empty)``; persists the live catalog as a side effect."""
+    from agent.command_token_source import (
+        build_command_token_provider,
+        materialize_probe_api_key,
+    )
     from hermes_cli.config import normalize_extra_headers
-    from hermes_cli.models import fetch_api_models, _get_ollama_native_headers
+    from hermes_cli.models import _get_ollama_native_headers, fetch_api_models
     from hermes_cli.models_local import (
-        fetch_ollama_local_models,
         _normalize_openai_base_url,
+        fetch_ollama_local_models,
         should_use_ollama_native_catalog,
     )
-
-    from agent.command_token_source import build_command_token_provider, materialize_probe_api_key
     source = build_command_token_provider(provider_info.get("key_cmd", ""), provider_info["name"])
     api_key = materialize_probe_api_key(source if source is not None else api_key)
     name, base_url = provider_info["name"], provider_info["base_url"]
@@ -284,7 +299,10 @@ def _discover_named_custom_models(provider_info: dict, api_key: str, configured_
     # _save_discovered_models_to_config. A failed save is non-fatal.
     if live_models:
         with contextlib.suppress(Exception):
-            from hermes_cli.model_switch_providers import _entry_credentials, _save_discovered_models_to_config
+            from hermes_cli.model_switch_providers import (
+                _entry_credentials,
+                _save_discovered_models_to_config,
+            )
             _save_discovered_models_to_config(
                 base_url, live_models, api_mode=api_mode, headers=extra_headers or None,
                 credential_identity=_entry_credentials(provider_info, "key_env", "api_key_env")[2])
@@ -322,10 +340,17 @@ def _model_flow_named_custom(config, provider_info):
     """Named custom provider from ``custom_providers`` / ``providers.<key>``: probes the model
     catalog (native ``/api/tags`` for endpoints conservatively identified as Ollama); a previously
     saved model is pre-selected and is the fallback when probing fails."""
-    from hermes_cli.main_provider_setup import _custom_provider_api_key_config_value, _custom_provider_base_url_config_value, _save_custom_provider
     from hermes_cli.auth import _save_model_choice
     from hermes_cli.config import load_config, save_config
-    from hermes_cli.model_switch import _entry_models_discovered, _models_config_is_allowlist
+    from hermes_cli.main_provider_setup import (
+        _custom_provider_api_key_config_value,
+        _custom_provider_base_url_config_value,
+        _save_custom_provider,
+    )
+    from hermes_cli.model_switch import (
+        _entry_models_discovered,
+        _models_config_is_allowlist,
+    )
     name = provider_info["name"]
     base_url = provider_info["base_url"]
     api_mode = provider_info.get("api_mode", "")

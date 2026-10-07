@@ -15,7 +15,12 @@ from pathlib import Path, PurePosixPath
 from tools.environments.base import BaseEnvironment
 from tools.environments.base_output import _ThreadedProcessHandle
 from tools.environments.file_sync import (
-    FileSyncManager, iter_sync_files, quoted_mkdir_command, quoted_rm_command, unique_parent_dirs)
+    FileSyncManager,
+    iter_sync_files,
+    quoted_mkdir_command,
+    quoted_rm_command,
+    unique_parent_dirs,
+)
 from tools.environments.remote_common import ensure_lazy_dep
 
 logger = logging.getLogger(__name__)
@@ -35,7 +40,13 @@ class DaytonaEnvironment(BaseEnvironment):
                  task_id: str = "default"):
         super().__init__(cwd=cwd, timeout=timeout)
         ensure_lazy_dep("daytona")
-        from daytona import Daytona, CreateSandboxFromImageParams, DaytonaError, Resources, SandboxState
+        from daytona import (
+            CreateSandboxFromImageParams,
+            Daytona,
+            DaytonaError,
+            Resources,
+            SandboxState,
+        )
 
         self._persistent, self._task_id, self._SandboxState = persistent_filesystem, task_id, SandboxState
         self._daytona = Daytona()

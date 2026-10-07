@@ -187,7 +187,10 @@ class TestModelFacingReset(unittest.TestCase):
         way out of poisoned state. A stale ``kernel_mode: per-call`` key must not
         drop it from the schema, and a model-shaped call routed through the
         registered handler must actually discard the kernel's state."""
-        from tools.code_execution_tool import _execute_code_handler, build_execute_code_schema
+        from tools.code_execution_tool import (
+            _execute_code_handler,
+            build_execute_code_schema,
+        )
 
         with _kernel_config(kernel_mode="per-call"):
             schema = build_execute_code_schema(mode="strict")
@@ -217,7 +220,10 @@ class TestKernelOwnershipAndLifecycle(unittest.TestCase):
     """
 
     def _run_as(self, session_key, code, task_id, **kwargs):
-        from tools.approval_context import reset_current_session_key, set_current_session_key
+        from tools.approval_context import (
+            reset_current_session_key,
+            set_current_session_key,
+        )
 
         token = set_current_session_key(session_key)
         try:
@@ -547,7 +553,10 @@ class TestBackgroundIdleReaper(unittest.TestCase):
     on its own schedule, and staging dirs that outlived a dead host are swept by age."""
 
     def _run_as(self, session_key, code, task_id, **kwargs):
-        from tools.approval_context import reset_current_session_key, set_current_session_key
+        from tools.approval_context import (
+            reset_current_session_key,
+            set_current_session_key,
+        )
 
         token = set_current_session_key(session_key)
         try:

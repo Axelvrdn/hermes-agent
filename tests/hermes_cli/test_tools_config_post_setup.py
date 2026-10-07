@@ -7,9 +7,9 @@ from threading import Thread
 from types import ModuleType
 from unittest.mock import patch
 
-import pm
 import pytest
 
+import pm
 from hermes_cli.tools_config_post_setup import _run_post_setup
 
 
@@ -137,9 +137,9 @@ def test_langfuse_setup_uses_plugin_admission_and_preserves_config_on_refusal(
         if failure == "admission":
             raise pm.InstallError("venv", "candidate refused")
         # The real admission publisher must commit both lists, not a second UI writer.
-        from pm.publication import PluginSelection
+        from hermes_cli.runtime_state import finish_publication, runtime_lock
         from pm.paths import repo_root
-        from hermes_cli.runtime_state import runtime_lock, finish_publication
+        from pm.publication import PluginSelection
         with runtime_lock(repo_root()):
             PluginSelection(dict(kwargs["plugins"].data)).publish(repo_root())
             finish_publication(repo_root())

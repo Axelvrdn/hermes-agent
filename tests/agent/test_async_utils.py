@@ -8,9 +8,7 @@ import warnings
 from concurrent.futures import Future
 from unittest.mock import patch
 
-
 from agent.async_utils import safe_schedule_threadsafe
-
 
 # ---------------------------------------------------------------------------
 # Helpers

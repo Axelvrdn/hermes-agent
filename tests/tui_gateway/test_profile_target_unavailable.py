@@ -5,8 +5,8 @@ import pytest
 
 
 def test_explicit_profile_target_never_falls_back(tmp_path, monkeypatch):
-    from tui_gateway import server
     from hermes_state import SessionDB
+    from tui_gateway import server
 
     home = tmp_path / ".hermes"
     worker = home / "profiles" / "worker"

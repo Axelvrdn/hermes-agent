@@ -1,11 +1,11 @@
 """Source launchers keep custom-home and selected-generation state at boot."""
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -306,7 +306,10 @@ def _command_survives_generation_collection(tmp_path, monkeypatch, surface):
                 monkeypatch.setattr(gateway, "PROJECT_ROOT", repo)
                 if surface == "launchd":
                     import plistlib
-                    from tests.hermes_cli.test_gateway_service import _osascript_exec_argv
+
+                    from tests.hermes_cli.test_gateway_service import (
+                        _osascript_exec_argv,
+                    )
                     unit = gateway.generate_launchd_plist()
                     # The job runs through osascript (#71206); exec the child it would spawn, minus the
                     # `>> log 2>> log` tail that only means something to the shell.

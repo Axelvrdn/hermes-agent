@@ -37,12 +37,12 @@ import pytest
 
 from tests.e2e.core.delivery._fake_platform import (
     GatewayProcess,
-    read_jsonl,
     footer,
     header,
     norm,
     persisted_answers,
     persisted_user_rows,
+    read_jsonl,
     visible_copies,
     wait_until,
 )

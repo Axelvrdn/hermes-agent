@@ -17,8 +17,20 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from gateway.hosted_rooms_common import (
-    DbPath, bounded_int, canonical_json, clock as _now, compact_json, connect, fenced_update as _fenced_update,
-    identifier, open_sqlite, table_columns, table_exists, transaction, utf8_len)
+    DbPath,
+    bounded_int,
+    canonical_json,
+    compact_json,
+    connect,
+    identifier,
+    open_sqlite,
+    table_columns,
+    table_exists,
+    transaction,
+    utf8_len,
+)
+from gateway.hosted_rooms_common import clock as _now
+from gateway.hosted_rooms_common import fenced_update as _fenced_update
 
 PROTOCOL_VERSION = 2
 MAX_ROOM_ID_CHARS = 128

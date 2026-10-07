@@ -71,6 +71,7 @@ class TestBranchCommandCLI:
         """Branching is child-first: when create_session fails the user stays on the original
         session, so it must not be marked ended as "branched" (#11030)."""
         from unittest.mock import patch
+
         from cli import HermesCLI
 
         original = cli_instance.session_id

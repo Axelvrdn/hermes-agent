@@ -9,7 +9,7 @@ import time
 import unittest
 from unittest.mock import MagicMock
 
-from tools.interrupt import get_interrupt_reason, set_interrupt, is_interrupted
+from tools.interrupt import get_interrupt_reason, is_interrupted, set_interrupt
 
 
 class TestInterruptPropagationToChild(unittest.TestCase):

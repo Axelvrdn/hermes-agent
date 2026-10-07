@@ -38,7 +38,7 @@ import urllib.parse
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Callable, Union, Self
+from typing import Any, Callable, Self, Union
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization

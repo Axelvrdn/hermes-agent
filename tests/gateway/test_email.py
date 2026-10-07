@@ -14,10 +14,9 @@ Covers:
 
 import os
 import unittest
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from unittest.mock import patch, MagicMock, ANY
-
+from email.mime.text import MIMEText
+from unittest.mock import ANY, MagicMock, patch
 
 
 class TestConfigEnvOverrides(unittest.TestCase):
@@ -266,6 +265,7 @@ class TestDispatchMessage(unittest.TestCase):
     def test_image_attachment_sets_photo_type(self):
         """Email with image attachment should set message type to PHOTO."""
         import asyncio
+
         from gateway.platforms.event import MessageType
         adapter = self._make_adapter()
         captured_events = []
@@ -345,10 +345,14 @@ class TestDispatchDefersToGatewayAuthorization(unittest.TestCase):
         import asyncio
         import tempfile
         from pathlib import Path
+
         from gateway.config import GatewayConfig, Platform, PlatformConfig
         from gateway.pairing import PairingStore
         from gateway.run import GatewayRunner
-        from plugins.platforms.email.adapter import _NO_AUTH_RESULTS_REASON, EmailAdapter
+        from plugins.platforms.email.adapter import (
+            _NO_AUTH_RESULTS_REASON,
+            EmailAdapter,
+        )
         with tempfile.TemporaryDirectory() as pairing_dir, \
                 patch("gateway.pairing.PAIRING_DIR", Path(pairing_dir)), \
                 patch.dict(os.environ, {"EMAIL_ADDRESS": "hermes@test.com", "EMAIL_PASSWORD": "secret",
@@ -383,8 +387,13 @@ class TestDispatchDefersToGatewayAuthorization(unittest.TestCase):
         authserv_id pin warns once per account from connect(), including when the account first comes up via a
         reconnect after a failed initial connect."""
         import asyncio
+
         from gateway.config import PlatformConfig
-        from plugins.platforms.email.adapter import _MISSING_AUTHSERV_REASON, _UNTRUSTED_AUTHSERV_REASON, EmailAdapter
+        from plugins.platforms.email.adapter import (
+            _MISSING_AUTHSERV_REASON,
+            _UNTRUSTED_AUTHSERV_REASON,
+            EmailAdapter,
+        )
 
         adapter_log = "plugins.platforms.email.adapter"
         with self.assertLogs(adapter_log, level="WARNING") as logs:
@@ -749,6 +758,7 @@ class TestPollLoop(unittest.TestCase):
         """A header-only, bounded preflight rejects a forged lower auth result
         before IMAP returns the MIME body or an attachment is decoded."""
         import asyncio
+
         from plugins.platforms.email.adapter import _MAX_PREAUTH_HEADER_BYTES
 
         adapter = self._make_adapter()
@@ -1058,8 +1068,9 @@ class TestSendEmailStandalone(unittest.TestCase):
         """_send_email should use verified STARTTLS when sending."""
         import asyncio
         import ssl
-        from plugins.platforms.email.adapter import _standalone_send as _email_send
         from types import SimpleNamespace
+
+        from plugins.platforms.email.adapter import _standalone_send as _email_send
         async def _send_email(extra, chat_id, message):
             return await _email_send(SimpleNamespace(token=None, api_key=None, extra=extra or {}), chat_id, message)
 
@@ -1232,6 +1243,7 @@ class TestConnectSmtp(unittest.TestCase):
     def test_ipv6_timeout_falls_back_to_ipv4(self):
         """When default connection times out, retry with an IPv4-only SMTP path."""
         import socket as _socket
+
         import plugins.platforms.email.adapter as email_mod
 
         adapter = self._make_adapter("587")
@@ -1250,6 +1262,7 @@ class TestConnectSmtp(unittest.TestCase):
     def test_port_465_ipv6_fallback(self):
         """Port 465 IPv6 timeout falls back to IPv4 with SMTP_SSL."""
         import socket as _socket
+
         import plugins.platforms.email.adapter as email_mod
 
         adapter = self._make_adapter("465")
@@ -1275,6 +1288,7 @@ class TestConnectionConfigResolution(unittest.TestCase):
         """A missing host returns False without the cryptic DNS error, and marks
         the failure non-retryable so the gateway stops reconnecting (#40715)."""
         import asyncio
+
         from gateway.config import PlatformConfig
         from plugins.platforms.email.adapter import EmailAdapter
         with patch.dict(os.environ, {
@@ -1325,8 +1339,8 @@ class TestSenderAuthentication(unittest.TestCase):
     def _verify(self, from_addr, auth_results=None, authserv_id="mx.ourserver.com"):
         """Rows stamp the pinned receiver's id, so a verdict is judged on its content, not on a pin mismatch."""
         from plugins.platforms.email.adapter import (
-            _verify_sender_authentication,
             _extract_email_address,
+            _verify_sender_authentication,
         )
         msg = self._msg(from_addr, auth_results)
         addr = _extract_email_address(from_addr)
@@ -1443,6 +1457,7 @@ def test_oversized_cron_output_is_delivered_as_one_whole_email():
     """No 4000-char truncation footer pointing at a file on the gateway host: the router hands
     the whole cron payload to the email adapter, which sends it as a single message."""
     import asyncio
+
     from gateway.config import GatewayConfig, PlatformConfig
     from gateway.delivery import DeliveryRouter
 

@@ -1,8 +1,9 @@
 """Regression test for #75588 — short tool-only suffix can make context
 compressor scan past messages, causing IndexError in _find_context_summaries()."""
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from agent.context_compressor import ContextCompressor
 

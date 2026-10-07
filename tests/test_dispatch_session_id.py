@@ -3,6 +3,7 @@
 import json
 from unittest.mock import MagicMock, patch
 
+
 def _make_registry(captured: dict):
     """Return a mock registry whose dispatch records the kwargs it receives."""
     registry = MagicMock()

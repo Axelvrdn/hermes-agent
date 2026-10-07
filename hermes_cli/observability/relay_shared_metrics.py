@@ -17,12 +17,12 @@ from agent import relay_runtime
 from agent.portal_tags import get_conversation_context
 from hermes_cli.version_info import get_version_info
 
-from .shared_metrics import SharedMetricsStore
 from . import shared_metrics_contract as contract
 from . import shared_metrics_efficiency as eff
 from . import shared_metrics_engagement as engagement_
 from . import shared_metrics_fields as fields_
 from . import shared_metrics_model as model_
+from .shared_metrics import SharedMetricsStore
 from .shared_metrics_contract import MODEL_CALL_SCOPE, SUBSCRIBER_NAME, TASK_SCOPE
 from .shared_metrics_subscriber import SharedMetricsSubscriber
 

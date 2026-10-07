@@ -6,9 +6,6 @@ import sys
 
 import pytest
 
-
-
-
 _SIGUSR2_CHILD = """
 import os, signal, sys, time
 from types import SimpleNamespace

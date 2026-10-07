@@ -6,9 +6,9 @@ satellite-side helper shared by preflight rescue and delivery-time ``SharedRoute
 the raw user file alone, false-blocking every routed job and failing delivery closed.
 """
 
-import hermes_yaml as yaml
 import pytest
 
+import hermes_yaml as yaml
 from cron.scheduler_preflight import (
     SharedRouteAdapters,
     _delivery_platform_routed_from_primary_gateway,

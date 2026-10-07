@@ -20,8 +20,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_cli import runtime_provider as rp
 from hermes_cli import providers as _providers
+from hermes_cli import runtime_provider as rp
 from hermes_cli.providers import nous_api_mode
 
 
@@ -182,7 +182,10 @@ class TestClientShape:
     def test_lookalike_host_does_not_get_portal_treatment(self):
         """Substring matching would hand a spoofed host the Portal JWT as a
         Bearer token. Hostname matching must reject it."""
-        from agent.anthropic_endpoints import _is_nous_portal_endpoint, _requires_bearer_auth
+        from agent.anthropic_endpoints import (
+            _is_nous_portal_endpoint,
+            _requires_bearer_auth,
+        )
 
         spoofed = "https://inference-api.nousresearch.com.attacker.test/v1"
         assert not _is_nous_portal_endpoint(spoofed)

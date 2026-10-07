@@ -18,8 +18,8 @@ pinning pm's truthful win32 degradation.
 
 from __future__ import annotations
 
-import logging
 import io
+import logging
 import stat
 import sys
 import tarfile

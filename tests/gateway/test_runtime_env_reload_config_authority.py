@@ -11,7 +11,6 @@ import os
 from pathlib import Path
 
 import hermes_yaml as yaml
-
 from gateway import run as gateway_run
 
 

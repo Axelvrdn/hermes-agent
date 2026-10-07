@@ -203,7 +203,10 @@ def test_recovery_marks_unmarked_packs_and_retries_the_same_fetch(crash_stderr, 
 # `git gc --auto` (git's own gc.autoPackLimit decides when it is worth it). Real git against a
 # local blobless clone: these pin how the pieces interact, not their command lines.
 
-from hermes_cli.gitlock import settle_partial_clone_maintenance, disable_tree0_auto_maintenance  # noqa: E402
+from hermes_cli.gitlock import (  # noqa: E402
+    disable_tree0_auto_maintenance,
+    settle_partial_clone_maintenance,
+)
 
 _GIT_ENV = {**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
 

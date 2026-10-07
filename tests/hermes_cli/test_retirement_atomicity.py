@@ -1,12 +1,12 @@
 """Freeze admission before consulting ledgers, without holding a lock across their locks."""
 
-from concurrent.futures import ThreadPoolExecutor
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 
 def test_prepare_freezes_admission_without_blocking_other_work_locks(monkeypatch):
-    from hermes_cli.backend_retirement import RetirementFence
     from hermes_cli import web_server_idle_proof
+    from hermes_cli.backend_retirement import RetirementFence
 
     fence = RetirementFence()
     probing, release, attempted = (threading.Event() for _ in range(3))
@@ -37,8 +37,8 @@ def test_prepare_freezes_admission_without_blocking_other_work_locks(monkeypatch
 
 
 def test_probe_failure_refuses_the_permit_without_wedging_admission(monkeypatch):
-    from hermes_cli.backend_retirement import RetirementFence
     from hermes_cli import web_server_idle_proof
+    from hermes_cli.backend_retirement import RetirementFence
 
     def broken_probe():
         raise OSError("ledger unavailable")

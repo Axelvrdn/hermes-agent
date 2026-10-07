@@ -22,14 +22,16 @@ import threading
 
 import pytest
 
-from tools import approval as A
 import tools.approval_detection as approval_detection
-from tools import approval_context
-from tools import approval_smart
-from tools.thread_context import propagate_context_to_thread
-from gateway.session_context import clear_session_vars, reset_session_vars, set_session_vars
+from gateway.session_context import (
+    clear_session_vars,
+    reset_session_vars,
+    set_session_vars,
+)
 from tests.tools._child_env_fixtures import child_env  # noqa: F401
-
+from tools import approval as A
+from tools import approval_context, approval_smart
+from tools.thread_context import propagate_context_to_thread
 
 # ---------------------------------------------------------------------------
 # 1. Context + callback propagation helper
@@ -91,6 +93,7 @@ def test_helper_clears_callbacks_on_teardown():
 @pytest.mark.parametrize("transport", ["local", "remote-file"])
 def test_rpc_carries_authority_to_real_dispatch(child_env, monkeypatch, transport):
     import time
+
     import model_tools
     from tests.tools._child_env_fixtures import RunToCompletionEnv, run_code
     from tools import terminal_tool

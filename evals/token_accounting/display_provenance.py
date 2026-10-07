@@ -8,24 +8,24 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import pty
 import sys
 import tempfile
+from pathlib import Path
 
 
 def child(out: Path) -> None:
-    from cli import HermesCLI
-    from run_agent import AIAgent
-    from agent.context_breakdown import compute_session_context_breakdown
-    from tui_gateway.server import _get_usage, _format_live_context_output
-    import threading
     import asyncio
-    from gateway.run import GatewayRunner
-    from gateway.config import GatewayConfig
-    from gateway.session import SessionStore, SessionSource
-    from gateway.config import Platform
+    import threading
+
+    from agent.context_breakdown import compute_session_context_breakdown
+    from cli import HermesCLI
+    from gateway.config import GatewayConfig, Platform
     from gateway.platforms.event import MessageEvent
+    from gateway.run import GatewayRunner
+    from gateway.session import SessionSource, SessionStore
+    from run_agent import AIAgent
+    from tui_gateway.server import _format_live_context_output, _get_usage
 
     runner = GatewayRunner.__new__(GatewayRunner)
     runner.config = GatewayConfig()

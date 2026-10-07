@@ -59,8 +59,8 @@ def _servable_profile_homes() -> set:
     ``hermes profile create`` leaves behind — counting it would flip a single-profile host
     fail-closed at its next boot.
     """
-    from hermes_constants import named_profile_has_servable_identity
     from hermes_cli.profiles import profiles_to_serve
+    from hermes_constants import named_profile_has_servable_identity
 
     homes = {Path(home).resolve() for name, home in profiles_to_serve(multiplex=True, include_standalone=True, include_parked=True)
              if name == "default" or named_profile_has_servable_identity(home)}
@@ -163,7 +163,10 @@ def launch_profile_runtime_scope(launch_home: "str | Path") -> Iterator[None]:
     (``gateway/run.py::_profile_runtime_scope``); the launch profile is a tenant like any other."""
     from agent.secret_scope import reset_secret_scope, set_secret_scope
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-    from tools.terminal_scope import install_profile_terminal_scope, reset_terminal_scope
+    from tools.terminal_scope import (
+        install_profile_terminal_scope,
+        reset_terminal_scope,
+    )
 
     home = Path(launch_home)
     home_token = secret_token = terminal_token = None

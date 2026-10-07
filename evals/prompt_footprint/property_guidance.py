@@ -3,10 +3,10 @@ Run with the repository venv; tiktoken must be available. No model API calls.
 """
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,6 +19,7 @@ def main():
         os.environ["TERMINAL_CWD"] = temporary
         os.chdir(temporary)
         import tiktoken
+
         from agent import prompt_builder
         from agent.system_prompt import build_system_prompt
         from tools.skills_hub_official import OptionalSkillSource

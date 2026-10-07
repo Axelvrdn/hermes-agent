@@ -6,8 +6,8 @@ Facade-owned state is read through ``_bt`` (``tools.browser_tool``, resolved per
 
 import re
 from typing import Any, Optional
-from tools.browser_tool_origin import origin as _bt
 
+from tools.browser_tool_origin import origin as _bt
 
 _SCREENSHOT_PATH_PATTERNS = (
     r"Screenshot saved to ['\"](?P<path>/[^'\"]+?\.png)['\"]",
@@ -40,8 +40,9 @@ def _store_full_snapshot(snapshot_text: str) -> Optional[str]:
     """
     try:
         import hashlib
-        from hermes_constants import get_hermes_dir
+
         from agent.redact import redact_sensitive_text
+        from hermes_constants import get_hermes_dir
 
         content = redact_sensitive_text(snapshot_text, force=True)
         if len(content) > _bt.MAX_STORED_SNAPSHOT_CHARS:

@@ -30,7 +30,6 @@ import pytest
 
 from hermes_cli._subprocess_compat import noninteractive_git_env
 
-
 # ---------------------------------------------------------------------------
 # 1. Env helper contract
 # ---------------------------------------------------------------------------

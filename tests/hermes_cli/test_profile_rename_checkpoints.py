@@ -5,12 +5,12 @@ from unittest.mock import patch
 
 import pytest
 
+import tools.checkpoint_manager as cm
 from hermes_cli.profile_identity import migrate_profile_identity
 from hermes_cli.profiles import create_profile, rename_profile
 from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-import tools.checkpoint_manager as cm
-from tools.checkpoint_manager import CheckpointManager
 from tools import checkpoint_maintenance as maintenance
+from tools.checkpoint_manager import CheckpointManager
 
 
 @pytest.fixture()

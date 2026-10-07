@@ -3,7 +3,6 @@ receives, SMTP sends. Configured via EMAIL_* env vars or ``platforms.email`` in 
 
 import asyncio
 import email as email_lib
-from contextlib import contextmanager, suppress
 import imaplib
 import logging
 import os
@@ -12,27 +11,31 @@ import smtplib
 import socket
 import ssl
 import uuid
+from contextlib import contextmanager, suppress
+from email import encoders
 from email.header import decode_header
+from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
 from email.parser import BytesHeaderParser
 from email.utils import formatdate, parseaddr
-from email import encoders
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from agent.async_utils import safe_schedule_threadsafe
 from agent.i18n import t
-from gateway.platforms.base import (
-    BasePlatformAdapter, SendResult,
-    cache_document_from_bytes, cache_image_from_bytes,
-)
-from gateway.platforms.helpers import cancel_task
-from gateway.platforms.event import MessageEvent, MessageType
 from gateway.config import Platform, PlatformConfig
+from gateway.platforms._shared import coerce_port, decode_json_list_literal, send_error
+from gateway.platforms._shared import get_scoped_secret as _get_secret
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    SendResult,
+    cache_document_from_bytes,
+    cache_image_from_bytes,
+)
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import cancel_task
 from utils import is_truthy_value
-from gateway.platforms._shared import get_scoped_secret as _get_secret, coerce_port, decode_json_list_literal, send_error
 
 logger = logging.getLogger(__name__)
 

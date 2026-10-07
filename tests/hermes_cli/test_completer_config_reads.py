@@ -7,9 +7,9 @@ import os
 from unittest.mock import patch
 
 import pytest
-import hermes_yaml as yaml
 
 import hermes_cli.commands_completion as commands_mod
+import hermes_yaml as yaml
 
 
 @pytest.fixture(autouse=True)

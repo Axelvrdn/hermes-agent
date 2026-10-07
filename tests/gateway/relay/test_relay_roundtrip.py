@@ -16,11 +16,9 @@ import pytest
 
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.session import SessionSource
 from gateway.relay.adapter import RelayAdapter
 from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
-
-
+from gateway.session import SessionSource
 from tests.gateway.relay.stub_connector import StubConnector
 
 

@@ -36,6 +36,7 @@ import pytest
 
 from agent.context_compressor import ContextCompressor
 
+
 def _compressor(threshold_tokens: int) -> ContextCompressor:
     cc = ContextCompressor(
         model="test-model",

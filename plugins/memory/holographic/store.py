@@ -6,9 +6,9 @@ import re
 import sqlite3
 import threading
 from pathlib import Path
+from typing import Self
 
 from . import holographic as hrr
-from typing import Self
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS facts (

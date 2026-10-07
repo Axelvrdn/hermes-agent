@@ -11,7 +11,6 @@ Reference: https://learn.microsoft.com/azure/ai-foundry/foundry-models/how-to/co
 
 from __future__ import annotations
 
-from pm import install_hint
 import contextvars
 import functools
 import logging
@@ -19,6 +18,8 @@ import os
 import threading
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Optional
+
+from pm import install_hint
 
 logger = logging.getLogger(__name__)
 

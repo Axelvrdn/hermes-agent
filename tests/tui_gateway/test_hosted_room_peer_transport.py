@@ -5,15 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 from gateway.hosted_room_driver import TaskIdentity
-from tui_gateway.hosted_room_driver import HostedRoomBinding, ROOM_SESSION_SOURCE
+from tui_gateway.hosted_room_driver import ROOM_SESSION_SOURCE, HostedRoomBinding
+from tui_gateway.hosted_room_peer_http import PeerRunsHTTPError
 from tui_gateway.hosted_room_peer_transport import (
     FailoverHostedRoomPeerClient,
     PeerHostedRoomTransport,
     PeerMemberRoute,
     RoomLinkCandidate,
 )
-from tui_gateway.hosted_room_peer_http import PeerRunsHTTPError
-
 
 BINDING = HostedRoomBinding("room-1", "gateway-home", 2)
 ROUTE = PeerMemberRoute(

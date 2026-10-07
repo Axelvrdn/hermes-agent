@@ -40,7 +40,10 @@ class ConfigContext:
 def load_picker_context() -> ConfigContext:
     """Load the disk-config snapshot every consumer needs."""
     from hermes_cli.config import (
-        coerce_provider_id, get_compatible_custom_providers, load_config, stringify_provider_map,
+        coerce_provider_id,
+        get_compatible_custom_providers,
+        load_config,
+        stringify_provider_map,
     )
     cfg = load_config()
     model_cfg = cfg.get("model", {})
@@ -298,8 +301,11 @@ def _apply_usage(rows: list[dict]) -> None:
     staleness bound renders ``unknown``/``unavailable``, never a confident stale gauge. Nothing here
     mutates the pool or disables routing: telemetry never benches a credential."""
     from agent.account_usage_cache import (
-        cached_account_usage, has_account_usage, refresh_account_usage_async,
-        refresh_account_usage_entries_async, snapshot_is_stale,
+        cached_account_usage,
+        has_account_usage,
+        refresh_account_usage_async,
+        refresh_account_usage_entries_async,
+        snapshot_is_stale,
     )
     from hermes_cli.auth import read_credential_pool
 
@@ -379,7 +385,12 @@ def _pool_usage_accounts(slug: str, wire_windows, account_resets_at,
     import logging
     import time
 
-    from agent.account_usage_cache import _identity_id_for, cached_account_usage, has_account_usage, snapshot_is_stale
+    from agent.account_usage_cache import (
+        _identity_id_for,
+        cached_account_usage,
+        has_account_usage,
+        snapshot_is_stale,
+    )
     from agent.credential_pool import STATUS_DEAD, _exhausted_until, load_pool
 
     try:
@@ -743,7 +754,10 @@ def _anthropic_oauth_credentials_present() -> bool:
     """True when the user explicitly authenticated Anthropic via OAuth (Hermes device flow or Claude Code
     login) — those leave no trace in active_provider / model.provider / API-key env vars."""
     try:
-        from agent.anthropic_credentials import read_claude_code_credentials, read_hermes_oauth_credentials
+        from agent.anthropic_credentials import (
+            read_claude_code_credentials,
+            read_hermes_oauth_credentials,
+        )
 
         readers = (read_hermes_oauth_credentials, read_claude_code_credentials)
         if any((read() or {}).get("accessToken") for read in readers):
@@ -799,7 +813,10 @@ def _filter_explicit_provider_rows(rows: list[dict], ctx: ConfigContext) -> list
 def _external_process_signed_in(slug: str) -> bool:
     """True when an external-process provider has verified CLI credentials."""
     try:
-        from hermes_cli.auth import PROVIDER_REGISTRY, get_external_process_provider_status
+        from hermes_cli.auth import (
+            PROVIDER_REGISTRY,
+            get_external_process_provider_status,
+        )
         pconfig = PROVIDER_REGISTRY.get(slug)
         return bool(pconfig and pconfig.auth_type == "external_process"
                     and get_external_process_provider_status(slug).get("auth_verified"))
@@ -866,15 +883,15 @@ def _apply_pricing(rows: list[dict], *, force_fresh_nous_tier: bool = False, cac
     ``free_tier`` (account is free-tier) and ``unavailable_models`` (paid models a free user can't pick).
     ``cached_only`` never hits the network: unknown Nous entitlement fails closed (``free_tier_pending``,
     all models locked) and missing pricing is marked ``pricing_pending``."""
-    from hermes_cli.models_pricing import (
-        _format_price_per_mtok,
-        compute_sale_discount,
-        get_pricing_for_provider,
-    )
     from hermes_cli.models import (
         check_nous_free_tier,
         get_cached_nous_free_tier,
         partition_nous_models_by_tier,
+    )
+    from hermes_cli.models_pricing import (
+        _format_price_per_mtok,
+        compute_sale_discount,
+        get_pricing_for_provider,
     )
 
     nous_free_tier: Optional[bool] = None  # resolved once (cached in models.py for the TTL window)
@@ -993,8 +1010,8 @@ def _prewarm_pricing_async(
 ) -> Optional[Thread]:
     """Warm picker pricing caches without delaying the current payload (one worker per
     profile + endpoint scope; a live worker is reused)."""
-    from hermes_constants import hermes_home_key
     from hermes_cli.models_pricing import pricing_cache_scope
+    from hermes_constants import hermes_home_key
 
     slugs = {
         (

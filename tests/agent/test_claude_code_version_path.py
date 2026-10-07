@@ -14,7 +14,10 @@ import sys
 import pytest
 
 import agent.anthropic_adapter as adapter
-from agent.anthropic_adapter import _CLAUDE_CODE_VERSION_FALLBACK, _detect_claude_code_version
+from agent.anthropic_adapter import (
+    _CLAUDE_CODE_VERSION_FALLBACK,
+    _detect_claude_code_version,
+)
 
 
 def _install(directory, name: str) -> str:

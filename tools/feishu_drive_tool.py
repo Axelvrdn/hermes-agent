@@ -12,7 +12,8 @@ from tools.feishu_lark import (  # noqa: F401  (set_client/get_client are import
     build_request,
     get_client,
     lark_call,
-    set_client)
+    set_client,
+)
 from tools.registry import registry, tool_error, tool_result
 
 logger = logging.getLogger(__name__)

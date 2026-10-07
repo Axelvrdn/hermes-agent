@@ -18,7 +18,8 @@ from unittest.mock import MagicMock
 
 from agent.turn_context import TurnContext, build_turn_context  # noqa: F401
 from run_agent import AIAgent
-from tests.agent.test_turn_context import _FakeAgent, _build
+from tests.agent.test_turn_context import _build, _FakeAgent
+
 
 class _FakeUncompressedAgent(_FakeAgent):
     """Agent stub with compression disabled, bound to the REAL warn methods."""

@@ -25,7 +25,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-
 logger = logging.getLogger("hermes_cli.models")
 
 Caps = dict[str, Optional[dict[str, Any]]]

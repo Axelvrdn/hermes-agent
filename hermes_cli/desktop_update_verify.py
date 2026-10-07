@@ -1,8 +1,8 @@
 """Read-only verification at the Windows Desktop handoff receipt boundary."""
 import json
-from pathlib import Path, PurePosixPath
 import re
 import struct
+from pathlib import Path, PurePosixPath
 
 from hermes_cli.main_desktop import (
     _HTML_TAG_WITH_URL,

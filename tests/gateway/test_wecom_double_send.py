@@ -40,14 +40,13 @@ properties, it does not re-implement the delivery lifecycle.
 
 from __future__ import annotations
 
-import logging
 import asyncio
+import logging
 from unittest.mock import MagicMock
 
 import pytest
 
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
-
 
 CHAT_ID = "chat-1"
 REQ_ID = "req-1"
@@ -119,8 +118,8 @@ def _make_real_wecom_adapter(*, resolve_finalize_ack: bool):
       * ``resolve_finalize_ack=True``  → finalize ack returns at once → the
         consumer finishes finalize and sets its flags before any join fires.
     """
-    from plugins.platforms.wecom.adapter import WeComAdapter
     from gateway.config import PlatformConfig
+    from plugins.platforms.wecom.adapter import WeComAdapter
 
     adapter = WeComAdapter(PlatformConfig(enabled=True))
     adapter._ws = MagicMock(closed=False)
@@ -305,8 +304,8 @@ def _make_manual_ack_adapter():
     auto-resolves any ack, so the test can orchestrate the exact interleaving
     of intermediate-ack arrival vs. finalize registration by hand.
     """
-    from plugins.platforms.wecom.adapter import WeComAdapter
     from gateway.config import PlatformConfig
+    from plugins.platforms.wecom.adapter import WeComAdapter
 
     adapter = WeComAdapter(PlatformConfig(enabled=True))
     adapter._ws = MagicMock(closed=False)

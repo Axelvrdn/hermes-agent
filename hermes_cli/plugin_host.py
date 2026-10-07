@@ -22,9 +22,9 @@ from __future__ import annotations
 import asyncio
 import contextvars
 import dataclasses
-import inspect
 import functools
 import importlib
+import inspect
 import itertools
 import logging
 import os
@@ -37,7 +37,12 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
 from hermes_cli.plugin_host_wire import (
-    Channel, PluginHostUnavailable, PluginHostUnsupported, decode, encode, signature_from,
+    Channel,
+    PluginHostUnavailable,
+    PluginHostUnsupported,
+    decode,
+    encode,
+    signature_from,
 )
 
 logger = logging.getLogger("hermes_cli.plugins")
@@ -91,7 +96,11 @@ class PluginHost:
         def bind() -> None:
             from hermes_constants import set_hermes_home_override
             set_hermes_home_override(self._home)
-            from agent.secret_scope import build_profile_secret_scope, is_multiplex_active, set_secret_scope
+            from agent.secret_scope import (
+                build_profile_secret_scope,
+                is_multiplex_active,
+                set_secret_scope,
+            )
             if is_multiplex_active():
                 set_secret_scope(build_profile_secret_scope(self._home), profile_home=str(self._home))
 
@@ -369,7 +378,9 @@ class PluginHost:
 
     def _serve_ctx(self, params: Dict[str, Any]) -> Any:
         from hermes_cli.plugin_isolation import (
-            HOST_OBJECT_BASES, HOST_SKIPPED_CTX_METHODS, HOST_UNSUPPORTED_CTX_METHODS,
+            HOST_OBJECT_BASES,
+            HOST_SKIPPED_CTX_METHODS,
+            HOST_UNSUPPORTED_CTX_METHODS,
         )
         ctx = self._plugin_ctx(params)
         method = str(params.get("method") or "")

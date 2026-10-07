@@ -23,7 +23,6 @@ import pytest
 
 from utils import atomic_write_text, atomic_yaml_write
 
-
 pytestmark = pytest.mark.platforms("posix")  # POSIX permission bits
 
 

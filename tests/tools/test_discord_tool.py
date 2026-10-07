@@ -6,10 +6,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from tools.discord_tool import (
-    DiscordAPIError,
     _ACTIONS,
     _ADMIN_ACTIONS,
     _CORE_ACTIONS,
+    DiscordAPIError,
     _available_actions,
     _detect_capabilities,
     _discord_request,
@@ -22,7 +22,6 @@ from tools.discord_tool import (
     get_dynamic_schema_admin,
     get_dynamic_schema_core,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -385,7 +384,10 @@ class TestNonBlockingCapabilityDetection:
         _reset_capability_cache()
 
     def test_memory_cache_hit_no_network(self):
-        from tools.discord_tool import _capability_cache, _detect_capabilities_nonblocking
+        from tools.discord_tool import (
+            _capability_cache,
+            _detect_capabilities_nonblocking,
+        )
         caps_in = {"has_members_intent": False, "has_message_content": True, "detected": True}
         _capability_cache["tok"] = caps_in
         with patch("tools.discord_tool._discord_request") as mock_req:

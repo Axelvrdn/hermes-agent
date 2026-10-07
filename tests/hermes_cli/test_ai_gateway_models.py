@@ -6,11 +6,15 @@ where hermes's shared picker expects ``prompt`` / ``completion``; these tests
 pin the translation and the curated-list filtering.
 """
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from hermes_cli import models as models_module
 from hermes_cli import models_pricing
-from hermes_cli.models import VERCEL_AI_GATEWAY_MODELS, _ai_gateway_model_is_free, fetch_ai_gateway_models
+from hermes_cli.models import (
+    VERCEL_AI_GATEWAY_MODELS,
+    _ai_gateway_model_is_free,
+    fetch_ai_gateway_models,
+)
 from hermes_cli.models_pricing import fetch_ai_gateway_pricing
 
 

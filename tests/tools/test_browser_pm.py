@@ -64,8 +64,8 @@ def test_unrecorded_playwright_cache_is_not_a_pm_browser(browser_store):
 
 
 def test_doctor_fix_publishes_and_reads_the_pm_browser(browser_store, monkeypatch):
-    from hermes_cli import doctor_tools
     import pm.client
+    from hermes_cli import doctor_tools
 
     _, _, publish = browser_store
     monkeypatch.setenv("PATH", "")

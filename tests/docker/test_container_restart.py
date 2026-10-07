@@ -20,7 +20,12 @@ import subprocess
 
 import pytest
 
-from tests.docker.conftest import docker_exec, docker_exec_sh, wait_for_path, wait_for_log
+from tests.docker.conftest import (
+    docker_exec,
+    docker_exec_sh,
+    wait_for_log,
+    wait_for_path,
+)
 
 
 def _docker(*args: str, **kw) -> subprocess.CompletedProcess[str]:

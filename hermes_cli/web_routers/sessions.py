@@ -6,9 +6,9 @@ right after it, ``manage_router`` (mutation/detail) much later.  web_server-owne
 helpers are reached via the late-binding seam so monkeypatching keeps working.
 """
 
-import logging
 import asyncio
 import json
+import logging
 import re
 import sqlite3
 import time
@@ -21,15 +21,33 @@ from fastapi.responses import StreamingResponse
 
 from hermes_cli.session_listing import subagent_listing_scope
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_gateway import _strip_session_list_rows
-from hermes_cli.web_server_sessions import _maybe_auto_archive_for_profile, _session_latest_descendant
 from hermes_cli.web_models import (
-    BulkDeleteSessions, SessionImport, SessionOwnerBackfill, SessionPrune, SessionRename)
+    BulkDeleteSessions,
+    SessionImport,
+    SessionOwnerBackfill,
+    SessionPrune,
+    SessionRename,
+)
 from hermes_cli.web_routers._common import (
-    CORRUPT_STORE_DETAIL, corrupt_store_as_status, log as _log, destructive_profile, http_failure,
+    CORRUPT_STORE_DETAIL,
+    corrupt_store_as_status,
+    destructive_profile,
+    http_failure,
+)
+from hermes_cli.web_routers._common import (
+    log as _log,
+)
+from hermes_cli.web_server_gateway import _strip_session_list_rows
+from hermes_cli.web_server_sessions import (
+    _maybe_auto_archive_for_profile,
+    _session_latest_descendant,
 )
 from hermes_state import is_malformed_db_error
-from hermes_state_errors import SessionActiveWriteGuardError, StateDbReplacedError, is_transient_sqlite_error
+from hermes_state_errors import (
+    SessionActiveWriteGuardError,
+    StateDbReplacedError,
+    is_transient_sqlite_error,
+)
 from hermes_state_health import STORAGE_CORRUPT, note_storage_error, storage_state
 
 list_router = APIRouter()

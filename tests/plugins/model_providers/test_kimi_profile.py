@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import pytest
 
+
 @pytest.fixture
 def kimi_profile():
     """Resolve the registered Kimi profile via the provider registry.

@@ -21,7 +21,10 @@ class CopilotProfile(ProviderProfile):
         if not (supports_reasoning and model):
             return {}, {}
         try:
-            from hermes_cli.models import clamp_github_reasoning_effort, github_model_reasoning_efforts
+            from hermes_cli.models import (
+                clamp_github_reasoning_effort,
+                github_model_reasoning_efforts,
+            )
 
             supported = github_model_reasoning_efforts(model)
             if not supported:

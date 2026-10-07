@@ -3,15 +3,14 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 from scripts.ci.setup_toolchain import current_target
 from tests.ci.desktop_release_roles import gate
-
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/ci/desktop_build_cache.py"
@@ -199,6 +198,7 @@ def test_composite_transports_only_and_uses_the_restore_key_for_save(tmp_path):
 
 def test_action_path_join_is_an_actual_newline(tmp_path):
     import re
+
     from ruamel.yaml import YAML
 
     action = YAML(typ="safe").load((ROOT / ".github/actions/desktop-build-cache/action.yml").read_text(encoding="utf-8-sig"))
@@ -238,6 +238,7 @@ def test_private_home_and_source_cannot_be_children_of_cached_roots(tmp_path, mo
 
 def test_direct_snapshot_preserves_node_receipt_and_excludes_job_secrets(tmp_path):
     import shutil
+
     from scripts.ci.desktop_build_cache import describe_cache
 
     node = shutil.which("node")

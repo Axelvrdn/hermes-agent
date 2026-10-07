@@ -26,7 +26,6 @@ from tui_gateway.hosted_room_peer_transport import (
     PeerMemberRoute,
 )
 
-
 ROOM_ID = "room-1"
 PROFILE = "ops"
 BINDING = HostedRoomBinding(

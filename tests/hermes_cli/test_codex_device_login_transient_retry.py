@@ -16,7 +16,6 @@ import pytest
 from hermes_cli import auth_codex
 from hermes_cli.auth import AuthError
 
-
 _SSL_EOF_MESSAGE = (
     "[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)")
 

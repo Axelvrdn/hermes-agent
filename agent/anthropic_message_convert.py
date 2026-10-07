@@ -10,8 +10,11 @@ import logging
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
+from agent.anthropic_thinking_policy import (
+    anthropic_thinking_route,
+    model_preserves_prior_thinking,
+)
 from agent.image_eviction_policy import outbound_image_retire_count
-from agent.anthropic_thinking_policy import anthropic_thinking_route, model_preserves_prior_thinking
 
 logger = logging.getLogger(__name__)
 
@@ -168,7 +171,10 @@ def _image_block_from_openai_url(url: str) -> Dict[str, Any]:
     """OpenAI image URL / data URL -> Anthropic ``image`` block. An inline subtype the API rejects
     (svg+xml, bmp, tiff) 400s every replay once in history: an SVG is rasterized to PNG when a
     rasterizer is installed, anything else unsupported becomes a text placeholder."""
-    from tools.vision_tools_image_prep import rasterize_svg_data_url, unsupported_inline_image_media_type
+    from tools.vision_tools_image_prep import (
+        rasterize_svg_data_url,
+        unsupported_inline_image_media_type,
+    )
     url = str(url or "").strip()
     if not url.startswith("data:"):
         return {"type": "image", "source": {"type": "url", "url": url}}

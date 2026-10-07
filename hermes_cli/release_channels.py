@@ -1,12 +1,12 @@
 """R2 channel wire protocol. Names are data; no local channel registry exists."""
 from __future__ import annotations
 
-from contextlib import contextmanager
-from contextvars import ContextVar
-from dataclasses import dataclass
 import hashlib
 import json
 import re
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener

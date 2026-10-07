@@ -1,32 +1,48 @@
 """Credential-pool auth subcommands."""
 
 from __future__ import annotations
-import logging
-from pm import install_hint
-from hermes_cli.cli_output import line_input
 
+import logging
 import math
 import sys
 import time
+import uuid
 from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any, Callable
-import uuid
 
-from agent.credential_pool import (
-    AUTH_TYPE_API_KEY, AUTH_TYPE_OAUTH, CUSTOM_POOL_PREFIX, SOURCE_MANUAL,
-    SOURCE_MANUAL_DEVICE_CODE, STATUS_EXHAUSTED, STRATEGY_FILL_FIRST, STRATEGY_ROUND_ROBIN,
-    STRATEGY_RANDOM, STRATEGY_LEAST_USED, PooledCredential, _codex_principal_identity,
-    _exhausted_until, _normalize_custom_pool_name, get_pool_strategy, label_from_token, list_custom_pool_providers,
-    load_pool)
-from agent.credential_pool_admin import CredentialNotSavedError
 import hermes_cli.auth as auth_mod
+from agent.credential_pool import (
+    AUTH_TYPE_API_KEY,
+    AUTH_TYPE_OAUTH,
+    CUSTOM_POOL_PREFIX,
+    SOURCE_MANUAL,
+    SOURCE_MANUAL_DEVICE_CODE,
+    STATUS_EXHAUSTED,
+    STRATEGY_FILL_FIRST,
+    STRATEGY_LEAST_USED,
+    STRATEGY_RANDOM,
+    STRATEGY_ROUND_ROBIN,
+    PooledCredential,
+    _codex_principal_identity,
+    _exhausted_until,
+    _normalize_custom_pool_name,
+    get_pool_strategy,
+    label_from_token,
+    list_custom_pool_providers,
+    load_pool,
+)
+from agent.credential_pool_admin import CredentialNotSavedError
 from hermes_cli.auth import PROVIDER_REGISTRY
 from hermes_cli.auth_plugin_providers import (
-    dispatch_plugin_auth, is_refreshable_oauth_provider, plugin_missing_auth_handler_error)
-from hermes_constants import OPENROUTER_BASE_URL
+    dispatch_plugin_auth,
+    is_refreshable_oauth_provider,
+    plugin_missing_auth_handler_error,
+)
+from hermes_cli.cli_output import line_input
 from hermes_cli.secret_prompt import masked_secret_prompt
-
+from hermes_constants import OPENROUTER_BASE_URL
+from pm import install_hint
 
 # Providers that support OAuth login in addition to API keys.
 _OAUTH_CAPABLE_PROVIDERS = {"anthropic", "nous", "openai-codex", "xai-oauth", "qwen-oauth", "minimax-oauth", "openrouter"}
@@ -550,7 +566,10 @@ def auth_list_command(args) -> None:
 
 def _print_external_login_notice() -> None:
     """One line telling the user why no Codex CLI / Claude Code login shows up when adoption is off."""
-    from agent.credential_sources import EXTERNAL_LOGINS_NOT_ADOPTED_NOTICE, adopt_external_logins_enabled
+    from agent.credential_sources import (
+        EXTERNAL_LOGINS_NOT_ADOPTED_NOTICE,
+        adopt_external_logins_enabled,
+    )
     if not adopt_external_logins_enabled():
         print(EXTERNAL_LOGINS_NOT_ADOPTED_NOTICE)
 
@@ -718,7 +737,11 @@ def auth_spotify_command(args) -> None:
 def _print_bedrock_status() -> None:
     """Show AWS Bedrock credential status (not in the pool — uses boto3 chain)."""
     try:
-        from agent.bedrock_adapter import has_aws_credentials, resolve_aws_auth_env_var, resolve_bedrock_region
+        from agent.bedrock_adapter import (
+            has_aws_credentials,
+            resolve_aws_auth_env_var,
+            resolve_bedrock_region,
+        )
         if not has_aws_credentials():
             return
         region = resolve_bedrock_region()
@@ -747,7 +770,10 @@ def _print_azure_entra_status() -> None:
             or str(model_cfg.get("auth_mode") or "").strip().lower() != "entra_id"):
             return
         from agent.azure_identity_adapter import (
-            EntraIdentityConfig, SCOPE_AI_AZURE_DEFAULT, describe_active_credential, has_azure_identity_installed,
+            SCOPE_AI_AZURE_DEFAULT,
+            EntraIdentityConfig,
+            describe_active_credential,
+            has_azure_identity_installed,
         )
         base_url = str(model_cfg.get("base_url") or "").strip()
         entra = model_cfg.get("entra") or {}

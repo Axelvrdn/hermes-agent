@@ -296,7 +296,8 @@ def test_growth_counts_the_growing_model_as_free(hermes_home, monkeypatch, capac
     mdir, gguf = _stage_27b(hermes_home, monkeypatch)
     monkeypatch.setattr(bootstrap, "get_supervisor", lambda: SimpleNamespace(is_idle=lambda m: True))
     monkeypatch.setattr(growth, "is_managed_endpoint", lambda url: True)
-    from hermes_cli.local_runtime import estimator, gguf as gguf_mod
+    from hermes_cli.local_runtime import estimator
+    from hermes_cli.local_runtime import gguf as gguf_mod
 
     monkeypatch.setattr(gguf_mod, "read_gguf_header", presets.read_gguf_header)
     monkeypatch.setattr(estimator, "profile_from_gguf", presets.profile_from_gguf)
@@ -322,7 +323,8 @@ def test_growth_refuses_a_rung_other_programs_leave_no_room_for(hermes_home, mon
     _mdir, gguf = _stage_27b(hermes_home, monkeypatch)
     monkeypatch.setattr(bootstrap, "get_supervisor", lambda: SimpleNamespace(is_idle=lambda m: True))
     monkeypatch.setattr(growth, "is_managed_endpoint", lambda url: True)
-    from hermes_cli.local_runtime import estimator, gguf as gguf_mod
+    from hermes_cli.local_runtime import estimator
+    from hermes_cli.local_runtime import gguf as gguf_mod
 
     monkeypatch.setattr(gguf_mod, "read_gguf_header", presets.read_gguf_header)
     monkeypatch.setattr(estimator, "profile_from_gguf", presets.profile_from_gguf)

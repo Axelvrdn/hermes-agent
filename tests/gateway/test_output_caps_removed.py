@@ -11,10 +11,10 @@ def test_legacy_user_caps_do_not_change_runtime(tmp_path, monkeypatch):
         "providers": {"local-fixture": {"api": "http://127.0.0.1:1/v1", "api_key": "fixture", "max_output_tokens": 19}},
     }
     (tmp_path / "config.yaml").write_text(json.dumps(config))
-    from gateway.run import _resolve_runtime_agent_kwargs
-    from gateway.platforms.api_server import _resolve_request_runtime_agent_kwargs
-    from hermes_cli.moa_config import _normalize_preset
     from agent.models_dev import _override_to_catalog_shape
+    from gateway.platforms.api_server import _resolve_request_runtime_agent_kwargs
+    from gateway.run import _resolve_runtime_agent_kwargs
+    from hermes_cli.moa_config import _normalize_preset
 
     runtime = _resolve_runtime_agent_kwargs()
     assert runtime.get("max_tokens") is None
@@ -37,9 +37,9 @@ def test_legacy_user_caps_do_not_change_runtime(tmp_path, monkeypatch):
 
 
 def test_optional_wire_caps_omitted_required_and_internal_preserved():
-    from agent.transports.chat_completions import ChatCompletionsTransport
-    from agent.transports.bedrock import BedrockTransport
     from agent.transports.anthropic import AnthropicTransport
+    from agent.transports.bedrock import BedrockTransport
+    from agent.transports.chat_completions import ChatCompletionsTransport
 
     messages = [{"role": "user", "content": "fixture"}]
     chat = ChatCompletionsTransport().build_kwargs(

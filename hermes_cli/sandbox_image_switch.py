@@ -36,7 +36,11 @@ def pending() -> Optional[PendingSwitch]:
     unpinned default, and a container labeled for this profile runs another image. ``docker`` is
     consulted (one ``ps``); any failure is "nothing pending"."""
     from hermes_cli.config import load_config_readonly
-    from tools.environments.docker import _container_identity, _docker_query, find_docker
+    from tools.environments.docker import (
+        _container_identity,
+        _docker_query,
+        find_docker,
+    )
 
     terminal = (load_config_readonly() or {}).get("terminal") or {}
     if terminal.get("backend") != "docker":

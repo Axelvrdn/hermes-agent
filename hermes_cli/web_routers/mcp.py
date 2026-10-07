@@ -5,25 +5,41 @@ web_server — reached via the late-binding seam so tests that mutate
 ``web_server._mcp_oauth_flows`` or monkeypatch its helpers keep working.
 """
 
-import logging
 import asyncio
 import hashlib
-from contextlib import contextmanager
+import logging
 import re
 import secrets
 import threading
 import time
+from contextlib import contextmanager
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_mcp import _mcp_oauth_flows, _mcp_server_summary, _normalize_mcp_server_create
-from hermes_cli.web_models import MCPCatalogInstall, MCPEnabledToggle, MCPServerCreate, MCPServersReplace
+from hermes_cli.web_models import (
+    MCPCatalogInstall,
+    MCPEnabledToggle,
+    MCPServerCreate,
+    MCPServersReplace,
+)
 from hermes_cli.web_routers._common import (
-    _profile_cli_args, _profile_scope, _spawn_hermes_action, config_write_scope, http_failure,
-    log as _log, scoped_to_thread,
+    _profile_cli_args,
+    _profile_scope,
+    _spawn_hermes_action,
+    config_write_scope,
+    http_failure,
+    scoped_to_thread,
+)
+from hermes_cli.web_routers._common import (
+    log as _log,
+)
+from hermes_cli.web_server_mcp import (
+    _mcp_oauth_flows,
+    _mcp_server_summary,
+    _normalize_mcp_server_create,
 )
 
 router = APIRouter()
@@ -111,7 +127,11 @@ async def list_mcp_servers(profile: Optional[str] = None):
 @router.post("/api/mcp/servers")
 async def add_mcp_server(body: MCPServerCreate, profile: Optional[str] = None):
     from hermes_cli.mcp_catalog import record_mcp_install
-    from hermes_cli.mcp_config import _get_mcp_servers, _save_bearer_auth_token, _save_mcp_server
+    from hermes_cli.mcp_config import (
+        _get_mcp_servers,
+        _save_bearer_auth_token,
+        _save_mcp_server,
+    )
 
     try:
         name, server_config, bearer_token = _normalize_mcp_server_create(body)
@@ -205,7 +225,11 @@ async def remove_mcp_server(name: str, profile: Optional[str] = None):
 @router.post("/api/mcp/servers/{name}/test")
 async def test_mcp_server(name: str, profile: Optional[str] = None):
     """Connect to the server, list its tools, disconnect."""
-    from hermes_cli.mcp_config import _get_mcp_servers, _oauth_tokens_present, _probe_single_server
+    from hermes_cli.mcp_config import (
+        _get_mcp_servers,
+        _oauth_tokens_present,
+        _probe_single_server,
+    )
 
     def _read():
         config_servers = _get_mcp_servers()
@@ -471,7 +495,10 @@ async def list_mcp_catalog(profile: Optional[str] = None):
         import sys
 
         try:
-            from hermes_cli.mcp_app_detection import discover_catalog_apps, validate_applications
+            from hermes_cli.mcp_app_detection import (
+                discover_catalog_apps,
+                validate_applications,
+            )
 
             applications = {}
             for entry in entries:

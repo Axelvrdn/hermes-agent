@@ -11,11 +11,12 @@ from __future__ import annotations
 
 import argparse
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from hermes_cli.main import cmd_dashboard
+
 
 def _ns(**kw):
     """Build an argparse.Namespace with dashboard defaults plus overrides."""

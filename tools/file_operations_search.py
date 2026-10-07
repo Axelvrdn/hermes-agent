@@ -60,7 +60,11 @@ _FILENAME_SEARCH_WAIT_SECONDS = 0.05
 
 def _normalized_filename_search_root(env: Any, root: str, fallback_cwd: str) -> str:
     """Normalize a filename-walk root without resolving remote paths locally."""
-    from tools.environments.local import LocalEnvironment, _IS_WINDOWS, _msys_to_windows_path
+    from tools.environments.local import (
+        _IS_WINDOWS,
+        LocalEnvironment,
+        _msys_to_windows_path,
+    )
 
     cwd = getattr(env, "cwd", None) or fallback_cwd
     if isinstance(env, LocalEnvironment):
@@ -288,7 +292,7 @@ class SearchMixin:
                 resolved = "rg"
             self._rg_resolution_cache[cmd] = resolved
             return resolved
-        from tools.environments.local import LocalEnvironment, _IS_WINDOWS
+        from tools.environments.local import _IS_WINDOWS, LocalEnvironment
 
         if _IS_WINDOWS and isinstance(self.env, LocalEnvironment):
             user_profile = os.environ.get("USERPROFILE") or str(Path.home())
@@ -637,7 +641,11 @@ class SearchMixin:
     def _is_broad_local_search_root(self, path: str) -> bool:
         """Whether a no-rg LOCAL root (filesystem root, $HOME or an ancestor of it) is
         unsafe for recursive find. Controller paths never classify remotes."""
-        from tools.environments.local import LocalEnvironment, _IS_WINDOWS, _msys_to_windows_path
+        from tools.environments.local import (
+            _IS_WINDOWS,
+            LocalEnvironment,
+            _msys_to_windows_path,
+        )
 
         if not isinstance(self.env, LocalEnvironment):
             return False
@@ -889,7 +897,11 @@ class SearchMixin:
                     "-printf support; install ripgrep 14+ or use order='discovery'."))
             return SearchResult(error="File search failed while running bounded find traversal.")
 
-        from tools.environments.local import LocalEnvironment, _IS_WINDOWS, _msys_to_windows_path
+        from tools.environments.local import (
+            _IS_WINDOWS,
+            LocalEnvironment,
+            _msys_to_windows_path,
+        )
         if _IS_WINDOWS and isinstance(self.env, LocalEnvironment):
             raw_files = [_msys_to_windows_path(file_path) for file_path in raw_files]
         return SearchResult(

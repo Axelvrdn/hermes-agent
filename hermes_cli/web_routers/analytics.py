@@ -9,16 +9,21 @@ import sqlite3
 import time
 from typing import Any, Dict, List, Optional
 
-import hermes_yaml as yaml
 from fastapi import APIRouter, HTTPException, Query
 
+import hermes_yaml as yaml
 from hermes_cli.config import get_config_path, read_raw_config
 from hermes_cli.web_deps import late
+from hermes_cli.web_models import RawConfigUpdate
 from hermes_cli.web_routers._common import corrupt_store_as_status
 from hermes_cli.web_server_profiles import (
-    _approval_mode_of, _aux_task_summary, _aux_usage_rows, _broadcast_gateway_session_info, _is_other_profile, _merge_aux_into_by_model,
+    _approval_mode_of,
+    _aux_task_summary,
+    _aux_usage_rows,
+    _broadcast_gateway_session_info,
+    _is_other_profile,
+    _merge_aux_into_by_model,
 )
-from hermes_cli.web_models import RawConfigUpdate
 
 router = APIRouter()
 

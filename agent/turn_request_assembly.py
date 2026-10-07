@@ -9,14 +9,14 @@ so ``patch("agent.conversation_loop.X")`` sites keep intercepting.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from typing import Any
 
 from agent.message_sanitization import _sanitize_messages_surrogates
-from agent.usage_anchor import anchored_context_tokens
 from agent.prompt_caching import build_prompt_cache_plan, effective_cache_ttl
 from agent.turn_context import build_api_messages
+from agent.usage_anchor import anchored_context_tokens
 
 logger = logging.getLogger("agent.conversation_loop")
 
@@ -112,8 +112,12 @@ def assemble_api_request(
     are injected only after whitespace normalization, the orphan sweep, thinking-only drop /
     user merge and surrogate stripping, so the same row's bytes never vary across turns."""
     from agent.conversation_loop import (
-        _CODEX_INCOMPLETE_NUDGE, _apply_context_engine_selection, _canonicalize_api_tool_calls,
-        _clone_message_for_send, _midturn_request_pressure_tokens, _pressure_with_real_floor,
+        _CODEX_INCOMPLETE_NUDGE,
+        _apply_context_engine_selection,
+        _canonicalize_api_tool_calls,
+        _clone_message_for_send,
+        _midturn_request_pressure_tokens,
+        _pressure_with_real_floor,
     )
     from agent.model_metadata import (
         estimate_messages_tokens_rough,
@@ -245,7 +249,9 @@ def assemble_api_request(
 
     if _agent_stale_thinking_on_wire(agent):
         if getattr(agent, "api_mode", "") == "anthropic_messages":
-            from agent.anthropic_thinking_policy import native_anthropic_preserves_prior_thinking
+            from agent.anthropic_thinking_policy import (
+                native_anthropic_preserves_prior_thinking,
+            )
 
             if native_anthropic_preserves_prior_thinking(
                 getattr(agent, "base_url", ""), getattr(agent, "model", "")

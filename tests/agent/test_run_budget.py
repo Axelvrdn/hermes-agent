@@ -30,6 +30,7 @@ from pathlib import Path
 
 import pytest
 
+
 def _write_config(tmp_path: Path, body: str) -> None:
     (tmp_path / "config.yaml").write_text(body or "{}\n", encoding="utf-8")
 
@@ -340,9 +341,9 @@ def test_wrapup_lands_in_the_persisted_row_via_pre_flush_hook(monkeypatch, tmp_p
     """The wrap-up notice must be injected BEFORE the tool row is flushed, or it
     never reaches SQLite: prepare_iteration's own call always runs on an
     already-persisted row (the previous iteration's flush already ran)."""
-    from hermes_state import SessionDB
-    from agent.tool_executor import _flush_session_db_after_tool_progress
     from agent.conversation_loop import RUN_BUDGET_WRAPUP_NOTICE
+    from agent.tool_executor import _flush_session_db_after_tool_progress
+    from hermes_state import SessionDB
 
     session_db = SessionDB(db_path=tmp_path / "proof.db")
     try:

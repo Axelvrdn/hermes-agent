@@ -22,6 +22,7 @@ from tools.skillevaluator_scan import (  # noqa: E402
     tier1_advisory_enabled,
 )
 
+
 def _report_json(findings):
     return {
         "overall_passed": not findings,

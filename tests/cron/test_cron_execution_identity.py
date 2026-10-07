@@ -6,7 +6,12 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
-from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall, write_hermes_home
+from tests.fakes.fake_llm_provider import (
+    FakeLLMServer,
+    Text,
+    ToolCall,
+    write_hermes_home,
+)
 
 _PLUGIN = '''
 import dataclasses, json, os
@@ -85,7 +90,10 @@ def test_tool_hook_in_a_ticked_job_sees_its_execution_and_none_outside(tmp_path)
 def test_identity_is_scoped_and_not_inherited_by_delegated_children():
     from agent.delegation_context import delegated_child_context
     from cron.execution_identity import (
-        current_cron_execution, enter_cron_execution, exit_cron_execution)
+        current_cron_execution,
+        enter_cron_execution,
+        exit_cron_execution,
+    )
 
     record = {"source": "builtin", "scheduled_instant": None, "started_at": "2026-10-04T00:00:00"}
     assert current_cron_execution() is None

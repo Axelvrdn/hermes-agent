@@ -10,6 +10,7 @@ from tools.computer_use.tool import (
     _element_to_dict,
 )
 
+
 def _el(bounds, index=2, role="radio button", label="Deg"):
     return UIElement(index=index, role=role, label=label, bounds=tuple(bounds), app="")
 

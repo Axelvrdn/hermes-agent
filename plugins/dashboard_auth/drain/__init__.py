@@ -17,7 +17,12 @@ from collections import Counter
 from typing import Optional
 
 from hermes_cli.dashboard_auth import DashboardAuthProvider, Session, TokenPrincipal
-from plugins.dashboard_auth._shared import NonInteractiveMixin, SkipRegistration, load_config_section, register_provider
+from plugins.dashboard_auth._shared import (
+    NonInteractiveMixin,
+    SkipRegistration,
+    load_config_section,
+    register_provider,
+)
 
 logger = logging.getLogger(__name__)
 _TAG = "dashboard-auth-drain"

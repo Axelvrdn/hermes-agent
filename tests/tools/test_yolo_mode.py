@@ -4,8 +4,15 @@ import pytest
 
 import tools.approval as approval_module
 from tools import approval_context
-
-from tools.approval import check_all_command_guards, check_dangerous_command, detect_dangerous_command, disable_session_yolo, enable_session_yolo, is_approval_bypass_active_for_session, is_session_yolo_enabled
+from tools.approval import (
+    check_all_command_guards,
+    check_dangerous_command,
+    detect_dangerous_command,
+    disable_session_yolo,
+    enable_session_yolo,
+    is_approval_bypass_active_for_session,
+    is_session_yolo_enabled,
+)
 from tools.approval_context import reset_current_session_key, set_current_session_key
 
 

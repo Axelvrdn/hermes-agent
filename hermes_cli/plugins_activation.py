@@ -141,7 +141,11 @@ def load_and_go_live(name: str) -> Optional[Dict[str, Any]]:
 
 
 def _go_live(name: str) -> Optional[Dict[str, Any]]:
-    from hermes_cli.plugins_activation_live import connect_plugin_mcp, live_notice, plugin_skills
+    from hermes_cli.plugins_activation_live import (
+        connect_plugin_mcp,
+        live_notice,
+        plugin_skills,
+    )
     try:
         from hermes_cli.plugins import _join_background_discovery, get_plugin_manager
         _join_background_discovery()
@@ -189,6 +193,7 @@ def notify_serve_backend(name: str, home: Path) -> Optional[Dict[str, Any]]:
     try:
         import json
         import urllib.request
+
         from gateway import host_rendezvous as hr
         from hermes_cli.url_utils import format_url_host
         record = _serve_backend_record()

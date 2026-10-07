@@ -8,6 +8,7 @@ the action log. The scan gate is the common case: a blocked install used to prin
 """
 
 import sys
+
 import pytest
 
 import hermes_cli.skills_hub as cli_hub

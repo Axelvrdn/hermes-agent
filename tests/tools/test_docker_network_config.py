@@ -215,7 +215,10 @@ def test_pin_verdict_reaches_docker_environment_through_the_terminal_tool(monkey
     (``_CONTAINER_KEYS`` is an allowlist): a pinned image that the builder never sees is a pin
     the runtime never honours, and the approval would silently do nothing."""
     from tools import terminal_tool as tt
-    from tools.terminal_tool_backends import _build_docker_env, _container_config_from_config
+    from tools.terminal_tool_backends import (
+        _build_docker_env,
+        _container_config_from_config,
+    )
 
     seen = {}
     monkeypatch.setattr("tools.terminal_tool_backends._DockerEnvironment",

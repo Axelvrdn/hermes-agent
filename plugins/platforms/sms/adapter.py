@@ -21,12 +21,12 @@ import urllib.parse
 from typing import Any, Dict, Optional
 
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms.base import gateway_trust_env, BasePlatformAdapter, SendResult
+from gateway.platforms._shared import env_is_connected as _env_is_connected
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import send_error
+from gateway.platforms.base import BasePlatformAdapter, SendResult, gateway_trust_env
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.platforms.helpers import redact_phone, send_chunks, strip_markdown
-from gateway.platforms._shared import (
-    env_is_connected as _env_is_connected, get_scoped_secret as _get_scoped_secret, send_error
-)
 
 try:
     import aiohttp
@@ -311,7 +311,7 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
         return send_error("SMS not configured (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER required)")
     message = _strip_markdown_for_sms(message)
     try:
-        from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+        from gateway.platforms.base import proxy_kwargs_for_aiohttp, resolve_proxy_url
         _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(resolve_proxy_url())
         url, headers = _messages_endpoint(account_sid, auth_token)
         async with _new_session(**_sess_kw) as session:

@@ -12,10 +12,10 @@ Usage:
                                [--arms base,pr,prns] [--reps 3]
 """
 
-import logging
 import argparse
 import itertools
 import json
+import logging
 import os
 import subprocess
 import sys

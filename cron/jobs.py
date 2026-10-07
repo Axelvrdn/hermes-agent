@@ -4,17 +4,17 @@
 
 import contextlib
 import copy
-from contextvars import ContextVar
-from dataclasses import dataclass, field
 import json
 import logging
+import os
+import re
 import shutil
 import sys
 import threading
 import time
-import os
-import re
 import uuid
+from contextvars import ContextVar
+from dataclasses import dataclass, field
 
 # Cross-process advisory locking for jobs.json: fcntl (Unix) or msvcrt (Windows). If both are
 # absent, _jobs_lock() degrades to in-process locking rather than failing.
@@ -28,18 +28,23 @@ except ImportError:  # pragma: no cover - non-Windows
     msvcrt = None
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from hermes_constants import get_hermes_home
-from cron.constants import CLAIM_TTL_INACTIVITY_HEADROOM, FIRE_CLAIM_SKEW_SECONDS, FIRE_CLAIM_TTL_SECONDS
+from typing import Any, Callable, Collection, Dict, List, Optional, Set, Tuple, Union
+
+from cron import store_health
+from cron.constants import (
+    CLAIM_TTL_INACTIVITY_HEADROOM,
+    FIRE_CLAIM_SKEW_SECONDS,
+    FIRE_CLAIM_TTL_SECONDS,
+)
 from cron.env_settings import cron_env_setting
 from cron.scheduler_ownership import _claim_owner_is_dead
-from cron import store_health
-from typing import Optional, Dict, List, Any, Callable, Set, Tuple, Union, Collection
+from hermes_constants import get_hermes_home
 
 logger = logging.getLogger(__name__)
 
-from hermes_time import now as _hermes_now
-from hermes_time import get_timezone
 from hermes_cli.observability.shared_metrics_gateway import record_cron_missed
+from hermes_time import get_timezone
+from hermes_time import now as _hermes_now
 from utils import atomic_replace, atomic_write_text, fsync_directory, mkstemp_beside
 
 # croniter is imported lazily (slow import, only needed for cron exprs). HAS_CRONITER stays a

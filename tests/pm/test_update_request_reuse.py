@@ -1,10 +1,10 @@
 """An update reads each successful index/artifact once, not once per target."""
 from __future__ import annotations
 
-from argparse import Namespace
-from collections import Counter
 import hashlib
 import json
+from argparse import Namespace
+from collections import Counter
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 

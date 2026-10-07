@@ -7,18 +7,19 @@ import logging
 import math
 import os
 import re
-from pathlib import Path
 from dataclasses import asdict, dataclass, field, fields, is_dataclass
-from typing import Dict, List, Optional, Any, Callable
 from enum import Enum
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
 
-from hermes_cli.config import get_hermes_home
-from agent.secret_scope import current_secret_scope, get_secret as _get_secret
+from agent.secret_scope import current_secret_scope
+from agent.secret_scope import get_secret as _get_secret
 from gateway.shutdown_watchdog import (
     DEFAULT_LOOP_WATCHDOG_INTERVAL_S,
     DEFAULT_LOOP_WATCHDOG_MAX_STRIKES,
     DEFAULT_LOOP_WATCHDOG_TIMEOUT_S,
 )
+from hermes_cli.config import get_hermes_home
 from utils import fast_safe_load, is_truthy_value
 
 logger = logging.getLogger(__name__)

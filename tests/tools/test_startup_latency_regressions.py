@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 import pytest
 
+
 class TestAuxProbeMode:
     def test_probe_mode_returns_stub_without_openai_import(self):
         import agent.auxiliary_client as aux
@@ -88,8 +89,8 @@ class TestAuxProbeMode:
 
 class TestVisionCheckUsesProbeMode:
     def test_check_vision_requirements_enters_probe_mode(self):
-        from tools import vision_tools
         import agent.auxiliary_client as aux
+        from tools import vision_tools
 
         states = []
 
@@ -121,6 +122,7 @@ class TestLazyMcpSdk:
 
     def test_lazy_symbol_getattr_resolves_via_ensure(self):
         import importlib.util
+
         from tools import mcp_tool
 
         if importlib.util.find_spec("mcp") is None:
@@ -148,8 +150,9 @@ class TestBannerUpdateCheckNonBlocking:
         """The late notice lands after patch_stdout owns stdout, where raw ESC bytes are
         sanitized into visible ``?[1;33m`` text (#83969). It must reach prompt_toolkit as a
         parsed ANSI fragment — never as a bare ``Console.print`` to stdout."""
-        import hermes_cli.banner as banner
         from prompt_toolkit.formatted_text import ANSI, to_formatted_text
+
+        import hermes_cli.banner as banner
 
         printed = []
         done = threading.Event()

@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -17,11 +17,11 @@ from tests.pm._fixtures import build_worker, client, isolated_python  # noqa: F4
 
 @pytest.mark.parametrize("test_environment", [False, True], ids=["runtime", "tests"])
 def test_development_setup_keeps_test_groups_out_of_the_runtime(tmp_path, monkeypatch, test_environment, build_worker):
-    from types import SimpleNamespace
     import shutil
+    from types import SimpleNamespace
 
-    from scripts.ci import setup_toolchain
     from pm import lock_project
+    from scripts.ci import setup_toolchain
     from tests.pm._fixtures import _wheel
 
     monkeypatch.setattr(Path, "home", lambda: tmp_path / "home")

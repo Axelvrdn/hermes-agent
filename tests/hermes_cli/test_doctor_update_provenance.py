@@ -10,9 +10,10 @@ mkdir — the plugins dir is computed, never created.
 from __future__ import annotations
 
 import json
-import pytest
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 import hermes_cli.doctor_state as ds
 

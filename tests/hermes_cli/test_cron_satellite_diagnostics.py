@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, timezone
 import json
 import os
 import time
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -110,6 +110,7 @@ def test_host_record_rung_names_the_roster_and_a_runnable_restart(served_root, c
 @pytest.mark.parametrize("heartbeat", ["missing", "fresh", "stale"])
 def test_satellite_list_and_create_require_own_heartbeat(served_root, capsys, monkeypatch, heartbeat):
     from argparse import Namespace
+
     from cron import jobs
     from hermes_cli import cron
 

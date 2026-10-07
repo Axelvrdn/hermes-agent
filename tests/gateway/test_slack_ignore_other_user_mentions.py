@@ -19,7 +19,6 @@ import pytest
 
 from gateway.config import Platform, PlatformConfig
 
-
 # ---------------------------------------------------------------------------
 # Mock slack-bolt if not installed (same pattern as test_slack_mention.py)
 # ---------------------------------------------------------------------------
@@ -55,7 +54,6 @@ import plugins.platforms.slack.adapter as _slack_mod  # noqa: E402
 _slack_mod.SLACK_AVAILABLE = True
 
 from plugins.platforms.slack.adapter import SlackAdapter  # noqa: E402
-
 
 BOT_USER_ID = "U_BOT_123"
 OTHER_USER_ID = "U_OTHER_456"

@@ -12,6 +12,7 @@ from unittest.mock import patch
 import pytest
 
 import hermes_logging
+
 # Use whatever RotatingFileHandler class hermes_logging actually resolved so
 # the autouse fixture's isinstance checks (which strip rotating handlers
 # between tests) match the real handlers on every platform. hermes_logging
@@ -112,7 +113,10 @@ def test_repeated_setup_routes_records_once(hermes_home, mode, component, config
 class TestSetupLogging:
     def test_profile_routing_follows_context_home(self, hermes_home, tmp_path):
         """Desktop multiplex cron records are written to their owning profile."""
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profile-b"
         profile_home.mkdir()
@@ -144,7 +148,10 @@ class TestSetupLogging:
         """The listener thread formats every record after its profile scope is gone, so a routed profile's own
         agent.log was redacted by the LAUNCH profile's policy: raw credentials if only the launch opted out."""
         from agent import redact
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         monkeypatch.setattr(redact, "_REDACT_ENABLED", launch_redacts)
         monkeypatch.setattr(redact, "_REDACT_ENABLED_BY_HOME", {})
@@ -173,7 +180,10 @@ class TestSetupLogging:
 
     def test_release_profile_log_handlers_closes_only_deleted_profile(self, hermes_home, tmp_path):
         """Profile deletion releases its routed log files without disturbing another profile."""
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         deleted_home = tmp_path / "profile-deleted"
         other_home = tmp_path / "profile-other"
@@ -219,7 +229,10 @@ class TestSetupLogging:
         handler beside the first home's would receive every profile's records."""
         from logging.handlers import RotatingFileHandler
 
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profile-b"
         profile_home.mkdir()
@@ -248,7 +261,10 @@ class TestSetupLogging:
         up must not add a second writer for its home on top of the router."""
         from logging.handlers import RotatingFileHandler
 
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profile-b"
         profile_home.mkdir()
@@ -270,7 +286,10 @@ class TestSetupLogging:
     def test_a_component_log_added_after_routing_is_routed_too(self, hermes_home, tmp_path):
         """setup_logging(mode="gateway") for an already-known home AFTER a second home turned
         routing on: gateway.log must be a routed writer, not a bare handler taking every home."""
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profile-b"
         profile_home.mkdir()
@@ -302,7 +321,10 @@ class TestSetupLogging:
         retrying (and stderr-spamming) the vanished logs/ path on every record
         (#103777).
         """
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profile-deleted"
         profile_home.mkdir()
@@ -359,7 +381,9 @@ class TestSetupLogging:
         import shutil
 
         from hermes_constants import (
-            mark_named_profile_deleted, reset_hermes_home_override, set_hermes_home_override,
+            mark_named_profile_deleted,
+            reset_hermes_home_override,
+            set_hermes_home_override,
         )
 
         profile_home = (hermes_home / "profiles" / "worker").resolve()
@@ -407,7 +431,10 @@ class TestSetupLogging:
         ``closed-per-write`` is how concurrent-log-handler behaves on Windows: the stream is
         closed after every write, which must not read as a skipped write.
         """
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         if stream_closed_after_write:
             real_emit = hermes_logging._ManagedRotatingFileHandler.emit
@@ -685,8 +712,9 @@ class TestWindowsConcurrentLogLockTimeout:
         self, tmp_path, monkeypatch, fresh_logging,
     ):
         """A post-import platform fake misses both handler selection and fallback resets."""
-        import portalocker
         from logging.handlers import RotatingFileHandler as StdlibRotatingFileHandler
+
+        import portalocker
 
         failure = ImportError("pywintypes is required for Win32Locker but not found")
 

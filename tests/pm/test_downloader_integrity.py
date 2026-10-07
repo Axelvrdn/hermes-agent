@@ -1,8 +1,8 @@
 """Every ranged worker must prove which representation and bytes it received."""
 from __future__ import annotations
 
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import re
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 
 import pytest
@@ -93,8 +93,8 @@ def test_failed_copy_publication_keeps_destination_atomic(tmp_path, monkeypatch,
 def test_fragmented_resume_obeys_connection_limit(tmp_path):
     import hashlib
     import json
-    from threading import Event, Lock
     import time
+    from threading import Event, Lock
 
     payload = bytes(range(256)) * 16
     entered = Event()
@@ -172,9 +172,9 @@ def test_fragmented_resume_obeys_connection_limit(tmp_path):
 
 def test_processes_share_partial_ownership_without_losing_destinations(tmp_path):
     import os
-    from pathlib import Path
     import subprocess
     import sys
+    from pathlib import Path
     from threading import Event, Lock
 
     payload = bytes(range(256)) * (4096 * 2)
@@ -259,6 +259,7 @@ def test_processes_share_partial_ownership_without_losing_destinations(tmp_path)
 def test_resume_never_trusts_unbound_coverage(tmp_path, dl_server, damage):
     import hashlib
     import json
+
     from tests.pm._range_server import RangeHandler, url
 
     payload = b"new remote data" * 1000

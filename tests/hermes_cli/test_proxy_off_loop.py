@@ -49,7 +49,6 @@ from aiohttp import web  # noqa: E402
 
 from hermes_cli.proxy.server import create_app  # noqa: E402
 
-
 # How long the fake adapter blocks. Long enough that a starved loop records
 # zero heartbeats, short enough to keep the suite fast. The thread-identity
 # assertions do not depend on this value at all.

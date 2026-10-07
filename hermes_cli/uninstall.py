@@ -6,9 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+from hermes_cli.colors import Colors, color
 from hermes_constants import get_hermes_home
 
-from hermes_cli.colors import Colors, color
 
 def _logger(mark: str, col: str):
     return lambda msg: print(f"{color(mark, col)} {msg}")
@@ -245,7 +245,7 @@ def uninstall_gateway_service():
 
     # 1. Kill any standalone gateway processes (all platforms)
     try:
-        from hermes_cli.gateway import kill_gateway_processes, find_gateway_pids
+        from hermes_cli.gateway import find_gateway_pids, kill_gateway_processes
         killed = kill_gateway_processes() if find_gateway_pids() else 0
         if killed:
             log_success(f"Killed {killed} running gateway process(es)")
@@ -270,7 +270,10 @@ def uninstall_gateway_service():
 def _remove_systemd_gateway() -> bool:
     """Linux: uninstall systemd services (both user and system scopes)."""
     from hermes_cli.gateway import (
-        _systemctl_cmd, _systemd_unit_belongs_to_current_home, get_service_name, get_systemd_unit_path,
+        _systemctl_cmd,
+        _systemd_unit_belongs_to_current_home,
+        get_service_name,
+        get_systemd_unit_path,
     )
     svc_name = get_service_name()
     removed_any = False

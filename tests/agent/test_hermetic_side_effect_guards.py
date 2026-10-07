@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import webbrowser
 
+
 def test_webbrowser_open_calls_are_neutralized(monkeypatch):
     """OAuth/browser tests should never reach the real browser registry."""
 

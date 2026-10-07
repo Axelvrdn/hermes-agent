@@ -26,9 +26,12 @@ import shutil
 
 import pytest
 
-from tools.file_operations import ShellFileOperations
-from tools.file_operations_search import _pattern_has_regex_newline, _split_tool_diagnostics
 from tools.environments.local import LocalEnvironment
+from tools.file_operations import ShellFileOperations
+from tools.file_operations_search import (
+    _pattern_has_regex_newline,
+    _split_tool_diagnostics,
+)
 
 
 def _ops(root):

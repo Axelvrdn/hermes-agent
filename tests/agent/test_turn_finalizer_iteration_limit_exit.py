@@ -375,7 +375,10 @@ def test_budget_exhausted_child_does_not_record_parent_kanban_timeout(monkeypatc
     """An in-process delegate_task child (or cron run) inherits ``HERMES_KANBAN_TASK`` from
     the dispatcher worker; exhausting ITS budget must not record ``timed_out`` against the
     parent's task or release the parent's claim (#112817)."""
-    from agent.delegation_context import delegated_child_context, non_dispatcher_owned_context
+    from agent.delegation_context import (
+        delegated_child_context,
+        non_dispatcher_owned_context,
+    )
 
     monkeypatch.setattr("hermes_cli.plugins.invoke_hook", lambda *_a, **_kw: [])
     monkeypatch.setenv("HERMES_KANBAN_TASK", "t_parent")

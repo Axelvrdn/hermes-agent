@@ -26,7 +26,6 @@ import pytest
 from gateway.run import GatewayRunner
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
-
 # ---------------------------------------------------------------------------
 # Defect A: stale preview recorded as delivered final
 # ---------------------------------------------------------------------------

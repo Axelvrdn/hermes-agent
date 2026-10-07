@@ -5,8 +5,8 @@ to a profile. Uninstall removes the former (in either mode — they are not
 data); profile clone/export never copies them.
 """
 
-from pathlib import Path
 import tarfile
+from pathlib import Path
 
 import pytest
 
@@ -31,7 +31,7 @@ def test_legacy_cleanup_removes_only_runtime_bytes_and_is_idempotent(tmp_path):
 class TestProfileCopyExclusions:
     @pytest.mark.parametrize("operation", ["clone", "export", "distribution"])
     def test_copies_profile_payload_without_install_artifacts(self, tmp_path, monkeypatch, operation):
-        from hermes_cli import profiles, profile_distribution
+        from hermes_cli import profile_distribution, profiles
 
         monkeypatch.setattr(Path, "home", lambda: tmp_path)
         home = tmp_path / ".hermes"

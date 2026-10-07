@@ -10,6 +10,7 @@ from gateway.platforms.base import resolve_proxy_url
 from gateway.run import GatewayRunner
 from gateway.session import SessionSource
 
+
 def _make_runner(proxy_url=None):
     """Create a minimal GatewayRunner for proxy tests."""
     runner = object.__new__(GatewayRunner)

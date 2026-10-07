@@ -25,14 +25,15 @@ Run:  python -m pytest tests/tui_gateway/test_stale_provider_resume_live.py -o a
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import tempfile
 import uuid
 from pathlib import Path
 
 import pytest
+
 import hermes_yaml as yaml
 
 OLD_URL = "https://old-endpoint.invalid/v1"

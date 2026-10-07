@@ -33,10 +33,10 @@ def _contents(db, session_id=SESSION_ID):
 class TestIdentityFlush:
     def test_summary_flush_hides_pure_handoff_but_not_composite_live_ask(self):
         from agent.context_compressor import (
+            _SUMMARY_END_MARKER,
             COMPRESSED_SUMMARY_METADATA_KEY,
             HISTORICAL_TASK_HEADING,
             SUMMARY_PREFIX,
-            _SUMMARY_END_MARKER,
         )
         from hermes_state import SessionDB
 

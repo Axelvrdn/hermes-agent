@@ -17,11 +17,21 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from agent.file_safety import HOME_CREDENTIAL_DIRS
-from hermes_cli.archive_safe import archive_root_dirs, make_targz, normalize_archive_parts, safe_extract_targz
+from hermes_cli.archive_safe import (
+    archive_root_dirs,
+    make_targz,
+    normalize_archive_parts,
+    safe_extract_targz,
+)
 from hermes_cli.home_data_layout import PM_RUNTIME_ROOT_DIRS
 from hermes_constants import (
-    LOCAL_RUNTIME_ROOT_DIRS, PROFILE_ID_RE, clear_named_profile_deleted, mark_named_profile_deleted,
-    named_profile_has_identity, named_profile_is_deleted, named_profile_is_live,
+    LOCAL_RUNTIME_ROOT_DIRS,
+    PROFILE_ID_RE,
+    clear_named_profile_deleted,
+    mark_named_profile_deleted,
+    named_profile_has_identity,
+    named_profile_is_deleted,
+    named_profile_is_live,
 )
 
 logger = logging.getLogger(__name__)
@@ -585,8 +595,11 @@ def _migrate_profile_config_if_outdated(profile_dir: Path) -> None:
     # Creation must not fail over an unmigratable old config; `hermes doctor --fix` surfaces
     # the detailed error in the target profile.
     with contextlib.suppress(Exception):
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
         from hermes_cli.config import check_config_version, migrate_config
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         token = set_hermes_home_override(str(profile_dir))
         try:
             current_ver, latest_ver = check_config_version()
@@ -795,8 +808,8 @@ def _seed_model_config(profile_dir: Path) -> None:
     if config_path.exists():
         return
     with contextlib.suppress(Exception):  # creation must not fail over this; `hermes model` sets it later
-        from hermes_constants import get_hermes_home
         from hermes_cli.config import atomic_config_write, read_user_config_raw
+        from hermes_constants import get_hermes_home
         source = get_hermes_home() / "config.yaml"
         seed = launch_model_seed(read_user_config_raw(source)) if source.is_file() else {}
         if seed:
@@ -1366,11 +1379,16 @@ def _bootstrap_profile_dir(profile_dir: Path, source_dir: Optional[Path],
     for relpath in _CLONE_SUBDIR_FILES:
         _clone_file(source_dir, profile_dir, relpath)
     _clone_plugins(source_dir, profile_dir)
-    from hermes_cli.profile_memory_config import active_memory_provider, clone_memory_provider_config
+    from hermes_cli.profile_memory_config import (
+        active_memory_provider,
+        clone_memory_provider_config,
+    )
     clone_memory_provider_config(source_dir, profile_dir,
                                  active_memory_provider(_load_yaml_dict(source_dir / "config.yaml")))
     if sync_imports:
-        from hermes_cli.agent_import_sync import SYNC_MANIFEST_NAME  # lazy: keeps yaml/utils off the hot startup path
+        from hermes_cli.agent_import_sync import (
+            SYNC_MANIFEST_NAME,  # lazy: keeps yaml/utils off the hot startup path
+        )
         _clone_file(source_dir, profile_dir, SYNC_MANIFEST_NAME)
 
 
@@ -1927,7 +1945,10 @@ def _s6_runtime_manager():
     """The s6 service manager inside the container, else None. Silent on host: a failing/
     absent detector must never print a confusing s6 warning to non-container users."""
     try:
-        from hermes_cli.service_manager import detect_service_manager, get_service_manager
+        from hermes_cli.service_manager import (
+            detect_service_manager,
+            get_service_manager,
+        )
         if detect_service_manager() != "s6":
             return None
         mgr = get_service_manager()
@@ -1981,12 +2002,19 @@ def _cleanup_gateway_service(name: str, profile_dir: Path) -> bool:
     home_token = set_hermes_home_override(str(profile_dir))
     try:
         os.environ["HERMES_HOME"] = str(profile_dir)
-        from hermes_cli.gateway import get_service_name, get_launchd_plist_path, user_systemd_unit_dir
+        from hermes_cli.gateway import (
+            get_launchd_plist_path,
+            get_service_name,
+            user_systemd_unit_dir,
+        )
 
         def _run(*cmd: str) -> None:
             subprocess.run(list(cmd), capture_output=True, check=False, timeout=10)
 
-        from hermes_cli.profiles_service_cleanup import remove_system_systemd_unit, remove_windows_task
+        from hermes_cli.profiles_service_cleanup import (
+            remove_system_systemd_unit,
+            remove_windows_task,
+        )
 
         system = _platform.system()
         removed = False
@@ -2035,7 +2063,11 @@ def _stop_gateway_process(profile_dir: Path) -> None:
         # Cross-profile kill refusal: the record's hermes_home stamp names the gateway's TRUE
         # owner. A poisoned gateway.pid in this dir can point at another profile's live
         # gateway — killing it starts a mutual SIGTERM restart loop.
-        from gateway.status import get_process_start_time, recorded_gateway_home_conflicts, terminate_pid
+        from gateway.status import (
+            get_process_start_time,
+            recorded_gateway_home_conflicts,
+            terminate_pid,
+        )
         if recorded_gateway_home_conflicts(data, expected_home=profile_dir):
             print(
                 f"✗ Refusing to stop PID {pid}: its recorded HERMES_HOME "

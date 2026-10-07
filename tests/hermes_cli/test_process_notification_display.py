@@ -8,8 +8,12 @@ import pytest
 
 from cli import HermesCLI
 from tools.process_registry_notifications import (
-    PROCESS_COMPLETE_DISPLAY_KIND, format_process_notification, process_completion_display_text)
+    PROCESS_COMPLETE_DISPLAY_KIND,
+    format_process_notification,
+    process_completion_display_text,
+)
 from tui_gateway import server
+
 
 def _registry(events):
     return SimpleNamespace(
@@ -63,7 +67,10 @@ def test_off_mutes_process_wakes_but_subagent_results_still_land(monkeypatch):
 def test_heartbeat_wake_paints_one_line_and_persists_hidden(monkeypatch):
     """The model gets the output delta; the human gets a one-line receipt, and the persisted row is
     typed ``hidden`` so Desktop/TUI never paint the wake as a user bubble."""
-    from tools.process_registry_notifications import HEARTBEAT_DISPLAY_KIND, heartbeat_display_text
+    from tools.process_registry_notifications import (
+        HEARTBEAT_DISPLAY_KIND,
+        heartbeat_display_text,
+    )
     beat = {**_event("proc_hb", None), "type": "heartbeat", "seq": 3, "elapsed": 422, "interval": 60,
             "output": "web tsc=0\nSECRET_OUTPUT_LINE"}
     cli = HermesCLI.__new__(HermesCLI)

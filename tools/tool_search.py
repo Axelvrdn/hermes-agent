@@ -17,17 +17,36 @@ from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from hermes_cli.config_defaults import DEFAULT_CONFIG
-from tools.registry import tool_error
-from toolsets import CLIENT_SURFACE_TOOLSETS, TOOLSET_SESSION_PLATFORMS
-from tools.tool_search_catalog import (
-    BRIDGE_TOOL_NAMES, CHARS_PER_TOKEN, TOOL_CALL_NAME, TOOL_DESCRIBE_NAME, TOOL_SEARCH_NAME,
-    CatalogEntry, _fn, _listing_group_label, _registry_entry, _registry_toolset,
-    build_catalog, build_catalog_listing_with_form, search_catalog)
-from tools.tool_search_validation import (
-    local_batch_error, normalize_tool_call_entries, not_deferrable_error, validate_deferred_call_args)
 from tools.connectors import CONNECTOR_BATCH_SENTINEL, is_connector_name
 from tools.connectors.search import (
-    connections_in_scope, connector_entries_by_group, connectors_unavailable, remote_schemas_for)
+    connections_in_scope,
+    connector_entries_by_group,
+    connectors_unavailable,
+    remote_schemas_for,
+)
+from tools.registry import tool_error
+from tools.tool_search_catalog import (
+    BRIDGE_TOOL_NAMES,
+    CHARS_PER_TOKEN,
+    TOOL_CALL_NAME,
+    TOOL_DESCRIBE_NAME,
+    TOOL_SEARCH_NAME,
+    CatalogEntry,
+    _fn,
+    _listing_group_label,
+    _registry_entry,
+    _registry_toolset,
+    build_catalog,
+    build_catalog_listing_with_form,
+    search_catalog,
+)
+from tools.tool_search_validation import (
+    local_batch_error,
+    normalize_tool_call_entries,
+    not_deferrable_error,
+    validate_deferred_call_args,
+)
+from toolsets import CLIENT_SURFACE_TOOLSETS, TOOLSET_SESSION_PLATFORMS
 
 logger = logging.getLogger("tools.tool_search")
 # Bound the work one bridge call requests. Search is capped at the gateway's

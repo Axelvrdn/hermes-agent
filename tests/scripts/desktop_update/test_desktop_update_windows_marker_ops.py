@@ -3,21 +3,21 @@ production release / heartbeat functions, on real processes and files.
 """
 from __future__ import annotations
 
-from pathlib import Path
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import pytest
 
 from tests.scripts.desktop_update.windows_handoff_support import (
-    MARKER_PS1,
     MARKER,
+    MARKER_PS1,
     POWERSHELL,
     _creation_time,
     _dead_pid,
-    _op,
     _HeldLock,
+    _op,
 )
 
 

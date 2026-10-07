@@ -21,11 +21,11 @@ paths with a mocked LLM client and assert the timeout that actually reaches
 ``client.chat.completions.create``.
 """
 
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from agent.auxiliary_client import call_llm, async_call_llm
+from agent.auxiliary_client import async_call_llm, call_llm
 
 # The committed bounded floor for config-derived compression timeouts.
 # Behaviour contract (see AGENTS.md "Behavior contracts over snapshots"):

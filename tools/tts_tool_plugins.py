@@ -10,10 +10,13 @@ import logging
 import math
 from typing import Any, Dict, Optional, Tuple
 
-from tools.tts_command_provider import (
-    BUILTIN_TTS_PROVIDERS, DEFAULT_COMMAND_TTS_OUTPUT_FORMAT, _get_named_provider_config,
-    _is_command_provider_config)
 from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER
+from tools.tts_command_provider import (
+    BUILTIN_TTS_PROVIDERS,
+    DEFAULT_COMMAND_TTS_OUTPUT_FORMAT,
+    _get_named_provider_config,
+    _is_command_provider_config,
+)
 
 logger = logging.getLogger("tools.tts_tool")
 

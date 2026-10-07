@@ -10,9 +10,9 @@ import pytest
 @pytest.mark.parametrize("mixed", [False, True])
 def test_local_batches_rejected_before_any_entry_executes(monkeypatch, mixed):
     import model_tools
-    from tools.tool_search import resolve_underlying_call
     from tools.connectors.gateway import bridge, config
     from tools.registry import invalidate_check_fn_cache
+    from tools.tool_search import resolve_underlying_call
 
     monkeypatch.setattr(config, "connectors_available", lambda: True)
     monkeypatch.setattr(bridge, "connectors_available", lambda: True)
@@ -34,15 +34,14 @@ def test_local_batches_rejected_before_any_entry_executes(monkeypatch, mixed):
 
 @pytest.mark.parametrize("flatten_probe", [False, True])
 def test_single_local_unwrap_keeps_session_db_todo_store_and_setup_callback(tmp_path, flatten_probe):
-    from agent.tool_executor import _unwrap_tool_search_call
     from agent.agent_runtime_helpers import invoke_tool
+    from agent.tool_executor import _unwrap_tool_search_call
+    from gateway.session_context import reset_session_vars, set_session_vars
     from hermes_state import SessionDB
     from tools.connectors import live
     from tools.connectors.contract import SettleReason
     from tools.connectors.mcp import apply_answer
     from tools.todo_tool import TodoStore
-
-    from gateway.session_context import reset_session_vars, set_session_vars
 
     # A desktop session: the MCP card exists only there.
     set_session_vars(source="desktop", session_key="current-session", session_id="current-session")

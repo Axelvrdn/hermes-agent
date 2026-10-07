@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
-from queue import Queue
 import subprocess
 import sys
+from pathlib import Path
+from queue import Queue
 from threading import Thread
 
 import tools.checkpoint_manager as checkpoints

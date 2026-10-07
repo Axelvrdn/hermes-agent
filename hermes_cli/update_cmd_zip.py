@@ -5,18 +5,23 @@ resolving/monkeypatching. Origin helpers are imported lazily per function (no cy
 """
 
 import logging
-from contextlib import suppress
 import os
 import re
 import shutil
 import subprocess
 import sys
+from contextlib import suppress
 from pathlib import Path
 from typing import Collection, Optional
 
 from hermes_cli._early_recovery import _keep_aside
 from hermes_cli._early_recovery_zip import (
-    ZIP_SWAP_JOURNAL, restore_interrupted_zip_swap, write_zip_swap_journal, zip_entry_identity, zip_swap_owner_lock)
+    ZIP_SWAP_JOURNAL,
+    restore_interrupted_zip_swap,
+    write_zip_swap_journal,
+    zip_entry_identity,
+    zip_swap_owner_lock,
+)
 from hermes_cli.update_cmd_common import _record_stop
 
 # Log-record parity with the origin module.
@@ -567,10 +572,10 @@ def _download_and_swap_zip(branch: str, zip_url: str, target_sha: str | None = N
     Two-phase: stage every entry (dirs AND top-level files) beside its target, then swap all in with
     same-filesystem renames, rolling back on failure — one-at-a-time replacement left a mixed, unbootable
     tree on interruption."""
-    from hermes_cli.update_cmd import _m
-
     import tempfile
     from urllib.request import urlretrieve
+
+    from hermes_cli.update_cmd import _m
     print("→ Downloading latest version...")
     tmp_dir = tempfile.mkdtemp(prefix="hermes-update-")
     downloaded = False
@@ -620,7 +625,7 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False,
 
     A supplied commit keeps the archive on the target selected before Git failed.
     """
-    from hermes_cli.update_cmd import _m, _complete_source_update
+    from hermes_cli.update_cmd import _complete_source_update, _m
     # The static archive would silently ignore --branch — the exact silent-divergence bug it exists to
     # prevent. Refuse rather than lie.
     branch = _m()._resolve_update_branch(args)

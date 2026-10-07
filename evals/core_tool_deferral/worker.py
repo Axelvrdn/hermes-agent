@@ -4,8 +4,8 @@
 Usage: worker.py <arm:base|pr> <model_slug> <task_id> <rep> <out_json>
 Env: OPENROUTER_API_KEY must be set. Exit 3 = infra/config error (do not score).
 """
-import logging
 import json
+import logging
 import os
 import shutil
 import sys
@@ -53,6 +53,7 @@ sys.path.insert(0, HARNESS)
 sys.path.insert(0, TREE)
 
 import tasks as taskmod  # noqa: E402
+
 TASK = taskmod.TASKS_BY_ID[TASK_ID]
 
 # --- seed session DB for recall tasks (both arms, always — cheap) ---------
@@ -97,6 +98,7 @@ EVENTS = []
 CALLBACK_LOG = []
 
 from tools import desktop_ui  # noqa: E402
+
 desktop_ui.set_emitter(lambda sid, event, payload: EVENTS.append(
     {"sid": sid, "event": event, "payload": payload}))
 
@@ -175,6 +177,7 @@ def connection_cb(payload):
 # --- import the tree's model_tools + patch registry stubs ------------------
 import model_tools  # noqa: E402  (triggers registrations + plugin discovery)
 from tools.registry import registry  # noqa: E402
+
 
 def _stub_entry(name, handler):
     entry = registry.get_entry(name)

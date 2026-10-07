@@ -54,7 +54,11 @@ def current_provider_owns_vendor(model_name: str, current_provider: str) -> bool
     switch there". Aggregators, custom endpoints and multi-vendor resellers (nvidia, alibaba, ...)
     have no single native vendor and are skipped."""
     from hermes_cli.model_normalize import detect_vendor
-    from hermes_cli.models import _AGGREGATOR_PROVIDERS, _PROVIDER_MODELS, normalize_provider
+    from hermes_cli.models import (
+        _AGGREGATOR_PROVIDERS,
+        _PROVIDER_MODELS,
+        normalize_provider,
+    )
 
     provider = (current_provider or "").strip().lower()
     if provider in _SKIP or provider.startswith("custom:"):

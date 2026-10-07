@@ -7,12 +7,12 @@ from gateway.config import Platform
 from gateway.run import GatewayRunner
 from gateway.session import SessionContext, SessionSource
 from gateway.session_context import (
-    get_session_env,
-    set_session_vars,
-    clear_session_vars,
-    reset_session_vars,
-    _VAR_MAP,
     _UNSET,
+    _VAR_MAP,
+    clear_session_vars,
+    get_session_env,
+    reset_session_vars,
+    set_session_vars,
 )
 
 

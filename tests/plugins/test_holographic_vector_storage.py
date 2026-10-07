@@ -10,7 +10,6 @@ from plugins.memory.holographic import holographic as hrr
 from plugins.memory.holographic.retrieval import FactRetriever
 from plugins.memory.holographic.store import MemoryStore
 
-
 pytestmark = pytest.mark.skipif(
     not hrr._HAS_NUMPY,
     reason="holographic vector storage requires numpy",

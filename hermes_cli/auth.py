@@ -11,100 +11,225 @@
 
 from __future__ import annotations
 
-from pm import install_hint
 import errno
 import json
 import logging
 import os
-import shutil
 import shlex
+import shutil
 import threading
 import time
 import webbrowser  # noqa: F401  (tests patch auth_mod.webbrowser.open; same module object)
-
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass, field
-from functools import partial
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Optional, Tuple
 from urllib.parse import urlparse
 
-from hermes_constants import OPENROUTER_BASE_URL, hermes_home_key, secure_parent_dir
 from agent.credential_persistence import sanitize_borrowed_credential_payload
-from utils import atomic_json_write, env_float, file_signature, is_truthy_value  # noqa: F401  (env_float: agent.credential_pool reads auth_mod.env_float)
-from hermes_cli.auth_zai_kimi import (  # noqa: F401  re-exported
-    KIMI_CODE_BASE_URL, ZAI_ENDPOINTS, _normalize_lmstudio_runtime_base_url, _resolve_kimi_base_url,
-    _resolve_zai_base_url, detect_zai_endpoint)
-from hermes_cli.auth_model_picker import (  # noqa: F401  re-exported
-    _prompt_model_selection, _save_model_choice)
-from hermes_cli.auth_device_flow import (  # noqa: F401  re-exported
-    _can_open_graphical_browser, _default_verify, _is_remote_session,
-    _nous_device_auth_timeout_message, _offer_existing_oauth_credentials,
-    _poll_device_token_generic, _poll_for_token, _print_device_code_instructions,
-    _print_login_success, _print_loopback_ssh_hint, _prompt_yes_no, _request_device_code,
-    _resolve_verify, _ssh_user_at_host)
-from hermes_cli.auth_oauth_grants import (  # noqa: F401  re-exported
-    SINGLE_USE_REFRESH_POOL_PROVIDERS, _oauth_heal_clean_marks, _oauth_heal_notices,
-    consume_oauth_heal_notices, heal_forked_single_use_oauth_grants,
-    strip_cloned_single_use_oauth_grants)
-from hermes_cli.auth_nous import (  # noqa: F401  re-exported
-    NOUS_SESSION_TERMINAL, NOUS_SESSION_UNKNOWN, NOUS_SESSION_VALID, _ALLOWED_NOUS_INFERENCE_HOSTS,
-    _agent_key_is_usable, _apply_nous_refreshed_tokens, _assert_nous_inference_jwt_usable,
-    _compute_nous_auth_status, _format_nous_entitlement_auth_error, _healed_nous_inference_url,
-    _login_nous, _merge_shared_nous_oauth_state, _migrate_stale_nous_portal_url,
-    _nous_device_code_login, _nous_inference_env_override, _nous_invoke_jwt_is_usable,
-    _nous_invoke_jwt_status, _nous_portal_base_url, _nous_portal_env_override, _nous_shared_store_lock,
-    _nous_shared_store_path, _pool_first_oauth_status, _quarantine_nous_oauth_state,
-    _quarantine_nous_pool_entries, _read_shared_nous_state, _refresh_access_token,
-    _refresh_nous_or_quarantine, _select_nous_invoke_jwt, _sync_nous_pool_from_auth_store,
-    _token_fingerprint, _try_import_shared_nous_state, _validate_nous_inference_url_from_network,
-    _write_shared_nous_state, fetch_nous_models, get_nous_auth_status_local,
-    get_nous_session_validity, persist_nous_credentials, refresh_nous_oauth_from_state,
-    resolve_nous_runtime_credentials, step_up_nous_billing_scope)
-from hermes_cli.auth_minimax import (  # noqa: F401  re-exported
-    _MINIMAX_OAUTH_ERROR_BODY_LIMIT, _login_minimax_oauth, _minimax_oauth_login, _minimax_pkce_pair,
-    _minimax_poll_token, _minimax_post_form, _minimax_request_user_code,
-    _minimax_resolve_token_expiry_unix, _minimax_response_error_text, _minimax_save_auth_state,
-    _refresh_minimax_oauth_state, build_minimax_oauth_token_provider,
-    resolve_minimax_oauth_runtime_credentials)
-from hermes_cli.auth_xai import (  # noqa: F401  re-exported
-    _login_xai_oauth, _read_xai_oauth_tokens, _refresh_xai_oauth_tokens, _save_xai_oauth_tokens,
-    _write_through_xai_oauth_to_global_root, _xai_access_token_is_expiring,
-    _xai_oauth_device_code_login, _xai_oauth_discovery, _xai_oauth_poll_device_token,
-    _xai_oauth_request_device_code, _xai_proactive_refresh_skew_seconds,
-    _xai_validate_inference_base_url, refresh_xai_oauth_pure, resolve_xai_oauth_runtime_credentials)
 from hermes_cli.auth_codex import (  # noqa: F401  re-exported
-    _codex_access_token_is_expiring, _codex_device_code_login, _codex_http_client,
-    _codex_pool_rate_limit_status, _codex_quota_probe_cache, _codex_usage_probe_url,
-    _import_codex_cli_tokens, _is_codex_rate_limit_shaped, _login_openai_codex,
-    _probe_codex_quota_restored, _read_codex_tokens, _refresh_codex_auth_tokens,
-    _refresh_expired_codex_probe_token, _save_codex_tokens, clear_codex_pool_quota_cooldowns,
-    refresh_codex_oauth_pure, resolve_codex_runtime_credentials)
-from hermes_cli.auth_spotify import (  # noqa: F401  re-exported
-    _refresh_spotify_oauth_state, get_spotify_auth_status, login_spotify_command,
-    resolve_spotify_runtime_credentials)
+    _codex_access_token_is_expiring,
+    _codex_device_code_login,
+    _codex_http_client,
+    _codex_pool_rate_limit_status,
+    _codex_quota_probe_cache,
+    _codex_usage_probe_url,
+    _import_codex_cli_tokens,
+    _is_codex_rate_limit_shaped,
+    _login_openai_codex,
+    _probe_codex_quota_restored,
+    _read_codex_tokens,
+    _refresh_codex_auth_tokens,
+    _refresh_expired_codex_probe_token,
+    _save_codex_tokens,
+    clear_codex_pool_quota_cooldowns,
+    refresh_codex_oauth_pure,
+    resolve_codex_runtime_credentials,
+)
+from hermes_cli.auth_constants import (  # noqa: F401  re-exported
+    ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
+    ACTUAL_LOCAL_NOAUTH_PLACEHOLDER,
+    AUTH_LOCK_TIMEOUT_SECONDS,
+    AUTH_STORE_VERSION,
+    CODEX_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
+    CODEX_OAUTH_CLIENT_ID,
+    CODEX_OAUTH_TOKEN_URL,
+    CODEX_RATE_LIMITED_CODE,
+    DEFAULT_ACTUAL_BASE_URL,
+    DEFAULT_ACTUAL_LOCAL_BASE_URL,
+    DEFAULT_CODEX_BASE_URL,
+    DEFAULT_COPILOT_ACP_BASE_URL,
+    DEFAULT_GITHUB_MODELS_BASE_URL,
+    DEFAULT_NOUS_CLIENT_ID,
+    DEFAULT_NOUS_INFERENCE_URL,
+    DEFAULT_NOUS_PORTAL_URL,
+    DEFAULT_NOUS_SCOPE,
+    DEFAULT_OLLAMA_CLOUD_BASE_URL,
+    DEFAULT_QWEN_BASE_URL,
+    DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL,
+    DEFAULT_SPOTIFY_API_BASE_URL,
+    DEFAULT_SPOTIFY_SCOPE,
+    DEFAULT_XAI_OAUTH_BASE_URL,
+    LMSTUDIO_NOAUTH_PLACEHOLDER,
+    MINIMAX_OAUTH_CLIENT_ID,
+    MINIMAX_OAUTH_CN_BASE,
+    MINIMAX_OAUTH_CN_INFERENCE,
+    MINIMAX_OAUTH_GLOBAL_BASE,
+    MINIMAX_OAUTH_GLOBAL_INFERENCE,
+    MINIMAX_OAUTH_REFRESH_SKEW_SECONDS,
+    MINIMAX_OAUTH_SCOPE,
+    NOUS_AUTH_PATH_INVOKE_JWT,
+    NOUS_BILLING_MANAGE_SCOPE,
+    NOUS_DEVICE_CODE_SOURCE,
+    NOUS_INVOKE_JWT_MIN_TTL_SECONDS,
+    QWEN_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
+    SERVICE_PROVIDER_NAMES,
+    SPOTIFY_DOCS_URL,
+    STEPFUN_STEP_PLAN_CN_BASE_URL,
+    STEPFUN_STEP_PLAN_INTL_BASE_URL,
+    XAI_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
+    XAI_OAUTH_CLIENT_ID,
+    XAI_OAUTH_SCOPE,
+    AuthError,
+    _decode_jwt_claims,
+    _nous_err,
+    httpx,
+)
+from hermes_cli.auth_device_flow import (  # noqa: F401  re-exported
+    _can_open_graphical_browser,
+    _default_verify,
+    _is_remote_session,
+    _nous_device_auth_timeout_message,
+    _offer_existing_oauth_credentials,
+    _poll_device_token_generic,
+    _poll_for_token,
+    _print_device_code_instructions,
+    _print_login_success,
+    _print_loopback_ssh_hint,
+    _prompt_yes_no,
+    _request_device_code,
+    _resolve_verify,
+    _ssh_user_at_host,
+)
+from hermes_cli.auth_minimax import (  # noqa: F401  re-exported
+    _MINIMAX_OAUTH_ERROR_BODY_LIMIT,
+    _login_minimax_oauth,
+    _minimax_oauth_login,
+    _minimax_pkce_pair,
+    _minimax_poll_token,
+    _minimax_post_form,
+    _minimax_request_user_code,
+    _minimax_resolve_token_expiry_unix,
+    _minimax_response_error_text,
+    _minimax_save_auth_state,
+    _refresh_minimax_oauth_state,
+    build_minimax_oauth_token_provider,
+    resolve_minimax_oauth_runtime_credentials,
+)
+from hermes_cli.auth_model_picker import (  # noqa: F401  re-exported
+    _prompt_model_selection,
+    _save_model_choice,
+)
+from hermes_cli.auth_nous import (  # noqa: F401  re-exported
+    _ALLOWED_NOUS_INFERENCE_HOSTS,
+    NOUS_SESSION_TERMINAL,
+    NOUS_SESSION_UNKNOWN,
+    NOUS_SESSION_VALID,
+    _agent_key_is_usable,
+    _apply_nous_refreshed_tokens,
+    _assert_nous_inference_jwt_usable,
+    _compute_nous_auth_status,
+    _format_nous_entitlement_auth_error,
+    _healed_nous_inference_url,
+    _login_nous,
+    _merge_shared_nous_oauth_state,
+    _migrate_stale_nous_portal_url,
+    _nous_device_code_login,
+    _nous_inference_env_override,
+    _nous_invoke_jwt_is_usable,
+    _nous_invoke_jwt_status,
+    _nous_portal_base_url,
+    _nous_portal_env_override,
+    _nous_shared_store_lock,
+    _nous_shared_store_path,
+    _pool_first_oauth_status,
+    _quarantine_nous_oauth_state,
+    _quarantine_nous_pool_entries,
+    _read_shared_nous_state,
+    _refresh_access_token,
+    _refresh_nous_or_quarantine,
+    _select_nous_invoke_jwt,
+    _sync_nous_pool_from_auth_store,
+    _token_fingerprint,
+    _try_import_shared_nous_state,
+    _validate_nous_inference_url_from_network,
+    _write_shared_nous_state,
+    fetch_nous_models,
+    get_nous_auth_status_local,
+    get_nous_session_validity,
+    persist_nous_credentials,
+    refresh_nous_oauth_from_state,
+    resolve_nous_runtime_credentials,
+    step_up_nous_billing_scope,
+)
+from hermes_cli.auth_oauth_grants import (  # noqa: F401  re-exported
+    SINGLE_USE_REFRESH_POOL_PROVIDERS,
+    _oauth_heal_clean_marks,
+    _oauth_heal_notices,
+    consume_oauth_heal_notices,
+    heal_forked_single_use_oauth_grants,
+    strip_cloned_single_use_oauth_grants,
+)
 from hermes_cli.auth_openrouter import _openrouter_pkce_login  # noqa: F401  re-exported
 from hermes_cli.auth_qwen import (  # noqa: F401  re-exported
-    _qwen_access_token_is_expiring, _qwen_cli_auth_path, _read_qwen_cli_tokens,
-    _refresh_qwen_cli_tokens, _save_qwen_cli_tokens, get_qwen_auth_status,
-    resolve_qwen_runtime_credentials)
-from hermes_cli.auth_constants import (  # noqa: F401  re-exported
-    _decode_jwt_claims, AUTH_STORE_VERSION, AUTH_LOCK_TIMEOUT_SECONDS, DEFAULT_NOUS_PORTAL_URL,
-    DEFAULT_NOUS_INFERENCE_URL, DEFAULT_NOUS_CLIENT_ID, NOUS_BILLING_MANAGE_SCOPE,
-    DEFAULT_NOUS_SCOPE, NOUS_DEVICE_CODE_SOURCE, NOUS_AUTH_PATH_INVOKE_JWT,
-    ACCESS_TOKEN_REFRESH_SKEW_SECONDS, NOUS_INVOKE_JWT_MIN_TTL_SECONDS, DEFAULT_CODEX_BASE_URL,
-    DEFAULT_XAI_OAUTH_BASE_URL, MINIMAX_OAUTH_CLIENT_ID, MINIMAX_OAUTH_SCOPE,
-    MINIMAX_OAUTH_GLOBAL_BASE, MINIMAX_OAUTH_CN_BASE, MINIMAX_OAUTH_GLOBAL_INFERENCE,
-    MINIMAX_OAUTH_CN_INFERENCE, MINIMAX_OAUTH_REFRESH_SKEW_SECONDS, DEFAULT_QWEN_BASE_URL,
-    DEFAULT_GITHUB_MODELS_BASE_URL, DEFAULT_COPILOT_ACP_BASE_URL, DEFAULT_OLLAMA_CLOUD_BASE_URL,
-    DEFAULT_ACTUAL_BASE_URL, DEFAULT_ACTUAL_LOCAL_BASE_URL, STEPFUN_STEP_PLAN_INTL_BASE_URL,
-    STEPFUN_STEP_PLAN_CN_BASE_URL, CODEX_OAUTH_CLIENT_ID, CODEX_OAUTH_TOKEN_URL,
-    CODEX_ACCESS_TOKEN_REFRESH_SKEW_SECONDS, XAI_OAUTH_CLIENT_ID, XAI_OAUTH_SCOPE,
-    XAI_ACCESS_TOKEN_REFRESH_SKEW_SECONDS, QWEN_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
-    DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL, DEFAULT_SPOTIFY_API_BASE_URL, SPOTIFY_DOCS_URL,
-    DEFAULT_SPOTIFY_SCOPE, SERVICE_PROVIDER_NAMES, LMSTUDIO_NOAUTH_PLACEHOLDER,
-    ACTUAL_LOCAL_NOAUTH_PLACEHOLDER, CODEX_RATE_LIMITED_CODE, AuthError, _nous_err, httpx)
+    _qwen_access_token_is_expiring,
+    _qwen_cli_auth_path,
+    _read_qwen_cli_tokens,
+    _refresh_qwen_cli_tokens,
+    _save_qwen_cli_tokens,
+    get_qwen_auth_status,
+    resolve_qwen_runtime_credentials,
+)
+from hermes_cli.auth_spotify import (  # noqa: F401  re-exported
+    _refresh_spotify_oauth_state,
+    get_spotify_auth_status,
+    login_spotify_command,
+    resolve_spotify_runtime_credentials,
+)
+from hermes_cli.auth_xai import (  # noqa: F401  re-exported
+    _login_xai_oauth,
+    _read_xai_oauth_tokens,
+    _refresh_xai_oauth_tokens,
+    _save_xai_oauth_tokens,
+    _write_through_xai_oauth_to_global_root,
+    _xai_access_token_is_expiring,
+    _xai_oauth_device_code_login,
+    _xai_oauth_discovery,
+    _xai_oauth_poll_device_token,
+    _xai_oauth_request_device_code,
+    _xai_proactive_refresh_skew_seconds,
+    _xai_validate_inference_base_url,
+    refresh_xai_oauth_pure,
+    resolve_xai_oauth_runtime_credentials,
+)
+from hermes_cli.auth_zai_kimi import (  # noqa: F401  re-exported
+    KIMI_CODE_BASE_URL,
+    ZAI_ENDPOINTS,
+    _normalize_lmstudio_runtime_base_url,
+    _resolve_kimi_base_url,
+    _resolve_zai_base_url,
+    detect_zai_endpoint,
+)
+from hermes_constants import OPENROUTER_BASE_URL, hermes_home_key, secure_parent_dir
+from pm import install_hint
+from utils import (  # noqa: F401  (env_float: agent.credential_pool reads auth_mod.env_float)
+    atomic_json_write,
+    env_float,
+    file_signature,
+    is_truthy_value,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -257,13 +382,20 @@ BUILTIN_PROVIDER_IDS = frozenset(PROVIDER_REGISTRY)
 # module's registry during that discovery. Keep the import below ProviderConfig / PROVIDER_REGISTRY so
 # a plugin never observes a partially initialized auth module (CONTRACT: during discovery a plugin may
 # rely only on ``ProviderConfig`` and ``PROVIDER_REGISTRY`` from here — nothing defined below).
-from hermes_cli.config import (  # noqa: E402
-    atomic_config_replace, get_hermes_home, get_config_path, read_raw_config, require_readable_config_before_write)
-
 # Plugin profiles (plugins/model-providers/<name>/) are mirrored into PROVIDER_REGISTRY with the
 # auth_type they declare; the mirror lives in the sibling so it can be re-run after discovery.
 from hermes_cli.auth_plugin_providers import (  # noqa: E402
-    get_plugin_oauth_auth_status, registry_lookup as _registry_lookup, sync_plugin_provider_registry)
+    get_plugin_oauth_auth_status,
+    sync_plugin_provider_registry,
+)
+from hermes_cli.auth_plugin_providers import registry_lookup as _registry_lookup
+from hermes_cli.config import (  # noqa: E402
+    atomic_config_replace,
+    get_config_path,
+    get_hermes_home,
+    read_raw_config,
+    require_readable_config_before_write,
+)
 
 sync_plugin_provider_registry()
 
@@ -382,7 +514,10 @@ def _resolve_api_key_provider_secret(provider_id: str, pconfig: ProviderConfig) 
     if provider_id == "copilot":
         # The dedicated copilot auth module does proper token validation/exchange.
         try:
-            from hermes_cli.copilot_auth import resolve_copilot_token, get_copilot_api_token
+            from hermes_cli.copilot_auth import (
+                get_copilot_api_token,
+                resolve_copilot_token,
+            )
             token, source = resolve_copilot_token()
             if token:
                 api_token, _base_url = get_copilot_api_token(token)
@@ -1057,7 +1192,11 @@ def _merge_disk_cooldown_state(
         return entry
     try:
         from agent.credential_pool import (
-            PooledCredential, STATUS_DEAD, STATUS_EXHAUSTED, _exhausted_until, _parse_absolute_timestamp,
+            STATUS_DEAD,
+            STATUS_EXHAUSTED,
+            PooledCredential,
+            _exhausted_until,
+            _parse_absolute_timestamp,
         )
 
         # Model cooldowns are independent observations: keep the latest reset per model so a
@@ -1591,7 +1730,9 @@ def _config_model_provider() -> Tuple[Any, Optional[str]]:
         # llama.cpp/vLLM/ollama server) — same explicit intent, spelled by URL.
         base_url = str(model_cfg.get("base_url") or "").strip() if isinstance(model_cfg, dict) else ""
         if base_url:
-            from hermes_cli.runtime_provider import _config_base_url_trustworthy_for_bare_custom
+            from hermes_cli.runtime_provider import (
+                _config_base_url_trustworthy_for_bare_custom,
+            )
             if _config_base_url_trustworthy_for_bare_custom(base_url, provider):
                 return model_cfg, "custom"
         return model_cfg, None
@@ -2221,7 +2362,7 @@ def _get_azure_foundry_auth_status() -> Dict[str, Any]:
     ``AZURE_FOUNDRY_API_KEY``."""
     info: Dict[str, Any] = {"provider": "azure-foundry"}
     try:
-        from hermes_cli.config import load_config, get_env_value_prefer_dotenv
+        from hermes_cli.config import get_env_value_prefer_dotenv, load_config
         cfg = load_config()
     except Exception:
         cfg = {}
@@ -2235,7 +2376,10 @@ def _get_azure_foundry_auth_status() -> Dict[str, Any]:
     if auth_mode == "entra_id":
         try:
             from agent.azure_identity_adapter import (
-                EntraIdentityConfig, SCOPE_AI_AZURE_DEFAULT, has_azure_identity_installed)
+                SCOPE_AI_AZURE_DEFAULT,
+                EntraIdentityConfig,
+                has_azure_identity_installed,
+            )
             installed = has_azure_identity_installed()
             entra_cfg = model_cfg["entra"] if isinstance(model_cfg.get("entra"), dict) else {}
             identity_config = EntraIdentityConfig.from_dict(entra_cfg, default_scope=SCOPE_AI_AZURE_DEFAULT)
@@ -2271,7 +2415,7 @@ def _copilot_runtime_base_url(api_key: str, default: str, env_url: str) -> str:
     authoritative for Enterprise / proxied accounts; falls back to the registry default."""
     base_url = _default_api_key_base_url(api_key, default, env_url)
     try:
-        from hermes_cli.copilot_auth import resolve_copilot_token, get_copilot_api_token
+        from hermes_cli.copilot_auth import get_copilot_api_token, resolve_copilot_token
         raw_token, _ = resolve_copilot_token()
         if raw_token:
             resolved = (get_copilot_api_token(raw_token)[1] or "").strip()

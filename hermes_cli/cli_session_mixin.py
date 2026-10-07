@@ -7,19 +7,20 @@ inside each method (``from cli import ...``) — never at module load time (impo
 
 from __future__ import annotations
 
-import logging
 import contextlib
+import logging
 import os
 import shutil
 import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from rich.console import Console
+from rich.markup import escape as _escape
 
 from agent.i18n import t
 from hermes_constants import get_hermes_home
 from hermes_state_ids import new_session_id
-from pathlib import Path
-from rich.console import Console
-from rich.markup import escape as _escape
-from typing import Any, Dict, List, Optional
 
 
 def _user_turn_indices(history: list) -> list[int]:
@@ -176,8 +177,9 @@ class CLISessionMixin:
 
     def _render_resume_history_panel_lines(self, panel) -> list[str]:
         """Render the resume panel at the current terminal width for resize replay."""
-        from cli import _suspend_output_history
         from io import StringIO
+
+        from cli import _suspend_output_history
 
         buf = StringIO()
         console = Console(
@@ -488,8 +490,11 @@ class CLISessionMixin:
     def new_session(self, silent=False, title=None):
         """Start a fresh session with a new session ID and cleared agent state."""
         from cli import (
-            CLI_CONFIG, _parse_service_tier_config,
-            _sync_process_session_id, datetime)
+            CLI_CONFIG,
+            _parse_service_tier_config,
+            _sync_process_session_id,
+            datetime,
+        )
         from hermes_cli.cli_model_switch_mixin import _resolve_cli_reasoning
         old_session_id = self.session_id
         _boundary_snapshot = None
@@ -624,7 +629,11 @@ class CLISessionMixin:
         """
         from cli import datetime
         from hermes_cli.session_export import (
-            SAVE_USAGE, load_save_snapshot, normalize_save_format, render_session_for_save)
+            SAVE_USAGE,
+            load_save_snapshot,
+            normalize_save_format,
+            render_session_for_save,
+        )
 
         parts = cmd.split()[1:]
         redact = bool(parts) and parts[-1].lower() in ("redact", "--redact")
@@ -723,7 +732,9 @@ class CLISessionMixin:
             return None
 
         from agent.context_compressor import (
-            history_before_user_originated_turn, retryable_user_text)
+            history_before_user_originated_turn,
+            retryable_user_text,
+        )
         from agent.memory_manager import sanitize_context
 
         warm_history = list(self.conversation_history)
@@ -901,9 +912,16 @@ class CLISessionMixin:
         No ``compression_enabled`` gate: that flag disables *automatic* compaction only, and
         the context-overflow error path directs users here when it is off.
         """
-        from agent.conversation_compression import finalize_context_engine_compression_notification
+        from agent.conversation_compression import (
+            finalize_context_engine_compression_notification,
+        )
         from agent.conversation_compression_manual import (
-            AGGRESSIVE_UNSUPPORTED, MIN_MESSAGES, compress_now, parse_compress_args, render_compress_result)
+            AGGRESSIVE_UNSUPPORTED,
+            MIN_MESSAGES,
+            compress_now,
+            parse_compress_args,
+            render_compress_result,
+        )
 
         if len(self.conversation_history or ()) < MIN_MESSAGES:
             print(t("cli.session.compress_too_short", min=MIN_MESSAGES))
@@ -967,7 +985,7 @@ class CLISessionMixin:
     def _persist_prompt_summary(self, icon: str, label: str, detail: str, outcome: str) -> None:
         """Print a one-line scrollback summary of a resolved modal prompt (approval/clarify
         panels vanish on repaint); gated by ``display.persist_prompts``."""
-        from cli import CLI_CONFIG, _DIM, _RST, _cprint
+        from cli import _DIM, _RST, CLI_CONFIG, _cprint
         if not CLI_CONFIG.get("display", {}).get("persist_prompts", True):
             return
         detail, outcome = (_squash(s) for s in (detail, outcome))

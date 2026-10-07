@@ -32,7 +32,6 @@ from gateway.platforms.api_server_runs import _RunStream
 from tools import approval as approval_mod
 from tools import approval_gateway_wait
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -2170,7 +2169,7 @@ class TestHostedRoomRuns:
         policy changed since the grant was issued — never silently mint a
         grant against the drifted policy (blocker 2, #97681 review)."""
         from gateway import hosted_rooms
-        from gateway.hosted_room_peer import issue_room_grant, decode_room_grant
+        from gateway.hosted_room_peer import decode_room_grant, issue_room_grant
         from gateway.hosted_rooms import local_authority_gateway_id
 
         stale_digest = "c" * 64

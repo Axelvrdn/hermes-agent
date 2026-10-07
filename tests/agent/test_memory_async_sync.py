@@ -21,8 +21,8 @@ import time
 
 import pytest
 
-from agent.memory_provider import MemoryProvider
 from agent.memory_manager import MemoryManager
+from agent.memory_provider import MemoryProvider
 
 
 class _SlowProvider(MemoryProvider):

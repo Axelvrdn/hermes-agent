@@ -17,25 +17,17 @@ import os
 import re
 import sys
 import threading
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
-import urllib.error
-import time
 from pathlib import Path
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     from typing import TypeGuard
 
-from hermes_cli.route_identity import normalize_route_base_url
-from hermes_cli.urllib_security import open_credentialed_url
-from hermes_cli.version_info import get_version_info
 from hermes_cli.models_catalog_static import (
-    CuratedFallbackModels,
-    CANONICAL_PROVIDERS,
-    OPENROUTER_MODELS,
-    PREFERRED_SILENT_DEFAULT_MODEL,
-    VERCEL_AI_GATEWAY_MODELS,
     _AGGREGATOR_PROVIDERS,
     _AZURE_FOUNDRY_RESPONSES_PREFIXES,
     _BORROWED_MODEL_PROVIDERS,
@@ -49,10 +41,13 @@ from hermes_cli.models_catalog_static import (
     _PROVIDER_MODELS,
     _PROVIDER_RETIRED_ALIASES,
     _SILENT_DEFAULT_PROVIDERS,
-    _xai_finalize_catalog)
-from hermes_cli.models_reasoning_caps import (
-    _OPENROUTER_CATALOG_URL,
-    _seed_reasoning_caps)
+    CANONICAL_PROVIDERS,
+    OPENROUTER_MODELS,
+    PREFERRED_SILENT_DEFAULT_MODEL,
+    VERCEL_AI_GATEWAY_MODELS,
+    CuratedFallbackModels,
+    _xai_finalize_catalog,
+)
 from hermes_cli.models_local import (
     _OLLAMA_LOCAL_MODELS_CACHE,
     _OLLAMA_LOCAL_MODELS_CACHE_TTL,
@@ -63,7 +58,15 @@ from hermes_cli.models_local import (
     _ollama_local_catalog,
     _ollama_probe_cache_key,
     _root_for_ollama_native_api,
-    fetch_ollama_cloud_models)
+    fetch_ollama_cloud_models,
+)
+from hermes_cli.models_reasoning_caps import (
+    _OPENROUTER_CATALOG_URL,
+    _seed_reasoning_caps,
+)
+from hermes_cli.route_identity import normalize_route_base_url
+from hermes_cli.urllib_security import open_credentialed_url
+from hermes_cli.version_info import get_version_info
 
 logger = logging.getLogger(__name__)
 
@@ -109,8 +112,8 @@ def _read_json_cache(path: Path, *, errors=Exception) -> Optional[dict]:
 def _write_json_cache(path: Path, data: Any, **dump_kwargs: Any) -> None:
     """Atomically persist a cache file (creating parents). Raises on failure — callers decide
     whether a failed cache write is worth logging."""
-    from utils import atomic_json_write
     from hermes_constants import mkdir_under_hermes_home
+    from utils import atomic_json_write
 
     mkdir_under_hermes_home(path.parent)
     atomic_json_write(path, data, **dump_kwargs)
@@ -615,7 +618,8 @@ _nous_caps_disk_checked = False
 _nous_caps_warm_started = False
 
 
-from agent.reasoning_effort import CODEX_ASTRA_EFFORTS, clamp_effort as _clamp_effort, is_astra_model
+from agent.reasoning_effort import CODEX_ASTRA_EFFORTS, is_astra_model
+from agent.reasoning_effort import clamp_effort as _clamp_effort
 
 
 def clamp_reasoning_effort_to_supported(
@@ -1124,7 +1128,10 @@ def detect_provider_for_model(
     NAMED the provider (``/model nous``), or there is no current provider yet (``auto``) — then the
     first guess is returned so the credential step fails loudly instead of silently ignoring input."""
     from hermes_cli.models_detect import (
-        current_provider_catalog_match, current_provider_owns_vendor, provider_has_credentials)
+        current_provider_catalog_match,
+        current_provider_owns_vendor,
+        provider_has_credentials,
+    )
 
     name = (model_name or "").strip()
     if not name:
@@ -1414,7 +1421,10 @@ def _codex_catalog(normalized: str, force_refresh: bool) -> list[str]:
     # gateway key is only ever sent to that gateway, never to the chatgpt.com default.
     base_url = None
     try:
-        from hermes_cli.auth import _codex_access_token_is_expiring, resolve_codex_runtime_credentials
+        from hermes_cli.auth import (
+            _codex_access_token_is_expiring,
+            resolve_codex_runtime_credentials,
+        )
 
         creds = resolve_codex_runtime_credentials(read_only=True)
         access_token, base_url = creds.get("api_key"), creds.get("base_url")
@@ -2223,7 +2233,7 @@ def _fetch_anthropic_models(
     ``api_key``, else ``resolve_anthropic_token()`` (env / OAuth / Claude Code), else a read-only
     API-key credential_pool entry."""
     try:
-        from agent.anthropic_credentials import resolve_anthropic_token, _is_oauth_token
+        from agent.anthropic_credentials import _is_oauth_token, resolve_anthropic_token
     except ImportError:
         return None
 
@@ -2240,7 +2250,11 @@ def _fetch_anthropic_models(
     is_oauth = _is_oauth_token(token)
     if is_oauth:
         headers["Authorization"] = f"Bearer {token}"
-        from agent.anthropic_adapter import _COMMON_BETAS, _OAUTH_ONLY_BETAS, _CONTEXT_1M_BETA
+        from agent.anthropic_adapter import (
+            _COMMON_BETAS,
+            _CONTEXT_1M_BETA,
+            _OAUTH_ONLY_BETAS,
+        )
         headers["anthropic-beta"] = ",".join(_COMMON_BETAS + _OAUTH_ONLY_BETAS)
     else:
         headers["x-api-key"] = token

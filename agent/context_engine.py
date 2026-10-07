@@ -16,7 +16,6 @@ from typing import Any, Dict, List, Optional
 from agent.compression_marker import elide_middle
 from agent.redact import redact_sensitive_text
 
-
 MEMORY_CONTEXT_MAX_CHARS = 6_000
 _MEMORY_CONTEXT_HEAD_CHARS = 4_000
 _MEMORY_CONTEXT_TAIL_CHARS = 1_500

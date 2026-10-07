@@ -11,7 +11,8 @@ import logging
 import shlex
 import sys
 from contextlib import contextmanager, suppress
-from dataclasses import dataclass, field, asdict, fields as dataclass_fields
+from dataclasses import asdict, dataclass, field
+from dataclasses import fields as dataclass_fields
 from typing import Any, Callable, Optional
 
 logger = logging.getLogger(__name__)
@@ -145,7 +146,11 @@ def _probe(label: str):
 
 def _collect_install_shape(plan: UpdatePlan) -> None:
     with _probe("Install-method probe"):
-        from hermes_cli.config import detect_install_method, get_managed_system, recommended_update_command_for_method
+        from hermes_cli.config import (
+            detect_install_method,
+            get_managed_system,
+            recommended_update_command_for_method,
+        )
 
         method = detect_install_method()
         managed = get_managed_system()

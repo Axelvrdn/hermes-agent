@@ -211,11 +211,14 @@ def _home_env(home: Path) -> Iterator[None]:
     a routed home and take only ``home``'s own secrets — with the env var swapped, the routed-home
     checks read ``home`` as the launch profile and handed the launch profile's credentials to the
     default gateway."""
-    from hermes_constants import (
-        get_routing_process_hermes_home, pin_process_hermes_home, process_hermes_home_is_pinned,
-        reset_hermes_home_override, set_hermes_home_override,
-    )
     import hermes_constants
+    from hermes_constants import (
+        get_routing_process_hermes_home,
+        pin_process_hermes_home,
+        process_hermes_home_is_pinned,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
     previous = os.environ.get("HERMES_HOME")
     pinned_here = not process_hermes_home_is_pinned()
     if pinned_here:
@@ -414,7 +417,11 @@ def _read_multiplex_flag(default_home: Path) -> bool:
 def _write_multiplex_flag(default_home: Path, value: bool) -> None:
     """Set ``gateway.multiplex_profiles`` in the DEFAULT profile's config.yaml through the config API
     (same read-guard + nested-set + atomic write ``hermes config set`` uses; no raw YAML edits)."""
-    from hermes_cli.config import _set_nested, _write_user_config, require_readable_config_before_write
+    from hermes_cli.config import (
+        _set_nested,
+        _write_user_config,
+        require_readable_config_before_write,
+    )
     cfg_path = default_home / "config.yaml"
     user_config = require_readable_config_before_write(cfg_path)
     # A stale top-level alias would shadow the nested key the docs describe.
@@ -1266,7 +1273,10 @@ def maybe_auto_migrate_after_update() -> None:
     migrate automatically when unblocked (deterministic, never prompts) or print the blocker block.
     ``gateway.auto_multiplex_migration: false`` on the default profile opts out; a secondary behind a
     service-domain / UNIX-user / HERMES_HOME boundary blocks this path only (the explicit command decides)."""
-    from hermes_cli.gateway_migrate_guards import auto_migration_blockers, auto_migration_opted_out
+    from hermes_cli.gateway_migrate_guards import (
+        auto_migration_blockers,
+        auto_migration_opted_out,
+    )
     if _host_supports_migration() is not None or auto_migration_opted_out(_default_home()):
         return
     plan = build_migration_plan()

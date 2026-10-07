@@ -12,14 +12,22 @@ from typing import Any, Dict, Optional
 
 from tools.environments.docker import DockerEnvironment as _DockerEnvironment
 from tools.environments.local import LocalEnvironment as _LocalEnvironment
-from tools.environments.managed_modal import ManagedModalEnvironment as _ManagedModalEnvironment
+from tools.environments.managed_modal import (
+    ManagedModalEnvironment as _ManagedModalEnvironment,
+)
 from tools.environments.modal import ModalEnvironment as _ModalEnvironment
-from tools.environments.singularity import SingularityEnvironment as _SingularityEnvironment
+from tools.environments.singularity import (
+    SingularityEnvironment as _SingularityEnvironment,
+)
 from tools.environments.ssh import SSHEnvironment as _SSHEnvironment
 from tools.managed_tool_gateway import is_managed_tool_gateway_ready
 from tools.terminal_tool_config import _get_plugin_env_provider
-from tools.tool_backend_helpers import (has_direct_modal_credentials, managed_nous_tools_enabled,
-                                        nous_tool_gateway_unavailable_message, resolve_modal_backend_state)
+from tools.tool_backend_helpers import (
+    has_direct_modal_credentials,
+    managed_nous_tools_enabled,
+    nous_tool_gateway_unavailable_message,
+    resolve_modal_backend_state,
+)
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("tools.terminal_tool")
@@ -132,8 +140,11 @@ def _build_local_env(*, cwd, timeout, **_):
 
 
 def _build_docker_env(*, image, cwd, timeout, cc, task_id, host_cwd, **_):
-    from tools.terminal_tool import (_docker_session_isolation_enabled, _has_isolation_overrides,
-                                     _maybe_reap_docker_orphans)
+    from tools.terminal_tool import (
+        _docker_session_isolation_enabled,
+        _has_isolation_overrides,
+        _maybe_reap_docker_orphans,
+    )
     # One-shot reaper for labeled containers orphaned by prior Hermes processes that died before
     # atexit (SIGKILL / OOM / closed terminal); ``terminal.docker_orphan_reaper: false`` disables it.
     _maybe_reap_docker_orphans(cc)
@@ -306,7 +317,10 @@ def _ssh_pre(config: Dict[str, Any]) -> bool:
 
 
 def _daytona_post(config: Dict[str, Any]) -> bool:
-    from daytona import Daytona  # noqa: F401 — SDK presence check (ImportError propagates)
+    from daytona import (
+        Daytona,  # noqa: F401 — SDK presence check (ImportError propagates)
+    )
+
     from agent.secret_scope import get_secret
     return get_secret("DAYTONA_API_KEY") is not None
 

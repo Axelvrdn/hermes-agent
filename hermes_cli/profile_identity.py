@@ -42,7 +42,12 @@ def migrate_profile_identity(old_name: str, new_name: str) -> bool:
     when all applicable identity was migrated, False when any durable migration failed or a live
     gateway would not accept the routing migration.
     """
-    from hermes_cli.profiles import _canon_valid, _live_default_multiplexer, _unknown_profile_error, get_profile_dir
+    from hermes_cli.profiles import (
+        _canon_valid,
+        _live_default_multiplexer,
+        _unknown_profile_error,
+        get_profile_dir,
+    )
     old_canon = _canon_valid(old_name)
     new_canon = _canon_valid(new_name)
     if "default" in (old_canon, new_canon):
@@ -74,7 +79,11 @@ def purge_profile_identity(profile: str) -> bool:
     Idempotent: purging an already-purged profile succeeds. Returns False only when the identity was
     not settled — by this process or by the live gateway.
     """
-    from hermes_cli.profiles import _canon_valid, _live_default_multiplexer, profile_exists
+    from hermes_cli.profiles import (
+        _canon_valid,
+        _live_default_multiplexer,
+        profile_exists,
+    )
     canon = _canon_valid(profile)
     if canon == "default":
         raise ValueError("Identity purge applies to named profiles only.")
@@ -164,7 +173,9 @@ def _gateway_accepts_profile_identity_verb(root: Path) -> bool:
 def _migrate_checkpoint_identity(old_canon: str, new_canon: str) -> bool:
     """Rekey checkpoint projects whose absolute workdirs moved with the profile directory."""
     from hermes_cli.profiles import get_profile_dir
-    from tools.checkpoint_manager_profile_rename import migrate_profile_checkpoint_projects
+    from tools.checkpoint_manager_profile_rename import (
+        migrate_profile_checkpoint_projects,
+    )
 
     old_dir = get_profile_dir(old_canon)
     new_dir = get_profile_dir(new_canon)
@@ -215,8 +226,8 @@ def _migrate_profile_identity(old_canon: str, new_canon: str, live_mux: bool) ->
         return False
 
     from hermes_cli.profiles import get_profile_dir
-    from hermes_state_registry import acquire, release_or_close
     from hermes_constants import get_default_hermes_root
+    from hermes_state_registry import acquire, release_or_close
     root = get_default_hermes_root()
     migrated = checkpoint_migrated
     for db_path in (root / "state.db", get_profile_dir(new_canon) / "state.db"):

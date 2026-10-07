@@ -6,8 +6,9 @@ are exposed in the model picker.
 """
 
 import pytest
-from hermes_cli.model_switch import list_authenticated_providers, switch_model
+
 from hermes_cli import runtime_provider as rp
+from hermes_cli.model_switch import list_authenticated_providers, switch_model
 
 
 @pytest.fixture(autouse=True)
@@ -707,6 +708,7 @@ def test_cli_picker_provider_select_reads_the_disk_cached_catalog(monkeypatch):
     disk-cached live catalog (like the gateway pickers), not the blocking ``provider_model_ids``
     probe: azure-foundry's probe walks api-version fallbacks with a 6 s timeout each (#27989)."""
     from types import SimpleNamespace
+
     import cli as cli_mod
 
     seen = []

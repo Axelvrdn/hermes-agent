@@ -13,10 +13,15 @@ import logging
 
 import pytest
 
-from tools.mcp_tool_errors import (
-    InvalidMcpUrlError, NonMcpEndpointError, _auth_error_detail, _classify_mcp_failure, _mcp_call_failed_message,
-    _unwrap_exception_group)
 from tools.mcp_tool import MCPServerTask
+from tools.mcp_tool_errors import (
+    InvalidMcpUrlError,
+    NonMcpEndpointError,
+    _auth_error_detail,
+    _classify_mcp_failure,
+    _mcp_call_failed_message,
+    _unwrap_exception_group,
+)
 
 
 def _group(*excs, msg="unhandled errors in a TaskGroup") -> BaseExceptionGroup:
@@ -117,7 +122,9 @@ class TestAuthErrorSurfacing:
         failure returns needs_reauth WITH the guard's guidance."""
         pytest.importorskip("mcp.client.auth")
         import json
+
         from mcp.client.auth import OAuthRegistrationError
+
         from tools import mcp_tool_handlers as handlers
 
         monkeypatch.setattr(handlers._loop, "_run_on_mcp_loop", lambda *_a, **_k: False)

@@ -9,6 +9,7 @@ an alphabetical skill entry.
 
 from agent.plan_prompt import build_plan_prompt
 
+
 class TestBuildPlanPrompt:
     def test_task_is_included_verbatim(self):
         task = "migrate the auth provider to OIDC with zero downtime"

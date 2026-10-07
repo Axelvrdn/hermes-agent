@@ -129,8 +129,8 @@ def _install_fake_ws(monkeypatch, reply_builder):
 
 
 def test_client_rpc_sends_correct_envelope_and_parses_response(monkeypatch):
-    from plugins.google_meet.node.client import NodeClient
     from plugins.google_meet.node import protocol
+    from plugins.google_meet.node.client import NodeClient
 
     def reply(raw_out):
         req = protocol.decode(raw_out)

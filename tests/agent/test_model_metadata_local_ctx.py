@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 
-
 @pytest.fixture(autouse=True)
 def _clear_local_ctx_probe_cache():
     """Reset the in-process local-probe TTL cache around every test.
@@ -801,7 +800,7 @@ class TestGetModelContextLengthLocalFallback:
 
     def test_local_endpoint_server_returns_none_falls_back_to_2m(self):
         """When local server returns None, still falls back to 2M probe tier."""
-        from agent.model_metadata import get_model_context_length, CONTEXT_PROBE_TIERS
+        from agent.model_metadata import CONTEXT_PROBE_TIERS, get_model_context_length
 
         with patch("agent.model_metadata.get_cached_context_length", return_value=None), \
              patch("agent.model_metadata.fetch_endpoint_model_metadata", return_value={}), \

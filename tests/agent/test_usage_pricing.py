@@ -6,8 +6,8 @@ import pytest
 from agent.usage_pricing import (
     _OFFICIAL_DOCS_PRICING,
     CanonicalUsage,
-    format_cost_label,
     estimate_usage_cost,
+    format_cost_label,
     get_pricing_entry,
     normalize_usage,
     resolve_billing_route,
@@ -386,7 +386,7 @@ def test_curated_google_flash_models_resolve_official_snapshot_pricing(monkeypat
     direct Gemini and Vertex routes — a model pickable via the aggregators but
     ``unknown`` to Google-route accounting is a catalog/pricing drift.
     """
-    from hermes_cli.models_catalog_static import OPENROUTER_MODELS, _PROVIDER_MODELS
+    from hermes_cli.models_catalog_static import _PROVIDER_MODELS, OPENROUTER_MODELS
 
     monkeypatch.setattr(
         "agent.usage_pricing.fetch_endpoint_model_metadata",

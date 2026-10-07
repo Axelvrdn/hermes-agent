@@ -42,6 +42,7 @@ def test_saved_opt_in_roundtrip_reaches_schema_and_board(surface, tmp_path, monk
     if surface == "http":
         from fastapi import FastAPI
         from fastapi.testclient import TestClient
+
         from hermes_cli.web_routers.tools import router
 
         app = FastAPI()
@@ -71,7 +72,10 @@ def test_saved_opt_in_roundtrip_reaches_schema_and_board(surface, tmp_path, monk
         assert "file" in selected()
         # A second profile in the same process must not borrow this grant or
         # poison the first profile's cached schema on return.
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         other_home = tmp_path / "profiles" / "observer"
         token = set_hermes_home_override(other_home)
         try:
@@ -84,8 +88,8 @@ def test_saved_opt_in_roundtrip_reaches_schema_and_board(surface, tmp_path, monk
         assert _detect_kanban(), "Saved opt-in still hides the Kanban playbook"
         result = json.loads(registry.dispatch("kanban_create", {"title": "opt-in roundtrip", "assignee": "default"}))
         assert result.get("ok"), result
-        from hermes_cli.kanban_db_connect import connect_closing
         from hermes_cli.kanban_db import get_task
+        from hermes_cli.kanban_db_connect import connect_closing
         with connect_closing() as conn:
             assert get_task(conn, result["task_id"]).title == "opt-in roundtrip"
         toggle(False)
@@ -103,9 +107,9 @@ def test_selection_is_scoped_and_preserves_worker_and_deny_boundaries(legacy, tm
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)
     monkeypatch.delenv("HERMES_KANBAN_BOARD", raising=False)
+    from agent.delegation_context import delegated_child_context
     from hermes_cli.config import load_config, save_config
     from hermes_cli.tools_config import _get_platform_tools
-    from agent.delegation_context import delegated_child_context
 
     save_config({"toolsets": ["kanban"] if legacy else [], "platform_toolsets": {"telegram": ["kanban"]}})
     # The same profile concurrently builds an explicitly opted-in schema and

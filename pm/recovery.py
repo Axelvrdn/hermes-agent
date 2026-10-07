@@ -8,7 +8,6 @@ from pathlib import Path
 
 from pm.package import InstallError
 
-
 STARTUP_IMPORTS = (
     ("ruamel.yaml", "ruamel.yaml", "YAML"),
     ("python-dotenv", "dotenv", "load_dotenv"),

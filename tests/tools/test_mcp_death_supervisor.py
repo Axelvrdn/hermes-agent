@@ -6,10 +6,10 @@ process dies without running any Python cleanup. A mocked parent death proves
 nothing about the guarantee.
 """
 
-import logging
 import asyncio
 import contextlib
 import io
+import logging
 import os
 import signal
 import subprocess

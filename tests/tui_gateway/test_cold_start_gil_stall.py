@@ -77,7 +77,8 @@ def test_handle_ws_resolves_skin_off_the_loop_thread(monkeypatch):
     import json
     import threading
 
-    from tui_gateway import server, ws as ws_mod
+    from tui_gateway import server
+    from tui_gateway import ws as ws_mod
 
     idents = {}
     frames = []

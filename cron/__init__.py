@@ -11,16 +11,16 @@ from cron.worker_bootstrap import worker_bootstrap as _boot_external_worker
 _boot_external_worker()
 
 from cron.jobs import (  # noqa: E402
+    JOBS_FILE,
     create_job,
     get_job,
     list_jobs,
-    remove_job,
-    update_job,
     pause_job,
+    rearm_oneshot,
+    remove_job,
     resume_job,
     trigger_job,
-    rearm_oneshot,
-    JOBS_FILE,
+    update_job,
 )
 from cron.scheduler import tick  # noqa: E402
 

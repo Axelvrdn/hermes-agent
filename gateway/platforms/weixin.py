@@ -4,7 +4,20 @@ encrypted CDN; ``qr_login`` backs the gateway setup wizard."""
 
 from __future__ import annotations
 
-import asyncio, base64, contextlib, hashlib, json, logging, mimetypes, os, re, secrets, tempfile, textwrap, time, uuid  # noqa: E401
+import asyncio  # noqa: E401
+import base64
+import contextlib
+import hashlib
+import json
+import logging
+import mimetypes
+import os
+import re
+import secrets
+import tempfile
+import textwrap
+import time
+import uuid
 from datetime import datetime
 from functools import partial
 from pathlib import Path
@@ -27,18 +40,29 @@ except ImportError:  # pragma: no cover - dependency gate
     default_backend = Cipher = algorithms = modes = None  # type: ignore[assignment]
 CRYPTO_AVAILABLE = Cipher is not None
 
-from gateway.config import Platform, PlatformConfig
-from gateway.platforms.helpers import MessageDeduplicator, cancel_task, greedy_pack_blocks
-from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
 from agent.i18n import t
+from gateway.config import Platform, PlatformConfig
+from gateway.platforms._shared import extra_or_secret as _extra_or_env
+from gateway.platforms._shared import get_scoped_secret as _wx_secret
+from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
 from gateway.platforms.base import (
-    _IMAGE_EXTS, _VIDEO_EXTS, gateway_trust_env, BasePlatformAdapter, SendResult,
-    cache_audio_from_bytes_async, cache_document_from_bytes_async, cache_image_from_bytes_async,
+    _IMAGE_EXTS,
+    _VIDEO_EXTS,
+    BasePlatformAdapter,
+    SendResult,
+    cache_audio_from_bytes_async,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+    gateway_trust_env,
 )
 from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import (
+    MessageDeduplicator,
+    cancel_task,
+    greedy_pack_blocks,
+)
 from hermes_constants import get_hermes_home
 from utils import atomic_json_write
-from gateway.platforms._shared import extra_or_secret as _extra_or_env, get_scoped_secret as _wx_secret
 
 
 def _extra_or_secret(extra: Dict[str, Any], key: str, default: str = "") -> str:
@@ -100,6 +124,7 @@ def _make_ssl_connector() -> Optional["aiohttp.TCPConnector"]:
     """
     try:
         import ssl
+
         import certifi
     except ImportError:
         return None

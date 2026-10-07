@@ -6,23 +6,29 @@ schemas sent to the model) and handle_function_call() (dispatch with
 hooks/middleware) plus registry pass-throughs.
 """
 
-import os
-import json
-import re
 import asyncio
-from contextlib import contextmanager
-from dataclasses import asdict, dataclass
-from contextvars import ContextVar
+import json
 import logging
+import os
+import re
 import threading
 import time
-from typing import Dict, Any, List, Optional, Tuple
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
-from tools.registry import CHECK_FN_CACHE_BYPASS, check_fn_cache_scope, discover_builtin_tools, registry, tool_error
-from tools.registry import _MAX_TOOL_ERROR_CHARS as _TOOL_ERROR_MAX_LEN
-from toolsets import resolve_toolset, validate_toolset
 from tools.arg_coercion import coerce_tool_args
+from tools.registry import _MAX_TOOL_ERROR_CHARS as _TOOL_ERROR_MAX_LEN
+from tools.registry import (
+    CHECK_FN_CACHE_BYPASS,
+    check_fn_cache_scope,
+    discover_builtin_tools,
+    registry,
+    tool_error,
+)
 from tools.todo_tool import TODO_LEGACY_ALIASES, TODO_SCHEMA
+from toolsets import resolve_toolset, validate_toolset
 from utils import file_signature
 
 logger = logging.getLogger(__name__)
@@ -350,7 +356,11 @@ def _rewrite_execute_code(td: Dict[str, Any], available: set) -> Optional[Dict[s
     """List only sandbox tools that are actually available."""
     # Without this, the model sees "web_search is available in execute_code" even when the API key isn't
     # configured or the toolset is disabled (#560-discord).
-    from tools.code_execution_tool import SANDBOX_ALLOWED_TOOLS, build_execute_code_schema, _get_execution_mode
+    from tools.code_execution_tool import (
+        SANDBOX_ALLOWED_TOOLS,
+        _get_execution_mode,
+        build_execute_code_schema,
+    )
     return _fn_def(build_execute_code_schema(SANDBOX_ALLOWED_TOOLS & available, mode=_get_execution_mode()))
 
 
@@ -527,7 +537,8 @@ def _compute_tool_definitions(enabled_toolsets: Optional[List[str]] = None, disa
     # configured share of the context window. Core tools are never deferred.
     # Must be the LAST step (after sanitization); idempotent if called twice.
     try:
-        from tools.tool_search import assemble_tool_defs, load_config as _load_ts_config
+        from tools.tool_search import assemble_tool_defs
+        from tools.tool_search import load_config as _load_ts_config
         ts_cfg = _load_ts_config()
         if not skip_tool_search_assembly and ts_cfg.enabled != "off":
             assembly = assemble_tool_defs(filtered_tools, context_length=_resolve_active_context_length(), config=ts_cfg)
@@ -567,7 +578,10 @@ def _resolve_active_context_length() -> int:
         model_id, model_cfg = _active_model_config()
         if not model_id:
             return 0
-        from agent.model_metadata import get_cached_context_length, get_model_context_length
+        from agent.model_metadata import (
+            get_cached_context_length,
+            get_model_context_length,
+        )
         # Honor explicit `model.context_length` in config.yaml — short-circuits the OpenRouter /models probe
         # at get_model_context_length step 0, so non-OpenRouter providers don't pay the ~2-3s OpenRouter
         # fetch at every CLI startup. See issue #46620.
@@ -804,7 +818,10 @@ def _pre_dispatch_guards(function_name: str, function_args: Dict[str, Any], skip
 def _approval_observability(ids: _CallIds):
     """Bind the approval observability context (turn/tool_call/session ids) for the block."""
     try:
-        from tools.approval_context import reset_current_observability_context, set_current_observability_context
+        from tools.approval_context import (
+            reset_current_observability_context,
+            set_current_observability_context,
+        )
         tokens = set_current_observability_context(turn_id=ids.turn_id or "", tool_call_id=ids.tool_call_id or "",
                                                    session_id=ids.session_id or "")
     except Exception:

@@ -17,10 +17,9 @@ without hanging the reconnect loop.
 
 from __future__ import annotations
 
-import logging
 import asyncio
+import logging
 from unittest.mock import patch
-
 
 
 async def _hanging_run(self, cfg):

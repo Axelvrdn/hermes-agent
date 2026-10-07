@@ -37,8 +37,7 @@ import sys
 
 from openpyxl import load_workbook
 from openpyxl.formatting.formatting import ConditionalFormattingList
-from openpyxl.utils import (column_index_from_string, get_column_letter,
-                            range_boundaries)
+from openpyxl.utils import column_index_from_string, get_column_letter, range_boundaries
 
 # A1-style reference, optionally sheet-qualified, optionally a range.
 # Guards: not preceded by a word char/$/. (avoids ABC123 identifiers) and

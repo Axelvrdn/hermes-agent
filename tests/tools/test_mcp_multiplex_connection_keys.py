@@ -9,7 +9,11 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_constants import hermes_home_key, reset_hermes_home_override, set_hermes_home_override
+from hermes_constants import (
+    hermes_home_key,
+    reset_hermes_home_override,
+    set_hermes_home_override,
+)
 
 
 def _tool():
@@ -66,10 +70,11 @@ def two_profiles(tmp_path, monkeypatch):
 def test_same_named_server_with_other_credentials_is_a_separate_connection(two_profiles, tmp_path,
                                                                           monkeypatch):
     import tools.mcp_tool as core
-    from tools import mcp_tool_discovery as disc, mcp_tool_handlers as handlers
+    import toolsets
+    from tools import mcp_tool_discovery as disc
+    from tools import mcp_tool_handlers as handlers
     from tools import mcp_tool_registration as reg
     from tools.registry import registry
-    import toolsets
 
     cfg_a = {"url": "https://mcp.example/x", "headers": {"Authorization": "Bearer A"}}
     cfg_b = {"url": "https://mcp.example/x", "headers": {"Authorization": "Bearer B"}}
@@ -120,6 +125,7 @@ def test_same_named_server_with_other_credentials_is_a_separate_connection(two_p
     # owner scope only around the config load, #113746): with a source-tagged secret the adopter's
     # stdio identity still resolves in ITS OWN scope, so an equal value shares the owner's child.
     import sys
+
     import agent.secret_scope as secret_scope
     import hermes_cli.env_loader as env_loader
     monkeypatch.setattr(secret_scope, "_MULTIPLEX_ACTIVE", True)
@@ -202,7 +208,8 @@ def test_same_named_server_with_other_mtls_identity_is_a_separate_connection(two
 
 def test_owner_reload_reregisters_profiles_that_adopted_its_connection(two_profiles):
     import tools.mcp_tool as core
-    from tools import mcp_tool_discovery as disc, mcp_tool_lifecycle as lifecycle
+    from tools import mcp_tool_discovery as disc
+    from tools import mcp_tool_lifecycle as lifecycle
     from tools import mcp_tool_registration as reg
     from tools.registry import registry
 
@@ -248,9 +255,10 @@ def test_owner_reload_reregisters_profiles_that_adopted_its_connection(two_profi
 def test_untrusted_adopter_of_a_full_profiles_connection_keeps_its_own_trust_gate(two_profiles, monkeypatch):
     """Trust is the consuming profile's policy: adopting A's ``trust: full`` connection must not let
     B's ``trust: untrusted`` write-capable call skip approval."""
-    from tools import mcp_tool_discovery as disc, mcp_tool_handlers as handlers
-    from tools import mcp_tool_registration as reg
     import tools.approval_prompt as approval_prompt
+    from tools import mcp_tool_discovery as disc
+    from tools import mcp_tool_handlers as handlers
+    from tools import mcp_tool_registration as reg
 
     route = {"url": "https://mcp.example/x", "headers": {"Authorization": "Bearer shared"}}
     cfg_a, cfg_b = dict(route, trust="full"), dict(route, trust="untrusted")
@@ -274,7 +282,8 @@ def test_untrusted_adopter_of_a_full_profiles_connection_keeps_its_own_trust_gat
 def test_parallel_safe_opt_in_is_per_profile(two_profiles):
     """B's ``supports_parallel_tool_calls`` on its own same-named server never makes A's serial
     server's tool parallel-safe (the batch planner would run two A calls concurrently)."""
-    from tools import mcp_tool_discovery as disc, mcp_tool_registration as reg
+    from tools import mcp_tool_discovery as disc
+    from tools import mcp_tool_registration as reg
 
     cfg_a = {"url": "https://mcp.example/x", "headers": {"Authorization": "Bearer A"}}
     cfg_b = dict(cfg_a, headers={"Authorization": "Bearer B"}, supports_parallel_tool_calls=True)
@@ -358,7 +367,9 @@ def test_launch_profile_pruning_a_server_keeps_served_profiles_same_named_connec
     names={"x"})``. ``scope=None`` must mean *the unscoped owner* there, not *every owner* —
     otherwise the dashboard's own profile silently tears down profile B's ``(B, "x")``."""
     import tools.mcp_tool as core
-    from tools import mcp_tool_discovery as disc, mcp_tool_lifecycle as lifecycle, mcp_tool_loop as loop
+    from tools import mcp_tool_discovery as disc
+    from tools import mcp_tool_lifecycle as lifecycle
+    from tools import mcp_tool_loop as loop
 
     monkeypatch.setattr("agent.secret_scope.is_multiplex_active", lambda: False)
     cfg = {"url": "https://mcp.example/x", "headers": {"Authorization": "Bearer shared"}}
@@ -404,7 +415,8 @@ def test_adopter_scope_setup_failure_leaks_no_override_and_continues(two_profile
     remaining adopters still get their re-registration pass."""
     import agent.secret_scope as ss
     import tools.mcp_tool as core
-    from tools import mcp_tool_discovery as disc, mcp_tool_lifecycle as lifecycle
+    from tools import mcp_tool_discovery as disc
+    from tools import mcp_tool_lifecycle as lifecycle
 
     core._orphaned_adopters.update({"/nonexistent/bad-home": {"x"}, "/nonexistent/good-home": {"x"}})
 

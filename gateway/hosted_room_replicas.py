@@ -16,8 +16,19 @@ from functools import partial
 from typing import Any, Iterator
 
 from gateway.hosted_rooms import (
-    MAX_ACTOR_ID_CHARS, HostedRoomError, RoomConflictError, _actor_json, _connect, _payload_json, _room_id,
-    _transaction, _validate_identifier, _validate_members, _validate_room_name, local_authority_gateway_id)
+    MAX_ACTOR_ID_CHARS,
+    HostedRoomError,
+    RoomConflictError,
+    _actor_json,
+    _connect,
+    _payload_json,
+    _room_id,
+    _transaction,
+    _validate_identifier,
+    _validate_members,
+    _validate_room_name,
+    local_authority_gateway_id,
+)
 from gateway.hosted_rooms_common import DbPath, bounded_int, clock, utf8_len
 
 MAX_REPLICA_ROOMS = 256

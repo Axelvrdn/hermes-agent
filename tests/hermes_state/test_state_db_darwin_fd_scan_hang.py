@@ -23,9 +23,9 @@ import time
 
 import hermes_state_dbfile as dbfile
 from hermes_state_dbfile import (
+    _DARWIN_FD_DEV_OFFSET,
     _DARWIN_FD_INO_OFFSET,
     _DARWIN_FD_PATH_OFFSET,
-    _DARWIN_FD_DEV_OFFSET,
     _DARWIN_FD_RECORD_SIZE,
     _iter_darwin_sidecar_holders,
 )

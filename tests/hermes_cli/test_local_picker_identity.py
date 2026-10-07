@@ -14,7 +14,6 @@ import dataclasses
 
 import pytest
 
-
 MANAGED = {"base_url": "http://127.0.0.1:18434/v1", "api_key": "k"}
 STAGED = {"Qwen-A-UD-Q4_K_M", "Qwen-B-UD-Q4_K_M"}
 

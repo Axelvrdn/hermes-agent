@@ -16,8 +16,8 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-from contextlib import suppress
 import weakref
+from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional

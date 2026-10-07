@@ -4,13 +4,21 @@ Independent-review probe (written by the /review subagent for tracking issue #10
 It reproduced a defect in the first version of the PR; the fixed head must pass it. Paths are taken
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
-import os,sys,tempfile,copy,json,types,subprocess
+import copy
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import types
 from pathlib import Path
+
 sys.path.insert(0,sys.argv[1] if len(sys.argv)>1 else os.getcwd());os.environ['HERMES_HOME']=tempfile.mkdtemp(prefix='cache-boundary-')  # usage: <repo_root>
 from agent.anthropic_message_convert import convert_messages_to_anthropic
 from agent.context_compressor import ContextCompressor
-from agent.turn_context import _preflight_request_tokens
 from agent.model_metadata import estimate_messages_tokens_rough
+from agent.turn_context import _preflight_request_tokens
+
 model='anthropic/claude-fable-5.1';url='https://inference-api.nousresearch.com/v1'
 cc=ContextCompressor(model=model,provider='nous',base_url=url,api_mode='anthropic_messages',config_context_length=1000000,threshold_tokens_cap=200000)
 rows=[{'role':'user','content':'Investigate repository.'}]

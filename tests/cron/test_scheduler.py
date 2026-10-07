@@ -5,7 +5,7 @@ import contextvars
 import itertools
 import json
 import os
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -14,14 +14,15 @@ from cron.scheduler import (
     _build_job_prompt,
     _deliver_result,
     _merge_mcp_into_per_job_toolsets,
-    _run_cron_cleanup_with_timeout,
     _resolve_cron_enabled_toolsets,
     _resolve_delivery_target,
+    _run_cron_cleanup_with_timeout,
     _summarize_cron_failure_for_delivery,
     run_job,
 )
 from cron.scheduler_delivery import _resolve_origin, _send_media_via_adapter
 from tools.env_passthrough import clear_env_passthrough
+
 
 def test_cron_cleanup_worker_inherits_caller_contextvars():
     """Profile-scoped secrets must remain visible during threaded cleanup."""
@@ -415,8 +416,9 @@ class TestDeliverResultWrapping:
         """When a live adapter is available, MEDIA files should be sent as native
         platform attachments (e.g., Discord voice, Telegram audio) rather than
         as literal 'MEDIA:/path' text."""
-        from gateway.config import Platform
         from concurrent.futures import Future
+
+        from gateway.config import Platform
         media_path = self._safe_media_path(tmp_path, monkeypatch, "cron-voice.mp3")
 
         adapter = AsyncMock()
@@ -1848,6 +1850,7 @@ class TestDeliverResultPartialSplitDelivery:
         which would deliver the whole payload again; the run reports the partial failure instead."""
         import asyncio
         import threading
+
         from gateway.config import Platform
         from gateway.platforms.base import SendResult
 
@@ -1890,8 +1893,9 @@ class TestDeliverResultLiveAdapterUnconfirmed:
     """
 
     def _run(self, send_value):
-        from gateway.config import Platform
         from concurrent.futures import Future
+
+        from gateway.config import Platform
 
         adapter = AsyncMock()
         adapter.send.return_value = send_value
@@ -2191,8 +2195,9 @@ class TestCronContinuableSurfaceInChannel:
         """Drive _deliver_result down the live-adapter path for a Slack
         channel-origin job with the given ``extra`` config. Returns the
         _open_continuable_cron_thread mock and the mirror_to_session mock."""
-        from gateway.config import Platform
         from concurrent.futures import Future
+
+        from gateway.config import Platform
 
         mock_cfg = self._slack_cfg(extra)
 
@@ -2269,8 +2274,8 @@ class TestCronContinuableSurfaceInChannel:
         identically to what a plain inbound channel reply resolves to. Assert
         the invariant directly via build_session_key, not just call args."""
         from cron.scheduler_delivery import _seed_cron_channel_session
-        from gateway.session import build_session_key, SessionSource
         from gateway.config import Platform
+        from gateway.session import SessionSource, build_session_key
 
         store = MagicMock()
         adapter = MagicMock()

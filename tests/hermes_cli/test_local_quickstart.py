@@ -15,6 +15,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+
 from hermes_cli.local_runtime.binaries import Engine
 
 
@@ -45,8 +46,8 @@ def test_quickstart_unknown_model_404s(client):
 
 def test_quickstart_without_recommendation_requires_explicit_choice(client, monkeypatch):
     """One budget: automatic setup refuses; an explicit spilled choice reaches activation."""
-    from hermes_cli.local_runtime.estimator import HardwareBudget
     import hermes_cli.web_routers.local_models as lm
+    from hermes_cli.local_runtime.estimator import HardwareBudget
 
     gib = 1 << 30
     budget = HardwareBudget(

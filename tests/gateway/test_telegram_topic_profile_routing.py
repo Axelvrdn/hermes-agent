@@ -5,10 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-from hermes_state import SessionDB
 from gateway.config import Platform
 from gateway.session import SessionSource
-
+from hermes_state import SessionDB
 
 CHAT = "208214988"
 

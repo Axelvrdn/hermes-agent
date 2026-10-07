@@ -12,13 +12,13 @@ import subprocess
 from contextlib import suppress
 from functools import wraps
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
 
-from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, extra_or_secret as _extra_or_secret, get_scoped_secret, send_error
-)
+from gateway.platforms._shared import apply_yaml_bridge as _apply_yaml_bridge
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret, send_error
 from hermes_cli._subprocess_compat import windows_detach_popen_kwargs
-from hermes_constants import (find_node_executable, get_hermes_dir, with_hermes_node_path)
+from hermes_constants import find_node_executable, get_hermes_dir, with_hermes_node_path
 
 _IS_WINDOWS = platform.system() == "Windows"
 
@@ -205,22 +205,32 @@ def _terminate_bridge_process(proc, *, force: bool = False) -> None:
         getattr(parent, action)()
 
 import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from gateway.config import Platform, PlatformConfig
+from gateway.platforms.base import (
+    SUPPORTED_DOCUMENT_TYPES,
+    BasePlatformAdapter,
+    SendResult,
+    cache_audio_from_url,
+    cache_image_from_url,
+)
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import cancel_task
 from gateway.platforms.whatsapp_common import WhatsAppBehaviorMixin
 from gateway.whatsapp_identity import normalize_whatsapp_mention_jid, to_whatsapp_jid
-from gateway.platforms.base import (
-    BasePlatformAdapter, SendResult, SUPPORTED_DOCUMENT_TYPES, cache_image_from_url, cache_audio_from_url,
-)
-from gateway.platforms.helpers import cancel_task
-from gateway.platforms.event import MessageEvent, MessageType
 from utils import env_int
 
 
 def _cache_dirs() -> tuple:
     """``(image, audio, video, document)`` cache dirs, resolved per call so a profile override's cache matches."""
-    from gateway.platforms.base import get_audio_cache_dir, get_document_cache_dir, get_image_cache_dir, get_video_cache_dir
+    from gateway.platforms.base import (
+        get_audio_cache_dir,
+        get_document_cache_dir,
+        get_image_cache_dir,
+        get_video_cache_dir,
+    )
     return get_image_cache_dir(), get_audio_cache_dir(), get_video_cache_dir(), get_document_cache_dir()
 
 
@@ -615,7 +625,10 @@ class WhatsAppAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
         secondary = bool(getattr(self, "_runtime_status_platform_key", ""))
         prior_bridge_is_ours = False
         if secondary:
-            from .bridge_ownership import secondary_bridge_port, check_secondary_ownership
+            from .bridge_ownership import (
+                check_secondary_ownership,
+                secondary_bridge_port,
+            )
             try:
                 self._bridge_port = secondary_bridge_port(self._profile_home, self.config.extra.get("bridge_port"))
                 prior_bridge_is_ours = check_secondary_ownership(self._session_path, self._bridge_port) == "ours"
@@ -1099,6 +1112,7 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
         return send_error("aiohttp not installed. Run: pip install aiohttp")
     try:
         from hermes_constants import get_hermes_home
+
         from .bridge_ownership import standalone_bridge_port
         bridge_port = standalone_bridge_port(
             get_hermes_home(), (getattr(pconfig, "extra", {}) or {}).get("bridge_port")
@@ -1179,8 +1193,14 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
 
 def interactive_setup() -> None:
     """Guide the user through WhatsApp setup (CLI helpers lazy-imported)."""
+    from hermes_cli.cli_output import (
+        print_header,
+        print_info,
+        print_success,
+        prompt,
+        prompt_yes_no,
+    )
     from hermes_cli.config import get_env_value, remove_env_value, save_env_value
-    from hermes_cli.cli_output import prompt, prompt_yes_no, print_header, print_info, print_success
     print_header("WhatsApp")
     print_info("WhatsApp uses a local Node.js bridge (WhatsApp Web client).")
     print_info("Start the bridge separately; the gateway connects to it over HTTP.")

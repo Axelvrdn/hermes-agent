@@ -6,7 +6,6 @@ import base64
 from pathlib import Path
 from unittest.mock import patch
 
-
 from agent.image_routing import (
     _coerce_capability_bool,
     _coerce_mode,
@@ -17,7 +16,6 @@ from agent.image_routing import (
     decide_image_input_mode,
     extract_image_refs,
 )
-
 
 # ─── _coerce_mode ────────────────────────────────────────────────────────────
 
@@ -502,9 +500,11 @@ class TestFormatCompatibility:
 
 
     def test_native_content_parts_blocks_image_symlink_to_read_denied_file(self, tmp_path: Path):
-        from agent.image_routing import build_native_content_parts
         import os
+
         import pytest
+
+        from agent.image_routing import build_native_content_parts
 
         secret = tmp_path / ".env"
         secret.write_bytes(_png_bytes())
@@ -655,8 +655,9 @@ class TestCodexContextVariantVisionLookup:
 
     def test_valid_variant_resolves_against_base_slug(self, monkeypatch):
         from types import SimpleNamespace
-        import agent.models_dev as models_dev
+
         import agent.image_routing as image_routing
+        import agent.models_dev as models_dev
 
         seen = []
 

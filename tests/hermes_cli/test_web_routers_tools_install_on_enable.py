@@ -10,6 +10,7 @@ the binary.
 """
 
 import pytest
+
 import hermes_cli.web_server_gateway as _web_server_gateway
 
 
@@ -22,8 +23,8 @@ class TestToggleToolsetInstallOnEnable:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
             hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"

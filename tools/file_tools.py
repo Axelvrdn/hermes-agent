@@ -19,28 +19,57 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from agent.file_safety import get_nt_namespace_error, get_read_block_error
-from agent.tool_result_classification import GUARDRAIL_REFUSAL_KEY
-from tools.binary_extensions import has_binary_extension
-from tools.skill_provenance import is_background_review
-from tools.file_operations import (
-    ShellFileOperations, normalize_read_pagination, normalize_search_pagination)
-from tools.file_operations_common import DEFAULT_READ_LIMIT, count_conflict_blocks
-from tools import file_state
 from agent.redact import _is_secret_file_arg, redact_sensitive_text
+from agent.tool_result_classification import GUARDRAIL_REFUSAL_KEY
+from tools import file_state
+from tools.binary_extensions import has_binary_extension
+from tools.file_operations import (
+    ShellFileOperations,
+    normalize_read_pagination,
+    normalize_search_pagination,
+)
+from tools.file_operations_common import DEFAULT_READ_LIMIT, count_conflict_blocks
 from tools.file_tools_paths import (
-    _expand_tilde, _path_resolution_warning, _resolve_base_dir, _resolve_entry_for_task,
-    _resolve_path_for_task)
-from tools.file_tools_write_guards import (
-    _READ_DEDUP_STATUS_MESSAGE, _check_approval_required_write, _check_binary_document_write,
-    _check_cross_profile_path, _check_protected_instruction_write, _check_sensitive_path,
-    _is_internal_file_tool_content, _stale_overwrite_blocker, _stale_write_refusal)
+    _expand_tilde,
+    _path_resolution_warning,
+    _resolve_base_dir,
+    _resolve_entry_for_task,
+    _resolve_path_for_task,
+)
 from tools.file_tools_read_tracking import (
-    _bump_consecutive, _cap_read_tracker_data, _carry_full_write_baselines, _check_file_staleness,
-    _check_not_found_cache, _known_full_content_sha256,
-    _file_metadata, _file_version,
-    _mark_full_write_baseline, _mark_verification_stale, _note_read_coverage, _patch_failure_lock,
-    _patch_failure_tracker, _read_tracker, _read_tracker_lock, _record_not_found,
-    _record_patch_failure, _reset_patch_failures, _task_data, _update_read_timestamp)
+    _bump_consecutive,
+    _cap_read_tracker_data,
+    _carry_full_write_baselines,
+    _check_file_staleness,
+    _check_not_found_cache,
+    _file_metadata,
+    _file_version,
+    _known_full_content_sha256,
+    _mark_full_write_baseline,
+    _mark_verification_stale,
+    _note_read_coverage,
+    _patch_failure_lock,
+    _patch_failure_tracker,
+    _read_tracker,
+    _read_tracker_lock,
+    _record_not_found,
+    _record_patch_failure,
+    _reset_patch_failures,
+    _task_data,
+    _update_read_timestamp,
+)
+from tools.file_tools_write_guards import (
+    _READ_DEDUP_STATUS_MESSAGE,
+    _check_approval_required_write,
+    _check_binary_document_write,
+    _check_cross_profile_path,
+    _check_protected_instruction_write,
+    _check_sensitive_path,
+    _is_internal_file_tool_content,
+    _stale_overwrite_blocker,
+    _stale_write_refusal,
+)
+from tools.skill_provenance import is_background_review
 
 logger = logging.getLogger(__name__)
 
@@ -270,10 +299,17 @@ _file_ops_cache: dict = {}
 def _create_terminal_env_for_file_ops(raw_task_id: str, task_id: str):
     """Build the terminal environment for *task_id* via the shared ``_create_configured_env``,
     so a file tool that runs before any terminal command still gets the configured backend."""
-    from tools.terminal_tool_config import _is_container_backend, coerce_ssh_remote_cwd
     from tools.terminal_tool import (
-        _create_configured_env, _get_env_config, _is_mounted_host_cwd, _is_unusable_container_cwd,
-        _resolve_task_host_cwd, _select_image, get_session_cwd, resolve_task_overrides)
+        _create_configured_env,
+        _get_env_config,
+        _is_mounted_host_cwd,
+        _is_unusable_container_cwd,
+        _resolve_task_host_cwd,
+        _select_image,
+        get_session_cwd,
+        resolve_task_overrides,
+    )
+    from tools.terminal_tool_config import _is_container_backend, coerce_ssh_remote_cwd
 
     config = _get_env_config()
     env_type = config["env_type"]
@@ -320,9 +356,16 @@ def _get_file_ops(task_id: str = "default") -> ShellFileOperations:
     with a registered env override keep their isolation.
     """
     from tools.terminal_tool import (
-        _active_environments, _env_lock, _last_activity, _start_cleanup_thread,
-        _creation_locks, _creation_locks_lock, _resolve_container_task_id,
-        get_session_cwd, record_session_cwd)
+        _active_environments,
+        _creation_locks,
+        _creation_locks_lock,
+        _env_lock,
+        _last_activity,
+        _resolve_container_task_id,
+        _start_cleanup_thread,
+        get_session_cwd,
+        record_session_cwd,
+    )
 
     raw_task_id = task_id or "default"
     task_id = _resolve_container_task_id(raw_task_id)
@@ -434,8 +477,13 @@ def _read_extracted_document(path: str, _resolved, offset: int, limit: int, task
     read path. Runs BEFORE the binary-extension guard.
     """
     from tools.read_extract import (
-        ANYDOC_EXTENSIONS, EXTRACTABLE_EXTENSIONS, MAX_DOCUMENT_BYTES, ExtractionError,
-        extract_document_bytes, is_extractable_document)
+        ANYDOC_EXTENSIONS,
+        EXTRACTABLE_EXTENSIONS,
+        MAX_DOCUMENT_BYTES,
+        ExtractionError,
+        extract_document_bytes,
+        is_extractable_document,
+    )
 
     if not is_extractable_document(str(_resolved)):
         return None

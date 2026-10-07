@@ -16,6 +16,7 @@ guards.
 
 from tools.approval import detect_dangerous_command
 
+
 class TestChownRecursiveLongOptionAbbreviation:
     """chown --recur* abbreviations targeting root must be caught.
 

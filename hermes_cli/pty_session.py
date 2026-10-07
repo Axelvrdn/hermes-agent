@@ -6,8 +6,8 @@ opaque token replays the buffer and resumes live.
 """
 from __future__ import annotations
 
-import logging
 import asyncio
+import logging
 import time
 from pathlib import Path
 from typing import Callable, Dict, Optional, Tuple

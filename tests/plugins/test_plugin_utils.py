@@ -11,7 +11,6 @@ import pytest
 
 from plugins.plugin_utils import SingletonSlot, lazy_singleton
 
-
 # --- lazy_singleton -------------------------------------------------------
 
 

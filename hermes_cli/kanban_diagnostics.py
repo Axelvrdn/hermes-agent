@@ -10,12 +10,11 @@ recovery action and auto-clears when the failure mode resolves.
 
 from __future__ import annotations
 
+import json
 import logging
+import time
 from dataclasses import asdict, dataclass, field
 from typing import Any, Callable, Iterable, Optional
-import json
-import time
-
 
 # Least → most urgent; sorted outputs put critical first.
 SEVERITY_ORDER = ("warning", "error", "critical")

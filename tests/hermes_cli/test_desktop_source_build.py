@@ -1,11 +1,15 @@
 """Desktop launch prepares once, then stages and publishes the local pack."""
-from argparse import Namespace
 import subprocess
+from argparse import Namespace
 
 import pytest
 
 from hermes_cli import main, main_desktop
-from tests.hermes_cli.test_source_build import source_checkout, source_products, _events  # noqa: F401
+from tests.hermes_cli.test_source_build import (  # noqa: F401
+    _events,
+    source_checkout,
+    source_products,
+)
 
 
 @pytest.fixture

@@ -62,7 +62,9 @@ def main() -> int:
         return 0 if envelope.get("ok") else 1
     query, safe_limit = str(request.get("query") or ""), max(1, int(request.get("safe_limit") or 1))
     try:
-        from plugins.web.ddgs.provider import _run_ddgs_search  # lazy: light startup, patchable
+        from plugins.web.ddgs.provider import (
+            _run_ddgs_search,  # lazy: light startup, patchable
+        )
         _write_envelope({"ok": True, "results": _run_ddgs_search(query, safe_limit)})
         return 0
     except Exception as exc:  # noqa: BLE001

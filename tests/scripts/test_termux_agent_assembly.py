@@ -1,14 +1,14 @@
 """Bionic assembly consumes prepared bytes without running foreign binaries."""
 import json
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 from scripts.build.inputs import RESOURCE_ENV, dependency_site
 from scripts.termux.payload_facts import write_facts
 
 
 def test_bionic_facts_and_agent_keep_fixed_prefix_and_tui_only(tmp_path):
-    from pm.lock import Lockfile, Facts
+    from pm.lock import Facts, Lockfile
     from pm.registry import get_package
 
     payload = tmp_path / "payload"

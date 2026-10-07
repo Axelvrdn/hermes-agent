@@ -19,16 +19,38 @@ import time
 import uuid
 from datetime import datetime, timezone  # noqa: F401  (timezone: split modules)
 from pathlib import Path
-from typing import Any, Callable, NamedTuple, Optional  # noqa: F401  (Callable: split modules)
+from typing import (  # noqa: F401  (Callable: split modules)
+    Any,
+    Callable,
+    NamedTuple,
+    Optional,
+)
+
+from agent.compaction_display import (
+    project_compaction_message_for_display,  # noqa: F401
+)
+from agent.conversation_loop import INTERRUPT_WAITING_FOR_MODEL_PREFIX  # noqa: F401
+from agent.fast_mode import STATIC_TIERS
+from agent.reasoning_effort import clamp_effort, route_supported_efforts
+from agent.replay_cleanup import canonicalize_replay_history
 
 # Several of these look unused here but are resolved BARE by split-module bodies rebound onto this
 # namespace (method_ctx.bind_module) — deleting one breaks a handler at call time, not import time.
-from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope  # noqa: F401
-from hermes_constants import (
-    get_hermes_home, get_hermes_home_override, get_process_hermes_home, profile_name_for_home,
-    reset_hermes_home_override, set_hermes_home_override)
+from agent.secret_scope import (  # noqa: F401
+    build_profile_secret_scope,
+    reset_secret_scope,
+    set_secret_scope,
+)
+from agent.skill_commands import describe_skill_invocation  # noqa: F401
 from hermes_cli.env_loader import load_hermes_dotenv
-from utils import file_signature, is_truthy_value
+from hermes_constants import (
+    get_hermes_home,
+    get_hermes_home_override,
+    get_process_hermes_home,
+    profile_name_for_home,
+    reset_hermes_home_override,
+    set_hermes_home_override,
+)
 from hermes_state_ids import new_session_id
 from tools.environments.local import hermes_subprocess_env
 from agent.fast_mode import STATIC_TIERS
@@ -39,17 +61,38 @@ from agent.compaction_display import project_compaction_message_for_display  # n
 from agent.skill_commands import describe_skill_invocation  # noqa: F401
 from agent.conversation_loop import INTERRUPT_WAITING_FOR_MODEL_PREFIX  # noqa: F401
 from tui_gateway import git_probe
-from tui_gateway.checkpoints import (_load_checkpoints_enabled, _resolve_checkpoint_hash,
-                                     resolve_checkpoints_enabled as _resolve_checkpoints_enabled)  # noqa: F401
 from tui_gateway._env import env_float, env_int
-from tui_gateway.turn_marker import clear_turn_marker, marker_writer_state, read_turn_marker, record_turn_start  # noqa: F401
+from tui_gateway.checkpoints import _load_checkpoints_enabled, _resolve_checkpoint_hash
+from tui_gateway.checkpoints import (
+    resolve_checkpoints_enabled as _resolve_checkpoints_enabled,  # noqa: F401
+)
 from tui_gateway.contracts import registry as _contracts
+from tui_gateway.transport import (
+    FanoutTransport,
+    StdioTransport,
+    Transport,
+    bind_transport,
+    current_transport,
+    reset_transport,
+)
+from tui_gateway.turn_marker import (  # noqa: F401
+    clear_turn_marker,
+    marker_writer_state,
+    read_turn_marker,
+    record_turn_start,
+)
+
 # User-facing copy shared with the split method modules (they close over this namespace).
 from tui_gateway.user_messages import (  # noqa: F401
-    AGENT_BUILD_ABANDONED, AGENT_MISSING_FOR_TURN, AGENT_STILL_STARTING, agent_init_failed_message, busy_message,
-    resume_failed_message, turn_error_text)
-from tui_gateway.transport import (FanoutTransport, StdioTransport, Transport, bind_transport,
-                                   current_transport, reset_transport)
+    AGENT_BUILD_ABANDONED,
+    AGENT_MISSING_FOR_TURN,
+    AGENT_STILL_STARTING,
+    agent_init_failed_message,
+    busy_message,
+    resume_failed_message,
+    turn_error_text,
+)
+from utils import file_signature, is_truthy_value
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +134,11 @@ with contextlib.suppress(Exception):
 
     prefetch_update_check()
 
-from tui_gateway.render import make_stream_renderer, render_diff, render_message  # noqa: F401
+from tui_gateway.render import (  # noqa: F401
+    make_stream_renderer,
+    render_diff,
+    render_message,
+)
 
 _sessions: dict[str, dict] = {}
 _methods: dict[str, callable] = {}
@@ -269,13 +316,14 @@ class _SlashWorker:
             + (["--model", model] if model else []) \
             + (["--provider", provider] if provider else [])
         self._closed = False
+        from agent.secret_scope import is_multiplex_active
         from hermes_cli._subprocess_compat import windows_hide_flags
+
         # slash_worker runs the Hermes agent → needs provider credentials. Tier-1 secrets
         # (gateway/GitHub/infra) are still stripped (#29157). Global-remote / multi-profile sessions: the
         # worker must resolve config/skills/state against the session's profile home, not the gateway's
         # launch HERMES_HOME (#40677).
         from tools.environments.local import served_profile_child_env
-        from agent.secret_scope import is_multiplex_active
 
         # The worker runs the agent → needs provider credentials; tier-1 secrets (gateway/GitHub/
         # infra) are still stripped. A served profile's worker gets THAT profile's home + secrets and
@@ -824,8 +872,8 @@ def _emit_approval_request(sid: str, data: dict | None) -> None:
     The wait is owned by ``tools.approval``'s queue (its own timeout, ``/approve all``, coalescing), so the request
     is queue-backed: the response resolves the queue entry, and the entry's own resolution (any surface, timeout,
     interrupt) withdraws the request with ``request.cancel``."""
-    from tui_gateway import server_requests
     from tools import approval as _approval
+    from tui_gateway import server_requests
     payload = _approval_request_payload(data)
     request_id = str(payload.get("request_id") or "")
     session_key = str((_sessions.get(sid) or {}).get("session_key") or "")
@@ -2077,7 +2125,10 @@ def _load_enabled_toolsets(platform: str | None = None) -> list[str] | None:
         fallback_notice = "[tui] no valid HERMES_TUI_TOOLSETS entries; using configured CLI toolsets"
     try:
         from hermes_cli.config import load_config
-        from hermes_cli.tools_config import _get_platform_tools, _platform_toolsets_explicitly_saved
+        from hermes_cli.tools_config import (
+            _get_platform_tools,
+            _platform_toolsets_explicitly_saved,
+        )
         cfg = load_config()
         # include_default_mcp_servers=True is the runtime variant (the agent must be able to call
         # default MCP servers); the config-editing variant would silently drop MCP tools from the TUI.
@@ -2115,7 +2166,6 @@ def _load_disabled_toolsets() -> list[str] | None:
     """
     try:
         from agent.skill_utils import parse_config_string_list
-
         from hermes_cli.config import load_config
 
         agent_cfg = load_config().get("agent") or {}
@@ -2481,7 +2531,7 @@ def _schedule_mcp_late_refresh(sid: str, agent) -> None:
     rebuilds like ``/reload-mcp`` and re-emits ``session.info``. Only pre-first-turn (nothing cached to
     invalidate); afterwards late tools need an explicit, consent-gated ``/reload-mcp``."""
     try:
-        from tui_gateway.entry import mcp_discovery_in_flight, join_mcp_discovery
+        from tui_gateway.entry import join_mcp_discovery, mcp_discovery_in_flight
     except Exception:
         return
     if not mcp_discovery_in_flight():
@@ -2529,7 +2579,10 @@ def _resolve_runtime_with_fallback(resolve_kwargs: dict | None = None) -> _Runti
             if not fb_provider or not fb_model:
                 continue
             try:
-                from hermes_cli.fallback_config import effective_runtime_provider, resolve_entry_api_key
+                from hermes_cli.fallback_config import (
+                    effective_runtime_provider,
+                    resolve_entry_api_key,
+                )
                 fb_kwargs: dict = {"requested": fb_provider, "target_model": fb_model,
                                    **({"explicit_base_url": entry["base_url"]} if entry.get("base_url") else {})}
                 if fb_api_key := resolve_entry_api_key(entry):
@@ -2622,7 +2675,10 @@ def _startup_system_prompt(cfg: dict, task_id: str) -> str:
     startup_skills = _parse_tui_skills_env()
     if not startup_skills:
         return system_prompt
-    from agent.skill_commands import build_preloaded_skills_prompt, format_missing_skills
+    from agent.skill_commands import (
+        build_preloaded_skills_prompt,
+        format_missing_skills,
+    )
     skills_prompt, loaded_skills, missing_skills = build_preloaded_skills_prompt(startup_skills, task_id=task_id)
     if missing_skills:
         if not loaded_skills:
@@ -3241,6 +3297,7 @@ def _pet_row_frame_counts(spritesheet) -> dict:
     """Real frame count per concrete spritesheet row name."""
     with contextlib.suppress(Exception):
         from PIL import Image
+
         from agent.pet import constants, render
         with Image.open(spritesheet) as opened:
             image = opened.convert("RGBA")
@@ -3279,6 +3336,7 @@ def _pet_sprite_payload(pet, *, scale: float) -> dict:
     """Renderer payload (spritesheet bytes + geometry) for *pet* — one shape for ``pet.info`` (active
     mascot) and ``pet.hatch`` (unadopted preview)."""
     import base64
+
     from agent.pet import constants
     try:
         stat = pet.spritesheet.stat()
@@ -3354,7 +3412,9 @@ def _pet_gen_sweep(root, *, max_age_s: float = 3600.0) -> None:
 
 def _pet_png_data_uri(path, *, max_px: int = 160) -> str:
     """Downscaled PNG data URI for a draft image (small preview payload)."""
-    import base64, io
+    import base64
+    import io
+
     from PIL import Image
     with Image.open(path) as opened:
         img = opened.convert("RGBA")
@@ -3376,7 +3436,8 @@ except (TypeError, ValueError):
 
 def _pet_reference_images_from_data_url(ref_raw: str, stage) -> list:
     """Decode + validate a reference-image data URL into the stage dir."""
-    import base64, binascii
+    import base64
+    import binascii
     import re as _re
     match = _re.match(r"^data:image/([a-zA-Z0-9.+-]+);base64,(.*)$", ref_raw, _re.DOTALL)
     if not match:
@@ -3574,7 +3635,11 @@ def _skill_usage_lookup():
     "hub" / "bundled" / "local" (``/api/skills`` ``provenance``, "local" spelled "agent"). Failure → 0 / "local"."""
     try:
         from tools.skill_usage import (
-            _read_bundled_names, _read_hub_installed_names, activity_count, load_usage)
+            _read_bundled_names,
+            _read_hub_installed_names,
+            activity_count,
+            load_usage,
+        )
         records, bundled, hub = load_usage(), _read_bundled_names(), _read_hub_installed_names()
     except Exception as e:
         logger.debug("skill usage lookup unavailable: %s", e)
@@ -3648,35 +3713,58 @@ _paste_counter = 0
 
 
 # mcp.servers.* handlers (methods_tools) resolve this BARE through this namespace.
-from .mcp_rpc_helpers import summarize_server as _mcp_summarize_server  # noqa: E402, F401
-
+from . import agent_callbacks as _agent_callbacks
+from . import billing_view as _billing_view
+from . import change_watcher as _change_watcher
+from . import compute_host_bridge as _compute_host_bridge
+from . import methods_bot_relay as _methods_bot_relay
+from . import methods_browser as _methods_browser
+from . import methods_browser_control as _methods_browser_control
+from . import methods_complete as _methods_complete
+from . import methods_complete_helpers as _methods_complete_helpers
+from . import methods_config as _methods_config
+from . import methods_config_set as _methods_config_set
+from . import methods_connectors as _methods_connectors
+from . import methods_connectors_account as _methods_connectors_account
+from . import methods_display as _methods_display
+from . import methods_display_watch as _methods_display_watch
+from . import methods_free_tier as _methods_free_tier
+from . import methods_i18n as _methods_i18n
+from . import methods_images as _methods_images
+from . import methods_onboarding as _methods_onboarding
+from . import methods_profiles as _methods_profiles
+from . import methods_projects as _methods_projects
+from . import methods_prompt as _methods_prompt
+from . import methods_session as _methods_session
+from . import methods_session_control as _methods_session_control
+from . import methods_session_foreign as _methods_session_foreign
+from . import methods_shared_metrics as _methods_shared_metrics
+from . import methods_slash as _methods_slash
+from . import methods_subagents as _methods_subagents
+from . import methods_tools as _methods_tools
+from . import methods_vault as _methods_vault
 
 # ── Split @method handler modules (see method_ctx.py): imported last so every global the handlers close
 # over exists; register() rebinds them onto this namespace.
-from . import (  # noqa: E402
-    methods_voice as _methods_voice, methods_browser as _methods_browser, methods_slash as _methods_slash,
-    methods_complete_helpers as _methods_complete_helpers, session_auto_continue as _session_auto_continue,
-    plugin_inject as _plugin_inject,
-    rpc_dispatch as _rpc_dispatch,
-    agent_callbacks as _agent_callbacks, session_history as _session_history,
-    prompt_attachments as _prompt_attachments, session_notifications as _session_notifications,
-    tool_progress as _tool_progress, change_watcher as _change_watcher,
-    session_compression as _session_compression, model_switch as _model_switch,
-    compute_host_bridge as _compute_host_bridge, session_workdir as _session_workdir,
-    session_lifecycle as _session_lifecycle, session_reaper as _session_reaper,
-    session_transports as _session_transports,
-    methods_browser_control as _methods_browser_control, methods_bot_relay as _methods_bot_relay,
-    methods_complete as _methods_complete, methods_config as _methods_config,
-    methods_config_set as _methods_config_set, methods_images as _methods_images,
-    methods_profiles as _methods_profiles, methods_prompt as _methods_prompt, methods_session as _methods_session,
-    methods_tools as _methods_tools, prompt_turn as _prompt_turn, billing_view as _billing_view,
-    methods_projects as _methods_projects, methods_session_foreign as _methods_session_foreign,
-    methods_session_control as _methods_session_control, methods_subagents as _methods_subagents,
-    methods_vault as _methods_vault, methods_free_tier as _methods_free_tier,
-    methods_connectors as _methods_connectors, methods_connectors_account as _methods_connectors_account,
-    methods_display as _methods_display, methods_display_watch as _methods_display_watch,
-    methods_onboarding as _methods_onboarding, methods_i18n as _methods_i18n,
-    methods_shared_metrics as _methods_shared_metrics, methods_start_chat as _methods_start_chat)
+from . import methods_start_chat as _methods_start_chat
+from . import methods_voice as _methods_voice  # noqa: E402
+from . import model_switch as _model_switch
+from . import plugin_inject as _plugin_inject
+from . import prompt_attachments as _prompt_attachments
+from . import prompt_turn as _prompt_turn
+from . import rpc_dispatch as _rpc_dispatch
+from . import session_auto_continue as _session_auto_continue
+from . import session_compression as _session_compression
+from . import session_history as _session_history
+from . import session_lifecycle as _session_lifecycle
+from . import session_notifications as _session_notifications
+from . import session_reaper as _session_reaper
+from . import session_transports as _session_transports
+from . import session_workdir as _session_workdir
+from . import tool_progress as _tool_progress
+from .mcp_rpc_helpers import (
+    summarize_server as _mcp_summarize_server,  # noqa: E402, F401
+)
 
 for _m in (
     _session_transports, _session_reaper, _session_lifecycle, _session_workdir, _compute_host_bridge, _model_switch,

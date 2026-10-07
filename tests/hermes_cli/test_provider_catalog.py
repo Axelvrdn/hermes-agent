@@ -11,6 +11,7 @@ from hermes_cli.provider_catalog import (
     provider_catalog_by_slug,
 )
 
+
 def test_profileless_providers_still_present():
     """Providers without a ProviderProfile must still resolve via fallbacks.
 

@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ============================================================================
 # Fixtures
 # ============================================================================
@@ -410,7 +409,7 @@ class TestAudioRecorderStop:
         mock_stream = MagicMock()
         mock_sd.InputStream.return_value = mock_stream
 
-        from tools.voice_mode import AudioRecorder, SAMPLE_RATE
+        from tools.voice_mode import SAMPLE_RATE, AudioRecorder
 
         recorder = AudioRecorder()
         recorder.start()
@@ -439,7 +438,7 @@ class TestAudioRecorderStop:
         mock_stream = MagicMock()
         mock_sd.InputStream.return_value = mock_stream
 
-        from tools.voice_mode import AudioRecorder, SAMPLE_RATE
+        from tools.voice_mode import SAMPLE_RATE, AudioRecorder
 
         recorder = AudioRecorder()
         recorder.start()
@@ -880,8 +879,8 @@ class TestPlaybackInterrupt:
     """Verify that TTS playback can be interrupted."""
 
     def test_stop_playback_terminates_process(self):
-        from tools.voice_mode import stop_playback, _playback_lock
         import tools.voice_mode as vm
+        from tools.voice_mode import _playback_lock, stop_playback
 
         mock_proc = MagicMock()
         mock_proc.poll.return_value = None  # process is running
@@ -992,8 +991,9 @@ class TestConfigurableSilenceParams:
         mock_stream = MagicMock()
         mock_sd.InputStream.return_value = mock_stream
 
-        from tools.voice_mode import AudioRecorder
         import threading
+
+        from tools.voice_mode import AudioRecorder
 
         recorder = AudioRecorder()
         recorder._silence_threshold = 5000
@@ -1408,7 +1408,8 @@ class TestWSL2PowerShellFallback:
         the (ffmpeg && powershell) exit status past the unconditional
         cleanup, so a real conversion/playback failure falls through to the
         next player instead of being masked by rm -f's always-zero exit."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from tools import voice_mode as vm
 
         captured_cmds = []
@@ -1455,7 +1456,8 @@ class TestWSL2PowerShellFallback:
     @pytest.mark.platforms("linux")
     def test_wsl2_unique_temp_filename(self, monkeypatch, tmp_path, sample_wav):
         """Two concurrent calls must use different temp WAV filenames."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from tools import voice_mode as vm
 
         filenames = []
@@ -1494,7 +1496,8 @@ class TestWSL2PowerShellFallback:
 
     def test_non_wsl_skips_powershell_fallback(self, monkeypatch, sample_wav):
         """On non-WSL Linux, the PowerShell player must not be inserted."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from tools import voice_mode as vm
 
         captured_players = []
@@ -1529,6 +1532,7 @@ class TestWSLAudioEnvironmentGate:
 
     def test_wsl_no_pulse_but_powershell_available_not_hard_blocked(self, monkeypatch):
         from unittest.mock import patch
+
         from tools import voice_mode as vm
 
         monkeypatch.delenv("PULSE_SERVER", raising=False)
@@ -1556,6 +1560,7 @@ class TestWSLAudioEnvironmentGate:
 
     def test_wsl_no_pulse_no_powershell_still_blocked(self, monkeypatch):
         from unittest.mock import patch
+
         from tools import voice_mode as vm
 
         monkeypatch.delenv("PULSE_SERVER", raising=False)
@@ -1578,6 +1583,7 @@ class TestWSLAudioEnvironmentGate:
     def test_wsl_with_pulse_server_unaffected(self, monkeypatch):
         """PULSE_SERVER already configured: existing behavior unchanged."""
         from unittest.mock import patch
+
         from tools import voice_mode as vm
 
         monkeypatch.setenv("PULSE_SERVER", "unix:/mnt/wslg/PulseServer")

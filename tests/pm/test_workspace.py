@@ -10,8 +10,8 @@ machine-specific). Its pyproject = core's pyproject verbatim +
 from __future__ import annotations
 
 import os
-import subprocess
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -20,8 +20,6 @@ import pytest
 import pm.workspace as ws
 from pm.environment import managed_environment
 from tests.pm.test_environment_build import locked_project  # noqa: F401
-
-
 
 
 @pytest.fixture

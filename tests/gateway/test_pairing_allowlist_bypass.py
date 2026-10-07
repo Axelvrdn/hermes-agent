@@ -227,11 +227,11 @@ def test_revoke_whatsapp_sole_entry_denies_live_adapter_without_restart(
     """
     from types import SimpleNamespace
 
+    import gateway.run as gateway_run
+    import hermes_cli.config as cfg
     from gateway.config import GatewayConfig, Platform, PlatformConfig
     from gateway.platforms.whatsapp_common import WhatsAppBehaviorMixin
     from gateway.run import GatewayRunner
-    import gateway.run as gateway_run
-    import hermes_cli.config as cfg
 
     monkeypatch.setenv("WHATSAPP_ALLOWED_USERS", "15551234567")
     monkeypatch.setattr(
@@ -469,9 +469,9 @@ async def test_matrix_pairing_revoke_denies_live_message_and_approval_without_re
 
 def test_matrix_pairing_revoke_purges_live_allowlist_snapshot(store, monkeypatch):
     """A live Matrix adapter must not retain an allowlist entry removed by pairing revoke."""
-    from gateway.config import PlatformConfig
     import gateway.run as gateway_run
     import hermes_cli.config as cfg
+    from gateway.config import PlatformConfig
     from plugins.platforms.matrix.adapter import MatrixAdapter
 
     owner_id = "@owner:example.org"

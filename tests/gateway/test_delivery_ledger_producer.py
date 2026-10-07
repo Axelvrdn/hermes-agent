@@ -7,8 +7,8 @@ replies, and empty responses are never recorded; ledger failures never
 block the send.
 """
 
-import logging
 import asyncio
+import logging
 import threading
 from unittest.mock import AsyncMock, MagicMock, patch
 

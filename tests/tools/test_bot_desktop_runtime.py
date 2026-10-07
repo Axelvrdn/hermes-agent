@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import contextlib
 import re
+import sys
 import threading
 import time
-import sys
 from pathlib import Path
 
 import pytest

@@ -13,6 +13,7 @@ import pytest
 
 from gateway.config import Platform
 
+
 @pytest.fixture(autouse=True)
 def _whatsapp_open_optin(monkeypatch):
     """Opt into WhatsApp allow-all so ``dm_policy: open`` dispatch tests run.

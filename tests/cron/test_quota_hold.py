@@ -16,7 +16,12 @@ import pytest
 import cron.scheduler as sched
 from cron import quota_hold as qh
 from cron.jobs import (
-    _job_is_stale_error_recurring, create_job, get_due_jobs, get_job, mark_job_run, update_job,
+    _job_is_stale_error_recurring,
+    create_job,
+    get_due_jobs,
+    get_job,
+    mark_job_run,
+    update_job,
 )
 from hermes_cli.auth import CODEX_RATE_LIMITED_CODE, AuthError
 

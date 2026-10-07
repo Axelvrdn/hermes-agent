@@ -32,7 +32,10 @@ def test_unconfirmed_removal_never_contacts_the_gateway(layout, monkeypatch, mod
 
 
 def test_live_chat_lease_blocks_data_deletion(layout):
-    from hermes_cli.active_sessions import release_active_session, try_acquire_active_session
+    from hermes_cli.active_sessions import (
+        release_active_session,
+        try_acquire_active_session,
+    )
 
     home, _, data = layout
     lease, refusal = try_acquire_active_session(
@@ -53,6 +56,7 @@ def test_manual_gateway_drains_over_real_control_transport_before_deletion(layou
     import subprocess
     import sys
     from threading import Event, Thread
+
     from gateway.control_socket import GatewayControlServer
     from gateway.status import get_process_start_time
 

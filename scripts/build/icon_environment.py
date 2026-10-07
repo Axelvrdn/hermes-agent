@@ -6,8 +6,8 @@ the locked runtime dependencies alone, without installing the application.
 """
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Builders import this file from a separately prepared source tree.
 ROOT = Path(__file__).resolve().parents[2]

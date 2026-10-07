@@ -22,9 +22,8 @@ values, and registry I/O are injected parameters (same pattern as
 input→output checks, not host fakes.
 """
 
-from pathlib import Path
-
 import json
+from pathlib import Path
 
 import pytest
 

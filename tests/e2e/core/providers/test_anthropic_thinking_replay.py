@@ -11,10 +11,10 @@ against the SDK's ``MessageCreateParams``.
 from __future__ import annotations
 
 import json
+import queue
 import subprocess
 import sys
 import threading
-import queue
 from pathlib import Path
 
 import pytest

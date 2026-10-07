@@ -7,7 +7,6 @@ seams; no module mocks, no network.
 import json
 from unittest.mock import patch
 
-
 from tools.connectors.tool import MANAGE_CONNECTIONS_SCHEMA, manage_connections
 
 

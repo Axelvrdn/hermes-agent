@@ -28,6 +28,7 @@ from agent.codex_runtime import (
     make_codex_app_server_event_bridge,
 )
 
+
 def _make_stub_agent() -> SimpleNamespace:
     """Minimal stand-in for AIAgent that records every callback fire."""
     return SimpleNamespace(
@@ -289,6 +290,7 @@ class TestBridgeRobustness:
 def test_real_progress_keeps_watchdog_alive_but_silence_still_aborts(monkeypatch, note):
     """Display hooks are optional; real progress must reach the watchdog regardless."""
     import threading
+
     from agent import activity_tracking, turn_liveness
 
     clock = SimpleNamespace(now=1000.0)

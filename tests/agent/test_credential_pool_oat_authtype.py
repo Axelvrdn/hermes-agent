@@ -11,8 +11,6 @@ from agent.credential_pool import (
 )
 
 
-
-
 def test_anthropic_real_api_key_unchanged():
     entry = PooledCredential.from_dict(
         "anthropic",

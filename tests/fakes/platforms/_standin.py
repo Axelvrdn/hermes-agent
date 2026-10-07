@@ -12,9 +12,9 @@ Nothing here knows about Hermes: the adapter under test talks to it through its 
 
 from __future__ import annotations
 
-import logging
 import asyncio
 import json
+import logging
 import threading
 import time
 from dataclasses import dataclass, field

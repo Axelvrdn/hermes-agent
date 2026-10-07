@@ -87,7 +87,10 @@ class _SourceVisitor(ast.NodeVisitor):
 
     def __init__(self, rel: str, *, model_provider: bool = False):
         from hermes_cli.plugin_isolation import (
-            HOST_DEGRADED_HOOKS, HOST_OBJECT_BASES, HOST_SKIPPED_CTX_METHODS, HOST_UNSUPPORTED_CTX_METHODS,
+            HOST_DEGRADED_HOOKS,
+            HOST_OBJECT_BASES,
+            HOST_SKIPPED_CTX_METHODS,
+            HOST_UNSUPPORTED_CTX_METHODS,
         )
         self._unsupported, self._skipped = HOST_UNSUPPORTED_CTX_METHODS, HOST_SKIPPED_CTX_METHODS
         self._degraded, self._object_methods = HOST_DEGRADED_HOOKS, HOST_OBJECT_BASES

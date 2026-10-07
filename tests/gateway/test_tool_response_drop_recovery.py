@@ -264,7 +264,7 @@ class TestPostStopInterruptSwallow:
         so its ``_interrupt_requested`` flag cannot leak into the next turn."""
         import threading
 
-        from gateway.run import GatewayRunner, _INTERRUPT_REASON_STOP
+        from gateway.run import _INTERRUPT_REASON_STOP, GatewayRunner
 
         class _RecordingAgent:
             def __init__(self):

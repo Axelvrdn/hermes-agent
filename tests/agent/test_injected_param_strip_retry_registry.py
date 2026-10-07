@@ -29,12 +29,12 @@ from unittest.mock import patch
 
 import pytest
 
+from agent.auxiliary_client import call_llm
 from agent.error_classifier import (
-    FailoverReason,
     _SERVER_INJECTED_PARAM_SENDERS,
+    FailoverReason,
     classify_api_error,
 )
-from agent.auxiliary_client import call_llm
 
 
 class MockAPIError(Exception):

@@ -16,13 +16,11 @@ import shutil
 import sqlite3
 import threading
 import time
-from dataclasses import dataclass
-from dataclasses import field
-from hermes_cli.sqlite_util import add_column_if_missing as _add_column_if_missing
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 
+from hermes_cli.sqlite_util import add_column_if_missing as _add_column_if_missing
 
 # ---------------------------------------------------------------------------
 # Connection helpers

@@ -23,7 +23,6 @@ import pytest
 
 import agent.model_metadata as mm
 
-
 GRANTED = 262144
 
 

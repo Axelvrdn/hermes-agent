@@ -10,7 +10,7 @@ from gateway.config import (
     Platform,
     PlatformConfig,
 )
-from gateway.run import _get_channel_override, GatewayRunner
+from gateway.run import GatewayRunner, _get_channel_override
 from gateway.session import SessionSource
 
 

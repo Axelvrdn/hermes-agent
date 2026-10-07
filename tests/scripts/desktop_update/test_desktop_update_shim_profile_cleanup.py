@@ -1,7 +1,7 @@
 """The update hand-off cleans only an atomically claimed browser profile."""
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
 

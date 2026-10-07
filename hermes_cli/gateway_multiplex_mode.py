@@ -86,8 +86,8 @@ def default_gateway_multiplexes(default_home: Optional[Path] = None) -> bool:
     (warned about and ignored at boot, see :func:`resolve_multiplex_mode`), so answering False from
     it made every CLI surface contradict the gateway that was about to multiplex anyway.
     """
-    from hermes_constants import get_default_hermes_root
     from hermes_cli.gateway_multiplex_served import recorded_served_profiles
+    from hermes_constants import get_default_hermes_root
     root = Path(default_home) if default_home is not None else get_default_hermes_root()
     recorded = recorded_served_profiles(root)
     if recorded is not None:
@@ -106,8 +106,8 @@ class MultiplexDecision:
 
 
 def _standalone_launcher() -> bool:
-    from hermes_constants import get_hermes_home, profile_name_for_home
     from hermes_cli.profiles import profile_is_standalone
+    from hermes_constants import get_hermes_home, profile_name_for_home
 
     home = get_hermes_home()
     return profile_name_for_home(home) not in (None, "default") and profile_is_standalone(home)
@@ -148,7 +148,11 @@ def implicit_multiplex_blocker() -> Optional[str]:
     # Parking is reversible without a host restart, so keep the reconcile watcher alive.
     if len(profiles_to_serve(multiplex=True, include_parked=True)) < 2:
         return SINGLE_PROFILE_REASON
-    from hermes_cli.gateway_migrate import MIGRATE_COMMAND, _host_supports_migration, build_migration_plan
+    from hermes_cli.gateway_migrate import (
+        MIGRATE_COMMAND,
+        _host_supports_migration,
+        build_migration_plan,
+    )
     host_reason = _host_supports_migration()
     if host_reason:
         return host_reason
@@ -290,8 +294,8 @@ def log_multiplex_decision(decision: MultiplexDecision) -> None:
 
 def unserved_profiles() -> list[str]:
     """Named profiles a standalone gateway leaves without a bot (the whole point of the warning)."""
-    from hermes_constants import get_hermes_home, profile_name_for_home
     from hermes_cli.profiles import profiles_to_serve
+    from hermes_constants import get_hermes_home, profile_name_for_home
     me = profile_name_for_home(get_hermes_home()) or "default"
     return [name for name, _home in profiles_to_serve(multiplex=True, include_parked=True) if name != me]
 

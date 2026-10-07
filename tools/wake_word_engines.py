@@ -182,8 +182,9 @@ class _SherpaKwsEngine(_Engine):
     frame_length = 1280  # streaming zipformer accepts any chunk; match capture path.
 
     def _build(self, cfg, sub, ww) -> None:
-        import sherpa_onnx
         import tempfile
+
+        import sherpa_onnx
         from sherpa_onnx import text2token
         model_dir = str(sub.get("model_dir") or "").strip()
         d = Path(model_dir) if model_dir else _ensure_sherpa_model()

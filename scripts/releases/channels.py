@@ -1,19 +1,33 @@
 """Authenticated channel administration; mutable records use ETag CAS, never CDN state."""
 from __future__ import annotations
 
-from copy import deepcopy
 import hashlib
 import http.client
 import secrets
 import uuid
+from copy import deepcopy
 
 from hermes_cli.release_channels import (
-    ChannelError, ChannelNotFound, ChannelReader, artifact_key, build_prefix,
-    canonical_json, channel_key, decode_json, package_versions, public_base as validate_public_base,
-    validate_name, validate_record, validate_repository, validate_request, validate_manifest, require_sha256,
+    ChannelError,
+    ChannelNotFound,
+    ChannelReader,
+    artifact_key,
+    build_prefix,
+    canonical_json,
+    channel_key,
+    decode_json,
+    package_versions,
+    require_sha256,
+    validate_manifest,
+    validate_name,
+    validate_record,
+    validate_repository,
+    validate_request,
+)
+from hermes_cli.release_channels import (
+    public_base as validate_public_base,
 )
 from scripts.releases import r2
-
 
 BRANDINGS = ("preview", "stable")
 
@@ -393,9 +407,9 @@ class ChannelPublisher:
                     return record
                 raise ChannelError("A newer build is published; stale completion refused")
             if policy is not None and record["head"] is not None:
+                from hermes_cli.update_channel import canary_timestamp
                 from scripts.releases.semver import compare
                 from scripts.releases.stable import windows_version
-                from hermes_cli.update_channel import canary_timestamp
                 previous_head = record["head"]
                 previous = self.store.get(previous_head["manifestKey"])
                 if previous is None or hashlib.sha256(previous[0]).hexdigest() != previous_head["sha256"]:

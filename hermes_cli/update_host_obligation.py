@@ -179,7 +179,12 @@ def _named_profiles_exist() -> bool:
     "default only"; here any error listing the roster or reading an entry's identity raises instead.
     Same identity rule as ``hermes_constants.named_profile_is_live`` (stdlib only: see above).
     """
-    from hermes_constants import _PROFILE_IDENTITY_MARKERS, PROFILE_ID_RE, get_default_hermes_root, profile_tombstone_path
+    from hermes_constants import (
+        _PROFILE_IDENTITY_MARKERS,
+        PROFILE_ID_RE,
+        get_default_hermes_root,
+        profile_tombstone_path,
+    )
 
     try:
         entries = list((get_default_hermes_root() / "profiles").iterdir())

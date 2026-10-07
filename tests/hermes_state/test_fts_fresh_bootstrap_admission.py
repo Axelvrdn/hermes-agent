@@ -8,7 +8,6 @@ from pathlib import Path
 import hermes_state_common
 from hermes_state import SessionDB
 
-
 _HOLD_ADMISSION_SCRIPT = """
 import sys
 import time

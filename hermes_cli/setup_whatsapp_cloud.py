@@ -6,13 +6,13 @@ Intentionally does NOT smoke-test the webhook: the gateway and the tunnel both r
 processes the user starts AFTER this wizard exits, so any in-wizard probe would fail."""
 
 from __future__ import annotations
-from hermes_cli.cli_output import line_input
 
 import re
 import secrets
 import sys
 from typing import Optional
 
+from hermes_cli.cli_output import line_input
 
 # --- Field-shape validators: each returns (ok, reason_if_not_ok) so obviously-malformed input is
 # rejected before saving, sparing a round trip with Meta's 401 / 400 errors.

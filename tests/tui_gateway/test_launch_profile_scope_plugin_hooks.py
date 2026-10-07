@@ -20,12 +20,12 @@ from pathlib import Path
 
 import pytest
 
+import tui_gateway.server as server
 from agent.secret_scope import set_multiplex_active
 from hermes_cli import plugins as plugins_mod
 from hermes_constants import get_hermes_home, get_hermes_home_override
 from tools.daemon_pool import DaemonThreadPoolExecutor
 from tools.thread_context import propagate_context_to_thread
-import tui_gateway.server as server
 from tui_gateway import launch_profile_policy as lpp
 
 

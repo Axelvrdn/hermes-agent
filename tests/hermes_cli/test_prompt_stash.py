@@ -26,6 +26,7 @@ from hermes_cli.prompt_stash import (
     resolve_ctrl_s,
 )
 
+
 class _FakeClock:
     """Deterministic monotonic clock for age assertions."""
 

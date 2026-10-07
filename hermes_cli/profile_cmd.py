@@ -7,9 +7,9 @@ the module attributes.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 import os
 import sys
+from pathlib import Path
 from typing import NoReturn, Optional
 
 
@@ -87,8 +87,12 @@ def _render_distribution_plan(plan) -> None:
 
 def _profile_status(args):
     """Bare ``hermes profile`` — show current profile status."""
+    from hermes_cli.profiles import (
+        format_profile_label,
+        get_active_profile_name,
+        list_profiles,
+    )
     from hermes_constants import display_hermes_home
-    from hermes_cli.profiles import format_profile_label, get_active_profile_name, list_profiles
     profile_name = get_active_profile_name()
     dhh = display_hermes_home()
     current = next((p for p in list_profiles() if _is_active(p, profile_name)), None)
@@ -107,7 +111,11 @@ def _profile_status(args):
 
 
 def _profile_list(args):
-    from hermes_cli.profiles import format_profile_label, get_active_profile_name, list_profiles
+    from hermes_cli.profiles import (
+        format_profile_label,
+        get_active_profile_name,
+        list_profiles,
+    )
     profiles = list_profiles()
     active = get_active_profile_name()
     if not profiles:
@@ -132,7 +140,10 @@ def _shared_credential_warnings(profiles) -> list:
     """One warning per named profile whose bot credential is byte-identical to the default's
     (typically an old ``--clone`` that copied .env): the collision that parks a multiplexed
     adapter or makes two standalone gateways fight over one bot."""
-    from hermes_cli.profile_channels import shared_channel_credentials, shared_credential_warning
+    from hermes_cli.profile_channels import (
+        shared_channel_credentials,
+        shared_credential_warning,
+    )
     default = next((p for p in profiles if p.is_default), None)
     if default is None:
         return []
@@ -170,7 +181,9 @@ def _source_profile_dir(source_label: str) -> Path:
 
 def _print_channel_clone_notice(name: str, source_label: str, clone_channels: bool, clone_flag: str) -> None:
     from hermes_cli.profile_channels import (
-        channel_platforms_configured, format_stripped_notice, shared_channel_credentials,
+        channel_platforms_configured,
+        format_stripped_notice,
+        shared_channel_credentials,
         shared_credential_warning,
     )
     from hermes_cli.profiles import get_profile_dir
@@ -189,8 +202,13 @@ def _print_channel_clone_notice(name: str, source_label: str, clone_channels: bo
 
 def _profile_create(args):
     from hermes_cli.profiles import (
-        _get_wrapper_dir, _is_wrapper_dir_in_path, check_alias_collision, create_profile,
-        create_wrapper_script, get_active_profile_name, seed_profile_skills,
+        _get_wrapper_dir,
+        _is_wrapper_dir_in_path,
+        check_alias_collision,
+        create_profile,
+        create_wrapper_script,
+        get_active_profile_name,
+        seed_profile_skills,
     )
     name = args.profile_name
     clone = getattr(args, "clone", False)
@@ -273,7 +291,10 @@ def _profile_create(args):
     print("\nNext steps:")
     print(f"  {name} setup              Configure API keys and model")
     print(f"  {name} chat               Start chatting")
-    from hermes_cli.gateway_multiplex_served import live_default_gateway_pid, recorded_served_profiles
+    from hermes_cli.gateway_multiplex_served import (
+        live_default_gateway_pid,
+        recorded_served_profiles,
+    )
     from hermes_cli.profiles import normalize_profile_name
     served = recorded_served_profiles() if live_default_gateway_pid() is not None else None
     if served is not None and normalize_profile_name(name) in {normalize_profile_name(p) for p in served}:
@@ -375,9 +396,17 @@ def _profile_describe(args):
 def _profile_show(args):
     name = args.profile_name
     from hermes_cli.profiles import (
-        get_profile_dir, profile_exists, _read_config_model, _check_gateway_running,
-        _served_by_running_multiplexer, _count_skills, _read_distribution_meta, _wrapper_path,
-        find_alias_for_profile, format_profile_label, read_profile_meta,
+        _check_gateway_running,
+        _count_skills,
+        _read_config_model,
+        _read_distribution_meta,
+        _served_by_running_multiplexer,
+        _wrapper_path,
+        find_alias_for_profile,
+        format_profile_label,
+        get_profile_dir,
+        profile_exists,
+        read_profile_meta,
     )
     if not profile_exists(name):
         _die(f"Error: Profile '{name}' does not exist.")
@@ -407,8 +436,13 @@ def _profile_show(args):
 
 def _profile_alias(args):
     from hermes_cli.profiles import (
-        _get_wrapper_dir, _is_wrapper_dir_in_path, check_alias_collision, create_wrapper_script,
-        profile_exists, remove_wrapper_script, validate_alias_name,
+        _get_wrapper_dir,
+        _is_wrapper_dir_in_path,
+        check_alias_collision,
+        create_wrapper_script,
+        profile_exists,
+        remove_wrapper_script,
+        validate_alias_name,
     )
     name = args.profile_name
     remove = getattr(args, "remove", False)
@@ -489,7 +523,11 @@ def _profile_export(args):
 
 
 def _profile_import(args):
-    from hermes_cli.profiles import check_alias_collision, create_wrapper_script, import_profile
+    from hermes_cli.profiles import (
+        check_alias_collision,
+        create_wrapper_script,
+        import_profile,
+    )
     try:
         profile_dir = import_profile(args.archive, name=getattr(args, "import_name", None))
         name = profile_dir.name
@@ -505,7 +543,12 @@ def _profile_import(args):
 
 def _profile_install(args):
     import tempfile
-    from hermes_cli.profile_distribution import DistributionError, install_distribution, plan_install
+
+    from hermes_cli.profile_distribution import (
+        DistributionError,
+        install_distribution,
+        plan_install,
+    )
     try:
         # Preview: stage into a scratch dir, show the manifest, then do the real install.
         # The double-stage avoids any side-effects if the user declines.
@@ -537,7 +580,11 @@ def _profile_install(args):
 
 
 def _profile_update(args):
-    from hermes_cli.profile_distribution import DistributionError, read_manifest, update_distribution
+    from hermes_cli.profile_distribution import (
+        DistributionError,
+        read_manifest,
+        update_distribution,
+    )
     from hermes_cli.profiles import get_profile_dir, normalize_profile_name
     try:
         canon = normalize_profile_name(args.profile_name)
@@ -578,7 +625,7 @@ _INFO_FIELDS = (
 
 
 def _profile_info(args):
-    from hermes_cli.profile_distribution import describe_distribution, DistributionError
+    from hermes_cli.profile_distribution import DistributionError, describe_distribution
     try:
         data = describe_distribution(args.profile_name)
     except (DistributionError, ValueError) as e:

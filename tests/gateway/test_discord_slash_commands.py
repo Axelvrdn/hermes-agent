@@ -1,9 +1,9 @@
 """Tests for native Discord slash command fast-paths (thread creation & auto-thread)."""
 
 import logging
+import sys
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
-import sys
 
 import pytest
 

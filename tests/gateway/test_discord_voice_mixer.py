@@ -28,7 +28,6 @@ if _DISCORD_DIR not in sys.path:
 
 import voice_mixer as vm  # noqa: E402
 
-
 # =====================================================================
 # Pure mixer unit tests
 # =====================================================================
@@ -63,8 +62,8 @@ class TestVoiceMixerCore:
 # =====================================================================
 
 def _make_adapter(fx_cfg=None):
-    from plugins.platforms.discord.adapter import DiscordAdapter
     from gateway.config import Platform, PlatformConfig
+    from plugins.platforms.discord.adapter import DiscordAdapter
     config = PlatformConfig(enabled=True, extra={})
     config.token = "fake-token"
     adapter = object.__new__(DiscordAdapter)

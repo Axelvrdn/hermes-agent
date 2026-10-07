@@ -243,8 +243,8 @@ def _two_profile_homes(tmp_path, monkeypatch) -> None:
             f"agent:\n  max_turns: {turns}\napprovals:\n  mode: manual\n"
             "platform_toolsets:\n  api_server: [hermes-api-server, web]\n")
         (home / ".env").write_text("")
-    from hermes_cli import profiles
     import gateway.run as gateway_run
+    from hermes_cli import profiles
     alpha = root / "profiles" / "alpha"
     monkeypatch.setattr(profiles, "_get_default_hermes_home", lambda: root)
     monkeypatch.setattr(gateway_run, "_hermes_home", alpha)

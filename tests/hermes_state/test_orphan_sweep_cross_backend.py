@@ -28,7 +28,6 @@ import pytest
 
 from hermes_state import SessionDB
 
-
 IDLE_S = 6 * 3600  # mirror the TUI gateway's default session TTL
 # Heartbeats refresh every 30s and a backend is "stale" if its last refresh
 # is older than this. Keep generous so tests don't race the timer.

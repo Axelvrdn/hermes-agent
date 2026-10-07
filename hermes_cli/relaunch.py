@@ -7,9 +7,7 @@ import shutil
 import sys
 from typing import Optional, Sequence
 
-from hermes_cli._parser import (
-    PRE_ARGPARSE_INHERITED_FLAGS, build_top_level_parser
-)
+from hermes_cli._parser import PRE_ARGPARSE_INHERITED_FLAGS, build_top_level_parser
 
 
 def _build_inherited_flag_table() -> list[tuple[str, bool]]:
@@ -139,7 +137,9 @@ def relaunch(
             )
             sys.exit(1)
     else:
-        from hermes_cli.observability.shared_metrics_startup import mark_in_place_relaunch
+        from hermes_cli.observability.shared_metrics_startup import (
+            mark_in_place_relaunch,
+        )
 
         mark_in_place_relaunch()
         os.execvp(new_argv[0], new_argv)

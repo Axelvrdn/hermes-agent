@@ -17,7 +17,6 @@ from hermes_cli import kanban_output
 from hermes_cli import kanban_workflow as kw
 from tools import kanban_tools_schemas
 
-
 W = kw.DEFAULT_WORKFLOW
 
 

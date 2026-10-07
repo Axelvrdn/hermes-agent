@@ -11,13 +11,13 @@ import re
 import time
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable, ClassVar, Dict, Optional, Any, Tuple, List
+from typing import Any, Awaitable, Callable, ClassVar, Dict, List, Optional, Tuple
 
 aiohttp: Any = None
 try:
     import aiohttp as _aiohttp
-    from slack_bolt.async_app import AsyncApp
     from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
+    from slack_bolt.async_app import AsyncApp
     from slack_sdk.web.async_client import AsyncWebClient
 
     aiohttp = _aiohttp
@@ -38,19 +38,29 @@ from agent.i18n import t
 from agent.retry_utils import parse_retry_after_seconds
 from agent.secret_scope import get_secret
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, env_is_connected as _env_is_connected,
-    extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret,
-    platform_gate_env as _scoped_gate_env, send_error
-)
-from gateway.platforms.helpers import MessageDeduplicator
+from gateway.platforms._shared import apply_yaml_bridge as _apply_yaml_bridge
+from gateway.platforms._shared import env_is_connected as _env_is_connected
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import platform_gate_env as _scoped_gate_env
+from gateway.platforms._shared import send_error
 from gateway.platforms.base import (
-    gateway_trust_env, BasePlatformAdapter, ExecApprovalPrompt,
-    SendResult, SUPPORTED_DOCUMENT_TYPES, SUPPORTED_VIDEO_TYPES, _TEXT_INJECT_EXTENSIONS,
-    is_host_excluded_by_no_proxy, resolve_proxy_url, safe_url_for_log, _ssrf_redirect_guard,
-    cache_document_from_bytes_async, cache_video_from_bytes_async,
+    _TEXT_INJECT_EXTENSIONS,
+    SUPPORTED_DOCUMENT_TYPES,
+    SUPPORTED_VIDEO_TYPES,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    _ssrf_redirect_guard,
+    cache_document_from_bytes_async,
+    cache_video_from_bytes_async,
+    gateway_trust_env,
+    is_host_excluded_by_no_proxy,
+    resolve_proxy_url,
+    safe_url_for_log,
 )
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
+from gateway.platforms.helpers import MessageDeduplicator
 
 try:  # sibling module; support both package and flat plugin-dir import
     from .block_kit import render_blocks, sanitize_blocks
@@ -336,10 +346,10 @@ def check_slack_requirements() -> bool:
         return True
 
     def _import():
-        from slack_bolt.async_app import AsyncApp
-        from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
-        from slack_sdk.web.async_client import AsyncWebClient
         import aiohttp
+        from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
+        from slack_bolt.async_app import AsyncApp
+        from slack_sdk.web.async_client import AsyncWebClient
         return {
             "AsyncApp": AsyncApp, "AsyncSocketModeHandler": AsyncSocketModeHandler,
             "AsyncWebClient": AsyncWebClient, "aiohttp": aiohttp, "SLACK_AVAILABLE": True}
@@ -2980,7 +2990,9 @@ class SlackAdapter(BasePlatformAdapter):
         chat_id = await self._dm_target(chat_id, metadata)
         try:
             from urllib.parse import unquote as _unquote
-            from tools.url_safety import create_ssrf_safe_async_client, is_safe_url as _is_safe_url
+
+            from tools.url_safety import create_ssrf_safe_async_client
+            from tools.url_safety import is_safe_url as _is_safe_url
         except Exception:
             return await super().send_multiple_images(chat_id, images, metadata, human_delay)
         thread_ts = self._resolve_thread_ts(None, metadata)
@@ -6288,8 +6300,11 @@ class SlackAdapter(BasePlatformAdapter):
         ``is_safe_url`` AND the Slack-CDN allowlist (token exfiltration); redirects are
         re-validated; an HTML body (sign-in page) is rejected so bogus bytes are never cached."""
         import httpx
+
         from tools.url_safety import (
-            create_ssrf_safe_async_client, is_safe_url, redirect_target_from_response,
+            create_ssrf_safe_async_client,
+            is_safe_url,
+            redirect_target_from_response,
         )
         if not is_safe_url(url):
             raise ValueError(
@@ -6349,7 +6364,10 @@ class SlackAdapter(BasePlatformAdapter):
     async def _download_slack_file(
         self, url: str, ext: str, audio: bool = False, team_id: str = "") -> str:
         """Download a Slack image/audio file and cache it; returns the cached path."""
-        from gateway.platforms.base import cache_audio_from_bytes_async, cache_image_from_bytes_async
+        from gateway.platforms.base import (
+            cache_audio_from_bytes_async,
+            cache_image_from_bytes_async,
+        )
         data = await self._download_slack_file_bytes(url, team_id=team_id, html_label="media")
         return await (cache_audio_from_bytes_async if audio else cache_image_from_bytes_async)(data, ext)
 
@@ -6834,9 +6852,15 @@ def _write_slack_manifest_and_instruct() -> None:
 def interactive_setup() -> None:
     """Guide the user through Slack bot setup (manifest, tokens, allowlist, home channel).
     CLI helpers are lazy-imported to keep the plugin's import surface small."""
-    from hermes_cli.config import remove_env_value, save_env_value
     from hermes_cli.cli_output import (
-        prompt, prompt_yes_no, print_header, print_info, print_success, print_warning)
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+        prompt_yes_no,
+    )
+    from hermes_cli.config import remove_env_value, save_env_value
     from hermes_cli.setup_platforms import declines_reconfigure
 
     print_header("Slack")

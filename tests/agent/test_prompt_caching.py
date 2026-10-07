@@ -14,7 +14,6 @@ from agent.prompt_caching import (
     strip_anthropic_tool_cache_control,
 )
 
-
 MARKER = {"type": "ephemeral"}
 
 

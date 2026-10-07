@@ -4,9 +4,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -15,10 +15,10 @@ if str(ROOT) not in sys.path:
 
 def prepare(source: Path, work: Path, cache: Path, out: Path, ref: str) -> Path:
     from hermes_cli.runtime_state import _lock
+    from pm.lock import _write
     from scripts.bundles.desktop_prepare import git, require_source
     from scripts.bundles.desktop_toolchain import run_preparation
     from scripts.bundles.native_prepared import prepared_path
-    from pm.lock import _write
 
     for path in (work, cache, out):
         if path.absolute() != path.resolve():

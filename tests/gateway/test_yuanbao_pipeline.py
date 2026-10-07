@@ -11,43 +11,43 @@ Tests cover:
 """
 
 import asyncio
-import sys
-import os
 import json
+import os
+import sys
 
 # Ensure project root is on the path
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
+from gateway.config import PlatformConfig
 from gateway.platforms.yuanbao import (
+    _MAX_RESOLVE_CONCURRENCY,
+    _MIN_RESOLVE_CONCURRENCY,
+    AccessGuardMiddleware,
+    AccessPolicy,
+    AutoSetHomeMiddleware,
+    ChatRoutingMiddleware,
+    DecodeMiddleware,
+    DedupMiddleware,
+    ExtractContentMiddleware,
+    ExtractFieldsMiddleware,
+    GroupAtGuardMiddleware,
     InboundContext,
     InboundMiddleware,
     InboundPipeline,
-    DecodeMiddleware,
-    ExtractFieldsMiddleware,
-    DedupMiddleware,
-    SkipSelfMiddleware,
-    ChatRoutingMiddleware,
-    AccessPolicy,
-    AccessGuardMiddleware,
-    AutoSetHomeMiddleware,
-    ExtractContentMiddleware,
-    PlaceholderFilterMiddleware,
-    GroupAtGuardMiddleware,
-    QuoteContextMiddleware,
+    InboundPipelineBuilder,
     MediaResolveMiddleware,
     PatchAnchorsMiddleware,
-    InboundPipelineBuilder,
+    PlaceholderFilterMiddleware,
+    QuoteContextMiddleware,
+    SkipSelfMiddleware,
     YuanbaoAdapter,
-    _MIN_RESOLVE_CONCURRENCY,
-    _MAX_RESOLVE_CONCURRENCY,
 )
-from gateway.config import PlatformConfig
-
 
 # ============================================================
 # Helpers

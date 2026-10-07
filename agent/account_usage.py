@@ -9,7 +9,11 @@ from typing import TYPE_CHECKING, Any, Callable, Optional
 import httpx
 
 from agent.anthropic_credentials import _is_oauth_token, resolve_anthropic_token
-from hermes_cli.auth import AuthError, _read_codex_tokens, resolve_codex_runtime_credentials
+from hermes_cli.auth import (
+    AuthError,
+    _read_codex_tokens,
+    resolve_codex_runtime_credentials,
+)
 from hermes_cli.auth_codex import _codex_pool_route_base_url
 from hermes_cli.runtime_provider import resolve_runtime_provider
 from hermes_time import safe_strftime
@@ -206,6 +210,7 @@ def _fetch_portal_account(timeout: float):
     and never blocks the caller or process exit; its eventual exception is
     drained so GC never logs "exception was never retrieved"."""
     import contextvars
+
     from hermes_cli.nous_account import get_nous_portal_account_info
     from tools.daemon_pool import DaemonThreadPoolExecutor
 

@@ -23,7 +23,7 @@ class TestRecordNousRateLimit:
     """Test recording rate limit state."""
 
     def test_records_with_header_reset(self, rate_guard_env):
-        from agent.nous_rate_guard import record_nous_rate_limit, _state_path
+        from agent.nous_rate_guard import _state_path, record_nous_rate_limit
 
         headers = {"x-ratelimit-reset-requests-1h": "1800"}
         record_nous_rate_limit(headers=headers)
@@ -39,7 +39,7 @@ class TestRecordNousRateLimit:
 
 
     def test_falls_back_to_error_context_reset_at(self, rate_guard_env):
-        from agent.nous_rate_guard import record_nous_rate_limit, _state_path
+        from agent.nous_rate_guard import _state_path, record_nous_rate_limit
 
         future_reset = time.time() + 900
         record_nous_rate_limit(
@@ -53,7 +53,7 @@ class TestRecordNousRateLimit:
 
 
     def test_custom_default_cooldown(self, rate_guard_env):
-        from agent.nous_rate_guard import record_nous_rate_limit, _state_path
+        from agent.nous_rate_guard import _state_path, record_nous_rate_limit
 
         record_nous_rate_limit(headers=None, default_cooldown=120.0)
 
@@ -68,7 +68,10 @@ class TestNousRateLimitRemaining:
 
 
     def test_returns_remaining_seconds_when_active(self, rate_guard_env):
-        from agent.nous_rate_guard import record_nous_rate_limit, nous_rate_limit_remaining
+        from agent.nous_rate_guard import (
+            nous_rate_limit_remaining,
+            record_nous_rate_limit,
+        )
 
         record_nous_rate_limit(headers={"x-ratelimit-reset-requests-1h": "600"})
         remaining = nous_rate_limit_remaining()
@@ -76,7 +79,7 @@ class TestNousRateLimitRemaining:
         assert 595 < remaining <= 605  # ~600 seconds, allowing for test execution time
 
     def test_returns_none_when_expired(self, rate_guard_env):
-        from agent.nous_rate_guard import nous_rate_limit_remaining, _state_path
+        from agent.nous_rate_guard import _state_path, nous_rate_limit_remaining
 
         # Write an already-expired state
         path = _state_path()
@@ -96,10 +99,10 @@ class TestClearNousRateLimit:
 
     def test_clears_existing_file(self, rate_guard_env):
         from agent.nous_rate_guard import (
-            record_nous_rate_limit,
+            _state_path,
             clear_nous_rate_limit,
             nous_rate_limit_remaining,
-            _state_path,
+            record_nous_rate_limit,
         )
 
         record_nous_rate_limit(headers={"retry-after": "600"})
@@ -309,7 +312,7 @@ class TestRateGuardStateEncoding:
     def test_read_uses_utf8_under_non_utf8_locale(self, rate_guard_env, monkeypatch):
         import builtins
 
-        from agent.nous_rate_guard import nous_rate_limit_remaining, _state_path
+        from agent.nous_rate_guard import _state_path, nous_rate_limit_remaining
 
         path = _state_path()
         os.makedirs(os.path.dirname(path), exist_ok=True)

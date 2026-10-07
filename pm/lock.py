@@ -161,9 +161,8 @@ class Facts:
 
     def refresh_digests(self, store_root: Path) -> int:
         """Publish all tool digests after packaging finishes changing their bytes."""
-        from pm.store import tree_digest
-
         from pm.filesystem import long_root
+        from pm.store import tree_digest
 
         packages = _read(self.path, strict=True)["packages"]
         # Digests walk whole tool trees: the long spelling keeps them past MAX_PATH.

@@ -61,6 +61,7 @@ def test_compression_replay_reaches_gateway_status_sink_only_when_visible(tmp_pa
 def test_invalid_config_int_print_honors_policy_log_always(tmp_path, monkeypatch, setting, capsys, caplog):
     _policy(tmp_path, monkeypatch, setting)
     import logging
+
     from agent import agent_init
     agent = types.SimpleNamespace(platform="cli", _notification_config=None)
     with caplog.at_level(logging.WARNING):
@@ -134,8 +135,9 @@ def test_cli_vision_fallback_notice_honors_policy(tmp_path, monkeypatch, setting
     """Real call through _preprocess_images_with_vision: the model-facing retry text (with the path)
     is always produced; only the console ⚠ notice follows policy."""
     _policy(tmp_path, monkeypatch, setting)
-    import cli as climod
     from unittest.mock import patch as _patch
+
+    import cli as climod
     out = []
     monkeypatch.setattr(climod, "_cprint", lambda s: out.append(s))
     img = tmp_path / "shot.png"; img.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 16)

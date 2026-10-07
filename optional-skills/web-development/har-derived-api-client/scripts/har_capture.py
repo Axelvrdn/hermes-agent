@@ -12,8 +12,8 @@ Actions run in order after page load. The HAR embeds request/response bodies
 NOTE: a failing action raises before the HAR is flushed -- you get no file.
 Fix the selector (try --headed to watch) and rerun.
 """
-import logging
 import argparse
+import logging
 import sys
 import time
 

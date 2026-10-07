@@ -12,8 +12,9 @@ the behavior under test.
 
 import time
 
-import hermes_cli.providers as providers_mod
 import pytest
+
+import hermes_cli.providers as providers_mod
 import hermes_yaml as yaml
 from hermes_cli.model_switch import list_authenticated_providers, switch_model
 from hermes_cli.model_switch_providers import (
@@ -22,7 +23,6 @@ from hermes_cli.model_switch_providers import (
     _save_discovered_models_to_config,
 )
 from hermes_cli.providers import resolve_provider_full
-
 
 _MOCK_VALIDATION = {
     "accepted": True,

@@ -7,7 +7,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from agent.fallback_cooldown import _mark_entitlement_rejected_model
-
 from run_agent import AIAgent
 
 # Assembled at runtime so no credential-shaped literal sits in source (scanner guard).

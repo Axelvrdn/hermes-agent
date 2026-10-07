@@ -21,6 +21,7 @@ def _fake_windows_prepare(tmp_path, monkeypatch, acquire):
     """Run the bootstrap's ``_prepare`` as on Windows, with PM, venv_sync and the --prepared
     child replaced by recorders; returns the ordered events."""
     from contextlib import nullcontext
+
     import pm
     import pm.client
     import pm.environments

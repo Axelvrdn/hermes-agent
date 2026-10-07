@@ -10,11 +10,13 @@ import os
 import queue
 import threading
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from rich.console import Console
+
 from hermes_cli.fallback_config import get_fallback_chain
 from hermes_state_ids import new_session_id
-from pathlib import Path
-from rich.console import Console
-from typing import Any, Dict, List, Optional
 from utils import base_url_host_matches, base_url_hostname, is_truthy_value
 
 # Log-record parity with the origin module.
@@ -40,7 +42,10 @@ class CLIInitMixin:
         self._focus_saved_tool_progress = self._focus_last_counted_tool = None
         self._focus_hidden_lines = 0
         if self._focus_view_enabled:
-            from hermes_cli.focus_view import FOCUS_TOOL_PROGRESS_MODE, normalize_tool_progress_mode
+            from hermes_cli.focus_view import (
+                FOCUS_TOOL_PROGRESS_MODE,
+                normalize_tool_progress_mode,
+            )
 
             self._focus_saved_tool_progress = normalize_tool_progress_mode(self.tool_progress_mode)
             self.tool_progress_mode = FOCUS_TOOL_PROGRESS_MODE
@@ -199,6 +204,7 @@ class CLIInitMixin:
     def _init_turn_limits(self, max_turns, run_budget):
         """max_turns: CLI arg > config > env var > default; run budget: CLI flag > config."""
         from cli import CLI_CONFIG
+
         # resolve_turn_limit() accepts "none"/"unlimited" (-> sys.maxsize) alongside ints.
         # KEEP the root-level CLI_CONFIG["max_turns"] fallback: it is never migrated on disk
         # and other config paths may bypass the load-time fold.
@@ -248,9 +254,19 @@ class CLIInitMixin:
 
     def _init_prompt_and_reasoning(self, reasoning):
         """Ephemeral system prompt/prefill, reasoning + service tier, OpenRouter routing knobs, fallback chain."""
-        from cli import CLI_CONFIG, _load_prefill_messages, _parse_reasoning_config, _parse_service_tier_config, _resolve_prefill_messages_file
+        from cli import (
+            CLI_CONFIG,
+            _load_prefill_messages,
+            _parse_reasoning_config,
+            _parse_service_tier_config,
+            _resolve_prefill_messages_file,
+        )
+
         # Env var wins, then hermes_cli.personality (single owner of overlay resolution).
-        from hermes_cli.personality import available_personalities, resolve_ephemeral_system_prompt
+        from hermes_cli.personality import (
+            available_personalities,
+            resolve_ephemeral_system_prompt,
+        )
 
         self.system_prompt = os.getenv("HERMES_EPHEMERAL_SYSTEM_PROMPT", "") or resolve_ephemeral_system_prompt(CLI_CONFIG)
         self.personalities = available_personalities(CLI_CONFIG)
@@ -340,8 +356,11 @@ class CLIInitMixin:
             # the store before relying on resume.
             self._session_db_unavailable = True
             logger.warning("Failed to initialize SessionDB — session will NOT be indexed for search: %s", e)
-            from hermes_state_user_copy import describe_storage_failure, storage_failure_details
             from agent.i18n import t
+            from hermes_state_user_copy import (
+                describe_storage_failure,
+                storage_failure_details,
+            )
             failure = describe_storage_failure(e)
             def _present_store_warning():
                 try:

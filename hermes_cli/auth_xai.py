@@ -6,19 +6,32 @@ Split out of ``hermes_cli/auth.py``; origin helpers are imported lazily per func
 
 from __future__ import annotations
 
-import logging
 import base64
 import json
+import logging
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Optional
 from urllib.parse import urlparse
-from hermes_cli.auth_codex import _load_auth_store_maybe_locked, _refresh_payload_access_token
+
+from hermes_cli.auth_codex import (
+    _load_auth_store_maybe_locked,
+    _refresh_payload_access_token,
+)
 from hermes_cli.auth_constants import (
-    AUTH_LOCK_TIMEOUT_SECONDS, AuthError, DEFAULT_XAI_OAUTH_BASE_URL, DEVICE_CODE_GRANT_TYPE,
-    XAI_ACCESS_TOKEN_REFRESH_SKEW_SECONDS, XAI_OAUTH_CLIENT_ID, XAI_OAUTH_DEVICE_CODE_URL,
-    XAI_OAUTH_DISCOVERY_URL, XAI_OAUTH_SCOPE, _FORM_JSON_HEADERS, _xai_err, httpx,
+    _FORM_JSON_HEADERS,
+    AUTH_LOCK_TIMEOUT_SECONDS,
+    DEFAULT_XAI_OAUTH_BASE_URL,
+    DEVICE_CODE_GRANT_TYPE,
+    XAI_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
+    XAI_OAUTH_CLIENT_ID,
+    XAI_OAUTH_DEVICE_CODE_URL,
+    XAI_OAUTH_DISCOVERY_URL,
+    XAI_OAUTH_SCOPE,
+    AuthError,
+    _xai_err,
+    httpx,
 )
 from utils import env_float
 
@@ -134,7 +147,17 @@ def _save_xai_oauth_tokens(
     Pass ``set_active=False`` for side-tool bootstrap (TTS/setup, tools config, dashboard, refresh)
     so inference routing is unchanged.
     """
-    from hermes_cli.auth import _auth_store_lock, _global_auth_file_path, _load_auth_store, _load_provider_state_with_source, _same_path, _save_auth_store, _store_provider_state, _utc_now_z, _write_through_xai_oauth_to_global_root
+    from hermes_cli.auth import (
+        _auth_store_lock,
+        _global_auth_file_path,
+        _load_auth_store,
+        _load_provider_state_with_source,
+        _same_path,
+        _save_auth_store,
+        _store_provider_state,
+        _utc_now_z,
+        _write_through_xai_oauth_to_global_root,
+    )
     if last_refresh is None:
         last_refresh = _utc_now_z()
     with _auth_store_lock():
@@ -355,7 +378,11 @@ def _refresh_xai_oauth_tokens(
     tokens: Dict[str, Any], *, token_endpoint: str, redirect_uri: str = "", timeout_seconds: float
 ) -> Dict[str, Any]:
     # Keep the stored auth_mode (legacy logins may carry ``oauth_pkce``): refresh must not relabel it.
-    from hermes_cli.auth import _load_auth_store, _load_provider_state, refresh_xai_oauth_pure
+    from hermes_cli.auth import (
+        _load_auth_store,
+        _load_provider_state,
+        refresh_xai_oauth_pure,
+    )
     try:
         state = _load_provider_state(_load_auth_store(), "xai-oauth") or {}
         auth_mode = str(state.get("auth_mode") or "oauth_device_code")
@@ -387,7 +414,13 @@ def _quarantine_xai_oauth_tokens(exc: AuthError) -> None:
 
     Best-effort: persistence failures are logged and swallowed; the caller re-raises regardless.
     """
-    from hermes_cli.auth import _last_auth_error_marker, _load_auth_store, _load_provider_state, _save_auth_store, _store_provider_state
+    from hermes_cli.auth import (
+        _last_auth_error_marker,
+        _load_auth_store,
+        _load_provider_state,
+        _save_auth_store,
+        _store_provider_state,
+    )
     try:
         store = _load_auth_store()
         state = _load_provider_state(store, "xai-oauth") or {}
@@ -418,7 +451,12 @@ def resolve_xai_oauth_runtime_credentials(
     *, force_refresh: bool = False, refresh_if_expiring: bool = True,
     refresh_skew_seconds: Optional[int] = None,
 ) -> Dict[str, Any]:
-    from hermes_cli.auth import _auth_store_lock, _is_terminal_xai_oauth_refresh_error, _refresh_xai_oauth_tokens, _xai_oauth_discovery
+    from hermes_cli.auth import (
+        _auth_store_lock,
+        _is_terminal_xai_oauth_refresh_error,
+        _refresh_xai_oauth_tokens,
+        _xai_oauth_discovery,
+    )
 
     def _should_refresh(data: Dict[str, Any]) -> bool:
         access_token = _clean(data["tokens"].get("access_token"))
@@ -465,7 +503,15 @@ def resolve_xai_oauth_runtime_credentials(
 
 
 def _login_xai_oauth(args, pconfig: ProviderConfig, *, force_new_login: bool = False) -> None:
-    from hermes_cli.auth import _is_remote_session, _offer_existing_oauth_credentials, _print_login_success, _update_config_for_provider, _xai_oauth_device_code_login, resolve_xai_oauth_runtime_credentials, unsuppress_credential_source
+    from hermes_cli.auth import (
+        _is_remote_session,
+        _offer_existing_oauth_credentials,
+        _print_login_success,
+        _update_config_for_provider,
+        _xai_oauth_device_code_login,
+        resolve_xai_oauth_runtime_credentials,
+        unsuppress_credential_source,
+    )
     del pconfig
 
     if not force_new_login and _offer_existing_oauth_credentials(
@@ -555,7 +601,14 @@ def _xai_oauth_poll_device_token(
 
 
 def _xai_oauth_device_code_login(*, timeout_seconds: float = 20.0, open_browser: bool = True) -> Dict[str, Any]:
-    from hermes_cli.auth import _can_open_graphical_browser, _is_remote_session, _print_device_code_instructions, _utc_now_z, _xai_oauth_discovery, _xai_oauth_poll_device_token
+    from hermes_cli.auth import (
+        _can_open_graphical_browser,
+        _is_remote_session,
+        _print_device_code_instructions,
+        _utc_now_z,
+        _xai_oauth_discovery,
+        _xai_oauth_poll_device_token,
+    )
     discovery = _xai_oauth_discovery(timeout_seconds)
     timeout = httpx.Timeout(max(20.0, timeout_seconds))
     with httpx.Client(timeout=timeout, headers={"Accept": "application/json"}) as client:

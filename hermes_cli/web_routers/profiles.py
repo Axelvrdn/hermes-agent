@@ -12,7 +12,6 @@ so a test's ``monkeypatch.setattr(<owning module>, "_helper", ...)`` keeps worki
 import contextlib
 import copy
 import functools
-from hermes_cli.web_read_coalescing import coalesced_read
 import inspect
 import json
 import logging
@@ -26,27 +25,41 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, HTTPException, Query
+from starlette.concurrency import run_in_threadpool
 
-from hermes_cli.session_listing import subagent_listing_scope
-from hermes_cli.web_deps import late
 from hermes_cli.config import get_process_hermes_home
 from hermes_cli.profiles import ProfileIdentitySettlementPending
+from hermes_cli.session_listing import subagent_listing_scope
+from hermes_cli.web_deps import late
+from hermes_cli.web_models import (
+    ProfileActiveUpdate,
+    ProfileCreate,
+    ProfileDescribeAuto,
+    ProfileDescriptionUpdate,
+    ProfileExport,
+    ProfileImport,
+    ProfileModelUpdate,
+    ProfileRename,
+    ProfileSoulUpdate,
+    SessionPrScanBody,
+)
+from hermes_cli.web_read_coalescing import coalesced_read
+from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK
 from hermes_cli.web_server_config import (
-    _apply_main_model_assignment, _normalize_main_model_assignment, _validated_main_model_selection,
+    _apply_main_model_assignment,
+    _normalize_main_model_assignment,
+    _validated_main_model_selection,
 )
 from hermes_cli.web_server_gateway import _strip_session_list_rows
-from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK
 from hermes_cli.web_server_profiles import (
-    _fallback_profile_dicts, _hub_action_name, _write_profile_mcp_servers,
+    _config_profile_scope,
+    _fallback_profile_dicts,
+    _hermes_home_scope,
+    _hub_action_name,
+    _write_profile_mcp_servers,
 )
 from hermes_cli.web_server_sessions import _open_session_db_at_path
 from hermes_state_health import STORAGE_CORRUPT, note_storage_error, storage_state
-from starlette.concurrency import run_in_threadpool
-from hermes_cli.web_models import (
-    ProfileCreate, ProfileActiveUpdate, ProfileExport, ProfileImport, ProfileRename,
-    ProfileSoulUpdate, ProfileDescriptionUpdate, ProfileModelUpdate, ProfileDescribeAuto,
-    SessionPrScanBody)
-from hermes_cli.web_server_profiles import _config_profile_scope, _hermes_home_scope
 
 # Same logger the handlers used before extraction (identical logger object).
 _log = logging.getLogger("hermes_cli.web_server")

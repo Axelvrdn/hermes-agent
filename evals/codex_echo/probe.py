@@ -5,9 +5,9 @@ The peer is an offline fixture, not a Codex/provider validation.
 """
 import json
 import os
-from pathlib import Path
 import tempfile
 import threading
+from pathlib import Path
 
 
 def main():

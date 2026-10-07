@@ -1,13 +1,14 @@
 import asyncio
-import pytest
-
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
 from hermes_cli import kanban as kc
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
 from hermes_cli import kanban_db_notify as kbn
-from unittest.mock import AsyncMock, MagicMock, patch
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -191,10 +192,10 @@ async def test_notifier_notify_plus_wake_sends_and_wakes(kanban_home):
     """notify+wake delivers the passive message AND wakes the agent; a plain
     notify sub only sends. The agent is woken only for the notify+wake sub."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     conn = kbc.connect()
     try:
@@ -256,10 +257,10 @@ async def test_notifier_plain_notify_never_wakes_even_with_session_id(kanban_hom
     creator session_id. This guards against the older unconditional wake path
     that forged adapter.handle_message events after every terminal delivery."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     conn = kbc.connect()
     try:
@@ -309,10 +310,10 @@ async def test_notifier_plain_notify_never_wakes_even_with_session_id(kanban_hom
 async def test_notifier_notify_wake_does_not_wake_on_status_event(kanban_home):
     """notify+wake wakes on terminal outcomes, not on dashboard status churn."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     conn = kbc.connect()
     try:
@@ -360,10 +361,10 @@ async def test_notifier_wake_forwards_persisted_chat_type_and_user_id(kanban_hom
     user_id so ``deliver_wake`` resolves the operator's real (e.g. group)
     session instead of a hardcoded one."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     conn = kbc.connect()
     try:
@@ -416,10 +417,10 @@ async def test_notifier_wake_only_skips_send_and_advances_cursor(kanban_home):
     """wake-only: NO passive send, the agent is woken exactly once, and the
     cursor advances so repeated ticks do not re-wake."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     conn = kbc.connect()
     try:
@@ -489,10 +490,10 @@ async def test_notifier_unsubs_after_abnormal_events(kind, kanban_home):
     TERMINAL_KINDS in gateway/run.py and PR #21398.
     """
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     conn = kbc.connect()
 
@@ -615,8 +616,8 @@ async def test_gateway_create_autosubscribes_on_explicit_board(kanban_home):
     flag appears before the subcommand, and the subscription must land in
     that board's DB rather than the ambient/default board.
     """
-    from gateway.run import GatewayRunner
     from gateway.config import Platform
+    from gateway.run import GatewayRunner
 
     kb.create_board("projx")
 
@@ -691,8 +692,8 @@ async def test_gateway_autosubscribe_roundtrips_user_id_alt_for_session_key(
     key built from the original source with the key rebuilt from the persisted
     row.
     """
-    from gateway.run import GatewayRunner
     from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from gateway.session import SessionSource, build_session_key
 
     runner = object.__new__(GatewayRunner)
@@ -761,10 +762,10 @@ async def test_notifier_artifact_delivery_skips_missing_files(kanban_home, tmp_p
     referenced by name only. The notifier must not crash and must still
     deliver any artifacts that do exist."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
     from tools import kanban_tools as kt
 
     # Allow ``tmp_path`` through the media-delivery safety filter. See the
@@ -841,11 +842,11 @@ async def test_notifier_uploads_review_handoff_artifacts(kanban_home, tmp_path, 
     """A review handoff's files are uploaded from the durable staged copy —
     not the scratch original the reviewer's completion is about to delete."""
     import hermes_cli.kanban_db as kb
+    from gateway.config import Platform
+    from gateway.run import GatewayRunner
     from hermes_cli import kanban_db_connect as kbc
     from hermes_cli import kanban_db_notify as kbn
     from hermes_cli import kanban_db_workspace as kbw
-    from gateway.run import GatewayRunner
-    from gateway.config import Platform
 
     monkeypatch.setenv("HERMES_MEDIA_ALLOW_DIRS", str(tmp_path))
 

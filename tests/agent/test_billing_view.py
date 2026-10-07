@@ -19,6 +19,7 @@ from decimal import Decimal
 import pytest
 
 import agent.billing_view as bv
+import hermes_cli.nous_billing as nb
 from agent.billing_view import (
     AutoReload,
     AutoReloadCard,
@@ -33,7 +34,6 @@ from agent.billing_view import (
     parse_money,
     validate_charge_amount,
 )
-import hermes_cli.nous_billing as nb
 from hermes_cli.nous_billing import (
     BillingAuthError,
     BillingError,
@@ -45,7 +45,6 @@ from hermes_cli.nous_billing import (
     _raise_for_error,
     resolve_portal_base_url,
 )
-
 
 # ---------------------------------------------------------------------------
 # Decimal money

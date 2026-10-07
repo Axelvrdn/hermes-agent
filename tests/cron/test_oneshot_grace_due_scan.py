@@ -16,8 +16,9 @@ These tests pin the due-scan grace gate:
   - re-triggered  -> due again (the Run button still works)
 """
 
-import pytest
 from datetime import datetime, timedelta, timezone
+
+import pytest
 
 from cron.jobs import (
     get_due_jobs,

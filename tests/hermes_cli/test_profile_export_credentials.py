@@ -155,7 +155,10 @@ class TestCredentialExclusion:
         from pathlib import Path
 
         from hermes_cli.profile_distribution import (
-            DistributionError, DistributionManifest, install_distribution, write_manifest,
+            DistributionError,
+            DistributionManifest,
+            install_distribution,
+            write_manifest,
         )
 
         monkeypatch.setattr(Path, "home", lambda: tmp_path)

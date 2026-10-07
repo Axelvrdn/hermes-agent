@@ -28,7 +28,6 @@ from typing import Any
 
 import pytest
 
-
 from . import _helpers as H
 
 NAMES = ("default", "alpha", "beta")

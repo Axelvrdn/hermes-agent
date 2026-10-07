@@ -3,8 +3,8 @@
 Split out of ``tools/browser_tool.py``. Facade-owned state is read through ``_bt`` (``tools.browser_tool``, resolved per call) — no import cycle.
 """
 
-import logging
 import contextlib
+import logging
 import os
 import shutil
 import signal
@@ -15,13 +15,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
-from tools.browser_tool_origin import origin as _bt
+from hermes_constants import (
+    get_hermes_home,
+    reset_hermes_home_override,
+    set_hermes_home_override,
+)
 from tools import browser_tool_cdp as _cdp
 from tools import browser_tool_cloud as _cloud
-from tools import browser_tool_session as _session
 from tools import browser_tool_install as _install
 from tools import browser_tool_real_profile as _real_profile
+from tools import browser_tool_session as _session
+from tools.browser_tool_origin import origin as _bt
 
 
 def _session_expiry_timestamp(session_info: Dict[str, Any]) -> Optional[float]:
@@ -119,7 +123,11 @@ def _session_owner_scope(task_id: str):
         yield
         return
 
-    from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
+    from agent.secret_scope import (
+        build_profile_secret_scope,
+        reset_secret_scope,
+        set_secret_scope,
+    )
     from hermes_cli.env_loader import hydrate_profile_secret_sources
 
     home_token = set_hermes_home_override(owner_home)
@@ -751,7 +759,9 @@ def cleanup_all_browsers() -> None:
         cleanup_browser(task_id)
 
     try:  # tear down CDP supervisors so background threads exit
-        from tools.browser_supervisor import SUPERVISOR_REGISTRY  # type: ignore[import-not-found]
+        from tools.browser_supervisor import (
+            SUPERVISOR_REGISTRY,  # type: ignore[import-not-found]
+        )
         SUPERVISOR_REGISTRY.stop_all()
     except Exception as _exc:
         logging.debug("Suppressed exception: %s", _exc, exc_info=True)

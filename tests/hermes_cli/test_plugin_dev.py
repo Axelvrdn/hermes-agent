@@ -189,7 +189,6 @@ def test_doctor_removes_temp_home_when_staging_copy_fails(
     import shutil
     import tempfile
 
-
     from hermes_cli import plugin_dev
 
     plugin = tmp_path / "sample"

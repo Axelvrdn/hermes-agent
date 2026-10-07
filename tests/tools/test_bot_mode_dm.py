@@ -1328,8 +1328,8 @@ def test_live_owner_ack_carries_the_poll_return_path_when_session_cannot_receive
     """#101142 sibling: a live-owner (Desktop) target still runs the same tracked runner whose
     stdout carries the reply. On a non-push sender the live-owner ack must propagate
     ``reply_delivery="poll"`` and the wait instruction instead of 'finish your turn'."""
-    from tools import bot_live_delivery as live
     import tools.terminal_tool as terminal_tool_module
+    from tools import bot_live_delivery as live
 
     home = _managed_home(tmp_path)
     target = home / "profiles" / "researcher"

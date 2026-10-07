@@ -1,8 +1,6 @@
 import importlib
 import logging
 
-
-
 terminal_tool_module = importlib.import_module("tools.terminal_tool")
 
 

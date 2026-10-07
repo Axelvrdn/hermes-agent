@@ -1,11 +1,12 @@
 """Post-PM installer stages use the real installation-bound publication."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
+
 from tests.installation_launcher_fixture import publish_fixture_launcher
 
 if os.name == 'posix':

@@ -18,11 +18,13 @@ Usage:
 import json
 import random
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Tuple
+
 import fire
 
 # Load environment variables
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -267,7 +269,7 @@ def run_compression(input_dir: Path, output_dir: Path, config_path: str):
     # Import the compressor
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent))
-    from trajectory_compressor import TrajectoryCompressor, CompressionConfig
+    from trajectory_compressor import CompressionConfig, TrajectoryCompressor
     
     print("\n🗜️  Running trajectory compression...")
     print(f"   Input: {input_dir}")

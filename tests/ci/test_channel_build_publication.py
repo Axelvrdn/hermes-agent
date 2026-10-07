@@ -5,25 +5,32 @@ import copy
 import hashlib
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
+from pathlib import Path
 
-import hermes_yaml
 import pytest
 
+import hermes_yaml
 from hermes_cli.release_channels import canonical_json
 from scripts.releases import channel_publish, handoff, r2
 from scripts.releases.channels import preview_identity
 from scripts.releases.versioning import tag_record
 from tests.ci.desktop_release_roles import (
-    DOWNLOADABLE_DISPATCHES, admitted, channel_publisher, commit_summary, gate, native_builds, needs_of, stage_step,
+    DOWNLOADABLE_DISPATCHES,
+    admitted,
+    channel_publisher,
+    commit_summary,
+    gate,
+    native_builds,
+    needs_of,
+    stage_step,
     universal_assembler,
 )
-from tests.ci.test_desktop_release_tag_admission import _seed_repo, _git, _workflow
+from tests.ci.test_desktop_release_tag_admission import _git, _seed_repo, _workflow
 from tests.scripts.test_release_r2 import r2_server  # noqa: F401
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -452,10 +459,10 @@ def test_disposable_controller_allocates_then_separate_admission(tmp_path):
 
 @pytest.mark.platforms("posix")
 def test_receiver_allocation_uses_official_identity_only_inside_scope(tmp_path):
-    from tests.scripts.test_release_channels import object_server, publisher
     from scripts.releases.channel_disposable import allocate_receivers
     from scripts.releases.channel_releases import product_identity
     from scripts.releases.r2_scope import R2Scope
+    from tests.scripts.test_release_channels import object_server, publisher
 
     with object_server() as (url, objects, *_):
         pub = publisher(url)

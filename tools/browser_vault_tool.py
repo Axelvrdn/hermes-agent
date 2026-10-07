@@ -27,8 +27,8 @@ autofill (kernel-login-autofill.ts / fill_from_vault.ts).
 from __future__ import annotations
 
 import json
-import secrets
 import logging
+import secrets
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -291,7 +291,10 @@ def browser_vault_unlock(backend_name: str) -> str:
 def browser_vault_save_login(label: str = "", task_id: Optional[str] = None) -> str:
     """Ask the user (masked prompt on their surface) for the login of the CURRENT page, store it in the local
     vault bound to that origin, and fill the password at once. The values never enter the conversation."""
-    from agent.vault_backends.unlock import can_prompt_here, get_save_login_prompt_callback
+    from agent.vault_backends.unlock import (
+        can_prompt_here,
+        get_save_login_prompt_callback,
+    )
     from agent.vault_store import get_vault_store
 
     effective_task_id = task_id or "default"
@@ -340,7 +343,13 @@ def browser_vault_enter_code(handle: str = "", task_id: Optional[str] = None) ->
     from agent.redact import register_vault_redaction_value
     from agent.vault_backends import backend_for_handle
     from agent.vault_backends.unlock import can_prompt_here, get_code_prompt_callback
-    from agent.vault_login_classifier import LoginControl, build_fill_js, build_inspection_js, build_otp_fills, classify_otp_controls
+    from agent.vault_login_classifier import (
+        LoginControl,
+        build_fill_js,
+        build_inspection_js,
+        build_otp_fills,
+        classify_otp_controls,
+    )
 
     effective_task_id = task_id or "default"
     _focus_bound_origin(effective_task_id, "", "otp")
@@ -406,6 +415,7 @@ def browser_vault_fill(handle: str, task_id: Optional[str] = None) -> str:
     the supervisor CDP WebSocket; the result reports only counts/metadata.
     """
     from agent.redact import register_vault_redaction_value
+    from agent.vault_backends import UnlockRequired, backend_for_handle
     from agent.vault_login_classifier import (
         ClassifiedLoginControl,
         LoginControl,
@@ -416,7 +426,6 @@ def browser_vault_fill(handle: str, task_id: Optional[str] = None) -> str:
         select_checkout_fills,
         select_password_fill,
     )
-    from agent.vault_backends import UnlockRequired, backend_for_handle
     from agent.vault_store import ADDRESS_FIELDS, PAYMENT_FIELDS, scrub_secret_from_text
 
     effective_task_id = task_id or "default"

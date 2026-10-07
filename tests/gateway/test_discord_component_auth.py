@@ -30,7 +30,9 @@ from plugins.platforms.discord.adapter import (  # noqa: E402
     UpdatePromptView,
     _resolve_exec_approval_admin_gate,
 )
-from plugins.platforms.discord.adapter_component_auth import _component_check_auth  # noqa: E402
+from plugins.platforms.discord.adapter_component_auth import (
+    _component_check_auth,  # noqa: E402
+)
 
 
 @pytest.fixture(autouse=True)

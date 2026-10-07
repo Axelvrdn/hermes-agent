@@ -8,11 +8,12 @@ Coverage:
   auto-detect ranking — keyed paid-band; keyless only when Tavily is selected.
 """
 
+import asyncio
 import json
 import os
-import asyncio
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 from tests.tools.conftest import register_all_web_providers
 

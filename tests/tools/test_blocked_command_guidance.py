@@ -1,10 +1,10 @@
 """Tests for blocked-command recovery guidance (parser-limit + backgrounding)."""
 
 
+from tools import approval_floors
 from tools.approval import _hardline_block_result
 from tools.approval_detection import _PARSER_LIMIT_DESCRIPTION
 from tools.terminal_tool import _foreground_background_guidance
-from tools import approval_floors
 
 
 class TestParserLimitRecovery:

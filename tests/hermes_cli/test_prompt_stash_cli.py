@@ -19,6 +19,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+
 def _make_cli(**kwargs):
     """Create a HermesCLI with prompt_toolkit stubbed out."""
     _clean_config = {

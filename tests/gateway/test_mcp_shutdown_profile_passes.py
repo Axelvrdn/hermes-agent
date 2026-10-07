@@ -53,7 +53,10 @@ async def test_every_pass_shares_the_callers_budget(homes, monkeypatch):
 async def test_teardown_thread_does_not_inherit_the_callers_home_override(tmp_path, monkeypatch):
     import tools.mcp_tool_lifecycle as lifecycle
     from hermes_constants import (
-        get_hermes_home_override, reset_hermes_home_override, set_hermes_home_override)
+        get_hermes_home_override,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
 
     launch = tmp_path / "launch"
     poison = tmp_path / "profiles" / "poison"

@@ -19,6 +19,7 @@ from agent.credential_pool import (
     PooledCredential,
 )
 
+
 def _codex_entry(entry_id: str = "codex-1") -> PooledCredential:
     return PooledCredential(
         provider="openai-codex",

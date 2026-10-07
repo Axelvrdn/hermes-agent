@@ -28,42 +28,81 @@ from functools import cached_property, wraps
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional, Set, Tuple, Union
 
-from hermes_constants import get_hermes_home, get_process_hermes_home, hermes_home_key
-from registration_lifecycle import replacement_coordinator
-from utils import env_var_enabled
 from hermes_cli.config import load_config_readonly
 from hermes_cli.middleware import VALID_MIDDLEWARE
 from hermes_cli.plugin_capabilities import plugin_capability_granted
-from hermes_cli.relay_plugin_cutover import RELAY_PLUGINS_CONFIG_ENV, legacy_relay_plugin_keys
-# Sibling modules' names are re-exported here (origin) so plugins and tests keep one import path.
-from hermes_cli.plugins_manifest import (  # noqa: F401 — re-exported
-    _CONFIG_SCHEMA_TYPES, SUPPORTED_MANIFEST_VERSION, PluginManifest, _portable_skill_namespace,
-    manifest_key, parse_manifest_file, resolve_module_origin, resolve_plugin_load_order,
-    validate_config_schema,
-)
 from hermes_cli.plugins_discovery import (  # noqa: F401 — re-exported
-    ENTRY_POINTS_GROUP, _get_disabled_plugins, _get_enabled_plugins, collect_directory_manifests,
-    discover_entrypoint_manifests, gate_manifest, plugin_discovery_suppressed, resolve_manifest_winners,
+    ENTRY_POINTS_GROUP,
+    _get_disabled_plugins,
+    _get_enabled_plugins,
+    collect_directory_manifests,
+    discover_entrypoint_manifests,
+    gate_manifest,
+    plugin_discovery_suppressed,
+    resolve_manifest_winners,
     scan_directory,
 )
-from hermes_cli.plugins_loader import (
-    PluginLoaderMixin, _BARE_MODULE_SCOPE, _MODULE_NAMESPACE_LOCK, _NS_PARENT, _evict_modules,
-    _plugin_home_scope, _serialized_replacement, in_plugin_load_worker,
-)
 from hermes_cli.plugins_dispatch import (  # noqa: F401 — re-exported
-    DEFAULT_SYSTEM_PROMPT_SECTION_MAX_CHARS, HERMES_EVENT_NAMESPACE, MAX_SYSTEM_PROMPT_SECTION_CHARS,
-    MAX_SYSTEM_PROMPT_SECTIONS_TOTAL_CHARS, PLUGIN_SECTIONS_END, PLUGIN_SECTIONS_START,
-    SYSTEM_PROMPT_SECTION_POSITIONS, _EVENT_EMIT_DEPTH_CAP, _EVENT_PENDING_CAP,
-    _HOOK_CALLBACK_TIMEOUT_SECS, _HOOK_TIMEOUT_SUPPRESSION_SECONDS, _MAX_HOOK_CALLBACK_TIMEOUT_SECS,
-    _PRE_TOOL_CALL_TIMEOUT_BLOCK_MESSAGE, PluginDispatchMixin, PluginSystemPromptSection,
-    RenderedPluginSystemPromptSection, _EventSubscription, format_system_prompt_sections,
+    _EVENT_EMIT_DEPTH_CAP,
+    _EVENT_PENDING_CAP,
+    _HOOK_CALLBACK_TIMEOUT_SECS,
+    _HOOK_TIMEOUT_SUPPRESSION_SECONDS,
+    _MAX_HOOK_CALLBACK_TIMEOUT_SECS,
+    _PRE_TOOL_CALL_TIMEOUT_BLOCK_MESSAGE,
+    DEFAULT_SYSTEM_PROMPT_SECTION_MAX_CHARS,
+    HERMES_EVENT_NAMESPACE,
+    MAX_SYSTEM_PROMPT_SECTION_CHARS,
+    MAX_SYSTEM_PROMPT_SECTIONS_TOTAL_CHARS,
+    PLUGIN_SECTIONS_END,
+    PLUGIN_SECTIONS_START,
+    SYSTEM_PROMPT_SECTION_POSITIONS,
+    PluginDispatchMixin,
+    PluginSystemPromptSection,
+    RenderedPluginSystemPromptSection,
+    _EventSubscription,
+    format_system_prompt_sections,
     is_valid_system_prompt_section_id,
 )
 from hermes_cli.plugins_ledger import PluginLedgerMixin, PluginRegistration
-from hermes_cli.plugins_state import (
-    PluginState, _locked_plugin_state, _nested_plugin_mapping, _nested_plugin_value,
-    _plugin_relative_segments, _plugin_settings_entry, save_plugin_setting,
+from hermes_cli.plugins_loader import (
+    _BARE_MODULE_SCOPE,
+    _MODULE_NAMESPACE_LOCK,
+    _NS_PARENT,
+    PluginLoaderMixin,
+    _evict_modules,
+    _plugin_home_scope,
+    _serialized_replacement,
+    in_plugin_load_worker,
 )
+
+# Sibling modules' names are re-exported here (origin) so plugins and tests keep one import path.
+from hermes_cli.plugins_manifest import (  # noqa: F401 — re-exported
+    _CONFIG_SCHEMA_TYPES,
+    SUPPORTED_MANIFEST_VERSION,
+    PluginManifest,
+    _portable_skill_namespace,
+    manifest_key,
+    parse_manifest_file,
+    resolve_module_origin,
+    resolve_plugin_load_order,
+    validate_config_schema,
+)
+from hermes_cli.plugins_state import (
+    PluginState,
+    _locked_plugin_state,
+    _nested_plugin_mapping,
+    _nested_plugin_value,
+    _plugin_relative_segments,
+    _plugin_settings_entry,
+    save_plugin_setting,
+)
+from hermes_cli.relay_plugin_cutover import (
+    RELAY_PLUGINS_CONFIG_ENV,
+    legacy_relay_plugin_keys,
+)
+from hermes_constants import get_hermes_home, get_process_hermes_home, hermes_home_key
+from registration_lifecycle import replacement_coordinator
+from utils import env_var_enabled
 
 
 def get_bundled_plugins_dir() -> Path:
@@ -387,7 +426,10 @@ class PluginContext:
     def subagent_lifecycle(self) -> Any:
         """Plugin-safe subagent lifecycle service: serializable handles and immutable snapshots,
         never a live agent or private registry."""
-        from agent.subagent_lifecycle import SubagentLifecycleService, get_active_subagent_parent
+        from agent.subagent_lifecycle import (
+            SubagentLifecycleService,
+            get_active_subagent_parent,
+        )
         return SubagentLifecycleService(get_active_subagent_parent)
 
     @property
@@ -709,7 +751,10 @@ class PluginContext:
         defines ``@<prefix>:``. Built-in prefixes (diff, staged, file, folder, git, url) are
         rejected."""
         from agent.context_references import (
-            ContextReferenceProvider as _CRP, register_context_reference_provider as _register,
+            ContextReferenceProvider as _CRP,
+        )
+        from agent.context_references import (
+            register_context_reference_provider as _register,
         )
         if self._wrong_type(provider, _CRP, "context reference provider"):
             return
@@ -737,7 +782,10 @@ class PluginContext:
         auth gate (non-loopback bind without ``--insecure``). Wrong type / duplicate name warn and
         are ignored, never raised."""
         from hermes_cli.dashboard_auth import DashboardAuthProvider
-        from hermes_cli.dashboard_auth.registry import register_global_provider, unregister_global_provider
+        from hermes_cli.dashboard_auth.registry import (
+            register_global_provider,
+            unregister_global_provider,
+        )
         if self._wrong_type(provider, DashboardAuthProvider, "dashboard-auth provider"):
             return
         launch_scope = hermes_home_key(get_process_hermes_home())
@@ -784,7 +832,11 @@ class PluginContext:
         it freely); an ACTIVE installer goes in ``ensure_deps_fn`` (called from ``create_adapter()`` when
         ``check_fn`` is False). Extra kwargs (``setup_fn``, ``emoji``, ``allowed_users_env``,
         ``platform_hint``, ``ensure_deps_fn``) forward to ``PlatformEntry``; unknown keys raise TypeError."""
-        from gateway.platform_registry import core_ships_platform, platform_registry, PlatformEntry
+        from gateway.platform_registry import (
+            PlatformEntry,
+            core_ships_platform,
+            platform_registry,
+        )
         if entry_kwargs.get("trusted_inbound") and self.manifest.source != "bundled" and core_ships_platform(name):
             raise self._refuse(f"core platform '{name}' with trusted_inbound (it would waive allowlists and pairing)")
         entry_kwargs.setdefault("plugin_name", self.manifest.name)
@@ -897,7 +949,12 @@ class PluginContext:
         registration wins key by key. Resets the i18n caches; never changes ``display.language``. Raises
         ``ValueError`` for a malformed id/surface/file and ``FileNotFoundError`` for a missing path."""
         from agent.i18n_layers import (
-            SURFACES, is_language_id, load_locale_source, normalize_language_id, register_pack, unregister_pack,
+            SURFACES,
+            is_language_id,
+            load_locale_source,
+            normalize_language_id,
+            register_pack,
+            unregister_pack,
         )
         lang_id = normalize_language_id(lang)
         if not is_language_id(lang_id):
@@ -1341,7 +1398,10 @@ class PluginManager(PluginLoaderMixin, PluginDispatchMixin, PluginLedgerMixin):
         activation), reset the cache and re-apply. Fail-open: never raises into discover_and_load."""
         try:
             from agent.secret_sources.registry import list_plugin_sources
-            from hermes_cli.env_loader import load_hermes_dotenv, reset_secret_source_cache
+            from hermes_cli.env_loader import (
+                load_hermes_dotenv,
+                reset_secret_source_cache,
+            )
             plugin_sources = list_plugin_sources()
         except Exception:
             return
@@ -2060,7 +2120,10 @@ def _resolve_block_from_details(
         return None
     try:
         from tools.approval import request_tool_approval
-        from tools.approval_context import reset_current_observability_context, set_current_observability_context
+        from tools.approval_context import (
+            reset_current_observability_context,
+            set_current_observability_context,
+        )
         approval_tokens = None
         with suppress(Exception):
             approval_tokens = set_current_observability_context(

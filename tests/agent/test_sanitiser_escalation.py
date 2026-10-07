@@ -231,7 +231,7 @@ class TestHealStatsSurface:
 
     def test_debug_report_includes_heal_counters(self, monkeypatch):
         import agent.agent_runtime_helpers as arh
-        from hermes_cli.debug import collect_debug_report, LogSnapshot
+        from hermes_cli.debug import LogSnapshot, collect_debug_report
 
         monkeypatch.setattr(arh, "_heal_escalation_threshold", lambda: 2)
         set_session_context("sess-report")

@@ -7,8 +7,8 @@ runtime identity -- the same one the completion publishes in its stamp.
 """
 
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
 

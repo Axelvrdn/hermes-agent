@@ -16,7 +16,11 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
-from hermes_cli.plugins_state import _plugin_relative_segments, _plugin_settings_entry, save_plugin_setting
+from hermes_cli.plugins_state import (
+    _plugin_relative_segments,
+    _plugin_settings_entry,
+    save_plugin_setting,
+)
 
 logger = logging.getLogger(__name__)
 

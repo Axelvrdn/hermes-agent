@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 from unittest.mock import Mock
 
-import pm
 import pytest
 
+import pm
 
 SETUP_PATH = (
     Path(__file__).resolve().parents[2]

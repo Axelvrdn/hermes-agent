@@ -1,5 +1,5 @@
-import importlib.metadata
 import argparse
+import importlib.metadata
 import json
 import logging
 import os

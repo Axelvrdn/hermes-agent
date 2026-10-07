@@ -17,18 +17,16 @@ import pytest
 
 from gateway.config import PlatformConfig
 from gateway.platforms.base import (
-    SendResult,
     SUPPORTED_VIDEO_TYPES,
+    SendResult,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-
 
 # ---------------------------------------------------------------------------
 # Mock the telegram package if it's not installed
 # ---------------------------------------------------------------------------
 # Now we can safely import
 from plugins.platforms.telegram.adapter import TelegramAdapter  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Helpers to build mock Telegram objects

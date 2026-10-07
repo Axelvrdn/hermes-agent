@@ -9,9 +9,9 @@ Run: HERMES_E2E_BROWSER=1 <venv>/bin/python evals/vault_fill_live_e2e.py
 """
 from __future__ import annotations
 
-import logging
 import http.server
 import json
+import logging
 import os
 import sys
 import tempfile
@@ -71,11 +71,11 @@ def main() -> int:
         assert sup is not None, "browser_exec did not attach a supervisor for its task (problem 1 regressed)"
         print("supervisor attached by browser_exec; its page before fill:", sup.evaluate_runtime("location.href")["result"])
 
+        import tools.approval_prompt as ap
+        from agent import redact
+        from agent.vault_store import get_vault_store
         from tools import browser_vault_tool as bvt
         from tools.browser_cdp_tool import _redact_cdp_output
-        from agent.vault_store import get_vault_store
-        from agent import redact
-        import tools.approval_prompt as ap
 
         store = get_vault_store()
         login = store.add_item("login", "site", {"identifier_type": "email", "identifier": "a@b.c", "password": "pw-E2E-8842"}, origin=origin)

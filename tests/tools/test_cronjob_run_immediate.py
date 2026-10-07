@@ -17,7 +17,7 @@ import time
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from tools.cronjob_tools import cronjob, _execute_job_now
+from tools.cronjob_tools import _execute_job_now, cronjob
 from tools.environments.base import set_activity_callback
 
 _JOB = {"id": "job-run-1", "name": "manual run", "prompt": "hi",

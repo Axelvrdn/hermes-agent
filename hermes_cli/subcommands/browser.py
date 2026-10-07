@@ -25,8 +25,11 @@ def build_browser_parser(subparsers) -> None:
 
     def _dispatch_browser(_args):
         from hermes_cli.browser_connect import (
-            UNSUPPORTED_CHANNEL, close_browser_holding_profile, detect_default_chromium,
-            real_profile_data_dir)
+            UNSUPPORTED_CHANNEL,
+            close_browser_holding_profile,
+            detect_default_chromium,
+            real_profile_data_dir,
+        )
 
         action = getattr(_args, "browser_action", None)
         if action != "close-profile":

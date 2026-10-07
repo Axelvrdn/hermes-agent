@@ -17,7 +17,6 @@ from tools.skills_hub_github import GitHubAuth, GitHubSource
 from tools.skills_hub_models import SkillBundle
 from tools.skills_hub_sources import UrlSource
 
-
 SKILL_MD = """---
 name: demo-bundle
 description: A multi-file test skill.
@@ -568,6 +567,7 @@ def test_unified_search_trust_rank_survives_limit_cut():
     """Official/builtin results must survive the limit truncation even when a
     high-volume community source floods the merged list first."""
     from unittest.mock import patch as _patch
+
     from tools.skills_hub_models import SkillMeta
     from tools.skills_hub_search import unified_search
 

@@ -1,15 +1,14 @@
 import asyncio
 import json
+import os
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 from gateway.config import Platform, PlatformConfig, load_gateway_config
 from gateway.platforms.event import MessageType
 from gateway.session import SessionSource
-
-import os
-
-import pytest
 
 
 @pytest.fixture(autouse=True)

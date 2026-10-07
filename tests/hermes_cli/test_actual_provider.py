@@ -26,6 +26,7 @@ from hermes_cli.providers import determine_api_mode
 from hermes_cli.providers import normalize_provider as normalize_overlay_provider
 from providers import get_provider_profile
 
+
 def _clear_actual_env(monkeypatch):
     monkeypatch.delenv("ACTUAL_API_KEY", raising=False)
     monkeypatch.delenv("ACTUAL_BASE_URL", raising=False)

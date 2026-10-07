@@ -332,8 +332,9 @@ class TestDispatchIntegration(unittest.TestCase):
         self.assertEqual(result["kernel"]["execution_count"], 3)
 
     def test_execute_remote_falls_open_to_per_call(self):
-        from tools.code_execution_tool import _execute_remote
         from unittest.mock import MagicMock
+
+        from tools.code_execution_tool import _execute_remote
 
         env = ScriptedEnv([
             ("command -v python3", lambda c: {"output": "OK\n", "returncode": 0}),

@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field, replace as dataclass_replace
+from dataclasses import dataclass, field
+from dataclasses import replace as dataclass_replace
 from typing import Any, Callable, Optional, Sequence
 
 from tools.connectors.gateway.config import connectors_available
-from tools.connectors.gateway.errors import GatewayAuthError, GatewayUnavailable, ToolGatewayError
+from tools.connectors.gateway.errors import (
+    GatewayAuthError,
+    GatewayUnavailable,
+    ToolGatewayError,
+)
 from tools.connectors.gateway.merge import fill_remote_failure, splice_remote_results
 from tools.connectors.gateway.names import parse_connector_name, vendor_slug_candidates
 

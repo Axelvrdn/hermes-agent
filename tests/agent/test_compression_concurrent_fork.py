@@ -42,6 +42,7 @@ import pytest
 
 from hermes_state import SessionDB
 
+
 def _build_agent_with_db(
     db: SessionDB,
     session_id: str,

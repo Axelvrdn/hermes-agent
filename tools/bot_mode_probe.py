@@ -374,7 +374,10 @@ def capability_fingerprint(home: str | os.PathLike | None = None) -> str:
         # scoped to the bot's home via the override the loaders already honor.
         from agent.skill_utils import parse_config_string_list
         from hermes_cli.config import load_config_readonly
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         token = set_hermes_home_override(str(resolved))
         try:

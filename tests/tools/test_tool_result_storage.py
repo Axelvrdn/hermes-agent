@@ -4,17 +4,17 @@ import json
 import os
 import subprocess
 import sys
+from unittest.mock import MagicMock, patch
 
 import pytest
-from unittest.mock import MagicMock, patch
 
 from tools.budget_config import (
     DEFAULT_PREVIEW_SIZE_CHARS,
     BudgetConfig,
 )
 from tools.tool_result_storage import (
-    PERSISTED_OUTPUT_TAG,
     PERSISTED_OUTPUT_CLOSING_TAG,
+    PERSISTED_OUTPUT_TAG,
     STORAGE_DIR,
     _build_persisted_message,
     _pageable_text,

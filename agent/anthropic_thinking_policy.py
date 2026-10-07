@@ -24,7 +24,6 @@ from agent.anthropic_endpoints import (
     _model_name_is_deepseek_thinking,
 )
 
-
 _CLAUDE_VERSION_RE = re.compile(
     # Semantic minors are short version components. Snapshot dates such as
     # claude-opus-4-20250514 must remain 4.0 rather than becoming 4.20250514.

@@ -21,14 +21,14 @@ def client(_isolate_hermes_home, monkeypatch):
     freebie.mkdir(parents=True, exist_ok=True)
     (freebie / "config.yaml").write_text("model: {}\n", encoding="utf-8")
 
-    from hermes_constants import get_hermes_home
     import hermes_cli.nous_account as nous_account
+    from hermes_constants import get_hermes_home
 
     # The launch profile's account is paid, the "freebie" profile's is free tier.
     monkeypatch.setattr(nous_account, "get_nous_portal_account_info", lambda **_k: SimpleNamespace(
         is_free_tier=get_hermes_home().name == "freebie"))
 
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
 
     c = TestClient(app, raise_server_exceptions=False)
     c.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN

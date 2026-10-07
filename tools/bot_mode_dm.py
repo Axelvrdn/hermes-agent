@@ -204,8 +204,16 @@ def message_agent_tool(target: str = "", message: str = "", task_id: Optional[st
     home = _agent_home(agent)
     try:
         from tools.bot_mode_probe import (
-            BOT_CHAT_TITLE, _display_name, _handle, _hermes_root, _peers, _profile_name as _self_profile_name,
-            _roster, is_bot_mode_managed,
+            BOT_CHAT_TITLE,
+            _display_name,
+            _handle,
+            _hermes_root,
+            _peers,
+            _roster,
+            is_bot_mode_managed,
+        )
+        from tools.bot_mode_probe import (
+            _profile_name as _self_profile_name,
         )
         from tools.bot_relay import BOT_CHAT_TURN_ARGS, _hermes_cli
 
@@ -304,8 +312,13 @@ def _try_relay_delivery(root: Path, raw_target: str, content: str, me: str, *,
     try:
         from tools.bot_mode_probe import _handle, local_taken_forms
         from tools.bot_relay import (
-            EnvelopeRefusedError, _target_aliases, enqueue_envelope, read_remote_roster, remote_target_forms,
-            resolve_remote_target, waiter_command,
+            EnvelopeRefusedError,
+            _target_aliases,
+            enqueue_envelope,
+            read_remote_roster,
+            remote_target_forms,
+            resolve_remote_target,
+            waiter_command,
         )
 
         roster = read_remote_roster(root)
@@ -432,7 +445,12 @@ def _run_local_turn(argv: list[str], dm_file: str, *, env: Optional[dict[str, st
 
     proc = _turn()
     if proc.returncode != 0:
-        from tools.bot_failure_reasons import RETRY_NONE, classify_agent_error, retry_action, turn_failure_text
+        from tools.bot_failure_reasons import (
+            RETRY_NONE,
+            classify_agent_error,
+            retry_action,
+            turn_failure_text,
+        )
         from tools.bot_relay import retry_turn_env
 
         # The re-run replays the same session and payload; the failed attempt already persisted the
@@ -487,7 +505,11 @@ def _dm_delivery_id(dm_file: "str | os.PathLike") -> str:
 
 def _admit_live_dm(profile_home: Path | None, dm_file: str, author: Optional[dict] = None) -> dict | None:
     """Pin intent before admission; retries may inspect, never change transport."""
-    from tools.bot_live_delivery import deliver_to_live_owner, find_canonical_live_owner, read_delivery_result
+    from tools.bot_live_delivery import (
+        deliver_to_live_owner,
+        find_canonical_live_owner,
+        read_delivery_result,
+    )
     from utils import fsync_directory
 
     intent: dict[str, Any]
@@ -522,7 +544,11 @@ def _admit_live_dm(profile_home: Path | None, dm_file: str, author: Optional[dic
 
 def _wait_live_dm(home: str, delivery_id: str, *, dm_file: "str | os.PathLike | None" = None) -> int:
     from tools.bot_failure_reasons import RUNTIME_OFFLINE
-    from tools.bot_live_delivery import await_delivery, cancel_queued_delivery, owner_holds_delivery
+    from tools.bot_live_delivery import (
+        await_delivery,
+        cancel_queued_delivery,
+        owner_holds_delivery,
+    )
 
     deadline = time.monotonic() + _LIVE_WAIT_MAX_SECONDS
     missed = 0
@@ -779,7 +805,8 @@ def _persist_reply_when_done(proc_id: str, agent: Any) -> bool:
 
     def _run() -> None:
         from tools.process_registry_notifications import (
-            format_process_notification, process_completion_display_text,
+            format_process_notification,
+            process_completion_display_text,
         )
 
         proc._completion_event.wait()

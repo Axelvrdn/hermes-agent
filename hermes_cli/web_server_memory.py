@@ -1,14 +1,15 @@
 """Memory-provider dashboard helpers: manifest/schema loading, setup-env and dependency probes, configured-status discovery.
 """
 
-import logging
 import json
+import logging
 import os
 import shlex
 import subprocess
-from fastapi import HTTPException
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from fastapi import HTTPException
 
 # Same logger the code used before extraction (record parity).
 _log = logging.getLogger("hermes_cli.web_server")

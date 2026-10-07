@@ -9,7 +9,6 @@ show an explicit summarizing indicator instead of the turn looking hung
 from __future__ import annotations
 
 import importlib
-
 from unittest.mock import MagicMock, patch
 
 import pytest

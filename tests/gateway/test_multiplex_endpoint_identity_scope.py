@@ -61,6 +61,7 @@ def test_matrix_homeserver_identity_follow_the_scoped_token(secondary_scope):
 @pytest.mark.asyncio
 async def test_matrix_standalone_send_posts_scoped_token_to_scoped_homeserver(secondary_scope, monkeypatch):
     import aiohttp
+
     from plugins.platforms.matrix import adapter as mx
 
     seen = {}
@@ -108,6 +109,7 @@ def test_dingtalk_client_id_follows_the_scoped_secret(secondary_scope):
 @pytest.mark.asyncio
 async def test_dingtalk_standalone_send_posts_to_scoped_robot_webhook(secondary_scope, monkeypatch):
     import httpx
+
     from plugins.platforms.dingtalk import adapter as ding
 
     posted = []

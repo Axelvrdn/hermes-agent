@@ -14,8 +14,8 @@ import json
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.agent_import import (
     ENTRY_DELIMITER,
     AgentImporter,
@@ -25,7 +25,6 @@ from hermes_cli.agent_import import (
     is_secret_key,
     sanitize_mcp_env,
 )
-
 
 # ---------------------------------------------------------------------------
 # Shared fixture: redirect Path.home() and HERMES_HOME (profile_env pattern)
@@ -676,6 +675,7 @@ class TestCliWiring:
 
     def test_rejects_unknown_agent(self):
         import argparse
+
         from hermes_cli.subcommands.import_agent import build_import_agent_parser
 
         parser = argparse.ArgumentParser()
@@ -688,6 +688,7 @@ class TestCliWiring:
             self, claude_tree, hermes_home, capsys):
         """End-to-end through import_agent_command with --dry-run."""
         import types
+
         from hermes_cli.agent_import import import_agent_command
 
         args = types.SimpleNamespace(
@@ -712,6 +713,7 @@ class TestCliWiring:
 class TestSyncManifest:
     def _run_command(self, agent, source, dry_run=False, sync=False):
         import types
+
         from hermes_cli.agent_import import import_agent_command
 
         import_agent_command(types.SimpleNamespace(

@@ -1,8 +1,8 @@
 """Verify load_transcript returns SQLite messages without any JSONL file."""
 
 
-from gateway.session import SessionStore
 from gateway.config import GatewayConfig
+from gateway.session import SessionStore
 
 
 def test_load_transcript_returns_db_messages_when_no_jsonl(tmp_path, monkeypatch):

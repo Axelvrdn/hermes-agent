@@ -1,28 +1,27 @@
 """Tests for SSRF protection in url_safety module."""
 
+import ipaddress
 import socket
 from unittest.mock import patch
 
 import httpx
+import pytest
 
 from tools.url_safety import (
-    is_safe_url,
+    _MAX_SSRF_CONNECT_IPS,
+    SSRFConnectionBlocked,
+    _global_allow_private_urls,
+    _is_blocked_ip,
+    _reset_allow_private_cache,
+    _resolved_http_connect_ips,
+    _SSRFGuardedAsyncNetworkBackend,
     async_is_safe_url,
+    create_ssrf_safe_async_client,
     is_always_blocked_url,
+    is_safe_url,
     normalize_url_for_request,
     redirect_target_from_response,
-    create_ssrf_safe_async_client,
-    SSRFConnectionBlocked,
-    _SSRFGuardedAsyncNetworkBackend,
-    _MAX_SSRF_CONNECT_IPS,
-    _resolved_http_connect_ips,
-    _is_blocked_ip,
-    _global_allow_private_urls,
-    _reset_allow_private_cache,
 )
-
-import ipaddress
-import pytest
 
 
 def _resolves_to(*ips):

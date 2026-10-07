@@ -383,8 +383,8 @@ async def test_running_agent_fastpath_allows_admin_command():
 async def test_gating_isolated_per_platform():
     """When Discord is gated and Telegram isn't, the same user_id on
     Telegram must be unrestricted."""
-    from gateway.run import GatewayRunner
     from gateway.config import GatewayConfig, Platform, PlatformConfig
+    from gateway.run import GatewayRunner
 
     runner = object.__new__(GatewayRunner)
     runner.config = GatewayConfig(

@@ -8,8 +8,8 @@ CRLF endings while the replacement is LF-only).
 See issue #507 (Roo Code deep-dive, item 2c).
 """
 
-import logging
 import json
+import logging
 
 import pytest
 
@@ -34,7 +34,7 @@ def hermes_home(monkeypatch, tmp_path):
     # test_resolve_path that rely on TERMINAL_CWD env var.
     try:
         from tools.file_tools import clear_file_ops_cache
-        from tools.file_tools_read_tracking import _read_tracker_lock, _read_tracker
+        from tools.file_tools_read_tracking import _read_tracker, _read_tracker_lock
         clear_file_ops_cache()
         with _read_tracker_lock:
             _read_tracker.clear()

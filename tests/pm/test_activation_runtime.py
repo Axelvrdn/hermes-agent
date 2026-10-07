@@ -1,14 +1,20 @@
 """Activation syncs through setup before selecting or changing the caller's env."""
 import json
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import textwrap
+from pathlib import Path
 
 import pytest
 
-from tests.pm.activation_support import bash, fake_store, posix, powershell, sync_checkout
+from tests.pm.activation_support import (
+    bash,
+    fake_store,
+    posix,
+    powershell,
+    sync_checkout,
+)
 
 # Spawns children with a home it builds itself; the parent's must stay real.
 pytestmark = pytest.mark.real_machine_home

@@ -8,9 +8,9 @@ exec-read *inside the sandbox*, so ``vision_analyze('/etc/passwd')`` never reads
 """
 from __future__ import annotations
 
-import logging
 import asyncio
 import base64
+import logging
 import os
 import re
 from dataclasses import dataclass
@@ -131,6 +131,7 @@ def _http_block_reason(url: str) -> Optional[str]:
 
 async def _download_to_bytes(url: str) -> bytes:
     import tempfile
+
     from tools.vision_tools import _download_image
     with tempfile.NamedTemporaryFile(suffix=".img", delete=False) as tf:
         tmp = Path(tf.name)
@@ -296,6 +297,7 @@ def _detect_video_mime(data: bytes, src: str) -> Optional[str]:
     """Video MIME from the extension table, else the ISO base-media ``ftyp`` magic at
     offset 4 (covers extensionless data: URLs / query-string URLs)."""
     from urllib.parse import urlsplit
+
     from tools.vision_tools import _detect_video_mime_type
     path_part = urlsplit(src).path if _SCHEME_RE.match(src) else src
     by_extension = _detect_video_mime_type(Path(path_part))

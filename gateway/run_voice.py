@@ -4,7 +4,6 @@ the MRO). ``gateway.run`` internals are imported lazily inside method bodies (im
 
 from __future__ import annotations
 
-from pm import install_hint
 import asyncio
 import functools
 import json
@@ -23,6 +22,7 @@ from gateway.config import Platform
 from gateway.platforms.base import build_auto_tts_output_path
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.session import SessionSource
+from pm import install_hint
 
 logger = logging.getLogger("gateway.run")  # log-record parity with the origin module
 
@@ -118,7 +118,9 @@ class GatewayVoiceMixin:
         if not chat_sets:
             return
         try:
-            from hermes_cli.config import load_config  # lazy: no gateway -> hermes_cli module dep
+            from hermes_cli.config import (
+                load_config,  # lazy: no gateway -> hermes_cli module dep
+            )
             auto_tts_default = bool((load_config().get("voice") or {}).get("auto_tts", False))
         except Exception:
             auto_tts_default = False

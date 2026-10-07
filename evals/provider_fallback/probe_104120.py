@@ -1,5 +1,12 @@
-import os, sys, tempfile, pathlib, json, threading, time, socket
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+import json
+import os
+import pathlib
+import socket
+import sys
+import tempfile
+import threading
+import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = sys.argv[1]
 home = tempfile.mkdtemp(prefix="hermes-104120-")
@@ -97,9 +104,9 @@ class Handler(BaseHTTPRequestHandler):
 server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
 threading.Thread(target=server.serve_forever, daemon=True).start()
 url = f"http://127.0.0.1:{server.server_port}/v1"
-from run_agent import AIAgent
-from agent.error_classifier import classify_api_error
 from agent.agent_runtime_helpers import restore_primary_runtime
+from agent.error_classifier import classify_api_error
+from run_agent import AIAgent
 
 results = []
 for label, model, chain in [

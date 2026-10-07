@@ -9,8 +9,6 @@ import os
 from unittest.mock import patch
 
 
-
-
 def test_probe_config_health_flags_null_sections():
     """Bare YAML keys (`agent:` with no value) parse as None and silently
     drop nested settings; probe must surface them so users can fix."""

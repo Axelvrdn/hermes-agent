@@ -7,8 +7,8 @@ provenance; category estimates are not exact tokenizer counts or gate authority.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import re
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -144,8 +144,8 @@ def context_usage_fields(compressor: Any) -> Dict[str, Any]:
 def compute_session_context_breakdown(agent: Any, messages: Optional[List[dict]] = None) -> Dict[str, Any]:
     """Return a Cursor-style context usage breakdown for one live agent."""
     from agent.model_metadata import estimate_messages_tokens_rough
-    from agent.usage_anchor import anchored_context_tokens
     from agent.system_prompt import build_system_prompt_parts
+    from agent.usage_anchor import anchored_context_tokens
 
     messages = messages or []
     parts = build_system_prompt_parts(agent)
@@ -216,8 +216,11 @@ def compute_context_details(agent: Any) -> Dict[str, Any]:
     Reuses the ``hermes prompt-size`` attribution (index-line bytes from the
     live skills block; schema bytes via the registry's tool→toolset map).
     """
-    from hermes_cli.prompt_size import _compute_skills_breakdown, _compute_toolsets_breakdown
     from agent.system_prompt import build_system_prompt_parts
+    from hermes_cli.prompt_size import (
+        _compute_skills_breakdown,
+        _compute_toolsets_breakdown,
+    )
 
     skills_block = _skills_block(build_system_prompt_parts(agent).get("stable", "") or "")
     tools = list(getattr(agent, "tools", None) or [])

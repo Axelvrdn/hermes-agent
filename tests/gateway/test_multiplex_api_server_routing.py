@@ -10,8 +10,8 @@ from typing import Any, cast
 
 from gateway.config import GatewayConfig, PlatformConfig
 from gateway.platforms.api_server import (
-    APIServerAdapter,
     _PROFILE_REJECTED,
+    APIServerAdapter,
     _api_request_profile,
 )
 

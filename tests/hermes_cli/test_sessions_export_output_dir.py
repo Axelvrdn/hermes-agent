@@ -3,8 +3,8 @@
 import json
 import sys
 
-import hermes_state
 import hermes_cli.main as main_mod
+import hermes_state
 
 
 class _FakeDB:

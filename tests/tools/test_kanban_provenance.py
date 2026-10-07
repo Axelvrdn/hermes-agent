@@ -8,9 +8,12 @@ from hermes_state import SessionDB
 
 @pytest.mark.parametrize("linked,explicit", [(False, None), (True, None), (False, "override")])
 def test_worker_create_keeps_durable_origin(tmp_path, monkeypatch, linked, explicit):
-    from hermes_cli import kanban_db as kb, kanban_db_connect as kbc, kanban_db_notify as kn
-    from tools import kanban_tools as kt, async_delegation
-    from gateway.session_context import set_session_vars, clear_session_vars
+    from gateway.session_context import clear_session_vars, set_session_vars
+    from hermes_cli import kanban_db as kb
+    from hermes_cli import kanban_db_connect as kbc
+    from hermes_cli import kanban_db_notify as kn
+    from tools import async_delegation
+    from tools import kanban_tools as kt
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)
@@ -47,9 +50,11 @@ def test_worker_create_keeps_durable_origin(tmp_path, monkeypatch, linked, expli
 
 
 def test_tool_subscription_captures_conversation_anchors(tmp_path, monkeypatch):
-    from hermes_cli import kanban_db as kb, kanban_db_connect as kbc, kanban_db_notify as kn
+    from gateway.session_context import clear_session_vars, set_session_vars
+    from hermes_cli import kanban_db as kb
+    from hermes_cli import kanban_db_connect as kbc
+    from hermes_cli import kanban_db_notify as kn
     from tools import kanban_tools as kt
-    from gateway.session_context import set_session_vars, clear_session_vars
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)
@@ -73,9 +78,10 @@ def test_tool_subscription_captures_conversation_anchors(tmp_path, monkeypatch):
 ])
 def test_tool_create_only_stamps_persisted_ambient_session(tmp_path, monkeypatch, session_id, persisted):
     """Ambient worker ids are provenance only after their state.db row exists."""
-    from hermes_cli import kanban_db as kb, kanban_db_connect as kbc
-    from tools import kanban_tools as kt
     from gateway.session_context import scoped_current_session_id
+    from hermes_cli import kanban_db as kb
+    from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)
@@ -99,9 +105,10 @@ def test_tool_create_only_stamps_persisted_ambient_session(tmp_path, monkeypatch
 def test_tool_create_stamps_request_scoped_session_over_process_env(tmp_path, monkeypatch):
     """In a multi-session process os.environ holds the LAST agent built; the request-scoped
     binding names the conversation that actually ordered the card."""
-    from hermes_cli import kanban_db as kb, kanban_db_connect as kbc
-    from tools import kanban_tools as kt
     from gateway.session_context import scoped_current_session_id
+    from hermes_cli import kanban_db as kb
+    from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)

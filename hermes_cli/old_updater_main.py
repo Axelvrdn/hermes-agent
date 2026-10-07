@@ -10,7 +10,6 @@ from typing import NoReturn
 
 from hermes_cli._old_updater import stop_for_relaunch
 
-
 # Shim to stop the old updater doing work until relaunch. Retain the filename
 # as data only, without recording a fingerprint or replacing the live recorder.
 _BYTECODE_FINGERPRINT_FILE = ".bytecode-fingerprint"

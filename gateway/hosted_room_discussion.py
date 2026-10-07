@@ -21,7 +21,6 @@ from gateway import hosted_rooms
 from gateway import hosted_rooms_common as common
 from gateway.hosted_rooms_common import compact_json
 
-
 MAX_DISCUSSION_MEMBERS = 6
 MIN_DISCUSSION_MEMBERS = 2
 MAX_DISCUSSION_ROUNDS = 3

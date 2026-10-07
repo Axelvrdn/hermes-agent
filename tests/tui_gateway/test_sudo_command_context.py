@@ -12,12 +12,12 @@ def test_sudo_request_preserves_command_without_leaking_prompt_context(monkeypat
     monkeypatch.setattr(sys, "stdout", sys.stdout)
     monkeypatch.setattr(sys, "excepthook", sys.excepthook)
     monkeypatch.setattr(threading, "excepthook", threading.excepthook)
-    from tui_gateway import server, server_requests
-    from tui_gateway.contracts.registry import SERVER_REQUESTS
-    from gateway.run import _redact_approval_command
     from agent import redact
     from agent.vault_backends import unlock
+    from gateway.run import _redact_approval_command
     from tools import project_tools, skills_tool, terminal_tool, terminal_tool_sudo
+    from tui_gateway import server, server_requests
+    from tui_gateway.contracts.registry import SERVER_REQUESTS
 
     # Restore the real registrations, including unrelated callbacks wired by the gateway.
     monkeypatch.setattr(terminal_tool, "_callback_tls", threading.local())

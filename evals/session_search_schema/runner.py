@@ -19,10 +19,10 @@ Results append to results/<label>/<model-slug>.jsonl (resume-safe: completed
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import importlib.util
 import json
+import logging
 import os
 import re
 import subprocess
@@ -37,8 +37,9 @@ REPO_ROOT = EVAL_DIR.parent.parent
 sys.path.insert(0, str(EVAL_DIR))
 sys.path.insert(0, str(REPO_ROOT))
 
-from agent.compression_marker import elide  # noqa: E402
 from tasks import SYSTEM, TASKS  # noqa: E402
+
+from agent.compression_marker import elide  # noqa: E402
 
 ALLOWED_KEYS = {
     "query", "role_filter", "limit", "session_id", "around_message_id",

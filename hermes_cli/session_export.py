@@ -7,13 +7,12 @@ only loads sessions and writes bytes.
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from html import escape as html_escape
-import json
 from typing import Any, Dict, Iterable, Iterator, List, Literal, Optional, Tuple
 
 from hermes_cli.timefmt import coerce_epoch
-
 
 ExportFormat = Literal["jsonl", "markdown"]
 ExportOnly = Literal["user-prompts"]

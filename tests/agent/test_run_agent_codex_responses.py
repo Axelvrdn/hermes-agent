@@ -4,7 +4,6 @@ from types import SimpleNamespace
 
 import pytest
 
-
 sys.modules.setdefault("fire", types.SimpleNamespace(Fire=lambda *a, **k: None))
 sys.modules.setdefault("firecrawl", types.SimpleNamespace(Firecrawl=object))
 sys.modules.setdefault("fal_client", types.SimpleNamespace())
@@ -2588,7 +2587,6 @@ def test_run_codex_stream_retired_request_stops_firing_callbacks(monkeypatch):
 def _raise_prestream_transport_error(request):
     """Raise the #103673 shape: APIConnectionError <- ReadError <- ReadError."""
     import httpx
-
     from openai import APIConnectionError
 
     inner = httpx.ReadError("receive failed", request=request)

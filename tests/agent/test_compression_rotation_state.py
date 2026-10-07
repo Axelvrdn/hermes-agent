@@ -26,7 +26,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agent.context_compressor import SUMMARY_PREFIX, ContextCompressor, _DB_PERSISTED_MARKER
+from agent.context_compressor import (
+    _DB_PERSISTED_MARKER,
+    SUMMARY_PREFIX,
+    ContextCompressor,
+)
 from agent.conversation_compression import (
     CompressionCommitFence,
     _is_real_user_message,

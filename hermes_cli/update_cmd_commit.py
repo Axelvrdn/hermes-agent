@@ -27,8 +27,8 @@ from hermes_cli._early_recovery import (
     RECOVERY_CLOSURE,
     RECOVERY_CLOSURE_INIT,
     RECOVERY_CLOSURE_MANIFEST,
-    blob_id,
     _lock_identity,
+    blob_id,
     interrupted_pull_marker,
     is_object_id,
     recovery_closure_dir,
@@ -119,7 +119,11 @@ def disarm_commit_obligations() -> None:
             if root is not None:
                 _owe_for(root, head)
             return
-    from hermes_cli.update_host_obligation import host_obligation_path, release_host_obligation, replace_bytes
+    from hermes_cli.update_host_obligation import (
+        host_obligation_path,
+        release_host_obligation,
+        replace_bytes,
+    )
 
     snapshot, _armed_snapshot = _armed_snapshot, None
     armed = dict(_armed_bytes)

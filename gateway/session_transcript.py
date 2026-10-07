@@ -9,8 +9,9 @@ import json
 import logging
 import threading
 import time
-from agent.turn_context import extract_api_content_sidecar
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+from agent.turn_context import extract_api_content_sidecar
 
 if TYPE_CHECKING:
     from gateway.session import SessionEntry
@@ -464,6 +465,7 @@ class SessionTranscriptMixin:
         if "messages_fts" in str(exc).lower():
             return True
         import sqlite3
+
         from hermes_state import SessionDB
         return isinstance(exc, sqlite3.DatabaseError) and SessionDB._is_fts_write_corruption_error(exc)
 

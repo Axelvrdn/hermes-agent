@@ -8,9 +8,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
 import pytest
 
-from hermes_cli.dashboard_auth.audit import audit_log, AuditEvent
+from hermes_cli.dashboard_auth.audit import AuditEvent, audit_log
 
 
 @pytest.fixture

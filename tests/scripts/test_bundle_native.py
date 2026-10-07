@@ -288,7 +288,8 @@ def test_bundle_stages_git_tree_and_runs_native_children_before_manifest(tmp_pat
         run = subprocess.run([str(moved / command)], cwd=tmp_path, capture_output=True, text=True, timeout=30)
         assert run.returncode == 7, run.stderr
         assert run.stdout.strip() == "1.0"
-        from pm import runtime as runtime_api, paths
+        from pm import paths
+        from pm import runtime as runtime_api
         with monkeypatch.context() as patch:
             patch.setattr(paths, "repo_root", lambda: moved / "hermes-agent")
             run = subprocess.run(runtime_api.runtime_command(moved / "hermes-agent/pm/launch.py", ["status"]),

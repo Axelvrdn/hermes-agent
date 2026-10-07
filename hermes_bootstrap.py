@@ -15,10 +15,10 @@ here may pull in a Hermes package that a project-local directory could shadow.
 
 from __future__ import annotations
 
-import logging
 import errno
 import importlib.abc
 import importlib.util
+import logging
 import os
 import selectors
 import socket
@@ -575,10 +575,9 @@ class RelaunchExit(SystemExit):
     relaunched = True
 
 
-from pm.environments import activate_dependencies, install_state_permission_message
 from hermes_cli._early_recovery import recover_if_needed
-
 from hermes_cli._parser import command_argv
+from pm.environments import activate_dependencies, install_state_permission_message
 
 # Repair needs only stdlib. Do not activate the damaged tree to reach it.
 _pm_repair = command_argv(sys.argv[1:])[:2] == ["pm", "repair"]

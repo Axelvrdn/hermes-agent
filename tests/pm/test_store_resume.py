@@ -6,13 +6,11 @@ import hashlib
 
 import pytest
 
-from pm.store import Store
-
 import pm.paths as paths
-
-from tests.pm._range_server import RangeHandler as _Handler, url as _url
+from pm.store import Store
+from tests.pm._range_server import RangeHandler as _Handler
 from tests.pm._range_server import dl_server as dl_server
-
+from tests.pm._range_server import url as _url
 
 
 def test_store_fetch_resumes_interrupted_download(tmp_path, dl_server, monkeypatch):

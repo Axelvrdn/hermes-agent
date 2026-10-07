@@ -198,8 +198,8 @@ def test_tui_init_run_state_seeds_config_sig_when_config_exists(monkeypatch):
     otherwise). Isolated-home tests without a config file therefore never
     exercised the call, and a missing import crashed every real CLI launch.
     """
-    from hermes_cli.config import get_config_path
     import cli as cli_mod
+    from hermes_cli.config import get_config_path
 
     # Bare object: skip the tool-callback / security wiring at the end of the init.
     monkeypatch.setenv("HERMES_DEFER_AGENT_STARTUP", "1")

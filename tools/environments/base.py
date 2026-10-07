@@ -20,15 +20,22 @@ from pathlib import Path
 from typing import Callable, Iterable
 
 from hermes_constants import get_hermes_home
-from tools.interrupt import consume_yield, is_interrupted, is_thread_interrupted
 from tools.environments.base_output import (
-    ProcessHandle, _finalize_wait_result, _new_output_collector, _start_drain_thread,
+    ProcessHandle,
+    _finalize_wait_result,
+    _new_output_collector,
+    _start_drain_thread,
 )
 from tools.environments.base_session_env import (
-    _SHELL_ENV_NAME_RE, _SNAP_TMP_SUFFIX, _cwd_marker, _snapshot_bootstrap_script, _split_cwd_marker,
+    _SHELL_ENV_NAME_RE,
+    _SNAP_TMP_SUFFIX,
+    _cwd_marker,
+    _snapshot_bootstrap_script,
+    _split_cwd_marker,
     _wrap_command_script,
 )
 from tools.environments.base_wait import _WaitTrace
+from tools.interrupt import consume_yield, is_interrupted, is_thread_interrupted
 from utils import env_var_enabled
 
 logger = logging.getLogger(__name__)

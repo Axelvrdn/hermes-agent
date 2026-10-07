@@ -10,6 +10,7 @@ from agent.anthropic_adapter import (
     sanitize_anthropic_kwargs,
 )
 
+
 def _fake_anthropic_call(**kwargs):
     """Mimic the Anthropic SDK's strict kwarg signature."""
     allowed = {

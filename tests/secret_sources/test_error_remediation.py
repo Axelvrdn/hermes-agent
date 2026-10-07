@@ -6,8 +6,6 @@ identity reject, the bws stderr summarizer, the per-source
 """
 from __future__ import annotations
 
-
-
 from agent.secret_sources import bitwarden as bw
 from agent.secret_sources.base import ErrorKind, FetchResult, SecretSource
 from agent.secret_sources.bitwarden import (
@@ -15,7 +13,6 @@ from agent.secret_sources.bitwarden import (
     _summarize_bws_stderr,
 )
 from agent.secret_sources.onepassword import OnePasswordSource
-
 
 _BWS_INVALID_CLIENT_DUMP = """\
 Error:
@@ -104,8 +101,8 @@ def test_remediation_never_raises_on_junk_cfg():
 
 
 def test_env_loader_prints_remediation_hint(tmp_path, monkeypatch, capsys):
-    from hermes_cli import env_loader
     from agent.secret_sources import registry
+    from hermes_cli import env_loader
 
     registry._reset_registry_for_tests()
     env_loader.reset_secret_source_cache()

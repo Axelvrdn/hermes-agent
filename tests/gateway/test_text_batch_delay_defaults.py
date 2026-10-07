@@ -11,8 +11,6 @@ from gateway.platforms.weixin import WeixinAdapter
 from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
 
 
-
-
 @pytest.mark.parametrize(
     "adapter_cls", [WhatsAppAdapter, WeixinAdapter], ids=["whatsapp", "weixin"],
 )

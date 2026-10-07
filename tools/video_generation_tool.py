@@ -18,7 +18,8 @@ from agent.video_gen_provider import (
     COMMON_RESOLUTIONS,
     DEFAULT_ASPECT_RATIO,
     DEFAULT_RESOLUTION,
-    error_response)
+    error_response,
+)
 from tools.registry import registry, tool_error
 
 logger = logging.getLogger(__name__)

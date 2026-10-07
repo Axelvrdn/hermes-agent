@@ -13,17 +13,16 @@ side effect the next tick can retry. The scan still returns its due jobs; tick()
 dispatch (no durable advance) without raising or mutating the store.
 """
 
+import asyncio
 import errno
 import json
-import asyncio
 import logging
 import os
 import shutil
 import sqlite3
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
-from datetime import datetime, timezone
 
 from cron import jobs as cronjobs
 from cron import store_health
@@ -309,11 +308,11 @@ def test_unwritable_store_is_shown_in_cron_status_and_announced_once(cron_store,
     window and is dropped if the store degrades again meanwhile, so the last notice always matches
     the store's real state."""
     from types import SimpleNamespace
+
+    from cron import scheduler
     from gateway import cron_store_notices
     from gateway.cron_store_notices import install_cron_store_notices
     from hermes_cli import cron as cron_cli
-
-    from cron import scheduler
 
     save_jobs([_due_job()])
     cron_dir = cron_store / "cron"
@@ -455,7 +454,9 @@ def test_unwritable_store_is_shown_in_cron_status_and_announced_once(cron_store,
     assert f"fix permissions on {cron_dir}" in sent[0][1]
     assert "writable again; 1 skipped run(s), catching up once per job" in sent[1][1]
     assert any(r.levelname == "WARNING" and "unwritable notice for" in r.getMessage() for r in caplog.records)
-    from cron import scheduler_ownership  # the profile leaves this gateway, its home already deleted
+    from cron import (
+        scheduler_ownership,  # the profile leaves this gateway, its home already deleted
+    )
     monkeypatch.setattr(scheduler_ownership, "_ticked_homes", {})
     sibling = cron_store / "sibling"  # a second profile whose cron/ reaches the same store
     sibling.mkdir()

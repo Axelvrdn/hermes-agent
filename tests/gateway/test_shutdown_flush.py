@@ -313,7 +313,10 @@ def test_flush_overflow_noop_on_empty():
 
 def test_drain_transcript_spool_skips_parseable_non_dict_payload(tmp_path, monkeypatch):
     """A scalar/list JSON spool file must not abort the drain; the healthy payload still replays."""
-    from gateway.shutdown_flush import drain_transcript_spool, spool_dropped_transcript_message
+    from gateway.shutdown_flush import (
+        drain_transcript_spool,
+        spool_dropped_transcript_message,
+    )
 
     flush_dir = _make_flush_dir(tmp_path)
     monkeypatch.setattr("gateway.shutdown_flush._get_flush_dir", lambda: flush_dir)

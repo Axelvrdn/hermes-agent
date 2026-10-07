@@ -82,7 +82,11 @@ def save_url(
     """
     import httpx
 
-    from tools.url_safety import create_ssrf_safe_client, is_always_blocked_url, is_safe_url
+    from tools.url_safety import (
+        create_ssrf_safe_client,
+        is_always_blocked_url,
+        is_safe_url,
+    )
 
     current_url, hop_headers, trusted_hop = url, headers, trusted_origin
     for _ in range(_MAX_SAVE_URL_REDIRECTS + 1):

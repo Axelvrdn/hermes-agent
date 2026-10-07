@@ -15,7 +15,12 @@ import site
 import sys
 from pathlib import Path
 
-from pm.environments import install_state_dir, selected_venv, site_packages, venv_bin_dir
+from pm.environments import (
+    install_state_dir,
+    selected_venv,
+    site_packages,
+    venv_bin_dir,
+)
 
 
 def running_environment(project_root: Path) -> Path | None:

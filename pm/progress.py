@@ -11,13 +11,13 @@ Stdlib-only: the bootstrap runner imports this from a pre-3.11 system Python.
 """
 from __future__ import annotations
 
-from collections import deque
 import os
 import re
 import shutil
 import subprocess
 import sys
 import time
+from collections import deque
 from typing import IO, Callable, Mapping, Optional, Protocol, Sequence
 
 TAIL_LINES = 80

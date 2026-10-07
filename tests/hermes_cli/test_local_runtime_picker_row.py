@@ -73,7 +73,11 @@ def test_explicit_only_filter_keeps_local_row_on_any_profile(hermes_home):
     filter must treat staged models as explicit configuration — otherwise
     the row only survives on the profile whose config points at llamacpp,
     and every other profile's dropdown silently loses local models."""
-    from hermes_cli.inventory import _filter_explicit_provider_rows, _local_runtime_row, load_picker_context
+    from hermes_cli.inventory import (
+        _filter_explicit_provider_rows,
+        _local_runtime_row,
+        load_picker_context,
+    )
 
     _stage(hermes_home, "Qwen3.8-27B-UD-Q5_K_XL")
     ctx = load_picker_context()

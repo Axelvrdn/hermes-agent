@@ -11,6 +11,7 @@ from tools.mcp_tool import MCPServerTask
 from tools.mcp_tool_registration import _register_server_tools
 from tools.registry import ToolRegistry
 
+
 def _make_mcp_tool(name: str, desc: str = ""):
     return SimpleNamespace(name=name, description=desc, inputSchema=None)
 

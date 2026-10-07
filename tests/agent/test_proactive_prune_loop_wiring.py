@@ -291,7 +291,11 @@ class TestCommittedPruneIsDedupBoundary:
 
     @staticmethod
     def _seed_dedup(tmp_path, task_id):
-        from tools.file_tools_read_tracking import _read_tracker, _read_tracker_lock, _task_data
+        from tools.file_tools_read_tracking import (
+            _read_tracker,
+            _read_tracker_lock,
+            _task_data,
+        )
         from tools.skills_tool_dedup import _record_skill_view, reset_skill_view_dedup
 
         skill_md = tmp_path / "SKILL.md"

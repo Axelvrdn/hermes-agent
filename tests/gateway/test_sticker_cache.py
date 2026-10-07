@@ -4,10 +4,11 @@ from unittest.mock import patch
 
 from gateway.sticker_cache import (
     _load_cache,
-    get_cached_description,
-    cache_sticker_description,
     build_sticker_injection,
+    cache_sticker_description,
+    get_cached_description,
 )
+
 
 class TestLoadSaveCache:
 

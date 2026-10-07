@@ -9,8 +9,8 @@ import pytest
 
 def test_gateway_main_survives_pm_failure(monkeypatch, tmp_path):
     monkeypatch.setattr("pm.paths.install_root", lambda: tmp_path)
-    import pm
     import gateway.run as gateway
+    import pm
 
     failed = []
     def broken():

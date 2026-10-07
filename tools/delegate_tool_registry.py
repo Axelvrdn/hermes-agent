@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import threading
 import time
 from typing import Any, Dict, List, Optional
+
 from agent.interrupt_compat import request_hard_interrupt
 from tools.registry import tool_error
 

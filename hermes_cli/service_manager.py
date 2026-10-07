@@ -1,8 +1,8 @@
 """Abstract service manager interface + systemd/launchd/Windows/s6 backends."""
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import re
 import shlex
@@ -120,6 +120,7 @@ class _HostServiceManager:
 
     def _backend_module(self):
         import importlib
+
         import hermes_cli
         importlib.import_module(f"hermes_cli.{self._backend}")
         return getattr(hermes_cli, self._backend)

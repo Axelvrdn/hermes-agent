@@ -12,8 +12,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from run_agent import AIAgent
 from agent.context_compressor import ContextCompressor
+from run_agent import AIAgent
 
 
 @pytest.fixture(autouse=True)

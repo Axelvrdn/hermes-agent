@@ -20,7 +20,12 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 
-from tools.tts_tool_delivery import _origin, _section, _wrap_pcm_as_wav, _write_wav_bytes_as
+from tools.tts_tool_delivery import (
+    _origin,
+    _section,
+    _wrap_pcm_as_wav,
+    _write_wav_bytes_as,
+)
 from tools.xai_http import hermes_xai_user_agent
 
 logger = logging.getLogger("tools.tts_tool")
@@ -567,8 +572,8 @@ def _generate_gemini_tts(text: str, output_path: str, tts_config: Dict[str, Any]
     gemini_config = _section(tts_config, "gemini")
     model = str(gemini_config.get("model", DEFAULT_GEMINI_TTS_MODEL)).strip() or DEFAULT_GEMINI_TTS_MODEL
     voice = str(gemini_config.get("voice", DEFAULT_GEMINI_TTS_VOICE)).strip() or DEFAULT_GEMINI_TTS_VOICE
-    from hermes_cli.config import get_env_value
     from agent.gemini_native_adapter import normalize_gemini_base_url
+    from hermes_cli.config import get_env_value
     base_url = normalize_gemini_base_url(
         gemini_config.get("base_url") or get_env_value("GEMINI_BASE_URL") or DEFAULT_GEMINI_TTS_BASE_URL,
     )

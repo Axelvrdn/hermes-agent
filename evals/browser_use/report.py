@@ -7,8 +7,8 @@ Groups by (model, arm): ok-rate, token mean/median, tool calls, wall clock,
 and token delta vs the ``base`` arm of the same model when present.
 """
 
-import logging
 import json
+import logging
 import statistics
 import sys
 from collections import defaultdict

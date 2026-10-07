@@ -27,9 +27,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
 
+from agent.secret_scope import get_secret as _get_secret
 from hermes_constants import get_hermes_home
 from utils import atomic_json_write
-from agent.secret_scope import get_secret as _get_secret
 
 logger = logging.getLogger(__name__)
 
@@ -468,7 +468,11 @@ def _refresh_oauth_token(creds: Dict[str, Any]) -> Optional[str]:
     token instead of racing it into ``invalid_grant``. Read, decision, POST and write-back share the pool's
     path-keyed cross-process lock (else two profiles can spend one refresh token)."""
     try:
-        from hermes_cli.auth import AUTH_LOCK_TIMEOUT_SECONDS, _auth_store_lock, env_float
+        from hermes_cli.auth import (
+            AUTH_LOCK_TIMEOUT_SECONDS,
+            _auth_store_lock,
+            env_float,
+        )
         refresh_timeout_seconds = env_float("HERMES_ANTHROPIC_REFRESH_TIMEOUT_SECONDS", 20)
         lock_timeout_seconds = max(float(AUTH_LOCK_TIMEOUT_SECONDS), float(refresh_timeout_seconds) + 5.0)
         cred_path = claude_code_credentials_path()
@@ -711,7 +715,9 @@ def resolve_anthropic_token(*, model: Optional[str] = None) -> Optional[str]:
 
 def run_oauth_setup_token() -> Optional[str]:
     """Run 'claude setup-token' interactively; the resulting token or None. FileNotFoundError if no 'claude' CLI."""
-    from agent.anthropic_adapter import find_claude_code_cli  # late: the adapter imports this module
+    from agent.anthropic_adapter import (
+        find_claude_code_cli,  # late: the adapter imports this module
+    )
     claude_path = find_claude_code_cli("claude")
     if not claude_path:
         raise FileNotFoundError("The 'claude' CLI is not installed. Install it with: npm install -g @anthropic-ai/claude-code")

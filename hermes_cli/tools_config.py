@@ -8,31 +8,77 @@ from typing import Dict, List, NoReturn, Optional, Set
 
 from hermes_cli.cli_output import print_info as _print_info
 from hermes_cli.colors import Colors, color
-from hermes_cli.config import cfg_get, load_config, save_config, get_env_value
+from hermes_cli.config import cfg_get, get_env_value, load_config, save_config
 from hermes_cli.nous_subscription import (
-    NousSubscriptionFeatures, apply_nous_managed_defaults, get_nous_subscription_features)
+    NousSubscriptionFeatures,
+    apply_nous_managed_defaults,
+    get_nous_subscription_features,
+)
 from hermes_cli.platforms import PLATFORMS as _PLATFORMS_REGISTRY
-from hermes_cli.toolset_scope import (
-    _TOOLSET_PLATFORM_RESTRICTIONS, toolset_allowed_for_platform as _toolset_allowed_for_platform)
-from hermes_cli.toolset_validation import parse_platform_toolsets_value
+
 # Re-exports: keep ``hermes_cli.tools_config.X`` callers and test patch targets resolving.
 from hermes_cli.tools_config_cua import (  # noqa: F401
-    _post_setup_no_window_flags, _cua_driver_cmd, _cua_version_summary, _resolved_cua_driver_cmd, _cua_driver_env,
-    _cua_driver_contract_status, _cua_driver_install_ready)
-from hermes_cli.tools_config_post_setup import (  # noqa: F401
-    _ensure_browser_use_cli, _run_post_setup, valid_post_setup_keys, run_post_setup_command, _POST_SETUP_INSTALLED,
-    _post_setup_already_installed, _module_installed, _POST_SETUP_READY)
-from hermes_cli.tools_config_providers import (  # noqa: F401
-    _plugin_image_gen_providers, _plugin_video_gen_providers, _plugin_web_search_providers, _plugin_browser_providers,
-    _plugin_tts_providers, web_provider_capabilities, _visible_providers, provider_readiness_status,
-    _toolset_needs_configuration_prompt, _configure_tool_category, _web_tier_matches, _is_provider_active,
-    _detect_active_provider_index, IMAGEGEN_BACKENDS, _plugin_image_gen_catalog, _plugin_video_gen_catalog,
-    _configure_imagegen_model, _configure_imagegen_model_for_plugin, _configure_videogen_model_for_plugin,
-    _select_plugin_image_gen_provider, _select_plugin_video_gen_provider, STT_MODEL_CATALOG, _configure_stt_model,
-    _write_provider_config, apply_provider_selection, _configure_provider, _reconfigure_provider,
-    _configure_vision_backend, _configure_vision_provider_model, _configure_simple_requirements)
+    _cua_driver_cmd,
+    _cua_driver_contract_status,
+    _cua_driver_env,
+    _cua_driver_install_ready,
+    _cua_version_summary,
+    _post_setup_no_window_flags,
+    _resolved_cua_driver_cmd,
+)
 from hermes_cli.tools_config_mcp import (  # noqa: F401
-    _configure_mcp_tools_interactive, _apply_toolset_change, _apply_mcp_change, tools_disable_enable_command)
+    _apply_mcp_change,
+    _apply_toolset_change,
+    _configure_mcp_tools_interactive,
+    tools_disable_enable_command,
+)
+from hermes_cli.tools_config_post_setup import (  # noqa: F401
+    _POST_SETUP_INSTALLED,
+    _POST_SETUP_READY,
+    _ensure_browser_use_cli,
+    _module_installed,
+    _post_setup_already_installed,
+    _run_post_setup,
+    run_post_setup_command,
+    valid_post_setup_keys,
+)
+from hermes_cli.tools_config_providers import (  # noqa: F401
+    IMAGEGEN_BACKENDS,
+    STT_MODEL_CATALOG,
+    _configure_imagegen_model,
+    _configure_imagegen_model_for_plugin,
+    _configure_provider,
+    _configure_simple_requirements,
+    _configure_stt_model,
+    _configure_tool_category,
+    _configure_videogen_model_for_plugin,
+    _configure_vision_backend,
+    _configure_vision_provider_model,
+    _detect_active_provider_index,
+    _is_provider_active,
+    _plugin_browser_providers,
+    _plugin_image_gen_catalog,
+    _plugin_image_gen_providers,
+    _plugin_tts_providers,
+    _plugin_video_gen_catalog,
+    _plugin_video_gen_providers,
+    _plugin_web_search_providers,
+    _reconfigure_provider,
+    _select_plugin_image_gen_provider,
+    _select_plugin_video_gen_provider,
+    _toolset_needs_configuration_prompt,
+    _visible_providers,
+    _web_tier_matches,
+    _write_provider_config,
+    apply_provider_selection,
+    provider_readiness_status,
+    web_provider_capabilities,
+)
+from hermes_cli.toolset_scope import _TOOLSET_PLATFORM_RESTRICTIONS
+from hermes_cli.toolset_scope import (
+    toolset_allowed_for_platform as _toolset_allowed_for_platform,
+)
+from hermes_cli.toolset_validation import parse_platform_toolsets_value
 
 
 def _pip_install(
@@ -497,7 +543,7 @@ def _explicit_toolsets(
     """Enabled set when the saved list names configurable/plugin keys directly (subset inference over
     ``hermes-cli`` would re-enable disabled toolsets). A mixed list (``[hermes-cli, spotify]``) still expands the
     composite; _DEFAULT_OFF_TOOLSETS applies to that implicit expansion only."""
-    from toolsets import resolve_toolset, TOOLSETS
+    from toolsets import TOOLSETS, resolve_toolset
 
     enabled = {ts for ts in toolset_names if ts in explicit_known_keys and _toolset_allowed_for_platform(ts, platform)}
     composite_tools = {
@@ -674,7 +720,7 @@ def _prune_toolsets_stripped_by_disabled(enabled_toolsets: Set[str], disabled_na
 def _recover_platform_native_toolsets(enabled_toolsets: Set[str], platform: str, *, skip: Set[str]) -> None:
     """Add non-configurable platform toolsets (discord, feishu_*) in place: in the default composite but not in
     CONFIGURABLE_TOOLSETS, so never in a checklist or saved list. Runs for BOTH ``_get_platform_tools`` branches."""
-    from toolsets import resolve_toolset, TOOLSETS
+    from toolsets import TOOLSETS, resolve_toolset
 
     platform_tool_universe = set(resolve_toolset(_platform_default_toolset(platform)))
     configurable_tool_universe = {t for ts_key, _, _ in CONFIGURABLE_TOOLSETS for t in resolve_toolset(ts_key)}

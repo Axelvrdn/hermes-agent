@@ -23,62 +23,118 @@ import uuid
 from collections import deque
 from contextlib import contextmanager, suppress
 from pathlib import Path
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    Self,
+    Tuple,
+    TypeVar,
+    cast,
+)
 
-from hermes_constants import get_hermes_home, mkdir_under_hermes_home
-from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, TypeVar, cast, Self
-
-from hermes_state_common import (
-    TITLE_SOURCE_DERIVED as _TITLE_SOURCE_DERIVED, TITLE_SOURCE_LLM as _TITLE_SOURCE_LLM,
-    TITLE_SOURCE_USER as _TITLE_SOURCE_USER,
-    escape_like as _escape_like, _placeholders,
-    stat_db_file_identity as _stat_db_file_identity,
-)
-from hermes_state_holders import read_only_db_uri
-from hermes_state_pidns import holder_pid_checkable
-from hermes_state_health import (
-    STORAGE_CORRUPT, mark_storage_corrupt, note_storage_error, storage_corrupt_reason, storage_state,
-)
-from hermes_state_errors import (
-    _DELETED_WAL_GENERATION_MSG, _DISK_IO_ERROR_MARKER, _STATE_DB_CORRUPT_MSG, _STATE_DB_GENERATION_KEY,
-    _STATE_DB_REPLACED_MSG, DeletedWalGenerationError, SessionCompressionInProgressError, StateDbCorruptError,
-    StateDbReplacedError, _is_no_more_rows, classify_persistence_error, is_malformed_db_error,
-    is_malformed_schema_error, is_sqlite_lock_error,
-)
-from hermes_state_guard import (
-    _STATE_DB_GUARD_BYPASS_ENV, _in_test_context, _is_production_state_db, _real_platform_state_root,
-    _register_test_instance, _set_last_init_error, get_last_init_error,
-)
-from hermes_state_readpool import _READ_POOL_MAX, _proc_fd_targets, _read_budget_for
-from hermes_state_sessions import SessionSessionsMixin
-from hermes_state_fts import SessionFtsSetupMixin, load_fts5_cjk_extension
-from hermes_state_portability import SessionPortabilityMixin
-from hermes_state_telegram import SessionTelegramTopicsMixin
-from hermes_state_profile_repair import SessionProfileRepairMixin
-from hermes_state_schema import SessionSchemaMixin
 import hermes_state_holders as _state_holders
 import hermes_state_lockguard as _lockguard
-from hermes_state_lockowners import log_write_lock_holders
-from hermes_state_dbfile import (
-    _connect_tracked_db, _fd_is_truly_unlinked, _prepare_connection_retirement,
-    _read_sqlite_application_id, _stat_sqlite_sidecar_identity,
-    _watched_sqlite_sidecar_paths, has_invalid_sqlite_header_preopen, is_zeroed_state_db, quarantine_cross_process_lock,
-    quarantine_invalid_state_db,
-    RetiredGenerationCaptureError, capture_retired_wal_generation, refuse_deleted_wal_generation,
+from hermes_constants import get_hermes_home, mkdir_under_hermes_home
+from hermes_state_common import (
+    TITLE_SOURCE_DERIVED as _TITLE_SOURCE_DERIVED,
 )
-from hermes_state_messages import SessionMessagesMixin
+from hermes_state_common import (
+    TITLE_SOURCE_LLM as _TITLE_SOURCE_LLM,
+)
+from hermes_state_common import (
+    TITLE_SOURCE_USER as _TITLE_SOURCE_USER,
+)
+from hermes_state_common import (
+    _placeholders,
+)
+from hermes_state_common import (
+    escape_like as _escape_like,
+)
+from hermes_state_common import (
+    stat_db_file_identity as _stat_db_file_identity,
+)
+from hermes_state_compression import SessionCompressionMixin
 from hermes_state_coverage import SessionCoverageMixin
-from hermes_state_rewind import SessionRewindMixin
-from hermes_state_wal import (
-    _WAL_INCOMPAT_MARKERS, _on_disk_journal_mode, apply_database_pragmas, apply_wal_with_fallback,
+from hermes_state_dbfile import (
+    RetiredGenerationCaptureError,
+    _connect_tracked_db,
+    _fd_is_truly_unlinked,
+    _prepare_connection_retirement,
+    _read_sqlite_application_id,
+    _stat_sqlite_sidecar_identity,
+    _watched_sqlite_sidecar_paths,
+    capture_retired_wal_generation,
+    has_invalid_sqlite_header_preopen,
+    is_zeroed_state_db,
+    quarantine_cross_process_lock,
+    quarantine_invalid_state_db,
+    refuse_deleted_wal_generation,
 )
-from hermes_state_repair import _claim_repair_attempt, preflight_db_writability, repair_state_db_schema
+from hermes_state_errors import (
+    _DELETED_WAL_GENERATION_MSG,
+    _DISK_IO_ERROR_MARKER,
+    _STATE_DB_CORRUPT_MSG,
+    _STATE_DB_GENERATION_KEY,
+    _STATE_DB_REPLACED_MSG,
+    DeletedWalGenerationError,
+    SessionCompressionInProgressError,
+    StateDbCorruptError,
+    StateDbReplacedError,
+    _is_no_more_rows,
+    classify_persistence_error,
+    is_malformed_db_error,
+    is_malformed_schema_error,
+    is_sqlite_lock_error,
+)
+from hermes_state_fts import SessionFtsSetupMixin, load_fts5_cjk_extension
+from hermes_state_gateway import SessionGatewayMixin
+from hermes_state_guard import (
+    _STATE_DB_GUARD_BYPASS_ENV,
+    _in_test_context,
+    _is_production_state_db,
+    _real_platform_state_root,
+    _register_test_instance,
+    _set_last_init_error,
+    get_last_init_error,
+)
+from hermes_state_health import (
+    STORAGE_CORRUPT,
+    mark_storage_corrupt,
+    note_storage_error,
+    storage_corrupt_reason,
+    storage_state,
+)
+from hermes_state_holders import read_only_db_uri
+from hermes_state_lockowners import log_write_lock_holders
+from hermes_state_maintenance import SessionMaintenanceMixin
+from hermes_state_messages import SessionMessagesMixin
+from hermes_state_pidns import holder_pid_checkable
+from hermes_state_portability import SessionPortabilityMixin
+from hermes_state_profile_repair import SessionProfileRepairMixin
+from hermes_state_readpool import _READ_POOL_MAX, _proc_fd_targets, _read_budget_for
+from hermes_state_repair import (
+    _claim_repair_attempt,
+    preflight_db_writability,
+    repair_state_db_schema,
+)
+from hermes_state_rewind import SessionRewindMixin
+from hermes_state_schema import SessionSchemaMixin
+from hermes_state_search import SessionSearchMixin
+from hermes_state_sessions import SessionSessionsMixin
+from hermes_state_telegram import SessionTelegramTopicsMixin
 from hermes_state_titles import SessionTitlesMixin
 from hermes_state_tool_retries import SessionToolRetriesMixin
 from hermes_state_usage import SessionUsageMixin
-from hermes_state_maintenance import SessionMaintenanceMixin
-from hermes_state_gateway import SessionGatewayMixin
-from hermes_state_compression import SessionCompressionMixin
-from hermes_state_search import SessionSearchMixin
+from hermes_state_wal import (
+    _WAL_INCOMPAT_MARKERS,
+    _on_disk_journal_mode,
+    apply_database_pragmas,
+    apply_wal_with_fallback,
+)
 
 try:  # Hard dependency, but tolerate scaffold-phase imports before pip install.
     import psutil

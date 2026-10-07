@@ -5,8 +5,8 @@ Stdlib only. ``extract_text`` stays tolerant of v0.3 peers."""
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import threading
 import time

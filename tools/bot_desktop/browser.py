@@ -95,7 +95,10 @@ def dock_argv(exe: str, user_data_dir: str, *, sandbox_bypass: Optional[bool] = 
     # The same sandbox policy agent-browser starts this binary with (root, Docker, AppArmor userns): the
     # human's Browser is the bot's browser, in the same container; a stricter rule here just made the dock
     # icon die with 'No usable sandbox!' in the official image while the agent's own Chromium ran fine.
-    from tools.browser_tool_session import CHROMIUM_SANDBOX_BYPASS_ARGS, _needs_chromium_sandbox_bypass
+    from tools.browser_tool_session import (
+        CHROMIUM_SANDBOX_BYPASS_ARGS,
+        _needs_chromium_sandbox_bypass,
+    )
     # The profile is persistent by design (logins survive handoffs); its HTTP cache is not worth a
     # gateway's disk: uncapped it grows for months toward a hosted instance's 6 GB.
     return [exe, f"--user-data-dir={user_data_dir}", "--remote-debugging-port=0", "--no-first-run",

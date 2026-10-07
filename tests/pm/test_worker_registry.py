@@ -7,11 +7,11 @@ import importlib.util
 import io
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tarfile
 import textwrap
+from pathlib import Path
 
 import pytest
 

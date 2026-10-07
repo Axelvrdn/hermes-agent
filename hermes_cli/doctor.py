@@ -20,18 +20,19 @@ _env_path = get_env_path()
 load_hermes_dotenv(hermes_home=_env_path.parent, project_env=PROJECT_ROOT / ".env")
 
 from hermes_cli.colors import Colors, color
-from hermes_cli.doctor_report import Finding, _section, check_bool, check_info, doctor_check, warn_on_error
-from hermes_cli.doctor_connectivity import _has_healthy_oauth_fallback_for_apikey_provider, build_probes, run_probes
-from hermes_cli.doctor_tools import _safe_which
-
 from hermes_cli.doctor_config import (
     _check_config_drift,
     _check_config_file,
     _check_env_file,
     _check_mcp_security,
     _check_relay_plugins,
-    _check_xai_retirement,
     _check_retired_session_reset,
+    _check_xai_retirement,
+)
+from hermes_cli.doctor_connectivity import (
+    _has_healthy_oauth_fallback_for_apikey_provider,
+    build_probes,
+    run_probes,
 )
 from hermes_cli.doctor_platform import (
     _check_certificates,
@@ -42,12 +43,13 @@ from hermes_cli.doctor_platform import (
     _check_security_advisories,
     _check_web_dashboard_import,
 )
-from hermes_cli.doctor_tools import (
-    _check_git_and_rg,
-    _check_node_and_browser,
-    _check_npm_audit,
-    _check_terminal_backend,
-    _check_tool_availability,
+from hermes_cli.doctor_report import (
+    Finding,
+    _section,
+    check_bool,
+    check_info,
+    doctor_check,
+    warn_on_error,
 )
 from hermes_cli.doctor_state import (
     _check_checkpoint_store,
@@ -57,6 +59,14 @@ from hermes_cli.doctor_state import (
     _check_profiles,
     _check_skills_hub,
     _check_state_db,
+)
+from hermes_cli.doctor_tools import (
+    _check_git_and_rg,
+    _check_node_and_browser,
+    _check_npm_audit,
+    _check_terminal_backend,
+    _check_tool_availability,
+    _safe_which,
 )
 
 _PROVIDER_ENV_HINTS = (
@@ -72,7 +82,11 @@ _PROVIDER_ENV_HINTS = (
 def _check_auth_providers(should_fix: bool, f: Finding) -> None:
     """Refresh-free OAuth status snapshot (doctor must never trigger a token refresh)."""
     with warn_on_error("Auth provider status", "(could not check: {e})"):
-        from hermes_cli.auth import get_nous_auth_status_local, get_codex_auth_status, get_minimax_oauth_auth_status
+        from hermes_cli.auth import (
+            get_codex_auth_status,
+            get_minimax_oauth_auth_status,
+            get_nous_auth_status_local,
+        )
         _login_row("Nous Portal auth", get_nous_auth_status_local())
         # Native OAuth is Hermes' own device-code flow; the Codex CLI only imports existing ~/.codex/auth.json
         # tokens, so the hint sits under the Codex row (not as another provider's remedy).

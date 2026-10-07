@@ -9,7 +9,6 @@ import os
 import pytest
 
 import hermes_yaml as yaml
-
 from hermes_cli import plugin_catalog as pc
 
 SHA = "38fe0fb53eff98d477f807432e965429e665ca33"
@@ -172,6 +171,7 @@ def test_live_cache_write_never_truncates_the_previous_copy(tmp_path, monkeypatc
         def json(self): return json.loads(self.content)
 
     import httpx
+
     import utils
     monkeypatch.setattr(httpx, "get", lambda *a, **k: _Resp())
     pc._live_fetch_failed_until = 0.0

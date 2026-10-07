@@ -27,7 +27,10 @@ def connect_plugin_mcp(activation: Dict[str, Any], portable: Dict[str, Dict[str,
     if not names:
         return []
     try:
-        from tools.mcp_tool_config import _filter_suspicious_mcp_servers, _load_mcp_config
+        from tools.mcp_tool_config import (
+            _filter_suspicious_mcp_servers,
+            _load_mcp_config,
+        )
         from tools.mcp_tool_discovery import register_mcp_servers
         configured = _load_mcp_config()
     except Exception as exc:

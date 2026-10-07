@@ -16,11 +16,10 @@ from contextvars import ContextVar
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Tuple
 
-from hermes_cli.config import cfg_get
-from hermes_constants import get_hermes_dir, get_hermes_home
-
 from agent.provider_media import GENERATED_SUBDIR, MEDIA_CACHE_MAX_AGE_HOURS
 from agent.skill_utils import EXCLUDED_SKILL_DIRS
+from hermes_cli.config import cfg_get
+from hermes_constants import get_hermes_dir, get_hermes_home
 
 try:  # pragma: no cover - exercised via the fail-closed test below
     from agent.file_safety import get_read_block_error
@@ -55,7 +54,9 @@ def _contained_host_path(rel: str, hermes_home: Path, abs_msg: str, traversal_ms
         logger.warning(abs_msg, rel)
         return None
     host_path = hermes_home / rel
-    from tools.path_security import validate_within_dir  # resolves symlinks and ``..`` before checking
+    from tools.path_security import (
+        validate_within_dir,  # resolves symlinks and ``..`` before checking
+    )
 
     if containment_error := validate_within_dir(host_path, hermes_home):
         logger.warning(traversal_msg, rel, containment_error)

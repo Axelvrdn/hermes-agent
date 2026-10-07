@@ -1,17 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
 import base64
 import binascii
 import hashlib
 import json
 import time
+from dataclasses import dataclass, replace
 from typing import Callable, Literal, Protocol
 
 from pydantic import ValidationError
 
 from hermes_constants import get_hermes_home
-from tools.connectors.gateway.errors import GatewayAuthError, GatewayUnavailable, ToolGatewayError
+from tools.connectors.gateway.errors import (
+    GatewayAuthError,
+    GatewayUnavailable,
+    ToolGatewayError,
+)
 from tools.connectors.portal.client import NotModified, validate_slug
 from tools.connectors.portal.errors import PortalToolsUnavailable
 from tools.connectors.portal.wire import ConnectorTool, ConnectorToolsListing

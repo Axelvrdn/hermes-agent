@@ -11,7 +11,6 @@ from pathlib import Path
 import hermes_cli.plugins as plugins_mod
 import model_tools
 
-
 _UNSET = object()
 
 

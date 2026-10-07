@@ -173,7 +173,9 @@ class GatewayModelCommandsMixin:
         if not result.success:
             return None, t("gateway.model.error_prefix", error=result.error_message)
         try:
-            from hermes_cli.context_switch_guard import enrich_model_switch_warnings_for_gateway
+            from hermes_cli.context_switch_guard import (
+                enrich_model_switch_warnings_for_gateway,
+            )
             # Off-loop: merge_preflight_compression_warning() runs the sync provider probe ladder.
             await asyncio.to_thread(
                 enrich_model_switch_warnings_for_gateway, result, self, session_key=ctx.session_key,
@@ -305,7 +307,10 @@ class GatewayModelCommandsMixin:
     ) -> str:
         """Confirmation text with full metadata (display form shortens opaque Palantir IDs)."""
         from gateway.run import _load_gateway_config
-        from hermes_cli.model_switch import format_model_for_display, resolve_display_context_length_async
+        from hermes_cli.model_switch import (
+            format_model_for_display,
+            resolve_display_context_length_async,
+        )
 
         lines = [
             t("gateway.model.switched", model=format_model_for_display(result.new_model)),
@@ -393,7 +398,10 @@ class GatewayModelCommandsMixin:
         """Slash dispatch does not install the routed profile's scope, so a multiplexed runner binds
         the owning home for the switch row and its switch_away friction."""
         from hermes_cli.observability.shared_metrics_events import record_model_switch
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         home = None
         if getattr(getattr(self, "config", None), "multiplex_profiles", False):
@@ -509,7 +517,9 @@ class GatewayModelCommandsMixin:
         """
         try:
             from hermes_cli.model_selection_guards import (
-                combined_selection_warning, selection_context_for_agent)
+                combined_selection_warning,
+                selection_context_for_agent,
+            )
             warning = await asyncio.to_thread(
                 combined_selection_warning, result.new_model, provider=result.target_provider,
                 base_url=result.base_url or ctx.current_base_url or "",
@@ -541,7 +551,10 @@ class GatewayModelCommandsMixin:
 
     async def _handle_model_command_locked(self, event: MessageEvent) -> Optional[str]:
         from gateway.run import _hermes_home
-        from hermes_cli.model_switch import parse_model_switch_args, resolve_persist_behavior
+        from hermes_cli.model_switch import (
+            parse_model_switch_args,
+            resolve_persist_behavior,
+        )
 
         profile_home = None
         if getattr(getattr(self, "config", None), "multiplex_profiles", False):
@@ -662,8 +675,8 @@ class GatewayModelCommandsMixin:
 
     def _save_gateway_config_key(self, key_path: str, value) -> bool:
         """Save a dot-separated key to config.yaml (shared by /reasoning, /fast and their pickers)."""
-        from gateway.slash_commands import _nested_dict
         from gateway.run import _gateway_config_home
+        from gateway.slash_commands import _nested_dict
         from hermes_cli.config import read_user_config_raw
         config_path = _gateway_config_home() / "config.yaml"
         try:

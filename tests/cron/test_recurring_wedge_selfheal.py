@@ -71,8 +71,8 @@ def cron_env(tmp_path, monkeypatch):
 
 class TestStaleInflightSelfHeal:
     def _setup(self, cron_env, monkeypatch):
-        from cron import scheduler as S
         from cron import executions as E
+        from cron import scheduler as S
 
         env = cron_env
         monkeypatch.setattr(E, "EXECUTIONS_FILE", env["home"] / "cron" / "executions.db")
@@ -133,9 +133,9 @@ class TestEAGAINCreateExecutionLeak:
 
 
     def test_pool_submit_eagain_releases_claim_and_redispatches(self, cron_env, monkeypatch, tmp_path):
-        from cron import scheduler as S
-        from cron import executions as E
         import cron.jobs as J
+        from cron import executions as E
+        from cron import scheduler as S
 
         env = cron_env
         monkeypatch.setattr(E, "EXECUTIONS_FILE", env["home"] / "cron" / "executions.db")

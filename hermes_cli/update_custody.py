@@ -225,7 +225,10 @@ def _bind_suspended(proc: subprocess.Popen) -> None:
     Suspended until bound, so nothing it spawns can escape the job. A refused bind kills the
     child before it ran a single instruction and raises :class:`CustodyRefused` (D2: never an
     unfenced writer); a failed resume kills the child."""
-    from hermes_cli.update_lock import _bind_to_kill_on_close_job, resume_suspended_child
+    from hermes_cli.update_lock import (
+        _bind_to_kill_on_close_job,
+        resume_suspended_child,
+    )
 
     try:
         _bind_to_kill_on_close_job(proc)

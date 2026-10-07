@@ -2,6 +2,13 @@
 
 
 import pytest
+from acp.schema import (
+    ContentToolCallContent,
+    FileEditToolCallContent,
+    ToolCallLocation,
+    ToolCallProgress,
+    ToolCallStart,
+)
 
 from acp_adapter.edit_approval import EditProposal
 from acp_adapter.tools import (
@@ -12,14 +19,6 @@ from acp_adapter.tools import (
     get_tool_kind,
     make_tool_call_id,
 )
-from acp.schema import (
-    FileEditToolCallContent,
-    ContentToolCallContent,
-    ToolCallLocation,
-    ToolCallStart,
-    ToolCallProgress,
-)
-
 
 # ---------------------------------------------------------------------------
 # TOOL_KIND_MAP coverage

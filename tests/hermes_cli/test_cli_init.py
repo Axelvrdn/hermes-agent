@@ -7,8 +7,8 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from agent.i18n import t
 
+from agent.i18n import t
 
 
 def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
@@ -231,6 +231,7 @@ class TestPromptToolkitTerminalCompatibility:
         """
         import os as _os
         from unittest.mock import patch as _patch
+
         from prompt_toolkit.key_binding import KeyBindings
 
         from cli import _bind_prompt_submit_keys

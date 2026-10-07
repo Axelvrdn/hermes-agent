@@ -3,7 +3,6 @@ service (no BotFather copy-paste); the raw Telegram token is saved locally after
 
 from __future__ import annotations
 
-from pm import install_hint
 import os
 import re
 import sys
@@ -12,6 +11,8 @@ from dataclasses import dataclass
 from typing import Optional
 
 import httpx
+
+from pm import install_hint
 
 # Nous-hosted pairing API; override for PoC/staging with TELEGRAM_ONBOARDING_URL.
 DEFAULT_API_URL = "https://setup.hermes-agent.nousresearch.com"
@@ -64,6 +65,7 @@ def render_qr_terminal(url: str) -> str:
     """Render a URL as a QR code string suitable for terminal output."""
     try:
         import io
+
         import qrcode  # type: ignore[import-untyped]
     except ImportError:
         return ""

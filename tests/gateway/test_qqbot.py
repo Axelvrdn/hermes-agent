@@ -10,7 +10,6 @@ import pytest
 
 from gateway.config import PlatformConfig
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -444,8 +443,8 @@ class TestQQTimeoutErrorNormalization:
 
     @pytest.mark.asyncio
     async def test_send_chunk_preserves_read_timeout_type(self, monkeypatch):
-        from gateway.platforms.base import BasePlatformAdapter
         import gateway.platforms.qqbot.adapter as qq_adapter_mod
+        from gateway.platforms.base import BasePlatformAdapter
 
         # Skip the real 1s+2s retry backoff.
         monkeypatch.setattr(qq_adapter_mod.asyncio, "sleep", mock.AsyncMock())
@@ -663,7 +662,8 @@ class TestBuildApprovalText:
 
     def test_truncates_long_commands(self):
         from gateway.platforms.qqbot.keyboards import (
-            ApprovalRequest, build_approval_text,
+            ApprovalRequest,
+            build_approval_text,
         )
         long = "x" * 1000
         req = ApprovalRequest(

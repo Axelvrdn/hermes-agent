@@ -20,7 +20,6 @@ from gateway.scale_to_zero import (
     should_arm,
 )
 
-
 # ── scale_to_zero_enabled (the Labs HERMES_SCALE_TO_ZERO stamp, D11/Q8=A) ────
 
 
@@ -201,7 +200,6 @@ import socket as _socket
 import tempfile
 import threading
 from pathlib import Path
-
 
 from gateway.scale_to_zero import (  # noqa: E402 - grouped with their section
     FLY_APP_NAME_ENV,

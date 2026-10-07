@@ -6,10 +6,10 @@ The scheduling hook retains psutil's real snapshot; it never invents process sta
 import ctypes
 import json
 import os
-from pathlib import Path
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 
 def main():

@@ -11,9 +11,9 @@ from __future__ import annotations
 
 import pytest
 
-from tools import approval_context, approval_human_wait
 import tools.terminal_tool as terminal_tool
 import tools.terminal_tool_sudo as terminal_tool_sudo
+from tools import approval_context, approval_human_wait
 
 
 @pytest.fixture(autouse=True)

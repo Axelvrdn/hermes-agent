@@ -35,7 +35,8 @@ class StopGateVerdict:
 def _verify_on_stop_nudge(agent) -> Optional[str]:
     try:
         from agent.verification_stop import (
-            build_verify_on_stop_nudge, verify_on_stop_enabled
+            build_verify_on_stop_nudge,
+            verify_on_stop_enabled,
         )
 
         if verify_on_stop_enabled():

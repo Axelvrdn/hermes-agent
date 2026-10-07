@@ -3,13 +3,13 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import re
 import select
 import struct
 import subprocess
 import tempfile
 import time
+from pathlib import Path
 
 
 def run(argv: list[str], env: dict[str, str], cwd: Path) -> subprocess.CompletedProcess:
@@ -22,6 +22,7 @@ def run(argv: list[str], env: dict[str, str], cwd: Path) -> subprocess.Completed
 
 def stop_child_tree(child: subprocess.Popen) -> None:
     import psutil
+
     from agent.deadline import kill_process_tree
 
     if child.poll() is not None:

@@ -17,8 +17,8 @@ import time
 from unittest.mock import MagicMock
 
 import pytest
-from tools import mcp_tool_loop as _mcp_loop
 
+from tools import mcp_tool_loop as _mcp_loop
 
 # ---------------------------------------------------------------------------
 # _is_session_expired_error — unit coverage
@@ -155,6 +155,7 @@ def test_call_tool_handler_rebuilds_configured_server_transport(
 ):
     """The real server run loop selects and rebuilds its configured transport."""
     from anyio import ClosedResourceError
+
     from tools import mcp_tool
     from tools.mcp_tool import MCPServerTask
     from tools.mcp_tool_handlers import _make_tool_handler

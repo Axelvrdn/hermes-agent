@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from agent.context_breakdown import compute_session_context_breakdown
 
+
 def _make_agent(
     *,
     stable: str = "identity and guidance",
@@ -99,6 +100,7 @@ from agent.context_breakdown import (  # noqa: E402
     render_context_breakdown_lines,
     render_context_grid,
 )
+
 
 def _payload(**overrides):
     base = {

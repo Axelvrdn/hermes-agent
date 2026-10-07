@@ -3,14 +3,13 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 from ruamel.yaml import YAML
-
 
 ROOT = Path(__file__).resolve().parents[2]
 DRIVER = ROOT / "scripts/termux/build.py"

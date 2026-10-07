@@ -10,7 +10,6 @@ tries QQ's free ``asr_refer_text`` first, then the configured STT provider.
 
 from __future__ import annotations
 
-from pm import install_hint
 import asyncio
 import contextlib
 import json
@@ -23,6 +22,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
+
+from pm import install_hint
 
 try:
     import aiohttp
@@ -39,14 +40,18 @@ except ImportError:
     httpx = None  # type: ignore[assignment]
 
 from gateway.config import Platform, PlatformConfig
+from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
 from gateway.platforms.base import (
-    gateway_trust_env, BasePlatformAdapter, ExecApprovalPrompt, SendResult,
-    _ssrf_redirect_guard, cache_document_from_bytes_async, cache_image_from_bytes_async,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    _ssrf_redirect_guard,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+    gateway_trust_env,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms.helpers import strip_markdown
-from gateway.platforms.helpers import MessageDeduplicator, cancel_task
-from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
+from gateway.platforms.helpers import MessageDeduplicator, cancel_task, strip_markdown
 from gateway.platforms.media_cache import ext_for_mime
 
 logger = logging.getLogger(__name__)
@@ -61,20 +66,48 @@ class QQCloseError(Exception):
         super().__init__(f"WebSocket closed (code={self.code}, reason={self.reason})")
 
 
-from gateway.platforms.qqbot.constants import (
-    API_BASE, TOKEN_URL, GATEWAY_URL_PATH, DEFAULT_API_TIMEOUT, FILE_UPLOAD_TIMEOUT,
-    CONNECT_TIMEOUT_SECONDS, RECONNECT_BACKOFF, MAX_RECONNECT_ATTEMPTS, RATE_LIMIT_DELAY,
-    QUICK_DISCONNECT_THRESHOLD, MAX_QUICK_DISCONNECT_COUNT, MAX_MESSAGE_LENGTH,
-    DEDUP_WINDOW_SECONDS, DEDUP_MAX_SIZE, MSG_TYPE_TEXT, MSG_TYPE_MARKDOWN, MSG_TYPE_MEDIA,
-    MSG_TYPE_INPUT_NOTIFY, MEDIA_TYPE_IMAGE, MEDIA_TYPE_VIDEO, MEDIA_TYPE_VOICE, MEDIA_TYPE_FILE)
-from gateway.platforms.qqbot.utils import coerce_list as _coerce_list, build_user_agent
-from gateway.platforms.qqbot.chunked_upload import (
-    ChunkedUploader, UploadDailyLimitExceededError, UploadFileTooLargeError)
-from gateway.platforms.qqbot.keyboards import (
-    ApprovalRequest, InlineKeyboard, InteractionEvent, build_approval_keyboard,
-    build_update_prompt_keyboard, parse_approval_button_data, parse_interaction_event,
-    parse_update_prompt_button_data)
 from gateway.platforms._shared import get_scoped_secret as _resolve_qq_secret
+from gateway.platforms.qqbot.chunked_upload import (
+    ChunkedUploader,
+    UploadDailyLimitExceededError,
+    UploadFileTooLargeError,
+)
+from gateway.platforms.qqbot.constants import (
+    API_BASE,
+    CONNECT_TIMEOUT_SECONDS,
+    DEDUP_MAX_SIZE,
+    DEDUP_WINDOW_SECONDS,
+    DEFAULT_API_TIMEOUT,
+    FILE_UPLOAD_TIMEOUT,
+    GATEWAY_URL_PATH,
+    MAX_MESSAGE_LENGTH,
+    MAX_QUICK_DISCONNECT_COUNT,
+    MAX_RECONNECT_ATTEMPTS,
+    MEDIA_TYPE_FILE,
+    MEDIA_TYPE_IMAGE,
+    MEDIA_TYPE_VIDEO,
+    MEDIA_TYPE_VOICE,
+    MSG_TYPE_INPUT_NOTIFY,
+    MSG_TYPE_MARKDOWN,
+    MSG_TYPE_MEDIA,
+    MSG_TYPE_TEXT,
+    QUICK_DISCONNECT_THRESHOLD,
+    RATE_LIMIT_DELAY,
+    RECONNECT_BACKOFF,
+    TOKEN_URL,
+)
+from gateway.platforms.qqbot.keyboards import (
+    ApprovalRequest,
+    InlineKeyboard,
+    InteractionEvent,
+    build_approval_keyboard,
+    build_update_prompt_keyboard,
+    parse_approval_button_data,
+    parse_interaction_event,
+    parse_update_prompt_button_data,
+)
+from gateway.platforms.qqbot.utils import build_user_agent
+from gateway.platforms.qqbot.utils import coerce_list as _coerce_list
 
 
 def check_qq_requirements() -> bool:
@@ -704,7 +737,9 @@ class QQAdapter(OwnAccessPolicyMixin, BasePlatformAdapter):
                     self._log_tag, session_key, event.operator_openid)
                 return
             try:
-                from tools.approval import resolve_gateway_approval  # lazy: keep adapter light
+                from tools.approval import (
+                    resolve_gateway_approval,  # lazy: keep adapter light
+                )
                 count = resolve_gateway_approval(session_key, choice)
                 logger.info(
                     "[%s] Button resolved %d approval(s) for session %s (choice=%s, operator=%s)",
@@ -1205,7 +1240,10 @@ class QQAdapter(OwnAccessPolicyMixin, BasePlatformAdapter):
         vars; None when unconfigured (QQ's built-in ASR still works). ``timeout`` (seconds,
         default 60) follows the shared STT client default so a self-hosted model's cold start
         is not cut off at 30s (#112939)."""
-        from tools.transcription_common import DEFAULT_STT_TIMEOUT, _config_number  # lazy: keep adapter light
+        from tools.transcription_common import (  # lazy: keep adapter light
+            DEFAULT_STT_TIMEOUT,
+            _config_number,
+        )
         stt_cfg = (self.config.extra or {}).get("stt")
         if isinstance(stt_cfg, dict) and stt_cfg.get("enabled") is not False:
             base_url = stt_cfg.get("baseUrl") or stt_cfg.get("base_url", "")

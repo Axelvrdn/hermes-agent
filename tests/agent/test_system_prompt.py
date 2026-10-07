@@ -63,9 +63,9 @@ def _captured_context_cwd(agent):
 @pytest.mark.parametrize("task_id, expected", [(None, False), ("t_worker", True)])
 def test_kanban_guidance_requires_worker_task_at_agent_init(monkeypatch, task_id, expected):
     """A profile can expose kanban tools without making the session a worker."""
+    import model_tools
     from agent.agent_init import _load_tools
     from agent.prompt_builder import KANBAN_GUIDANCE
-    import model_tools
 
     if task_id is None:
         monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)

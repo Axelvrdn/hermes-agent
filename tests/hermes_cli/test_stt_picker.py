@@ -21,6 +21,7 @@ from hermes_cli.tools_config import (  # noqa: E402
     apply_provider_selection,
 )
 
+
 def _stt_cat():
     return TOOL_CATEGORIES["stt"]
 
@@ -63,7 +64,10 @@ class TestModelPicker:
         import re
 
         from hermes_cli.web_server_config import _SCHEMA_OVERRIDES
-        from tools.transcription_common import BUILTIN_STT_PROVIDERS, STT_MODEL_CONFIG_KEY
+        from tools.transcription_common import (
+            BUILTIN_STT_PROVIDERS,
+            STT_MODEL_CONFIG_KEY,
+        )
 
         desktop = (Path(__file__).resolve().parents[2] / "apps/desktop/src/app/settings/constants.ts").read_text()
         for provider, models in STT_MODEL_CATALOG.items():

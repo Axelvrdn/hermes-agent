@@ -97,7 +97,12 @@ def _detect_supervisor() -> str:
 
 def build_identify_payload() -> dict[str, Any]:
     """Default ``identify`` answer, built from gateway.status primitives."""
-    from gateway.status import _build_pid_record, _get_code_identity_fields, _profile_label_for_home, read_runtime_status
+    from gateway.status import (
+        _build_pid_record,
+        _get_code_identity_fields,
+        _profile_label_for_home,
+        read_runtime_status,
+    )
     record = _build_pid_record()
     payload: dict[str, Any] = {
         "protocol": CONTROL_PROTOCOL_VERSION,

@@ -1,10 +1,10 @@
 """Release-channel checks and updates against actual repositories and HTTP feeds."""
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
-from threading import Thread
-from types import SimpleNamespace
 import subprocess
 import urllib.request
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from threading import Thread
+from types import SimpleNamespace
 from urllib.parse import urlsplit
 
 import pytest

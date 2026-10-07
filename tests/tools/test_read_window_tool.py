@@ -5,8 +5,6 @@ import json
 from tools import read_window_tool as rw
 
 
-
-
 def test_requires_callback():
     """Outside the desktop GUI there is no bridge — a clear error, no crash."""
     result = json.loads(rw.read_window_below_tool(callback=None))

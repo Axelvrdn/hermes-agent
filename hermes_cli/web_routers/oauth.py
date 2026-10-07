@@ -19,11 +19,15 @@ from fastapi import APIRouter, HTTPException, Request
 
 from hermes_cli.auth_constants import _codex_err
 from hermes_cli.web_deps import LateState, late
-from hermes_cli.web_server_oauth import (
-    _external_process_cli_command, _oauth_profile_name, _oauth_sessions, _oauth_sessions_lock, _truncate_token,
-)
 from hermes_cli.web_models import OAuthSubmitBody
 from hermes_cli.web_routers._common import scoped_to_thread
+from hermes_cli.web_server_oauth import (
+    _external_process_cli_command,
+    _oauth_profile_name,
+    _oauth_sessions,
+    _oauth_sessions_lock,
+    _truncate_token,
+)
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -124,7 +128,9 @@ def _start_poller(target, sid: str, prefix: str = "oauth-poll") -> None:
 def _track_oauth_setup(flow, session_id: str) -> None:
     """Hand the setup flow to its session; settle it now if the poller already ended."""
     from hermes_cli.observability.shared_metrics_setup import (
-        attach_oauth_setup, finish_provider_setup, settle_oauth_setup,
+        attach_oauth_setup,
+        finish_provider_setup,
+        settle_oauth_setup,
     )
     with _oauth_sessions_lock:
         sess = _oauth_sessions.get(session_id)
@@ -542,7 +548,10 @@ async def _start_minimax_device_code(profile: Optional[str]) -> Dict[str, Any]:
     # Device-code flow with a PKCE extension: verifier + challenge from
     # _minimax_pkce_pair bind the token exchange to the original session.
     from hermes_cli.auth import (
-        MINIMAX_OAUTH_CLIENT_ID, MINIMAX_OAUTH_GLOBAL_BASE, _minimax_pkce_pair, _minimax_request_user_code,
+        MINIMAX_OAUTH_CLIENT_ID,
+        MINIMAX_OAUTH_GLOBAL_BASE,
+        _minimax_pkce_pair,
+        _minimax_request_user_code,
     )
     verifier, challenge, state = _minimax_pkce_pair()
     portal_base_url = (os.getenv("MINIMAX_PORTAL_BASE_URL") or MINIMAX_OAUTH_GLOBAL_BASE).rstrip("/")
@@ -763,7 +772,10 @@ async def disconnect_oauth_provider(provider_id: str, request: Request, profile:
             _log.info("oauth/disconnect: %s", provider_id)
             return {"ok": True, "provider": provider_id}
         try:
-            from hermes_cli.auth import clear_provider_auth, invalidate_nous_auth_status_cache
+            from hermes_cli.auth import (
+                clear_provider_auth,
+                invalidate_nous_auth_status_cache,
+            )
             cleared = clear_provider_auth(provider_id)
             if provider_id == "nous":
                 invalidate_nous_auth_status_cache()
@@ -833,7 +845,10 @@ async def start_oauth_login(provider_id: str, request: Request, profile: Optiona
 async def _begin_oauth_setup_metric(provider_id: str, profile: Optional[str]):
     """Start the provider-setup metric off the event loop (a cold metrics runtime blocks); None when the
     owning profile does not collect. Never raises: the start route's own validation owns errors."""
-    from hermes_cli.observability.shared_metrics_setup import begin_oauth_setup, collection_enabled
+    from hermes_cli.observability.shared_metrics_setup import (
+        begin_oauth_setup,
+        collection_enabled,
+    )
     try:
         profile_name = _oauth_profile_name(profile)
         home = _resolve_profile_dir(profile_name) if profile_name else None
@@ -847,7 +862,10 @@ async def _begin_oauth_setup_metric(provider_id: str, profile: Optional[str]):
 async def _end_oauth_setup_metric(flow, exc: Exception) -> None:
     if flow is None:
         return
-    from hermes_cli.observability.shared_metrics_setup import finish_provider_setup, setup_failure_class
+    from hermes_cli.observability.shared_metrics_setup import (
+        finish_provider_setup,
+        setup_failure_class,
+    )
     with contextlib.suppress(Exception):
         # A 401/403 from the start route is the provider refusing this account/client; a 504 is the
         # provider not answering in time.

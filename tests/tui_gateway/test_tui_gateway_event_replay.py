@@ -6,10 +6,10 @@ import pytest
 
 from tui_gateway import event_replay
 from tui_gateway.event_replay import (
-    latest_seq,
-    reset_replay_state,
     events_since,
+    latest_seq,
     replay_stats,
+    reset_replay_state,
 )
 
 

@@ -6,7 +6,7 @@ import asyncio
 import logging
 import sys
 import time
-from typing import Optional, Sequence, Self
+from typing import Optional, Self, Sequence
 
 try:
     from winpty import PtyProcess  # type: ignore

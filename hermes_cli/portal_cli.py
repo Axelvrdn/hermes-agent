@@ -104,7 +104,10 @@ def _cmd_open(args) -> int:
 
 def _cmd_tools(args) -> int:
     """List the Tool Gateway catalog + current routing."""
-    from hermes_cli.nous_subscription import get_nous_subscription_features, managed_image_partner
+    from hermes_cli.nous_subscription import (
+        get_nous_subscription_features,
+        managed_image_partner,
+    )
 
     config = load_config() or {}
     try:

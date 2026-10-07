@@ -19,10 +19,18 @@ from agent.turn_context import extract_api_content_sidecar
 from gateway.config import Platform
 from gateway.platforms.base import EphemeralReply
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.session import SessionSource, build_session_key, is_shared_multi_user_session
+from gateway.session import (
+    SessionSource,
+    build_session_key,
+    is_shared_multi_user_session,
+)
 from gateway.session_transcript import TranscriptReadError
 from gateway.slash_commands_branch_thread import (
-    BRANCH_THREAD_PLATFORMS, branch_dest_source, branch_thread_parent, format_thread_ref, parse_branch_args,
+    BRANCH_THREAD_PLATFORMS,
+    branch_dest_source,
+    branch_thread_parent,
+    format_thread_ref,
+    parse_branch_args,
 )
 from gateway.slash_commands_status import history_unreadable
 
@@ -384,8 +392,11 @@ class GatewaySessionCommandsMixin:
         # The canonical projection skips bookkeeping rows (role=user + display_kind) and pure
         # handoffs while still recognizing a real ask embedded in a compaction carrier.
         from agent.context_compressor import (
-            history_before_user_originated_turn, retryable_user_text, split_user_originated_turn,
-            user_originated_turn_view)
+            history_before_user_originated_turn,
+            retryable_user_text,
+            split_user_originated_turn,
+            user_originated_turn_view,
+        )
 
         source = event.source
         session_entry = await self.async_session_store.get_or_create_session(source)
@@ -507,7 +518,10 @@ class GatewaySessionCommandsMixin:
     async def _handle_compress_command_inner(self, event: MessageEvent) -> str:
         """Handle /compress -- manually compress conversation context; ``/compress <focus>`` tells
         the summariser what to preserve. Flags/positional forms are parsed by the shared core."""
-        from agent.conversation_compression_manual import MIN_MESSAGES, parse_compress_args
+        from agent.conversation_compression_manual import (
+            MIN_MESSAGES,
+            parse_compress_args,
+        )
 
         source = event.source
         session_entry = await self.async_session_store.get_or_create_session(source)
@@ -531,8 +545,13 @@ class GatewaySessionCommandsMixin:
 
     async def _run_manual_compression(self, source, session_entry, history: list, request) -> str:
         """Build a temporary agent, run the shared compress core, persist, and describe the outcome."""
-        from agent.conversation_compression import finalize_context_engine_compression_notification
-        from agent.conversation_compression_manual import compress_now, render_compress_result
+        from agent.conversation_compression import (
+            finalize_context_engine_compression_notification,
+        )
+        from agent.conversation_compression_manual import (
+            compress_now,
+            render_compress_result,
+        )
         from gateway.run import _platform_config_key
 
         session_key = self._session_key_for_source(source)
@@ -582,9 +601,9 @@ class GatewaySessionCommandsMixin:
 
     async def _build_manual_compression_agent(self, session_id: str, model, runtime_kwargs: dict):
         """Build the throwaway AIAgent that performs a manual /compress rewrite of *session_id*."""
-        from run_agent import AIAgent
         from gateway.run import _GATEWAY_HYGIENE_PLATFORM, _seed_hygiene_system_prompt
         from hermes_cli.config import load_config as _load_cfg
+        from run_agent import AIAgent
         from utils import is_truthy_value as _is_truthy
 
         # _compress_context may persist its cached system prompt, and this agent runs outside the
@@ -716,8 +735,14 @@ class GatewaySessionCommandsMixin:
     async def _handle_save_command(self, event: MessageEvent) -> str:
         """Handle /save — export the current session and send it as a document."""
         import tempfile
+
         from hermes_cli.session_export import (
-            SAVE_USAGE, default_save_filename, load_save_snapshot, normalize_save_format, render_session_for_save)
+            SAVE_USAGE,
+            default_save_filename,
+            load_save_snapshot,
+            normalize_save_format,
+            render_session_for_save,
+        )
 
         parts = event.get_command_args().split()
         redact = bool(parts) and parts[-1].lower() in ("redact", "--redact")
@@ -970,7 +995,10 @@ class GatewaySessionCommandsMixin:
         if not self._session_db:
             return self._session_db_unavailable_reply()
         from hermes_cli.session_listing import (
-            format_gateway_session_listing, parse_session_listing_args, query_session_listing)
+            format_gateway_session_listing,
+            parse_session_listing_args,
+            query_session_listing,
+        )
         try:
             include_all, include_unnamed, target, search_query = parse_session_listing_args(
                 event.get_command_args().strip())

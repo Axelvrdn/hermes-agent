@@ -7,8 +7,11 @@ import httpx
 import pytest
 
 from tools.fal_common import (
-    _ManagedFalSyncClient, _extract_http_status, _managed_fal_billing_error,
-    _normalize_fal_queue_url_format, import_fal_client,
+    _extract_http_status,
+    _managed_fal_billing_error,
+    _ManagedFalSyncClient,
+    _normalize_fal_queue_url_format,
+    import_fal_client,
 )
 
 

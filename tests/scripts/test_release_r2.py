@@ -47,7 +47,6 @@ from scripts.releases.r2 import (
     rfc3986_encode,
     stale_feed_bundle_keys,
 )
-
 from scripts.releases.r2_scope import R2Scope, channel_public_base
 
 AKID = "AKIDEXAMPLE"

@@ -2,12 +2,6 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 
-
-
-
-
-
-
 def test_explicit_auto_prune_false_is_respected(monkeypatch, tmp_path: Path):
     """Migration guard: an install that explicitly opted out keeps its choice."""
     import cli

@@ -9,6 +9,7 @@ not a client-local list.
 import json
 import sys
 
+
 class _FakeDB:
     def __init__(self, rows=None, known=("20260315_092437_c9a6ff",)):
         self.rows = rows or []

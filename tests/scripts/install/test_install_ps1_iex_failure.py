@@ -4,9 +4,9 @@
 `exit` on failure closed their window. A script file run keeps its exit code.
 """
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 

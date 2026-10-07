@@ -10,8 +10,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 
 from hermes_cli.local_runtime.estimator import (
-    HardwareBudget, LayerKind, ModelProfile, PhysicsRefusal, ctx_bytes, footprint_bytes,
-    physics_check)
+    HardwareBudget,
+    LayerKind,
+    ModelProfile,
+    PhysicsRefusal,
+    ctx_bytes,
+    footprint_bytes,
+    physics_check,
+)
 
 FLOOR = 64 * 1024                     # = target; one internal constant
 _LADDER_GROWTH = 1.5

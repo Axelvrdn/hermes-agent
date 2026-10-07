@@ -4,6 +4,7 @@ from acp_adapter.auth import (
     detect_provider,
 )
 
+
 class TestDetectProviderPresence:
 
     def test_has_provider_false_without_credentials(self, monkeypatch):

@@ -11,7 +11,6 @@ from hermes_cli.partial_compress import (
     split_history_for_partial_compress,
 )
 
-
 # ── parse_partial_compress_args ──────────────────────────────────────
 
 

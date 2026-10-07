@@ -17,19 +17,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from hermes_constants import (
-    LOCAL_RUNTIME_ROOT_DIRS, _get_platform_default_hermes_home, get_default_hermes_root, get_hermes_home,
-    display_hermes_home,
-)
-from hermes_state_dbfile import RETIRED_GENERATION_DIR_SUFFIX
-from hermes_state_holders import read_only_db_uri
-
 from agent.provider_media import GENERATED_SUBDIR
 from hermes_cli.archive_safe import normalize_archive_parts
-from hermes_cli.backup_sqlite import _close_quietly, _safe_copy_db
-from hermes_cli.home_data_layout import PM_RUNTIME_ROOT_DIRS, profile_root_entry
-from hermes_cli.sizefmt import format_bytes as _format_size
-
 from hermes_cli.backup_restore import (
     _count_session_rows,
     _default_new_file_mode,
@@ -40,6 +29,18 @@ from hermes_cli.backup_restore import (
     _safe_restore_db,
     _validate_backup_zip,
 )
+from hermes_cli.backup_sqlite import _close_quietly, _safe_copy_db
+from hermes_cli.home_data_layout import PM_RUNTIME_ROOT_DIRS, profile_root_entry
+from hermes_cli.sizefmt import format_bytes as _format_size
+from hermes_constants import (
+    LOCAL_RUNTIME_ROOT_DIRS,
+    _get_platform_default_hermes_home,
+    display_hermes_home,
+    get_default_hermes_root,
+    get_hermes_home,
+)
+from hermes_state_dbfile import RETIRED_GENERATION_DIR_SUFFIX
+from hermes_state_holders import read_only_db_uri
 
 logger = logging.getLogger(__name__)
 
@@ -384,7 +385,10 @@ def is_zeroed_sqlite_file(path: Path, *, probe_bytes: int = 100, force: bool = F
             return False
     except OSError:
         return False
-    from hermes_cli.sqlite_safe_read import has_live_connection, read_header_bytes_preopen
+    from hermes_cli.sqlite_safe_read import (
+        has_live_connection,
+        read_header_bytes_preopen,
+    )
     if not force and has_live_connection(path):
         return False
 
@@ -964,8 +968,10 @@ def run_import(args) -> Optional[int]:
         if profiles_dir.is_dir():
             try:
                 from hermes_cli.profiles import (
-                    create_wrapper_script, check_alias_collision,
-                    _is_wrapper_dir_in_path, _get_wrapper_dir,
+                    _get_wrapper_dir,
+                    _is_wrapper_dir_in_path,
+                    check_alias_collision,
+                    create_wrapper_script,
                 )
                 for entry in sorted(profiles_dir.iterdir()):
                     if not entry.is_dir():
@@ -1036,7 +1042,10 @@ def run_import(args) -> Optional[int]:
             print("To start a gateway for this home, run:  hermes gateway install")
         else:
             try:
-                from hermes_cli.gateway import ensure_gateway_service, _is_service_running
+                from hermes_cli.gateway import (
+                    _is_service_running,
+                    ensure_gateway_service,
+                )
 
                 if not _is_service_running():
                     print()
@@ -1900,9 +1909,9 @@ def _sibling_profile_homes(invoking_home: Path) -> list[tuple[str, Path]]:
     homes: list[tuple[str, Path]] = []
     try:
         from hermes_cli.profiles import (
+            _PROFILE_ID_RE,
             _get_default_hermes_home,
             _get_profiles_root,
-            _PROFILE_ID_RE,
         )
 
         invoking = invoking_home.resolve()

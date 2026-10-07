@@ -2,9 +2,9 @@
 
 Regression for https://github.com/NousResearch/hermes-agent/issues/119681
 """
+from agent.transports.chat_completions import ChatCompletionsTransport
 from providers import get_provider_profile, register_provider
 from providers.base import ProviderProfile
-from agent.transports.chat_completions import ChatCompletionsTransport
 
 
 def test_bare_named_custom_provider_gets_custom_profile(monkeypatch):

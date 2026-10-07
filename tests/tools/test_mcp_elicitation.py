@@ -13,7 +13,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 pytest.importorskip("mcp.types")
 
 from mcp.types import ElicitResult  # noqa: E402  -- after importorskip

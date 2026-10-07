@@ -3,10 +3,6 @@
 from __future__ import annotations
 
 
-
-
-
-
 def test_nous_portal_tags_contains_product_and_client():
     """Every Nous Portal request gets BOTH the product tag and the base-version tag."""
     from agent.portal_tags import nous_portal_tags

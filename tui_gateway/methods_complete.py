@@ -81,8 +81,9 @@ def _plugin_reference_items(pfx: str, qval: str) -> list[dict] | None:
     """`@<prefix>:<query>` autocomplete for a plugin ContextReferenceProvider; None when
     no provider owns ``pfx`` or it fails."""
     try:
-        from agent.context_references import get_context_reference_providers
         import asyncio
+
+        from agent.context_references import get_context_reference_providers
         if (prov := get_context_reference_providers().get(pfx)) is None:
             return None
         coro = prov.autocomplete(qval, limit=20)
@@ -281,11 +282,12 @@ def _(rid, params: dict) -> dict:
     text = params.get("text", "")
     if not text.startswith("/"):
         return _ok(rid, {"items": []})
-    from hermes_cli.commands_completion import SlashCommandCompleter
     from prompt_toolkit.document import Document
     from prompt_toolkit.formatted_text import to_plain_text
-    from agent.skill_commands import get_interactive_skill_commands
+
     from agent.skill_bundles import get_skill_bundles
+    from agent.skill_commands import get_interactive_skill_commands
+    from hermes_cli.commands_completion import SlashCommandCompleter
     # Skill/bundle lookups are home- and cwd-keyed: bind the calling session's profile and workspace so
     # the popup offers the project-local skills ``command.dispatch`` accepts for that session (#114359).
     # A new-chat draft has no session yet: it names its rail-selected ``profile`` instead (#124651).
@@ -315,7 +317,10 @@ def _(rid, params: dict) -> dict:
         # Command-token stage: the completer only emits name-prefix matches, so merge in
         # catalog entries whose name SUBSTRING or DESCRIPTION words match (name outranks description).
         if " " not in text and len(text) > 1:
-            from tui_gateway.slash_fuzzy import fuzzy_rank_slash_items, normalize_slash_search_query
+            from tui_gateway.slash_fuzzy import (
+                fuzzy_rank_slash_items,
+                normalize_slash_search_query,
+            )
             items, score_of = fuzzy_rank_slash_items(
                 items, to_items(Document("/", 1)), normalize_slash_search_query(text))
         usage, origin_of = _skill_usage_lookup()
@@ -394,13 +399,17 @@ def _(rid, params: dict) -> dict:
     # the previous key (model.api_key, custom_providers[*].api_key) is rotated in the same action (#62269).
     env_var = pconfig.api_key_env_vars[0]
     from hermes_cli.config import load_env
-    from hermes_cli.credential_lifecycle import save_provider_env_credential  # also rotates stale config.yaml mirrors
+    from hermes_cli.credential_lifecycle import (
+        save_provider_env_credential,  # also rotates stale config.yaml mirrors
+    )
     previous = load_env().get(env_var)
     # Under the profile scope the save publishes into the addressed profile's secret scope (and the
     # shared os.environ only for the launch profile), so the refreshed inventory below sees it.
     save_provider_env_credential(env_var, api_key)
     if api_key != previous:  # a same-key re-save connects nothing new
-        from hermes_cli.observability.shared_metrics_setup import record_provider_setup_done
+        from hermes_cli.observability.shared_metrics_setup import (
+            record_provider_setup_done,
+        )
         record_provider_setup_done(_resolve_session_platform(), slug, background=True)
     # The launch profile's boot record may still say "nothing configured"; the gated picker's own chat
     # waits on setup.status, so the fresh key must move the record (+ setup.ready). reconcile_record

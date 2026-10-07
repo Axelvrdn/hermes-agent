@@ -351,6 +351,7 @@ def install_pack_plugins(
     consent flow as a single install (a pack never bulk-grants). Successful installs are enabled
     (the user consented via the review screen) and their config seed applied.
     """
+    from hermes_cli.plugins_admission import AdmissionRefused
     from hermes_cli.plugins_cmd import (
         PluginOperationError,
         _declared_capabilities_from_manifest,
@@ -359,7 +360,6 @@ def install_pack_plugins(
         _run_capability_consent,
         _set_plugin_enabled,
     )
-    from hermes_cli.plugins_admission import AdmissionRefused
     from hermes_cli.plugins_cmd_install import recorded_install
     results: List[PackInstallResult] = []
 
@@ -454,7 +454,11 @@ def export_pack(*, enabled_only: bool = False, pack_name: str = "my-hermes-pack"
     """Build pack YAML from the current install; returns ``(yaml_text, warnings)``. Plugins with
     unknown Git provenance (no install metadata) become warnings + YAML comments, never entries."""
     import hermes_yaml as yaml
-    from hermes_cli.plugins_cmd import _get_enabled_set, _plugins_dir, _read_install_metadata
+    from hermes_cli.plugins_cmd import (
+        _get_enabled_set,
+        _plugins_dir,
+        _read_install_metadata,
+    )
     metadata = _read_install_metadata()
     enabled = _get_enabled_set()
     installed = sorted(d.name for d in _plugins_dir().iterdir() if d.is_dir() and not d.name.startswith("."))

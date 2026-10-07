@@ -19,7 +19,11 @@ from tempfile import TemporaryDirectory
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from tools.transcription_audio import (
-    _find_ffmpeg_binary, _probe_audio_duration, _run_quiet, _transcode_audio_for_stt)
+    _find_ffmpeg_binary,
+    _probe_audio_duration,
+    _run_quiet,
+    _transcode_audio_for_stt,
+)
 from tools.transcription_common import MAX_FILE_SIZE, _error_result, _ok_result
 
 logger = logging.getLogger("tools.transcription_tools")

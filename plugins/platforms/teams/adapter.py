@@ -10,6 +10,7 @@ Requires the ``teams`` extra (auto-installed by the gateway on first start, or
 from __future__ import annotations
 
 import asyncio
+
 # microsoft-teams-apps calls ``load_dotenv(find_dotenv(usecwd=True))`` at ``microsoft_teams.apps.app``
 # import time. Importing it during plugin discovery / ``TeamsSummaryWriter`` imports would pollute process
 # ``os.environ`` from a cwd-discovered ``.env`` (#62935). Detect presence via find_spec only; bind symbols
@@ -52,18 +53,26 @@ AdaptiveCardActionMessageResponse = AdaptiveCardInvokeResponse = InvokeResponse 
 HttpRequest = HttpResponse = HttpRouteHandler = AdaptiveCard = ExecuteAction = TextBlock = None  # type: ignore[assignment,misc]
 HttpMethod = str  # type: ignore[assignment,misc]
 
-from gateway.config import Platform, PlatformConfig
-from gateway.platforms.helpers import MessageDeduplicator
-from gateway.platforms.base import (
-    gateway_trust_env, BasePlatformAdapter, ExecApprovalPrompt, SendResult, cache_image_from_url, cache_media_bytes_async,
-)
-from gateway.platforms.base_exec_approval import approval_timeout_seconds, format_approval_deadline_line
 from agent.i18n import t
-from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms._shared import (
-    coerce_port, extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret,
-    seed_extra_from_env as _seed_extra_from_env, send_error
+from gateway.config import Platform, PlatformConfig
+from gateway.platforms._shared import coerce_port, send_error
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    cache_image_from_url,
+    cache_media_bytes_async,
+    gateway_trust_env,
 )
+from gateway.platforms.base_exec_approval import (
+    approval_timeout_seconds,
+    format_approval_deadline_line,
+)
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import MessageDeduplicator
 
 logger = logging.getLogger(__name__)
 
@@ -453,6 +462,7 @@ class TeamsAdapter(BasePlatformAdapter):
         attachments are NOT pre-authenticated, unlike SharePoint downloadUrls. The lock is created lazily
         because ``asyncio.Lock()`` in __init__ may bind the wrong loop."""
         import time
+
         import httpx
         if self._bf_token_lock is None:
             self._bf_token_lock = asyncio.Lock()
@@ -474,8 +484,11 @@ class TeamsAdapter(BasePlatformAdapter):
     async def _fetch_attachment_bytes(self, url: str, timeout: float = 30.0) -> bytes:
         """Download attachment bytes with SSRF protection. Connector URLs get the bot's bearer token;
         redirects and body size go through the shared guards (as the cache_*_from_url helpers)."""
+        from gateway.platforms.base import (
+            _read_httpx_body_with_limit,
+            _ssrf_redirect_guard,
+        )
         from tools.url_safety import create_ssrf_safe_async_client, is_safe_url
-        from gateway.platforms.base import _ssrf_redirect_guard, _read_httpx_body_with_limit
         if not is_safe_url(url):
             raise ValueError("Blocked unsafe attachment URL (SSRF protection)")
         headers = {"User-Agent": "Mozilla/5.0 (compatible; HermesAgent/1.0)"}
@@ -635,7 +648,7 @@ class TeamsAdapter(BasePlatformAdapter):
     async def _on_card_action(
         self, ctx: "ActivityContext[AdaptiveCardInvokeActivity]"
     ) -> "InvokeResponse[AdaptiveCardActionMessageResponse]":
-        from tools.approval import resolve_gateway_approval, has_blocking_approval
+        from tools.approval import has_blocking_approval, resolve_gateway_approval
 
         data = ctx.activity.value.action.data or {}
         hermes_action = data.get("hermes_action", "")
@@ -743,6 +756,7 @@ class TeamsAdapter(BasePlatformAdapter):
         try:
             import base64
             import mimetypes
+
             from microsoft_teams.api import Attachment, MessageActivityInput
 
             if source.startswith(("http://", "https://")):
@@ -799,8 +813,14 @@ _SETUP_INTRO = (  # "" → blank line
 
 
 def interactive_setup() -> None:
+    from hermes_cli.cli_output import (
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+        prompt_yes_no,
+    )
     from hermes_cli.config import get_env_value, save_env_value
-    from hermes_cli.cli_output import prompt, prompt_yes_no, print_info, print_success, print_warning
     from hermes_cli.setup_platforms import declines_reconfigure
     if declines_reconfigure("Teams", "Reconfigure Teams?", "TEAMS_CLIENT_ID"):
         return

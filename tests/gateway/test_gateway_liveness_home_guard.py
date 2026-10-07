@@ -10,8 +10,8 @@ import json
 
 import pytest
 
-from gateway import status
 import hermes_constants
+from gateway import status
 
 _LIVE_PID = 4242
 

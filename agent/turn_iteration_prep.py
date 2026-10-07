@@ -48,6 +48,7 @@ ITERATION_BUDGET_WARNING_TEMPLATE = (
 def _maybe_inject_iteration_budget_warning(agent: Any, messages: Any) -> bool:
     """Append the opt-in one-shot warning to the newest tool result."""
     import os
+
     from agent.delegation_context import is_dispatcher_owned_worker_context
 
     # Cancellation results still need persistence, but must not urge more work.
@@ -357,7 +358,8 @@ def begin_iteration(
     dedup, then the interrupt / review-budget / iteration-budget exits. ``api_call_count`` is
     incremented here (the grace call consumes its flag instead of the budget)."""
     from agent.conversation_loop import (
-        _apply_active_turn_redirect, _review_input_budget_exhausted
+        _apply_active_turn_redirect,
+        _review_input_budget_exhausted,
     )
 
     def _verdict(action: str) -> IterationStart:
@@ -452,7 +454,8 @@ def apply_retry_restarts(
     forever and hold the turn lease indefinitely."""
 
     from agent.conversation_loop import (
-        _HANDOFF_SKIP_FINAL_RESPONSE, _should_skip_model_call_for_reference_handoff
+        _HANDOFF_SKIP_FINAL_RESPONSE,
+        _should_skip_model_call_for_reference_handoff,
     )
 
     def _verdict(action: str) -> RetryRestartVerdict:

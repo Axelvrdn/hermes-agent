@@ -290,8 +290,8 @@ def test_routed_review_fork_does_not_inherit_reasoning_config():
     provider defaults, mirroring the ``not _routed`` gate on
     ``_cached_system_prompt`` inheritance.
     """
-    import run_agent
     import agent.background_review as bg_review
+    import run_agent
 
     agent_stub = _make_agent_stub(run_agent.AIAgent)
 
@@ -455,8 +455,8 @@ def test_same_model_review_surfaces_ignored_reasoning_effort_once():
 def test_review_effort_notice_only_for_same_model_review_forks():
     """No notice when the key is unset, when the fork is routed (#94825 owns that path), or for the
     /btw ``side_question`` fork sharing ``build_cache_parity_fork``."""
-    import run_agent
     import agent.background_review as bg_review
+    import run_agent
     from agent.background_review import build_cache_parity_fork
 
     _Recorder = _make_recorder_class()
@@ -531,7 +531,10 @@ def test_same_model_fork_inherits_parent_cache_scope_rotated_lineage(tmp_path):
     and the Portal ``conversation=`` root (fork has no DB to walk the lineage)."""
     import run_agent
     from agent.background_review import build_cache_parity_fork
-    from agent.prompt_cache_scope import declared_conversation_scope, resolve_prompt_cache_scope
+    from agent.prompt_cache_scope import (
+        declared_conversation_scope,
+        resolve_prompt_cache_scope,
+    )
     from hermes_state import SessionDB
 
     db = SessionDB(db_path=tmp_path / "state.db")

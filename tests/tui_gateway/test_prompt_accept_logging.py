@@ -27,6 +27,7 @@ import pytest
 
 from tui_gateway import server
 
+
 class _InlineThread:
     """Run the turn synchronously so tests observe its final state."""
 

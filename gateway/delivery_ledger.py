@@ -216,7 +216,9 @@ def _transaction():
 
 def _start_time(pid: int) -> Optional[int]:
     try:
-        from gateway.status import get_process_start_time  # lazy: tests monkeypatch gateway.status
+        from gateway.status import (
+            get_process_start_time,  # lazy: tests monkeypatch gateway.status
+        )
         return get_process_start_time(pid)
     except Exception:
         return None

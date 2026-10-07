@@ -1,8 +1,8 @@
 """Tests for tools/send_message_tool.py."""
 
-import logging
 import asyncio
 import json
+import logging
 import os
 import sys
 from types import ModuleType, SimpleNamespace
@@ -27,15 +27,7 @@ def _reset_signal_scheduler():
     _reset_scheduler()
 
 from gateway.config import Platform
-from tools.send_message_tool import (
-    _resolve_slack_user_target,
-    _send_matrix_via_adapter,
-    _send_signal,
-    _send_telegram,
-    _send_to_platform,
-    send_message_tool,
-)
-from tools.send_message_targets import _parse_target_ref
+
 # Discord helpers moved to the plugin in #24325.  Import from the new path
 # and provide a thin ``_send_discord(token, ...)`` shim that mirrors the
 # pre-migration signature so the existing test bodies keep working.
@@ -43,6 +35,15 @@ from plugins.platforms.discord.adapter import (
     _DISCORD_STANDALONE_JSON_BODY_LIMIT_BYTES,
     _derive_forum_thread_name,
     _standalone_send,
+)
+from tools.send_message_targets import _parse_target_ref
+from tools.send_message_tool import (
+    _resolve_slack_user_target,
+    _send_matrix_via_adapter,
+    _send_signal,
+    _send_telegram,
+    _send_to_platform,
+    send_message_tool,
 )
 
 
@@ -119,8 +120,8 @@ class _StreamingAiohttpSession:
 def _discord_entry():
     """Return the live Discord PlatformEntry, importing lazily so plugin
     discovery is forced exactly once and patches survive across tests."""
-    from hermes_cli.plugins import discover_plugins
     from gateway.platform_registry import platform_registry
+    from hermes_cli.plugins import discover_plugins
     discover_plugins()
     return platform_registry.get("discord")
 
@@ -169,8 +170,8 @@ class _patch_discord_sender:
 def _slack_entry():
     """Return the live Slack PlatformEntry, importing lazily so plugin
     discovery is forced exactly once and patches survive across tests."""
-    from hermes_cli.plugins import discover_plugins
     from gateway.platform_registry import platform_registry
+    from hermes_cli.plugins import discover_plugins
     discover_plugins()
     return platform_registry.get("slack")
 
@@ -534,8 +535,8 @@ class TestSendToPlatformChunking:
         truncate_message() pass in _send_to_platform must know Signal's limit
         (regression for #67279 / #57929 — long sends were rejected whole).
         """
-        from gateway.platforms.signal import MAX_MESSAGE_LENGTH as SIGNAL_MAX
         import tools.send_message_tool as smt
+        from gateway.platforms.signal import MAX_MESSAGE_LENGTH as SIGNAL_MAX
 
         sent = []
 
@@ -1549,8 +1550,8 @@ class TestSendViaAdapterStandaloneFallback:
     @pytest.mark.asyncio
     async def test_standalone_sender_fn_raises_is_caught_and_formatted(self, monkeypatch):
         """Hook raises: error dict has 'Plugin standalone send failed: ...'"""
-        from tools.send_message_tool import _send_via_adapter
         from gateway.platform_registry import platform_registry
+        from tools.send_message_tool import _send_via_adapter
 
         async def boom(pconfig, chat_id, message, **kwargs):
             raise ValueError("boom!")

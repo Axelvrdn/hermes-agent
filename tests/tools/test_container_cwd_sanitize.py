@@ -19,6 +19,7 @@ behaviour so neither path can regress.
 
 import tools.terminal_tool as tt
 
+
 class TestIsUnusableContainerCwd:
     def test_windows_backslash_host_path_rejected(self):
         # The exact shape from the bug report: a Windows host cwd reaching a
@@ -117,8 +118,8 @@ class TestFileOpsCwdSanitizedAtCallSite:
         override registered, and return the cwd that reached
         ``_create_environment`` (i.e. the cwd passed to ``docker run -w``).
         """
-        import tools.terminal_tool as tt
         import tools.file_tools as ft
+        import tools.terminal_tool as tt
 
         captured = {}
 

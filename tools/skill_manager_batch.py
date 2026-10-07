@@ -2,12 +2,12 @@
 (``skill_manage``/``_find_skill``/``_skill_gate_bypass``) is reached lazily
 through ``tools.skill_manager_tool`` so that module owns it."""
 
-from contextlib import suppress
 import json
 import logging
 import posixpath
 import shutil
 import tempfile
+from contextlib import suppress
 from pathlib import Path
 
 logger = logging.getLogger("tools.skill_manager_tool")

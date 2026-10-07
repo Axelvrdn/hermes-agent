@@ -73,7 +73,10 @@ class BrowserUseBrowserProvider(CloudBrowserProvider):
 
     def _get_config_or_none(self, *, refresh_token: bool = True) -> Optional[Dict[str, Any]]:
         # Lazy: managed_tool_gateway pulls in the Nous auth stack direct-key users never need.
-        from tools.managed_tool_gateway import peek_nous_access_token, resolve_managed_tool_gateway
+        from tools.managed_tool_gateway import (
+            peek_nous_access_token,
+            resolve_managed_tool_gateway,
+        )
         from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, read_selection
 
         def _managed_config() -> Optional[Dict[str, Any]]:
@@ -102,7 +105,11 @@ class BrowserUseBrowserProvider(CloudBrowserProvider):
 
     def _get_config(self) -> Dict[str, Any]:
         from tools.tool_backend_helpers import (
-            NOUS_MANAGED_PROVIDER, managed_nous_tools_enabled, read_selection, selection_error)
+            NOUS_MANAGED_PROVIDER,
+            managed_nous_tools_enabled,
+            read_selection,
+            selection_error,
+        )
 
         config = self._get_config_or_none()
         if config is not None:

@@ -129,7 +129,11 @@ def iter_sync_files(container_base: str = "/root/.hermes") -> list[tuple[str, st
     """Enumerate all (host_path, remote_path) pairs to sync to a remote. Credential paths are
     remapped from the hardcoded /root/.hermes to *container_base* (remote home may differ)."""
     # Late import: credential_files pulls in agent modules (circular at module level).
-    from tools.credential_files import get_credential_file_mounts, iter_cache_files, iter_skills_files
+    from tools.credential_files import (
+        get_credential_file_mounts,
+        iter_cache_files,
+        iter_skills_files,
+    )
 
     files = [
         (entry["host_path"], entry["container_path"].replace("/root/.hermes", container_base, 1))

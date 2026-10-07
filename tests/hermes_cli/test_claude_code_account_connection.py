@@ -1,7 +1,8 @@
 """Accounts Connected must follow Claude Code token validity, not token presence."""
 
-from hermes_cli.web_server import _SESSION_TOKEN, app
 from fastapi.testclient import TestClient
+
+from hermes_cli.web_server import _SESSION_TOKEN, app
 
 client = TestClient(app)
 HEADERS = {"X-Hermes-Session-Token": _SESSION_TOKEN}

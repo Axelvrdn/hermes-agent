@@ -1,10 +1,10 @@
 """Cross-process ownership of resumable partials and their GC boundary."""
 from __future__ import annotations
 
-from contextlib import contextmanager
 import os
-from pathlib import Path
 import time
+from contextlib import contextmanager
+from pathlib import Path
 
 from pm.filesystem import lock_fd
 

@@ -1,7 +1,13 @@
 """Behavior contract for the `jobs` input parser (no workflow YAML is read)."""
 import pytest
 
-from scripts.releases.job_groups import ALL_JOBS, JOB_GROUPS, parse_jobs, phase_jobs, selects_all
+from scripts.releases.job_groups import (
+    ALL_JOBS,
+    JOB_GROUPS,
+    parse_jobs,
+    phase_jobs,
+    selects_all,
+)
 
 
 def test_the_default_selects_every_group():

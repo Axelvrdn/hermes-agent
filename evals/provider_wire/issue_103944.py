@@ -3,11 +3,10 @@
 import json
 import os
 import sys
-from pathlib import Path
-
 import tempfile
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 REPO = Path(sys.argv[1]).resolve()
 arm = sys.argv[2]
@@ -93,11 +92,11 @@ config = {
 Path(os.environ["HERMES_HOME"]).mkdir(parents=True, exist_ok=True)
 # JSON is valid YAML, allowing the real config loader to read the seeded file.
 (Path(os.environ["HERMES_HOME"]) / "config.yaml").write_text(json.dumps(config))
-from run_agent import AIAgent
-from providers import get_provider_profile
+from agent.transports.chat_completions import ChatCompletionsTransport
 from hermes_cli.config import get_compatible_custom_providers, load_config
 from hermes_cli.config_providers import get_custom_provider_context_length
-from agent.transports.chat_completions import ChatCompletionsTransport
+from providers import get_provider_profile
+from run_agent import AIAgent
 
 loaded = get_compatible_custom_providers(load_config())
 rows = []

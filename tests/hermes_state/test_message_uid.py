@@ -325,7 +325,11 @@ class TestPersistedMergeWitness:
             "SELECT tool_call_uid FROM messages WHERE content = 'stray'").fetchone()[0] is None
 
     def test_a_composite_rewind_reports_the_replacement_rows_uid(self, db):
-        from agent.context_compressor import HISTORICAL_TASK_HEADING, SUMMARY_PREFIX, _SUMMARY_END_MARKER
+        from agent.context_compressor import (
+            _SUMMARY_END_MARKER,
+            HISTORICAL_TASK_HEADING,
+            SUMMARY_PREFIX,
+        )
 
         sid = "s"
         db.create_session(sid, "cli", model="m")
@@ -346,7 +350,11 @@ class TestPersistedMergeWitness:
     def test_a_live_undo_of_a_composite_turn_installs_the_replacement_rows_identity(self, db):
         """The CLI/TUI/gateway undo path (``rewind_user_turn``) installs the hidden scaffold as the live head:
         it must carry the replacement row's uid, not wait for a restart to learn it."""
-        from agent.context_compressor import HISTORICAL_TASK_HEADING, SUMMARY_PREFIX, _SUMMARY_END_MARKER
+        from agent.context_compressor import (
+            _SUMMARY_END_MARKER,
+            HISTORICAL_TASK_HEADING,
+            SUMMARY_PREFIX,
+        )
 
         sid = "s"
         db.create_session(sid, "cli", model="m")

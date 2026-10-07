@@ -7,7 +7,6 @@ from agent.context_breakdown import _bytes_to_tokens, _chars_to_tokens
 from agent.model_metadata import CHARS_PER_TOKEN, estimate_tokens_rough
 from agent.native_compaction import _approx_tokens
 
-
 CYRILLIC = "Привет мир, это проверка оценки токенов. " * 40
 CJK = "これは日本語のテキストです。" * 40
 

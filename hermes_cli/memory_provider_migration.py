@@ -43,8 +43,8 @@ def provider_present(name: str, home: Path) -> bool:
     """True when the provider resolves anywhere Hermes looks for *home* (bundled, that home's user
     plugins, entry point). The lookup reads the active home, so it is bound explicitly: the update
     hook walks several profile homes from one process."""
-    from plugins.memory import find_provider_dir
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+    from plugins.memory import find_provider_dir
     token = set_hermes_home_override(home)
     try:
         return find_provider_dir(name) is not None
@@ -161,7 +161,10 @@ def _home_consent(home: Path) -> bool:
 def _install_into(home: Path, *, consent: Optional[bool] = None) -> Callable[[str], dict]:
     def _install(name: str) -> dict:
         from hermes_cli.plugins_cmd import dashboard_install_plugin
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         token = set_hermes_home_override(home)
         try:
             return dashboard_install_plugin("", force=False, enable=True, catalog_name=name,

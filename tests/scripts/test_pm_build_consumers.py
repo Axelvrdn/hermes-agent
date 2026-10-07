@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -26,6 +26,7 @@ def test_ci_setup_exports_python_first_and_no_installer_policy(tmp_path, monkeyp
     """
     import importlib
     from types import SimpleNamespace
+
     from scripts.ci import setup_toolchain
 
     monkeypatch.setattr(setup_toolchain, "packages", lambda toolchain, extra=None: ["python", "uv"])
@@ -100,7 +101,7 @@ def test_ci_packages_exports_python_and_preserves_real_child_exit(tmp_path, monk
 
 def test_termux_gate_checks_real_offline_wheels_and_application_uses_same_graph(tmp_path, local_toolchain):
     from pm.package import InstallError
-    from scripts.termux import build_wheels, build_environment
+    from scripts.termux import build_environment, build_wheels
     from tests.pm._fixtures import _wheel
 
     wheels = tmp_path / "wheelhouse"

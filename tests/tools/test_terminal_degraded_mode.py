@@ -19,6 +19,7 @@ import pytest
 
 from tools.environments.base import EnvironmentConnectionError
 
+
 @pytest.fixture
 def isolated_env(tmp_path, monkeypatch):
     """Isolated HERMES_HOME + a clean environment cache for terminal_tool."""

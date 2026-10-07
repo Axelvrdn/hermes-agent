@@ -8,14 +8,19 @@ loop-internal helpers resolve lazily so ``patch("agent.conversation_loop.X")`` k
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
 import time
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from agent.error_classifier import FailoverReason
 from agent.turn_api_call import stop_thinking_spinner
-from agent.turn_failure_copy import invalid_response_failure_reason, provider_label_for, site_copy, stamp_failure
+from agent.turn_failure_copy import (
+    invalid_response_failure_reason,
+    provider_label_for,
+    site_copy,
+    stamp_failure,
+)
 from agent.turn_truncation import handle_content_policy_refusal, recover_from_truncation
 from agent.turn_usage import record_response_usage
 
@@ -246,7 +251,9 @@ def retry_invalid_response(
     from agent.conversation_loop import _arm_fallback_restart
     from agent.retry_utils import jittered_backoff
     from agent.turn_recovery import (
-        classify_codex_soft_failure, describe_invalid_response, interruptible_backoff_sleep,
+        classify_codex_soft_failure,
+        describe_invalid_response,
+        interruptible_backoff_sleep,
     )
 
     def _verdict(action: str, result: Optional[Dict[str, Any]] = None) -> InvalidResponseVerdict:

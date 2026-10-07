@@ -7,7 +7,6 @@ import asyncio
 import logging
 
 import pytest
-import hermes_cli.web_server_lifecycle as _web_server_lifecycle
 
 # Phase 5 / Phase 6: these tests mutate ``web_server.app.state.auth_required``
 # at module level. Run them in the same xdist worker so they don't race
@@ -17,8 +16,8 @@ import hermes_cli.web_server_lifecycle as _web_server_lifecycle
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
+import hermes_cli.web_server_lifecycle as _web_server_lifecycle
 from hermes_cli import web_server
-
 
 # ---------------------------------------------------------------------------
 # should_require_auth predicate (Task 0.2)
@@ -57,6 +56,7 @@ def _stub_uvicorn_run(monkeypatch):
     that will capture the keyword args.
     """
     import contextlib
+
     import uvicorn
     captured: dict = {"kwargs": {}}
 
@@ -250,9 +250,10 @@ def test_trusted_proxy_allowlist_rejects_unbounded_entries(caplog):
 
 def test_trusted_container_proxy_controls_https_detection():
     """Only a configured bridge peer may turn X-Forwarded-Proto into HTTPS."""
-    from hermes_cli.dashboard_auth.cookies import detect_https
     from starlette.requests import Request
     from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+    from hermes_cli.dashboard_auth.cookies import detect_https
 
     trusted = _web_server_lifecycle._dashboard_forwarded_allow_ips({
         "trusted_proxies": ["172.18.0.0/16"],

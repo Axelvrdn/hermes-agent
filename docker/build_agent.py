@@ -1,12 +1,12 @@
 """Supply the image's fixed runtime paths to the shared offline assembler."""
 from __future__ import annotations
 
-from pathlib import Path
 import sysconfig
+from pathlib import Path
 
-from scripts.build.agent import assemble
-from scripts.build.inputs import AgentInputs, RESOURCE_ENV
 from pm.store import current_target
+from scripts.build.agent import assemble
+from scripts.build.inputs import RESOURCE_ENV, AgentInputs
 
 
 def assemble_image(root: Path) -> None:

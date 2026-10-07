@@ -17,7 +17,6 @@ import pytest
 
 from gateway.platforms.event import ProcessingOutcome
 
-
 if TYPE_CHECKING:
     from plugins.platforms.feishu.adapter import FeishuAdapter
 
@@ -110,6 +109,7 @@ class TestFeishuAdapterMessaging(unittest.TestCase):
         """
         import threading
         from types import SimpleNamespace
+
         from gateway.config import PlatformConfig
         from plugins.platforms.feishu.adapter import FeishuAdapter
 
@@ -954,8 +954,8 @@ class TestAdapterBehavior(unittest.TestCase):
     def test_text_batch_flushes_when_message_count_limit_is_hit(self):
         from gateway.config import PlatformConfig
         from gateway.platforms.event import MessageEvent, MessageType
-        from plugins.platforms.feishu.adapter import FeishuAdapter
         from gateway.session import SessionSource
+        from plugins.platforms.feishu.adapter import FeishuAdapter
 
         adapter = FeishuAdapter(PlatformConfig())
         adapter.handle_message = AsyncMock()
@@ -1057,8 +1057,8 @@ class TestAdapterBehavior(unittest.TestCase):
     def test_media_batch_merges_rapid_photo_messages(self):
         from gateway.config import PlatformConfig
         from gateway.platforms.event import MessageEvent, MessageType
-        from plugins.platforms.feishu.adapter import FeishuAdapter
         from gateway.session import SessionSource
+        from plugins.platforms.feishu.adapter import FeishuAdapter
 
         adapter = FeishuAdapter(PlatformConfig())
         adapter.handle_message = AsyncMock()
@@ -1180,6 +1180,7 @@ class TestAdapterBehavior(unittest.TestCase):
     def test_download_remote_document_blocks_connect_time_rebind(self):
         import httpcore
         from httpcore._backends.auto import AutoBackend
+
         from gateway.config import PlatformConfig
         from plugins.platforms.feishu.adapter import FeishuAdapter
         from tools.url_safety import SSRFConnectionBlocked
@@ -1518,7 +1519,10 @@ class TestWebhookSecurity(unittest.TestCase):
         self.assertTrue(adapter._is_webhook_signature_valid(headers, body))
 
     def test_rate_limit_resets_after_window_expires(self):
-        from plugins.platforms.feishu.adapter import _FEISHU_WEBHOOK_RATE_LIMIT_MAX, _FEISHU_WEBHOOK_RATE_WINDOW_SECONDS
+        from plugins.platforms.feishu.adapter import (
+            _FEISHU_WEBHOOK_RATE_LIMIT_MAX,
+            _FEISHU_WEBHOOK_RATE_WINDOW_SECONDS,
+        )
         adapter = self._make_adapter()
         ip = "10.0.0.3"
         for _ in range(_FEISHU_WEBHOOK_RATE_LIMIT_MAX):
@@ -1531,8 +1535,14 @@ class TestWebhookSecurity(unittest.TestCase):
 
     def test_webhook_request_rejects_oversized_chunked_body_while_reading(self):
         from gateway.config import PlatformConfig
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-        from plugins.platforms.feishu.adapter import FeishuAdapter, _FEISHU_WEBHOOK_MAX_BODY_BYTES
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
+        from plugins.platforms.feishu.adapter import (
+            _FEISHU_WEBHOOK_MAX_BODY_BYTES,
+            FeishuAdapter,
+        )
 
         with tempfile.TemporaryDirectory() as tmpdir:
             token = set_hermes_home_override(tmpdir)
@@ -1607,6 +1617,7 @@ class TestDedupTTL(unittest.TestCase):
         skipped; the rest of the state loads.
         """
         import tempfile
+
         from gateway.config import PlatformConfig
         from plugins.platforms.feishu.adapter import FeishuAdapter
 
@@ -1640,6 +1651,7 @@ class TestDedupTTL(unittest.TestCase):
         test_directory_write_runs_off_event_loop_thread in
         test_channel_directory.py for the same #83906 bug class."""
         import threading
+
         from gateway.config import PlatformConfig
         from plugins.platforms.feishu.adapter import FeishuAdapter
 
@@ -1718,7 +1730,10 @@ class TestGroupMentionAtAll(unittest.TestCase):
 class TestFeishuMentionMap(unittest.TestCase):
 
     def test_build_mentions_map_marks_self_by_open_id(self):
-        from plugins.platforms.feishu.adapter import _build_mentions_map, _FeishuBotIdentity
+        from plugins.platforms.feishu.adapter import (
+            _build_mentions_map,
+            _FeishuBotIdentity,
+        )
 
         mention = SimpleNamespace(
             key="@_user_1",
@@ -1735,7 +1750,10 @@ class TestFeishuMentionMap(unittest.TestCase):
         NOT be flagged as self when their open_id differs. Before the fix,
         name-match fired even when open_id was present and different, causing
         their messages to be silently stripped/dropped."""
-        from plugins.platforms.feishu.adapter import _build_mentions_map, _FeishuBotIdentity
+        from plugins.platforms.feishu.adapter import (
+            _build_mentions_map,
+            _FeishuBotIdentity,
+        )
 
         human_with_same_name = SimpleNamespace(
             key="@_user_1",
@@ -1753,7 +1771,10 @@ class TestFeishuMentionMap(unittest.TestCase):
         not have populated _bot_open_id yet. During that window, a mention
         carrying a real open_id should still match via name — otherwise
         @bot messages silently fail admission."""
-        from plugins.platforms.feishu.adapter import _build_mentions_map, _FeishuBotIdentity
+        from plugins.platforms.feishu.adapter import (
+            _build_mentions_map,
+            _FeishuBotIdentity,
+        )
 
         bot_mention = SimpleNamespace(
             key="@_user_1",
@@ -1770,7 +1791,10 @@ class TestFeishuMentionMap(unittest.TestCase):
 class TestFeishuMentionHint(unittest.TestCase):
 
     def test_hint_filters_self_mentions(self):
-        from plugins.platforms.feishu.adapter import FeishuMentionRef, _build_mention_hint
+        from plugins.platforms.feishu.adapter import (
+            FeishuMentionRef,
+            _build_mention_hint,
+        )
 
         refs = [
             FeishuMentionRef(name="Hermes", open_id="ou_bot", is_self=True),
@@ -1782,7 +1806,10 @@ class TestFeishuMentionHint(unittest.TestCase):
         )
 
     def test_hint_dedupes_repeated_user(self):
-        from plugins.platforms.feishu.adapter import FeishuMentionRef, _build_mention_hint
+        from plugins.platforms.feishu.adapter import (
+            FeishuMentionRef,
+            _build_mention_hint,
+        )
 
         refs = [
             FeishuMentionRef(name="Alice", open_id="ou_alice"),
@@ -1828,7 +1855,10 @@ class TestFeishuStripLeadingSelf(unittest.TestCase):
         self.assertEqual(result, "please don't @Hermes anymore")
 
     def test_returns_input_when_no_self_refs(self):
-        from plugins.platforms.feishu.adapter import _strip_edge_self_mentions, FeishuMentionRef
+        from plugins.platforms.feishu.adapter import (
+            FeishuMentionRef,
+            _strip_edge_self_mentions,
+        )
 
         refs = [FeishuMentionRef(name="Alice", open_id="ou_alice")]
         self.assertEqual(_strip_edge_self_mentions("@Alice hi", refs), "@Alice hi")
@@ -1836,7 +1866,10 @@ class TestFeishuStripLeadingSelf(unittest.TestCase):
 class TestFeishuNormalizeText(unittest.TestCase):
 
     def test_renders_self_mention_with_name(self):
-        from plugins.platforms.feishu.adapter import _normalize_feishu_text, FeishuMentionRef
+        from plugins.platforms.feishu.adapter import (
+            FeishuMentionRef,
+            _normalize_feishu_text,
+        )
 
         refs = {"@_user_1": FeishuMentionRef(name="Hermes", open_id="ou_bot", is_self=True)}
         self.assertEqual(
@@ -1854,7 +1887,10 @@ class TestFeishuPostMentionParsing(unittest.TestCase):
         """Post <at>.user_id is a placeholder ('@_user_N'); the real display
         name comes from the mentions_map lookup. Confirmed via live
         im.v1.message.get payload."""
-        from plugins.platforms.feishu.adapter import parse_feishu_post_payload, FeishuMentionRef
+        from plugins.platforms.feishu.adapter import (
+            FeishuMentionRef,
+            parse_feishu_post_payload,
+        )
 
         payload = {
             "en_us": {
@@ -1911,7 +1947,10 @@ class TestFeishuPostTextIsNotMarkdownEscaped(unittest.TestCase):
 
 class TestFeishuNormalizeWithMentions(unittest.TestCase):
     def test_text_message_renders_mention_by_name(self):
-        from plugins.platforms.feishu.adapter import normalize_feishu_message, _FeishuBotIdentity
+        from plugins.platforms.feishu.adapter import (
+            _FeishuBotIdentity,
+            normalize_feishu_message,
+        )
 
         mention = SimpleNamespace(
             key="@_user_1",
@@ -1932,7 +1971,10 @@ class TestFeishuNormalizeWithMentions(unittest.TestCase):
     def test_post_message_marks_self_via_mentions_map_lookup(self):
         """Real Feishu post: <at user_id="@_user_N"> + top-level mentions array
         resolves to open_id via placeholder lookup, not direct tag fields."""
-        from plugins.platforms.feishu.adapter import normalize_feishu_message, _FeishuBotIdentity
+        from plugins.platforms.feishu.adapter import (
+            _FeishuBotIdentity,
+            normalize_feishu_message,
+        )
 
         raw = json.dumps({
             "en_us": {

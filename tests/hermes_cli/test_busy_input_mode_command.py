@@ -4,6 +4,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
+
 def _import_cli():
     import hermes_cli.config as config_mod
 

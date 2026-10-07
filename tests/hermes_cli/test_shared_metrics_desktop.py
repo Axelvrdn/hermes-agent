@@ -13,11 +13,11 @@ from types import SimpleNamespace
 
 import pytest
 
+import tui_gateway.server as server
 from hermes_cli.observability import relay_shared_metrics
 from hermes_cli.observability import shared_metrics_contract as contract
 from hermes_cli.observability import shared_metrics_desktop as desktop
 from hermes_cli.observability.shared_metrics import SharedMetricsStore
-import tui_gateway.server as server
 
 TODAY = "2026-09-27"
 

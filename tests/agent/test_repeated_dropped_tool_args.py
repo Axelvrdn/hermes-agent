@@ -9,7 +9,6 @@ import pytest
 from hermes_constants import PARTIAL_STREAM_STUB_ID
 from run_agent import AIAgent
 
-
 REPEATED_COMMAND = "cat >> /tmp/example.py <<'PYEOF'\n" + (
     "# The model repeats this same rambling fragment instead of writing the script.\n" * 150
 ) + "PYEOF"

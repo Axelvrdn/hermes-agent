@@ -12,7 +12,6 @@ from typing import Any, Dict
 
 from hermes_cli.sqlite_util import add_column_if_missing
 
-
 # Keep the extracted store's log records on the API server logger.
 logger = logging.getLogger("gateway.platforms.api_server")
 

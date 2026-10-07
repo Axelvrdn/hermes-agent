@@ -427,7 +427,10 @@ def desktop_update_fields(
 ) -> dict[str, str]:
     """hermes.update.run dims for a Desktop packaged self-update (RPC-reported)."""
     from .shared_metrics_contract import (
-        DESKTOP_UPDATE_STAGES, UPDATE_OUTCOMES, update_duration_bucket, version_age_bucket,
+        DESKTOP_UPDATE_STAGES,
+        UPDATE_OUTCOMES,
+        update_duration_bucket,
+        version_age_bucket,
     )
 
     outcome_value = str(outcome or "").strip().lower()

@@ -6,8 +6,9 @@ import logging
 import shutil
 import subprocess
 import sys
-from tools import tool_backend_helpers
+
 from hermes_cli import nous_subscription
+from tools import tool_backend_helpers
 
 logger = logging.getLogger("hermes_cli.setup")
 
@@ -85,8 +86,11 @@ def _run_xai_oauth_login_from_setup() -> bool:
     credentials for side tools). False on any failure (caller falls back)."""
     try:
         from hermes_cli.auth import (
-            _is_remote_session, _save_xai_oauth_tokens, _xai_oauth_device_code_login,
-            unsuppress_credential_source)
+            _is_remote_session,
+            _save_xai_oauth_tokens,
+            _xai_oauth_device_code_login,
+            unsuppress_credential_source,
+        )
     except Exception as exc:
         _setup.print_warning(f"xAI Grok OAuth helpers unavailable: {exc}")
         return False

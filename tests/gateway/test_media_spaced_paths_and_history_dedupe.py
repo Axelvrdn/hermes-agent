@@ -15,13 +15,10 @@ Covers the follow-up wave after PR #72170:
 
 import os
 
-
 from gateway.platforms.base import (
     BasePlatformAdapter,
 )
 from gateway.run import _collect_history_media_paths
-
-
 
 
 class TestSpacedPaths:

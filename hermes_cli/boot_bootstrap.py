@@ -8,13 +8,14 @@ an explicit post-update run). PM owns runtime diagnosis, not this record.
 """
 from __future__ import annotations
 
-from pm.environments import install_state_dir
 import json
 import logging
 import os
 import subprocess
 import time
 from pathlib import Path
+
+from pm.environments import install_state_dir
 
 logger = logging.getLogger(__name__)
 

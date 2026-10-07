@@ -192,7 +192,7 @@ def _reason_row(default_reason: str, item: dict, kind: str) -> str:
 def _print_migration_preview(report: dict):
     """Dry-run preview grouped by status, with warnings for high-impact items (gateway takeover,
     config semantics)."""
-    from hermes_cli.setup import color, Colors, print_info
+    from hermes_cli.setup import Colors, color, print_info
     items = report.get("items", [])
     if not items:
         print_info("Nothing to migrate.")
@@ -255,8 +255,15 @@ def _offer_openclaw_migration(hermes_home: Path) -> bool:
     """Detect ~/.openclaw and offer to migrate during first-time setup: dry-run preview first,
     execute only after explicit confirmation. Returns True iff migration ran successfully."""
     from hermes_cli.setup import (
-        get_config_path, _info, load_config, print_header, print_info, print_success, print_warning, prompt_yes_no,
-        save_config
+        _info,
+        get_config_path,
+        load_config,
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt_yes_no,
+        save_config,
     )
     openclaw_dir = Path.home() / ".openclaw"
     if not openclaw_dir.is_dir() or not _OPENCLAW_SCRIPT.exists():

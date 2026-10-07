@@ -14,10 +14,10 @@ Examples:
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import io
 import json
+import logging
 import sys
 
 

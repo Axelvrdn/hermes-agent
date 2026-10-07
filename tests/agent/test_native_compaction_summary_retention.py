@@ -9,12 +9,12 @@ an ad-hoc heuristic), whole-or-drop truncation, and idempotency.
 """
 
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_METADATA_KEY,
-    ContextCompressor,
-    SUMMARY_PREFIX,
     _MERGED_PRIOR_CONTEXT_HEADER,
     _MERGED_SUMMARY_DELIMITER,
     _SUMMARY_END_MARKER,
+    COMPRESSED_SUMMARY_METADATA_KEY,
+    SUMMARY_PREFIX,
+    ContextCompressor,
 )
 from agent.native_compaction import (
     _extract_item_text,

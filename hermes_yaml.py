@@ -5,7 +5,7 @@ Every operation owns its parser/emitter; instances must not be shared by threads
 """
 
 from io import StringIO
-from typing import Any, IO, overload
+from typing import IO, Any, overload
 
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError as YAMLError

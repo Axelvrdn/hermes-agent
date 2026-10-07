@@ -56,7 +56,14 @@ def _run_nous_flow(config: dict, *, context: str, cancel_exc: tuple, cancel_line
 
 def _run_portal_one_shot(config: dict) -> None:
     """One-shot Nous Portal setup (``hermes setup --portal`` / ``hermes portal``)."""
-    from hermes_cli.setup import _info, _print_banner, _record_setup_completed, print_error, print_info, print_success
+    from hermes_cli.setup import (
+        _info,
+        _print_banner,
+        _record_setup_completed,
+        print_error,
+        print_info,
+        print_success,
+    )
     _print_banner("│     ☤ Hermes Setup — Nous Portal (one-shot)             │")
     _info(None, "  One subscription, 300+ models, plus the Tool Gateway:",
           "    web search, image generation, TTS, browser automation",
@@ -89,8 +96,17 @@ def _run_first_time_quick_setup(config: dict, hermes_home, is_existing: bool):
     """Streamlined first-time setup via Nous Portal: OAuth, model, terminal & messaging;
     everything else gets defaults."""
     from hermes_cli.setup import (
-        _apply_default_agent_settings, _info, print_header, print_info, _print_setup_summary, print_success,
-        print_warning, prompt_choice, save_config, setup_gateway, setup_terminal_backend
+        _apply_default_agent_settings,
+        _info,
+        _print_setup_summary,
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt_choice,
+        save_config,
+        setup_gateway,
+        setup_terminal_backend,
     )
     # Step 1: Nous Portal — OAuth login + model selection (provider set to "nous" by the save).
     print_header("Nous Portal", gap=True)
@@ -171,8 +187,11 @@ def _blank_slate_minimal_toolsets(config: dict):
     keep = {"file", "terminal", "vision", "skills"}
     config.setdefault("platform_toolsets", {})["cli"] = sorted(keep)
     try:
+        from hermes_cli.tools_config import (
+            CONFIGURABLE_TOOLSETS,
+            _get_plugin_toolset_keys,
+        )
         from toolsets import TOOLSETS
-        from hermes_cli.tools_config import CONFIGURABLE_TOOLSETS, _get_plugin_toolset_keys
         all_keys = {k for k, _, _ in CONFIGURABLE_TOOLSETS}
         all_keys.update(_get_plugin_toolset_keys())
         # Plain TOOLSETS entries catch recovered toolsets like ``kanban``. Skip "hermes-*" platform
@@ -223,8 +242,14 @@ def _run_blank_slate_setup(config: dict, hermes_home, is_existing: bool):
     """Blank Slate setup — essentials only, everything else OFF; then finish now or walk through
     opting capabilities back in. Nothing is enabled that the user did not explicitly choose."""
     from hermes_cli.setup import (
-        _info, print_header, print_info, print_success, prompt_choice, save_config, setup_model_provider,
-        setup_terminal_backend
+        _info,
+        print_header,
+        print_info,
+        print_success,
+        prompt_choice,
+        save_config,
+        setup_model_provider,
+        setup_terminal_backend,
     )
     print_header("Blank Slate Setup", gap=True)
     _info("Everything starts OFF. First we force-enable only what's required",
@@ -274,7 +299,14 @@ def _run_blank_slate_setup(config: dict, hermes_home, is_existing: bool):
 def _blank_slate_walkthrough(config: dict, hermes_home):
     """Opt-in walkthrough for Blank Slate: skills, tools, plugins, MCP, gateway."""
     from hermes_cli.setup import (
-        _info, print_header, print_info, print_success, print_warning, prompt_yes_no, save_config, setup_gateway,
+        _info,
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt_yes_no,
+        save_config,
+        setup_gateway,
     )
     # Bundled skills — default to NONE, offer to seed all
     print_header("Bundled Skills", gap=True)
@@ -334,11 +366,25 @@ def _blank_slate_walkthrough(config: dict, hermes_home):
 
 def _run_quick_setup(config: dict, hermes_home):
     """Quick setup — only configure items that are missing."""
-    from hermes_cli.setup import (
-        color, Colors, _info, print_header, print_info, _print_setup_summary, print_success,
-        _prompt_and_save_env_var, _prompt_api_key, _section_rule, prompt_checklist, save_config,
+    from hermes_cli.config import (
+        check_config_version,
+        get_missing_config_fields,
+        get_missing_env_vars,
     )
-    from hermes_cli.config import (get_missing_env_vars, get_missing_config_fields, check_config_version)
+    from hermes_cli.setup import (
+        Colors,
+        _info,
+        _print_setup_summary,
+        _prompt_and_save_env_var,
+        _prompt_api_key,
+        _section_rule,
+        color,
+        print_header,
+        print_info,
+        print_success,
+        prompt_checklist,
+        save_config,
+    )
     print_header("Quick Setup — Missing Items Only", gap=True)
 
     # Check what's missing

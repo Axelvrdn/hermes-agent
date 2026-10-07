@@ -22,7 +22,6 @@ from typing import Dict, Mapping, NamedTuple, Optional, Tuple
 
 from utils import file_signature
 
-
 # Process-global (describes the deployment mode, not a per-task value): set once
 # at gateway startup when gateway.multiplex_profiles is true.
 _MULTIPLEX_ACTIVE: bool = False
@@ -100,7 +99,11 @@ def serves_routed_profile() -> bool:
     mirror cannot flip this predicate."""
     if is_multiplex_active():
         return True
-    from hermes_constants import get_hermes_home_override, get_routing_process_hermes_home, hermes_home_key
+    from hermes_constants import (
+        get_hermes_home_override,
+        get_routing_process_hermes_home,
+        hermes_home_key,
+    )
     own = hermes_home_key(get_routing_process_hermes_home())
     bound = _SECRET_SCOPE.get()
     if bound is not None and bound.profile_home and hermes_home_key(bound.profile_home) != own:
@@ -413,7 +416,9 @@ def build_profile_secret_scope(hermes_home: Path) -> Dict[str, str]:
     # managed-vs-user collision (#111187 review). Every multiplex-authoritative scope — gateway
     # turn, routed cron fire, external worker — is built here, so managed authority is composed
     # once, not restored by each consumer.
-    from hermes_cli.managed_scope import load_managed_env  # fail-open: {} when no managed scope
+    from hermes_cli.managed_scope import (
+        load_managed_env,  # fail-open: {} when no managed scope
+    )
 
     secrets.update((k, v) for k, v in load_managed_env().items() if not _is_global_env(k))
     return secrets

@@ -11,28 +11,38 @@ from __future__ import annotations
 import concurrent.futures
 import contextlib
 import json
-from pathlib import Path
 import logging
 import os
 import random
 import threading
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable, Optional
 
+from agent.compression_marker import _COMPRESSION_MARKER_PREFIX
 from agent.display import (
     KawaiiSpinner,
-    build_tool_preview as _build_tool_preview,
-    build_tool_label as _build_tool_label,
-    get_cute_tool_message as _get_cute_tool_message_impl,
-    get_tool_emoji as _get_tool_emoji,
-    tool_row_emoji as _tool_row_emoji,
-    redact_tool_args_for_display as _redact_tool_args_for_display,
     _detect_tool_failure,
 )
-from agent.compression_marker import _COMPRESSION_MARKER_PREFIX
-from agent.interrupt_control import _REASON_USER_INTERRUPT, interrupt_skip_wording
-from agent.message_sanitization import coalesce_tool_call_id
+from agent.display import (
+    build_tool_label as _build_tool_label,
+)
+from agent.display import (
+    build_tool_preview as _build_tool_preview,
+)
+from agent.display import (
+    get_cute_tool_message as _get_cute_tool_message_impl,
+)
+from agent.display import (
+    get_tool_emoji as _get_tool_emoji,
+)
+from agent.display import (
+    redact_tool_args_for_display as _redact_tool_args_for_display,
+)
+from agent.display import (
+    tool_row_emoji as _tool_row_emoji,
+)
 from agent.inline_tool_executors import (
     INLINE_TOOL_EXECUTORS,
     InlineToolContext,
@@ -40,25 +50,30 @@ from agent.inline_tool_executors import (
     emit_terminal_post_tool_call,
     tool_hook_ids,
 )
+from agent.interrupt_control import _REASON_USER_INTERRUPT, interrupt_skip_wording
+from agent.message_sanitization import coalesce_tool_call_id
 from agent.tool_dispatch_helpers import (
     _NEVER_PARALLEL_TOOLS,
+    _append_subdir_hint_to_multimodal,
+    _context_pruned_argument_paths,
     _is_destructive_command,
     _is_multimodal_tool_result,
     _multimodal_text_summary,
-    _append_subdir_hint_to_multimodal,
-    _context_pruned_argument_paths,
     _plan_tool_batch_segments,
     make_tool_result_message,
 )
+from hermes_cli.observability.shared_metrics_efficiency import (
+    note_tool_result,
+    record_tool_batch,
+)
+from tools.budget_config import DEFAULT_BUDGET, BudgetConfig, budget_for_context_window
 from tools.terminal_tool_lifecycle import get_active_env
 from tools.thread_context import propagate_context_to_thread
 from tools.tool_result_storage import (
-    maybe_persist_tool_result,
     enforce_turn_budget,
     extract_persisted_path,
+    maybe_persist_tool_result,
 )
-from tools.budget_config import BudgetConfig, DEFAULT_BUDGET, budget_for_context_window
-from hermes_cli.observability.shared_metrics_efficiency import note_tool_result, record_tool_batch
 
 # A tool result this large (raw stdout, file dumps) is the biggest allocation a turn ever drops.
 # The commit only flags it: the string is still referenced by the publish frames here, so the
@@ -96,7 +111,10 @@ def _ensure_file_checkpoint(agent, function_name: str, function_args: dict, effe
     if not file_path:
         return
     from agent.file_safety import is_nt_namespace_path
-    from tools.file_tools_paths import _resolve_path_for_task, container_backend_for_task
+    from tools.file_tools_paths import (
+        _resolve_path_for_task,
+        container_backend_for_task,
+    )
 
     if container_backend_for_task(effective_task_id or "default") is not None:
         return  # container paths: nothing to checkpoint on the host
@@ -1839,7 +1857,11 @@ def _publish_sequential_result(agent, messages: list, ref: _ToolCallRef, managed
 
 def execute_tool_calls_sequential(agent, assistant_message, messages: list, effective_task_id: str, api_call_count: int = 0, *, finalize: bool = True) -> None:
     from types import SimpleNamespace
-    from agent.terminal_approval_batch import terminal_approval_batch, terminal_approval_runs
+
+    from agent.terminal_approval_batch import (
+        terminal_approval_batch,
+        terminal_approval_runs,
+    )
     for calls in terminal_approval_runs(agent, assistant_message.tool_calls):
         with terminal_approval_batch(agent, calls, messages, effective_task_id):
             _execute_tool_calls_sequential(agent, SimpleNamespace(tool_calls=calls), messages, effective_task_id, api_call_count, finalize=False)

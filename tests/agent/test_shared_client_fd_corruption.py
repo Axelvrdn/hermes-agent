@@ -32,6 +32,7 @@ import pytest
 
 from tests.agent.test_streaming import _make_stream_chunk
 
+
 def _make_agent():
     from run_agent import AIAgent
 

@@ -3,11 +3,10 @@
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
-import hermes_time
 import pytest
 
+import hermes_time
 from cron import jobs
-
 
 NEW_YORK = ZoneInfo("America/New_York")
 

@@ -1,5 +1,6 @@
 """UI sink gating never suppresses the producer or interprets its return value."""
 import pytest
+
 from gateway import warning_notifications as policy
 
 

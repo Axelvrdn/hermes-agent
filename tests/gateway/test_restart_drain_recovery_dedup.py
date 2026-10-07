@@ -23,6 +23,7 @@ import types
 
 from hermes_state import SessionDB
 
+
 def _make_db(tmp_path) -> SessionDB:
     return SessionDB(db_path=tmp_path / "state.db")
 

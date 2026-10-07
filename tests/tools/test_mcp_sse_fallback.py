@@ -91,8 +91,8 @@ def test_opaque_sdk_rejection_is_reported_with_the_servers_status_and_body(monke
     warning and the both-transports ConnectionError must still name the HTTP status, the URL that
     was requested and the body the server sent (#114350, #113359). A root that already carries the
     status (httpx ``HTTPStatusError``) is left alone — no duplicated detail."""
-    from tools.mcp_tool_errors import _make_http_rejection_recorder
     from tools.mcp_tool import sdk_httpx
+    from tools.mcp_tool_errors import _make_http_rejection_recorder
 
     httpx2 = sdk_httpx()
     body = '{"jsonrpc":"2.0","error":{"code":-32020,"message":"Unsupported MCP-Protocol-Version"}}'

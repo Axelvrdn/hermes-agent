@@ -216,6 +216,7 @@ def test_enqueue_say_requires_text():
 def test_cli_register_includes_node_subcommand():
     """`hermes meet` argparse tree includes the node subtree."""
     import argparse
+
     from plugins.google_meet.cli import register_cli
 
     parser = argparse.ArgumentParser(prog="hermes meet")
@@ -277,7 +278,13 @@ def test_join_polls_for_late_button_and_admission_unmutes_mic(tmp_path):
     The mic check is driven through ``_drain_loop``'s admission branch — the production call site."""
     import time
 
-    from plugins.google_meet.meet_bot import _ADMISSION_PROBE_JS, _BotConfig, _BotState, _drain_loop, _join
+    from plugins.google_meet.meet_bot import (
+        _ADMISSION_PROBE_JS,
+        _BotConfig,
+        _BotState,
+        _drain_loop,
+        _join,
+    )
 
     class _Page:
         def __init__(self, ready_at, mic_muted, stop):

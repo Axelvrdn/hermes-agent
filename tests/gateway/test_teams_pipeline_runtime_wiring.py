@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import sys
-from types import ModuleType
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock
 
 from gateway.config import Platform, PlatformConfig

@@ -1,8 +1,8 @@
 """Skills configuration for Hermes Agent. `hermes skills` enters this module."""
 from typing import List, Optional, Set
 
-from hermes_cli.config import cfg_get, load_config, save_config
 from hermes_cli.colors import Colors, color
+from hermes_cli.config import cfg_get, load_config, save_config
 from hermes_cli.platforms import PLATFORMS as _PLATFORMS
 
 # {key: label} view of the messaging platforms (``PLATFORMS.items()`` / ``.get(key)`` below).

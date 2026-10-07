@@ -1,13 +1,12 @@
 """Source E2E children stamp their own checkout, not the workflow's NEW ref."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSETS = ROOT / "tests/install/e2e-assets"

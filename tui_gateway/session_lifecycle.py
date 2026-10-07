@@ -5,9 +5,8 @@ globals at install time (method_ctx.bind_module), so they reference server.py gl
 
 from __future__ import annotations
 
-import logging
-
 import contextlib
+import logging
 
 from .method_ctx import bind_module
 
@@ -246,7 +245,10 @@ def _other_runtime_lease_guard(session_id: str, session: dict):
     the lifecycle -> preserve) when the guard can't be loaded/entered in 3 tries: unknown ownership never ends a row."""
     lease = session.get("active_session_lease")
     try:
-        from hermes_cli.active_sessions import active_session_liveness_guard, release_active_session_liveness_guard
+        from hermes_cli.active_sessions import (
+            active_session_liveness_guard,
+            release_active_session_liveness_guard,
+        )
     except Exception as exc:
         logger.warning("Failed to load active session ownership guard; preserving session %s: %s", session_id, exc)
         yield True

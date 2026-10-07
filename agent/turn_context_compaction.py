@@ -16,8 +16,10 @@ from typing import Any, Dict, List, Optional
 
 from agent.context_engine import automatic_compaction_status_message
 from agent.conversation_compression import (
-    IDLE_COMPACTION_STATUS_TEMPLATE, PREFLIGHT_COMPRESSION_STATUS_TEMPLATE,
-    compression_skipped_due_to_lock, conversation_history_after_compression,
+    IDLE_COMPACTION_STATUS_TEMPLATE,
+    PREFLIGHT_COMPRESSION_STATUS_TEMPLATE,
+    compression_skipped_due_to_lock,
+    conversation_history_after_compression,
 )
 
 logger = logging.getLogger("agent.turn_context")

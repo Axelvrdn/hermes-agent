@@ -175,7 +175,10 @@ class SingularityEnvironment(BaseEnvironment):
             cmd.append("--writable-tmpfs")
 
         try:
-            from tools.credential_files import get_credential_file_mounts, get_skills_directory_mount
+            from tools.credential_files import (
+                get_credential_file_mounts,
+                get_skills_directory_mount,
+            )
             for entry in (*get_credential_file_mounts(), *get_skills_directory_mount()):
                 cmd.extend(["--bind", f"{entry['host_path']}:{entry['container_path']}:ro"])
         except Exception as e:

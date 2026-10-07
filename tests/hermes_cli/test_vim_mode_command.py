@@ -4,7 +4,6 @@ import unittest
 from types import SimpleNamespace
 
 
-
 def _import_cli():
     import cli as cli_mod
 

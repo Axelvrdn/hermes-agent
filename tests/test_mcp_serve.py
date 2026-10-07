@@ -13,8 +13,8 @@ import inspect
 import json
 import os
 import sqlite3
-import time
 import threading
+import time
 from unittest.mock import MagicMock
 
 import pytest
@@ -424,7 +424,7 @@ class TestEventBridge:
         assert result[0]["session_key"] == "wake"
 
     def test_queue_limit(self):
-        from mcp_serve import EventBridge, QueueEvent, QUEUE_LIMIT
+        from mcp_serve import QUEUE_LIMIT, EventBridge, QueueEvent
         b = EventBridge()
         for i in range(QUEUE_LIMIT + 50):
             b._enqueue(QueueEvent(cursor=0, type="message", session_key=f"s{i}"))

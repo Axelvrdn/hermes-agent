@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 import platform
 import shutil
 import subprocess
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 _IDENTIFIER = "com.nousresearch.hermes.managed-python"

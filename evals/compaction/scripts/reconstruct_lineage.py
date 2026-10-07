@@ -10,9 +10,9 @@ Usage: reconstruct_lineage.py <state_db_copy> <root_session_id> <out_json>
 
 ALWAYS run against a COPY of state.db, never the live file.
 """
-import logging
 import hashlib
 import json
+import logging
 import sqlite3
 import sys
 
@@ -25,6 +25,7 @@ db.row_factory = sqlite3.Row
 
 # collect the whole descendant tree, chronological by started_at
 import collections
+
 children = collections.defaultdict(list)
 for r in db.execute(
     "SELECT id, parent_session_id FROM sessions WHERE parent_session_id IS NOT NULL"

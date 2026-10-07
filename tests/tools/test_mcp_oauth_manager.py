@@ -298,6 +298,7 @@ async def test_manager_provider_token_exchange_includes_dcr_secret(tmp_path, mon
     from urllib.parse import parse_qs
 
     from mcp.shared.auth import OAuthClientInformationFull
+
     from tools.mcp_oauth_manager import MCPOAuthManager, reset_manager_for_tests
 
     reset_manager_for_tests()
@@ -422,6 +423,7 @@ async def test_refresh_response_without_refresh_token_keeps_stored_one(tmp_path,
     """RFC 6749 §6: an AS that does not rotate omits refresh_token; the prior one must survive in
     the live provider AND on disk, or the server dies at the next expiry (#62333)."""
     import json
+
     from mcp.shared.auth import OAuthToken
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
@@ -449,6 +451,7 @@ async def test_refresh_response_without_refresh_token_keeps_stored_one(tmp_path,
 async def test_refresh_response_with_new_refresh_token_rotates(tmp_path, monkeypatch):
     """A rotating AS's new refresh_token replaces the stored one (carry-forward fills gaps only)."""
     import json
+
     from mcp.shared.auth import OAuthToken
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))

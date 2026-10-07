@@ -14,7 +14,6 @@ import json
 import subprocess
 from unittest.mock import patch
 
-
 from hermes_cli import doctor_tools
 
 

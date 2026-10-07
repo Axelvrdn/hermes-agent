@@ -3,7 +3,6 @@
 from providers import register_provider
 from providers.base import ProviderProfile
 
-
 novita = ProviderProfile(
     name="novita", aliases=("novita-ai", "novitaai"), display_name="NovitaAI",
     description="NovitaAI — AI-native cloud for builders and agents",

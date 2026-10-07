@@ -1,13 +1,14 @@
 """MCP process lifecycle: stdio child PID tracking and orphan cleanup, graceful
 server shutdown and draining of the background MCP loop."""
 
-import logging
 import asyncio
+import logging
 import os
 import time
 from typing import Dict, Optional
-from tools.mcp_tool_common import _core
+
 from tools import mcp_tool_loop as _loop
+from tools.mcp_tool_common import _core
 
 logger = logging.getLogger("tools.mcp_tool")
 
@@ -131,7 +132,12 @@ def _reregister_orphaned_adopters() -> None:
     if not pending:
         return
     from pathlib import Path
-    from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
+
+    from agent.secret_scope import (
+        build_profile_secret_scope,
+        reset_secret_scope,
+        set_secret_scope,
+    )
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tools import mcp_tool_discovery as _discovery
     from tools.mcp_tool_config import _load_mcp_config
@@ -378,7 +384,9 @@ def _kill_orphaned_mcp_children(include_active: bool = False, server_name: Optio
         logger.debug("Sent SIGTERM to orphaned MCP process %d (%s)", pid, owner)
     time.sleep(2)
     sigkill = getattr(_signal, "SIGKILL", _signal.SIGTERM)
-    from gateway.status import _pid_exists  # ``os.kill(pid, 0)`` is NOT a no-op on Windows
+    from gateway.status import (
+        _pid_exists,  # ``os.kill(pid, 0)`` is NOT a no-op on Windows
+    )
     for pid, owner in pids.items():
         if _pid_exists(pid) or _group_alive(pgids.get(pid), my_pgid):  # leader or descendants survived SIGTERM
             _signal_mcp_process(pid, sigkill, owner, pgids.get(pid), my_pgid, starts.get(pid))

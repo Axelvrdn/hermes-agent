@@ -16,8 +16,7 @@ import pytest
 
 import hermes_cli.config as hc
 from tools.approval import check_all_command_guards, load_permanent_allowlist
-from tools.approval_context import _get_approval_config
-from tools.approval_context import _get_cron_approval_mode
+from tools.approval_context import _get_approval_config, _get_cron_approval_mode
 
 
 @pytest.fixture

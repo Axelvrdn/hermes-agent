@@ -367,6 +367,7 @@ def fetch_live_catalog(*, force: bool = False) -> Optional[Dict[str, Any]]:
         return _stale_live_cache(cache)
     try:
         import httpx
+
         from hermes_constants import mkdir_under_hermes_home
         from utils import atomic_write_text
 

@@ -6,8 +6,8 @@ the main group chat.
 
 Covers: #6969, #9916, #7355
 """
-from unittest.mock import AsyncMock, MagicMock
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 

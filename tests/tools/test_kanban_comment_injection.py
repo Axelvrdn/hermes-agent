@@ -21,9 +21,9 @@ _WORKTREE = Path(__file__).resolve().parents[2]
 if str(_WORKTREE) not in sys.path:
     sys.path.insert(0, str(_WORKTREE))
 
+import tools.kanban_tools as kt
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
-import tools.kanban_tools as kt
 
 
 class FakeAgent:

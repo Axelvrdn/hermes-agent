@@ -283,8 +283,12 @@ def _legacy_group_fence_error(rid, session, params):
         return None
     try:
         from gateway.hosted_rooms import (
-            HostedRoomError, RoomProbeUnavailableError, default_db_path, probe_hosted_room,
-            probe_peer_room_reservation)
+            HostedRoomError,
+            RoomProbeUnavailableError,
+            default_db_path,
+            probe_hosted_room,
+            probe_peer_room_reservation,
+        )
         hosted = probe_hosted_room(default_db_path(), room_id=room_id)
         peer = False
         if not hosted:
@@ -866,7 +870,11 @@ def _(rid, params: dict) -> dict:
         return _err(rid, 4015, "path required")
     try:
         from cli import (
-            _IMAGE_EXTENSIONS, _detect_file_drop, _resolve_attachment_path, _split_path_input)
+            _IMAGE_EXTENSIONS,
+            _detect_file_drop,
+            _resolve_attachment_path,
+            _split_path_input,
+        )
         if dropped := _detect_file_drop(raw):
             image_path, remainder = dropped["path"], dropped["remainder"]
         else:

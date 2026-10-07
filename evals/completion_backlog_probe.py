@@ -9,7 +9,6 @@ import argparse
 import contextlib
 import json
 import os
-from pathlib import Path
 import queue
 import shlex
 import sys
@@ -17,6 +16,7 @@ import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 from urllib.request import Request, urlopen

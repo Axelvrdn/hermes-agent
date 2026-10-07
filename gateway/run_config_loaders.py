@@ -17,11 +17,17 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from gateway.config import Platform
 from gateway.restart import (
-    DEFAULT_GATEWAY_CRON_DRAIN_TIMEOUT, DEFAULT_GATEWAY_POST_INTERRUPT_GRACE_TIMEOUT,
-    DEFAULT_GATEWAY_RESTART_AFTER_TURN_TIMEOUT, DEFAULT_GATEWAY_RESTART_DRAIN_TIMEOUT,
-    DEFAULT_GATEWAY_SIGNAL_INTERRUPT_GRACE_TIMEOUT, parse_cron_drain_timeout,
-    parse_restart_after_turn_timeout, parse_restart_drain_timeout,
-    launchd_service_label, parse_signal_interrupt_grace_timeout, read_launchd_exit_timeout_s,
+    DEFAULT_GATEWAY_CRON_DRAIN_TIMEOUT,
+    DEFAULT_GATEWAY_POST_INTERRUPT_GRACE_TIMEOUT,
+    DEFAULT_GATEWAY_RESTART_AFTER_TURN_TIMEOUT,
+    DEFAULT_GATEWAY_RESTART_DRAIN_TIMEOUT,
+    DEFAULT_GATEWAY_SIGNAL_INTERRUPT_GRACE_TIMEOUT,
+    launchd_service_label,
+    parse_cron_drain_timeout,
+    parse_restart_after_turn_timeout,
+    parse_restart_drain_timeout,
+    parse_signal_interrupt_grace_timeout,
+    read_launchd_exit_timeout_s,
     resolve_launchd_capped_drain,
 )
 from gateway.session import SessionSource
@@ -271,7 +277,10 @@ class GatewayConfigLoadersMixin:
         """``display.busy_text_debounce_seconds`` / ``display.busy_text_hard_cap_seconds`` for one
         profile, without consulting process env (#116893). A non-numeric or negative value is
         rejected with a warning naming the key, never silently coerced."""
-        from gateway.platforms.base import DEFAULT_BUSY_TEXT_DEBOUNCE_SECONDS, DEFAULT_BUSY_TEXT_HARD_CAP_SECONDS
+        from gateway.platforms.base import (
+            DEFAULT_BUSY_TEXT_DEBOUNCE_SECONDS,
+            DEFAULT_BUSY_TEXT_HARD_CAP_SECONDS,
+        )
         out = []
         for key, default in (("busy_text_debounce_seconds", DEFAULT_BUSY_TEXT_DEBOUNCE_SECONDS),
                              ("busy_text_hard_cap_seconds", DEFAULT_BUSY_TEXT_HARD_CAP_SECONDS)):
@@ -472,8 +481,8 @@ class GatewayConfigLoadersMixin:
         the AMBIENT profile — callers deciding for another profile's event enter its scope first
         (``_completion_event_scope``). The env override reads through the secret scope so a served
         secondary sees its own ``.env`` value, not the launch profile's ``os.environ``."""
-        from gateway.run import _load_gateway_config
         from gateway.platforms._shared import platform_gate_env as _platform_gate_env
+        from gateway.run import _load_gateway_config
         mode = _platform_gate_env("HERMES_BACKGROUND_NOTIFICATIONS")
         if not mode:
             raw = cfg_get(_load_gateway_config(), "display", "background_process_notifications")

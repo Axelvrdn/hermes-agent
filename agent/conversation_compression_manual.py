@@ -48,7 +48,10 @@ class CompressResult:
 
 def parse_compress_args(raw_args: str) -> CompressRequest:
     """One parser for every surface: flags anywhere, then the boundary-aware / focus positional forms."""
-    from hermes_cli.partial_compress import extract_compress_flags, parse_partial_compress_args
+    from hermes_cli.partial_compress import (
+        extract_compress_flags,
+        parse_partial_compress_args,
+    )
     rest, preview, aggressive = extract_compress_flags((raw_args or "").strip())
     partial, keep_last, focus_topic = parse_partial_compress_args(rest)
     return CompressRequest(preview=preview, aggressive=aggressive, partial=partial, keep_last=keep_last,
@@ -86,11 +89,19 @@ def compress_now(
     ``_compress_context`` still does useful work there — codex_app_server native compaction, and the
     phase-1 tool-result prune / blank-echo drop that ``ContextCompressor.compress`` commits even when no
     summary window exists."""
-    from agent.context_compressor import _DB_PERSISTED_MARKER, _fresh_compaction_message_copy
-    from agent.conversation_compression import finalize_context_engine_compression_notification
+    from agent.context_compressor import (
+        _DB_PERSISTED_MARKER,
+        _fresh_compaction_message_copy,
+    )
+    from agent.conversation_compression import (
+        finalize_context_engine_compression_notification,
+    )
     from agent.manual_compression_feedback import summarize_manual_compression
     from hermes_cli.partial_compress import (
-        rejoin_compressed_head_and_tail, split_history_for_partial_compress, summarize_compress_preview)
+        rejoin_compressed_head_and_tail,
+        split_history_for_partial_compress,
+        summarize_compress_preview,
+    )
 
     before = list(history)
     before_tokens = estimate_request_tokens(agent, before)

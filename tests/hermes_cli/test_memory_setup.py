@@ -6,12 +6,6 @@ import hermes_cli.memory_setup as memory_setup
 from hermes_cli.memory_setup import _CANCELLED
 
 
-
-
-
-
-
-
 def test_cmd_setup_generic_choice_cancel_writes_nothing(tmp_path, monkeypatch):
     class ChoiceProvider:
         def __init__(self):

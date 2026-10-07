@@ -39,18 +39,18 @@ the scratch HERMES_HOME; ``--isolation on|off`` sets it. Run BOTH:
 
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import os
 import re
+import shutil
 import socket
 import subprocess
 import sys
 import tempfile
 import threading
 import time
-import shutil
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path

@@ -6,7 +6,6 @@ import asyncio
 
 from tui_gateway.ws import WSTransport, _sanitize_ws_text
 
-
 LONE_SURROGATE = "\ud83d"
 
 

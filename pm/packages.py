@@ -23,7 +23,14 @@ from pm.package import (
     unpack_deb,
 )
 from pm.registry import register
-from pm.store import ALL_TARGETS, MUSL_TARGETS, Store, current_target, flatten_single_dir, merge_tree
+from pm.store import (
+    ALL_TARGETS,
+    MUSL_TARGETS,
+    Store,
+    current_target,
+    flatten_single_dir,
+    merge_tree,
+)
 from pm.update import (
     btbn_index,
     btbn_versions,
@@ -375,6 +382,7 @@ class Venv(StatePackage):
     def expected_stamp(self, extras: list[str], *, plugin_dirs=None) -> str:
         import hashlib
         import json
+
         from pm.lock import Lockfile
         from pm.paths import lockfile_path
         from pm.store import current_target
@@ -402,8 +410,9 @@ class Venv(StatePackage):
         is left out (the caller reports it) instead of refusing the whole graph.
         """
         import uuid
-        from pm.environments import install_state_dir, runtime_facts_path
+
         from pm.environment import managed_environment
+        from pm.environments import install_state_dir, runtime_facts_path
         from pm.lock import Facts
         from pm.native_build import source_build_environment
         from pm.workspace import enabled_member_dirs, lock_and_sync

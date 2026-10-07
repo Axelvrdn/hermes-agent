@@ -10,13 +10,13 @@ import asyncio
 import json
 import math
 import os
-from pathlib import Path
 import sqlite3
 import subprocess
 import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import parse_qs
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -76,11 +76,12 @@ class Wire:
 
 
 async def setup(url):
+    from telegram import Bot
+
     from gateway.config import GatewayConfig, Platform, PlatformConfig
     from gateway.run import GatewayRunner
     from gateway.session import SessionStore
     from plugins.platforms.telegram.adapter import TelegramAdapter
-    from telegram import Bot
     runner = object.__new__(GatewayRunner)
     runner.session_store = SessionStore(Path(os.environ['HERMES_HOME']) / 'sessions', GatewayConfig())
     runner._profile_adapters = {}

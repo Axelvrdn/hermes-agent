@@ -11,6 +11,7 @@ import pytest
 
 from hermes_cli.sizefmt import format_bytes
 
+
 @pytest.mark.parametrize(
     "n,expected",
     [

@@ -15,7 +15,6 @@ import pytest
 from tools import browser_camofox
 from tools import browser_tool_eval_policy as bt_eval_policy
 
-
 PRIVATE_URL = "http://169.254.169.254/latest/meta-data/"
 
 

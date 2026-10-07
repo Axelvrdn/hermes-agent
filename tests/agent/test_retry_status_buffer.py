@@ -8,7 +8,6 @@ silently dropped.
 
 from __future__ import annotations
 
-
 from run_agent import AIAgent
 
 

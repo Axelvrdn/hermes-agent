@@ -6,11 +6,11 @@ Usage:
 """
 from __future__ import annotations
 
-import logging
 import argparse
 import collections
 import glob
 import json
+import logging
 from pathlib import Path
 
 EVAL_DIR = Path(__file__).resolve().parent

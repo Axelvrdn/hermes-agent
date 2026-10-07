@@ -47,8 +47,8 @@ def test_default_marker_is_ignored_with_one_warning(homes, caplog, multiplex):
 
 @pytest.mark.parametrize('verb', ['stop', 'start', 'restart'])
 def test_cli_lifecycle_orders_marker_before_socket(homes, monkeypatch, capsys, verb):
-    from hermes_cli import gateway as gw
     from gateway import control_socket
+    from hermes_cli import gateway as gw
     root, secondary = homes
     marker = secondary / 'gateway.parked'
     owner = SimpleNamespace(home=root, profile_label='default', profiles=('default', 'worker'),
@@ -93,8 +93,8 @@ def test_cli_lifecycle_orders_marker_before_socket(homes, monkeypatch, capsys, v
 
 
 def test_restart_after_stop_unparks_and_serves_the_profile(homes, monkeypatch, capsys):
-    from hermes_cli import gateway as gw
     from gateway import control_socket
+    from hermes_cli import gateway as gw
     root, secondary = homes
     marker = secondary / 'gateway.parked'
     marker.touch()
@@ -144,7 +144,8 @@ def test_force_restart_keeps_parked_profile_gateway_ownership(homes, monkeypatch
 
 
 def test_parked_status_and_topology_keep_roster(homes, monkeypatch, capsys):
-    from hermes_cli import gateway as gw, profiles
+    from hermes_cli import gateway as gw
+    from hermes_cli import profiles
     from hermes_cli.web_server_gateway import _collect_profile_gateway_topology
     root, secondary = homes
     (secondary / 'gateway.parked').touch()
@@ -174,9 +175,11 @@ def test_parked_profile_keeps_implicit_host_multiplexed(homes, monkeypatch):
 
 def test_dashboard_exposes_parked_profile_and_start_unparks_it(homes, monkeypatch):
     from types import SimpleNamespace
+
     from fastapi.testclient import TestClient
+
     from gateway import host_attach
-    from hermes_cli import web_server, profiles
+    from hermes_cli import profiles, web_server
     from hermes_cli.web_server_gateway import multiplexed_profile_refusal
     root, secondary = homes
     (secondary / 'gateway.parked').touch()
@@ -195,8 +198,9 @@ def test_dashboard_exposes_parked_profile_and_start_unparks_it(homes, monkeypatc
 
 @pytest.mark.parametrize('host_running', [False, True])
 def test_start_unparks_without_host_rendezvous(homes, monkeypatch, capsys, host_running):
-    from hermes_cli import gateway as gw, gateway_multiplex_served as served
     from gateway import control_socket
+    from hermes_cli import gateway as gw
+    from hermes_cli import gateway_multiplex_served as served
     root, secondary = homes
     marker = secondary / 'gateway.parked'
     marker.touch()
@@ -238,7 +242,8 @@ def test_default_status_distinguishes_served_and_parked(homes, monkeypatch, caps
 
 
 def test_parked_status_still_reports_a_forced_gateway(homes, monkeypatch, capsys):
-    from hermes_cli import gateway as gw, profiles
+    from hermes_cli import gateway as gw
+    from hermes_cli import profiles
     root, secondary = homes
     (secondary / 'gateway.parked').touch()
     monkeypatch.setenv('HERMES_HOME', str(secondary))

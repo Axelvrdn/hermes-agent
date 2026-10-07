@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 
 from agent.auxiliary_client import call_llm
 
+
 class _Timeout(Exception):
     pass
 

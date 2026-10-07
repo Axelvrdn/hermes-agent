@@ -10,6 +10,7 @@ from agent.turn_context_compaction import (
     run_turn_start_compaction,
 )
 
+
 def _agent(**kw):
     compressor = SimpleNamespace(
         protect_first_n=3, protect_last_n=3, threshold_tokens=1_000, context_length=8_000,

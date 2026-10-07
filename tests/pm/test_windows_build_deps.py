@@ -1,12 +1,11 @@
 """Native PowerShell prerequisite selection without downloading build tools."""
-from pathlib import Path
 import json
 import os
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
-
 
 pytestmark = pytest.mark.platforms("windows")
 HELPER = Path(__file__).resolve().parents[2] / "scripts" / "windows-build-deps.ps1"

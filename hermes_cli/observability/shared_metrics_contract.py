@@ -1864,7 +1864,10 @@ def install_snapshot_fields(
     terminal_backend: Any, display_language: Any,
 ) -> dict[str, str]:
     """Bounded daily configuration snapshot: counts, closed enums and public names only."""
-    from .shared_metrics_catalog import display_language_metric_name, provider_metric_name
+    from .shared_metrics_catalog import (
+        display_language_metric_name,
+        provider_metric_name,
+    )
 
     provider = _norm(memory_provider)
     backend = _norm(terminal_backend) or "local"

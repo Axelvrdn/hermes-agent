@@ -10,7 +10,8 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from utils import fast_safe_load
 
 # Log-record parity with the origin module.
@@ -260,7 +261,12 @@ def load_cli_config() -> Dict[str, Any]:
 
     ``HERMES_IGNORE_USER_CONFIG=1`` skips the user config entirely (``.env`` still loads).
     """
-    from cli import _cli_config_defaults, _hermes_home, _merge_file_config, _mirror_config_to_env
+    from cli import (
+        _cli_config_defaults,
+        _hermes_home,
+        _merge_file_config,
+        _mirror_config_to_env,
+    )
     config_path = _hermes_home / 'config.yaml'
     if not config_path.exists() or os.environ.get("HERMES_IGNORE_USER_CONFIG") == "1":
         config_path = Path(__file__).parent / 'cli-config.yaml'

@@ -1,12 +1,17 @@
 """Termux packaging refuses identity mistakes before modifying its payload."""
 import os
-from pathlib import Path
 import shlex
 import subprocess
 import sys
+from pathlib import Path
 
-from tests.ci.test_desktop_release_tag_admission import _BASH, _GIT, _child_env, _git, _seed_repo
-
+from tests.ci.test_desktop_release_tag_admission import (
+    _BASH,
+    _GIT,
+    _child_env,
+    _git,
+    _seed_repo,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 

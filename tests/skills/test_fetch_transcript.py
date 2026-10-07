@@ -8,6 +8,7 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 import fetch_transcript
 
+
 class TestExtractVideoId:
     def test_standard_watch_url(self):
         assert fetch_transcript.extract_video_id("https://www.youtube.com/watch?v=dQw4w9WgXcQ") == "dQw4w9WgXcQ"

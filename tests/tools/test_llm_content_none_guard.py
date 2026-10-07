@@ -14,7 +14,6 @@ import types
 
 from agent.auxiliary_client import extract_content_or_reasoning
 
-
 # ── helpers ────────────────────────────────────────────────────────────────
 
 def _make_response(content, **msg_attrs):

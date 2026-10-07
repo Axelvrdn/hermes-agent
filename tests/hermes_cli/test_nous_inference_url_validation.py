@@ -28,6 +28,7 @@ from hermes_cli.auth import (
     _validate_nous_inference_url_from_network,
 )
 
+
 class TestValidatorRules:
 
     def test_attacker_host_rejected(self, caplog):
@@ -71,9 +72,10 @@ class TestCallSiteWiring:
     def _read_auth_source(self):
         # The Nous refresh sites live in auth_nous.py (split out of auth.py);
         # read both so the guard tolerates relocation but still fires on deletion.
+        from pathlib import Path
+
         import hermes_cli.auth as _auth_mod
         import hermes_cli.auth_nous as _nous_mod
-        from pathlib import Path
         return "".join(
             Path(m.__file__).read_text(encoding="utf-8") for m in (_auth_mod, _nous_mod)
         )
@@ -171,8 +173,9 @@ class TestEnvOverrideWins:
     STAGING = "https://stg-inference-api.nousresearch.com/v1"
 
     def _patch_no_refresh(self, monkeypatch, auth, state):
-        import hermes_cli.auth_nous as hermes_cli_auth_nous
         import contextlib
+
+        import hermes_cli.auth_nous as hermes_cli_auth_nous
 
         # No refresh fires: the stored access token is a usable invoke JWT.
         monkeypatch.setattr(auth, "_nous_invoke_jwt_status", lambda *a, **k: None)

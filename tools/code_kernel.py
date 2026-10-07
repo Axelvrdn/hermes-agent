@@ -782,9 +782,9 @@ def _cell_result(kernel: SessionKernel, key: Tuple, status: str, payload: Dict[s
                  timeout: int, sandbox_tools: frozenset, reused: bool,
                  state_reset: bool, exec_start: float) -> Dict[str, Any]:
     """Assemble the tool result for one settled cell (disposing the kernel where the contract says so)."""
-    from tools.code_execution_tool import _sandbox_failure_hint, _truncate_stdout_text
     from agent.redact import redact_sensitive_text
     from tools.ansi_strip import strip_ansi
+    from tools.code_execution_tool import _sandbox_failure_hint, _truncate_stdout_text
     def clean(text: str) -> str:
         return redact_sensitive_text(strip_ansi(text), code_file=True)
     if status in ("timeout", "interrupted"):

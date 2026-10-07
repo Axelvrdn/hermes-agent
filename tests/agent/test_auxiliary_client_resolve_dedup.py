@@ -11,6 +11,7 @@ import logging
 import agent.auxiliary_client as ac
 from agent.auxiliary_client import resolve_provider_client
 
+
 class TestUnknownProviderDedup:
     def setup_method(self):
         ac._LOGGED_UNKNOWN_PROVIDER_KEYS.clear()

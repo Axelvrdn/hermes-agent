@@ -8,7 +8,6 @@ from tools.connectors.gateway.names import (
     vendor_slug_candidates,
 )
 
-
 ENCODE_CASES = [
     (
         "gmail",

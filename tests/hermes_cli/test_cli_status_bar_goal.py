@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 from cli import HermesCLI
 
+
 def _make_cli(model: str = "anthropic/claude-sonnet-4-20250514"):
     cli_obj = HermesCLI.__new__(HermesCLI)
     cli_obj.model = model

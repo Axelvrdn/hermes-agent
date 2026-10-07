@@ -50,7 +50,7 @@ class TestBuildJobPromptContextFrom:
     """Test that _build_job_prompt() injects context from referenced jobs."""
 
     def test_injects_latest_output(self, cron_env):
-        from cron.jobs import create_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job
         from cron.scheduler import _build_job_prompt
 
         job_a = create_job(prompt="Find news", schedule="every 1h")
@@ -73,9 +73,10 @@ class TestBuildJobPromptContextFrom:
         assert f"Output from job '{job_a['id']}'" in prompt
 
     def test_uses_most_recent_output(self, cron_env):
-        from cron.jobs import create_job, OUTPUT_DIR
-        from cron.scheduler import _build_job_prompt
         import time
+
+        from cron.jobs import OUTPUT_DIR, create_job
+        from cron.scheduler import _build_job_prompt
 
         job_a = create_job(prompt="Find news", schedule="every 1h")
         output_dir = OUTPUT_DIR / job_a["id"]
@@ -111,7 +112,7 @@ class TestBuildJobPromptContextFrom:
         assert "Summarize" in prompt
 
     def test_injects_multiple_context_jobs(self, cron_env):
-        from cron.jobs import create_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job
         from cron.scheduler import _build_job_prompt
 
         job_a = create_job(prompt="Find news", schedule="every 1h")
@@ -133,7 +134,7 @@ class TestBuildJobPromptContextFrom:
 
     def test_context_injected_before_prompt(self, cron_env):
         """Context should appear before the job's own prompt."""
-        from cron.jobs import create_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job
         from cron.scheduler import _build_job_prompt
 
         job_a = create_job(prompt="Find data", schedule="every 1h")
@@ -153,7 +154,7 @@ class TestBuildJobPromptContextFrom:
 
     def test_output_truncated_at_8k_chars(self, cron_env):
         """Output longer than the 8000-char budget is clipped head+tail (#117290)."""
-        from cron.jobs import create_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job
         from cron.scheduler import _build_job_prompt
 
         job_a = create_job(prompt="Find data", schedule="every 1h")
@@ -194,9 +195,10 @@ class TestUpdateContextFrom:
     """
 
     def test_update_adds_context_from_to_existing_job(self, cron_env):
+        import json
+
         from cron.jobs import create_job, get_job
         from tools.cronjob_tools import cronjob
-        import json
 
         job_a = create_job(prompt="Find news", schedule="every 1h")
         job_b = create_job(prompt="Summarize", schedule="every 2h")
@@ -222,7 +224,7 @@ class TestSelfContext:
     """
 
     def test_self_injects_own_previous_output(self, cron_env):
-        from cron.jobs import create_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job
         from cron.scheduler import _build_job_prompt
 
         job = create_job(
@@ -241,7 +243,7 @@ class TestSelfContext:
         assert f"Output from job '{job['id']}'" not in prompt
 
     def test_self_case_insensitive(self, cron_env):
-        from cron.jobs import create_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job
         from cron.scheduler import _build_job_prompt
 
         job = create_job(
@@ -267,7 +269,7 @@ class TestSelfContext:
 
     def test_own_id_treated_as_self(self, cron_env):
         """Passing the job's literal id gets the continuity framing too."""
-        from cron.jobs import create_job, update_job, get_job, OUTPUT_DIR
+        from cron.jobs import OUTPUT_DIR, create_job, get_job, update_job
         from cron.scheduler import _build_job_prompt
 
         job = create_job(prompt="Scan", schedule="every 1h")
@@ -294,9 +296,10 @@ class TestContinuityFlag:
 
 
     def test_create_continuity_false_is_noop(self, cron_env):
-        from tools.cronjob_tools import cronjob
-        from cron.jobs import get_job
         import json
+
+        from cron.jobs import get_job
+        from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
             action="create",
@@ -308,9 +311,10 @@ class TestContinuityFlag:
         assert get_job(result["job_id"]).get("context_from") is None
 
     def test_create_continuity_combines_with_context_from(self, cron_env):
+        import json
+
         from cron.jobs import create_job, get_job
         from tools.cronjob_tools import cronjob
-        import json
 
         upstream = create_job(prompt="Collect", schedule="every 1h")
         result = json.loads(cronjob(
@@ -326,9 +330,10 @@ class TestContinuityFlag:
         assert "self" in stored
 
     def test_update_continuity_true_adds_self(self, cron_env):
+        import json
+
         from cron.jobs import create_job, get_job
         from tools.cronjob_tools import cronjob
-        import json
 
         job = create_job(prompt="Scan", schedule="every 1h")
         result = json.loads(cronjob(
@@ -340,9 +345,10 @@ class TestContinuityFlag:
         assert get_job(job["id"])["context_from"] == ["self"]
 
     def test_update_continuity_false_removes_self_preserves_others(self, cron_env):
+        import json
+
         from cron.jobs import create_job, get_job
         from tools.cronjob_tools import cronjob
-        import json
 
         upstream = create_job(prompt="Collect", schedule="every 1h")
         job = create_job(
@@ -359,9 +365,10 @@ class TestContinuityFlag:
         assert get_job(job["id"])["context_from"] == [upstream["id"]]
 
     def test_update_continuity_true_idempotent(self, cron_env):
+        import json
+
         from cron.jobs import create_job, get_job
         from tools.cronjob_tools import cronjob
-        import json
 
         job = create_job(prompt="Scan", schedule="every 1h", context_from="self")
         result = json.loads(cronjob(
@@ -374,10 +381,11 @@ class TestContinuityFlag:
 
     def test_continuity_job_gets_previous_output(self, cron_env):
         """End-to-end: a continuity-created job injects its own prior output."""
-        from tools.cronjob_tools import cronjob
-        from cron.jobs import get_job, OUTPUT_DIR
-        from cron.scheduler import _build_job_prompt
         import json
+
+        from cron.jobs import OUTPUT_DIR, get_job
+        from cron.scheduler import _build_job_prompt
+        from tools.cronjob_tools import cronjob
 
         result = json.loads(cronjob(
             action="create",

@@ -9,8 +9,11 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
-from hermes_cli.setup import print_success  # def-time binding (table value)
-from hermes_cli.setup import print_warning  # def-time binding (table value)
+
+from hermes_cli.setup import (
+    print_success,  # def-time binding (table value)
+    print_warning,  # def-time binding (table value)
+)
 
 
 def _gw():
@@ -264,7 +267,8 @@ def _telegram_auto_setup(token_var: str) -> tuple[bool, object]:
         return False, None
     try:
         from hermes_cli.telegram_managed_bot import (
-            auto_setup_telegram_bot_result, is_valid_telegram_bot_token,
+            auto_setup_telegram_bot_result,
+            is_valid_telegram_bot_token,
         )
     except ImportError:
         _gw().print_warning("  Automatic setup is unavailable in this install.")

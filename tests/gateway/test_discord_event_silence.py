@@ -21,8 +21,8 @@ from tests.gateway.test_discord_connect import _ensure_discord_mock  # noqa: E40
 _ensure_discord_mock()
 
 from tests.gateway.test_discord_liveness import (  # noqa: E402
-    _LiveBot,
     _connect,
+    _LiveBot,
     _make_adapter,
     _set_websocket_health,
     _wait_until,

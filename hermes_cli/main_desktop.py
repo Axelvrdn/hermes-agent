@@ -4,11 +4,11 @@ Split out of ``hermes_cli/main.py``. Names that still live in main (``PROJECT_RO
 are imported lazily inside the functions that use them (avoids an import cycle).
 """
 
-import logging
-import contextlib
 import argparse
+import contextlib
 import hashlib
 import json
+import logging
 import os
 import platform
 import re
@@ -18,9 +18,9 @@ import stat
 import subprocess
 import sys
 import time as _time_mod
-
 from pathlib import Path
 from typing import Callable, Optional
+
 from hermes_cli.desktop_console import desktop_console_output, desktop_launch_notice
 from hermes_platform.host import facts
 
@@ -1048,7 +1048,10 @@ def _installed_desktop_apps() -> list[Path]:
     """
     if not _owns_installed_desktop_apps():
         return []
-    from hermes_cli.gui_uninstall import desktop_install_record, packaged_gui_app_paths  # noqa: PLC0415
+    from hermes_cli.gui_uninstall import (  # noqa: PLC0415
+        desktop_install_record,
+        packaged_gui_app_paths,
+    )
     from utils import read_json_or_empty  # noqa: PLC0415
     candidates = packaged_gui_app_paths()
     if owned := _update_owned_macos_bundles(candidates):
@@ -1356,7 +1359,11 @@ def _register_linux_desktop_entry(defer: bool = False):
     """
     from hermes_cli.main import PROJECT_ROOT
     try:
-        from hermes_cli.linux_desktop_entry import DeferredDesktopEntryInstall, install_desktop_entry, is_supported
+        from hermes_cli.linux_desktop_entry import (
+            DeferredDesktopEntryInstall,
+            install_desktop_entry,
+            is_supported,
+        )
         if not is_supported():
             return None
         if defer:
@@ -1432,7 +1439,9 @@ def _diagnose_esbuild_ignore_scripts(output: Optional[str]) -> None:
 def build_prepared_desktop(desktop_dir: Path, *, source_mode: bool, npm: str, env: dict,
                            icons: Path | None = None) -> Optional[Path]:
     """Build prepared desktop sources, then publish the verified staged app."""
-    from hermes_cli.source_build import run_in_custody  # npm writes the checkout: update custody
+    from hermes_cli.source_build import (
+        run_in_custody,  # npm writes the checkout: update custody
+    )
 
     if not source_mode and sys.platform == "win32" and (ancestor := _desktop_ancestor_in(desktop_dir)):
         # The Desktop running this build holds the exe lock the promotion rename needs,
@@ -1887,7 +1896,11 @@ def _launch_bundled_desktop(
 
     Never returns.
     """
-    from hermes_cli.bundled_app import NotBundledApp, launch_detached, resolve_bundle_layout
+    from hermes_cli.bundled_app import (
+        NotBundledApp,
+        launch_detached,
+        resolve_bundle_layout,
+    )
     from hermes_cli.main import PROJECT_ROOT
 
     refused = [

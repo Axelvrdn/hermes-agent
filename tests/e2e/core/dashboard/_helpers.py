@@ -11,8 +11,8 @@ it as ``X-Hermes-Session-Token`` on REST and ``?token=`` on WebSocket upgrades, 
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import re
 import secrets
@@ -28,8 +28,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 import httpx
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from tests.fakes.fake_llm_provider import FakeLLMServer
 
 from . import _reaper

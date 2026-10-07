@@ -13,7 +13,6 @@ from __future__ import annotations
 import re
 from typing import Optional
 
-
 # floor_seconds -> slugs. Order irrelevant — longest slug wins at match time.
 _REASONING_STALE_TIMEOUT_FLOORS: dict[int, tuple[str, ...]] = {
     600: (

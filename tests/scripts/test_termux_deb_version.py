@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
+
 from scripts.termux.deb_version import channel_for_tag, deb_version_for_tag
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts/termux/deb_version.py"

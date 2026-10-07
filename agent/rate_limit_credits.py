@@ -134,7 +134,10 @@ class RateLimitCreditsMixin:
         try:
             from agent.credits_tracker import (
                 _remember_shown_band,
-                evaluate_credits_notices, is_free_tier_model, new_credits_latch, rewarm_pricing_before_depleted_notice,
+                evaluate_credits_notices,
+                is_free_tier_model,
+                new_credits_latch,
+                rewarm_pricing_before_depleted_notice,
             )
             latch = getattr(self, "_credits_latch", None)
             if latch is None:

@@ -6,17 +6,16 @@ cli-level names through ``from cli import ...`` at call time so facade monkeypat
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import logging
 import os
 import sys
 import time
-from agent.i18n import t
-from agent.interrupt_compat import request_hard_interrupt
 from contextlib import suppress
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+from agent.i18n import t
+from agent.interrupt_compat import request_hard_interrupt
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("cli")
@@ -68,7 +67,8 @@ def _run_kanban_goal_loop_q(cli: "HermesCLI", first_response: str, run_turn=None
 
     from hermes_cli import kanban_db as _kb
     from hermes_cli import kanban_db_connect as _kbc
-    from hermes_cli.goals import run_kanban_goal_loop as _run_loop, DEFAULT_MAX_TURNS as _DEF_TURNS
+    from hermes_cli.goals import DEFAULT_MAX_TURNS as _DEF_TURNS
+    from hermes_cli.goals import run_kanban_goal_loop as _run_loop
 
     # Goal text = title + body (the acceptance criteria the judge evaluates against).
     with _kbc.connect_closing() as conn:
@@ -170,8 +170,8 @@ def _single_query_exit_code(result, *, credentials_rate_limited: bool = False,
     ``agent.kanban_turn_recovery``) so a whitespace-only value is not a worker here
     either — the exit mapping and the recovery gate must agree on what a worker is.
     """
-    from cli import _TERMINAL_PROVIDER_REASONS, _TRANSIENT_PROVIDER_REASONS
     from agent.kanban_turn_recovery import kanban_task_id
+    from cli import _TERMINAL_PROVIDER_REASONS, _TRANSIENT_PROVIDER_REASONS
 
     if not isinstance(result, dict):
         if credentials_rate_limited and kanban_task_id():
@@ -203,12 +203,22 @@ def _run_quiet_single_query(cli, effective_query, emitter=None):
     Nested Bot Mode notifies bind this session's key (not the dispatcher's) and resume in-process
     before stdout is printed, so a teammate reply is the quiet run's final answer rather than a
     stranded receipt."""
-    from cli import _emit_interrupted_session_end, _run_kanban_goal_loop_q, _single_query_exit_code, _sync_cli_session_id_from_agent
     from agent.interrupt_compat import _accepts_keyword
     from agent.turn_author import take_turn_author_from_env
+    from cli import (
+        _emit_interrupted_session_end,
+        _run_kanban_goal_loop_q,
+        _single_query_exit_code,
+        _sync_cli_session_id_from_agent,
+    )
     from hermes_cli.quiet_single_query import (
-        adopt_unanswered_turn, bind_quiet_session_key, continue_quiet_notify_completions,
-        exit_single_query, quiet_notify_linger_seconds, take_turn_report_path, write_turn_report,
+        adopt_unanswered_turn,
+        bind_quiet_session_key,
+        continue_quiet_notify_completions,
+        exit_single_query,
+        quiet_notify_linger_seconds,
+        take_turn_report_path,
+        write_turn_report,
     )
 
     author = take_turn_author_from_env()
@@ -238,7 +248,9 @@ def _run_quiet_single_query(cli, effective_query, emitter=None):
         # live run/claim proof live in agent/kanban_turn_recovery.py. Runs BEFORE the turn
         # report so everything downstream — report, follow-ups, response, goal gate, exit —
         # sees the post-recovery disposition.
-        from agent.kanban_turn_recovery import recover_failed_kanban_turns as _recover_turns
+        from agent.kanban_turn_recovery import (
+            recover_failed_kanban_turns as _recover_turns,
+        )
 
         def _quiet_recover_turn(nudge):
             nonlocal result
@@ -356,7 +368,9 @@ def _route_single_query_images(cli, query, effective_query, single_query_images,
     _img_mode = "text"
     _build_parts = None
     try:
-        from agent.image_routing import build_native_content_parts as _build_parts  # noqa: F811
+        from agent.image_routing import (
+            build_native_content_parts as _build_parts,  # noqa: F811
+        )
         from agent.image_routing import decide_image_input_mode
         from hermes_cli.config import load_config
 
@@ -396,9 +410,9 @@ def _collect_kanban_task_images(single_query_images):
     if not _kanban_task_id:
         return single_query_image_urls
     try:
+        from agent.image_routing import extract_image_refs as _extract_refs
         from hermes_cli import kanban_db as _kb
         from hermes_cli import kanban_db_connect as _kbc
-        from agent.image_routing import extract_image_refs as _extract_refs
 
         with _kbc.connect_closing() as _conn:
             _task = _kb.get_task(_conn, _kanban_task_id)
@@ -424,8 +438,14 @@ def _install_single_query_signal_handlers(cli):
     A plain KeyboardInterrupt only unwinds the main thread, so tool worker threads
     would orphan the setsid child; the interrupt + grace window lets them kill it.
     """
-    from cli import _arm_exit_watchdog_on_shutdown_signal, _flush_logging_and_stdio, _flush_one_shot_session_store, _interrupt_agent_for_signal
     import signal as _signal
+
+    from cli import (
+        _arm_exit_watchdog_on_shutdown_signal,
+        _flush_logging_and_stdio,
+        _flush_one_shot_session_store,
+        _interrupt_agent_for_signal,
+    )
 
     def _kill_foreground_and_exit(*_):
         # The worker's command runs in its own process group: SIGKILL it or it outlives os._exit.
@@ -489,7 +509,18 @@ def _configure_quiet_agent(agent) -> None:
 def _run_single_query_mode(cli, query, image, quiet, oneshot, stream_json: bool = False):
     """``-q``/``--image`` entry: seed an interactive session on a TTY, else run the one-shot turn and exit.
     ``stream_json`` (implies quiet) swaps the plain-text final answer for the JSONL event protocol."""
-    from cli import _SeededQueryMessage, _collect_kanban_task_images, _collect_query_images, _configure_quiet_agent, _finalize_single_query, _route_single_query_images, _run_kanban_goal_loop_chat, _run_quiet_single_query, _should_seed_interactive, _single_query_exit_code
+    from cli import (
+        _collect_kanban_task_images,
+        _collect_query_images,
+        _configure_quiet_agent,
+        _finalize_single_query,
+        _route_single_query_images,
+        _run_kanban_goal_loop_chat,
+        _run_quiet_single_query,
+        _SeededQueryMessage,
+        _should_seed_interactive,
+        _single_query_exit_code,
+    )
     if _should_seed_interactive(query, image, quiet, oneshot):
         seeded_query, seeded_images = _collect_query_images(query, image)
         logger.info(
@@ -524,7 +555,9 @@ def _run_single_query_mode(cli, query, image, quiet, oneshot, stream_json: bool 
     try:
         query, single_query_images = _collect_query_images(query, image)
         single_query_image_urls = _collect_kanban_task_images(single_query_images)
-        from hermes_cli.observability.shared_metrics_startup import record_cli_one_shot_ready
+        from hermes_cli.observability.shared_metrics_startup import (
+            record_cli_one_shot_ready,
+        )
         record_cli_one_shot_ready()
         if quiet:
             # Quiet mode: suppress banner, spinner, tool previews.

@@ -5,13 +5,13 @@ Origin helpers are imported lazily per function (no cycle; test patches on the o
 """
 
 import logging
-from contextlib import contextmanager, nullcontext, redirect_stdout, suppress
 import os
 import re
 import shlex
 import subprocess
 import sys
 import time as _time
+from contextlib import contextmanager, nullcontext, redirect_stdout, suppress
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -258,7 +258,10 @@ def _hermes_holder_subcommand(cmdline: str) -> str | None:
     # ``python -c <src> … -m hermes_cli.main <subcommand>``: the entry token belongs to the argv the
     # inline source carries for a LATER spawn, not to this holder (#107002) -- unless the source is a
     # Hermes bootstrap running the entry point in this process (#124318).
-    from gateway.status_inline_source import command_line_runs_inline_source, inline_bootstrap_argv
+    from gateway.status_inline_source import (
+        command_line_runs_inline_source,
+        inline_bootstrap_argv,
+    )
     normalized = [t.strip("\"'").replace("\\", "/") for t in tokens]
     if command_line_runs_inline_source(normalized):
         tokens = inline_bootstrap_argv(normalized)
@@ -562,7 +565,11 @@ def _ledger_reapable_backend_pids(matches: list[tuple[int, str, str]]) -> list[i
     (PID reuse can't forge it), purpose is a REAPABLE kind (never interactive), and the recorded SPAWNER is
     provably dead. Safe in ANY context. Unlisted holders fall to later rungs and never disqualify identified ones."""
     try:
-        from hermes_cli.process_identity import REAPABLE_PURPOSES, ledger_entries, spawner_is_dead
+        from hermes_cli.process_identity import (
+            REAPABLE_PURPOSES,
+            ledger_entries,
+            spawner_is_dead,
+        )
         entries = ledger_entries()
     except Exception:
         return []
@@ -795,8 +802,8 @@ def _windows_cold_start_plan() -> dict | None:
     *generation* that authorized it on the token: the marker is a mutable one-shot that any concurrent
     ``hermes gateway status``/``start`` consumes, so execution authorizes the spawn from the token and
     consumes only that generation (#110020 review)."""
-    from hermes_cli.update_cmd import _desktop_owns_gateway_lifecycle
     from hermes_cli import gateway_windows
+    from hermes_cli.update_cmd import _desktop_owns_gateway_lifecycle
     with _best_effort('Could not check Windows gateway autostart state before update: %s'):
         if not gateway_windows.is_installed():
             return None
@@ -827,7 +834,10 @@ def _pause_windows_gateway_services(service_gateways, token: dict, profiles: dic
 
     Runs after every fallible ordinary-gateway step so a failure here restores the attempted
     services AND the already-paused ordinary gateways before re-raising."""
-    from hermes_cli.update_cmd import _restore_windows_gateway_service, _stop_windows_gateway_service
+    from hermes_cli.update_cmd import (
+        _restore_windows_gateway_service,
+        _stop_windows_gateway_service,
+    )
     paused_services = []
     current_service_name = None
     try:
@@ -873,7 +883,11 @@ def _owned_gateway_pids(pids, *, keep=(), quiet: bool = True) -> list[int]:
 
 def _discover_windows_gateways():
     """``(profile_processes, service_gateways, service_gateway_pids, running_pids)`` for the pause; any indeterminate probe aborts."""
-    from hermes_cli.gateway import find_gateway_pids, find_profile_gateway_processes, find_windows_gateway_services
+    from hermes_cli.gateway import (
+        find_gateway_pids,
+        find_profile_gateway_processes,
+        find_windows_gateway_services,
+    )
     with _abort_on_error("Could not map Windows gateway PIDs to profiles"):
         profile_process_list = find_profile_gateway_processes(strict=True)
         profile_processes = {proc.pid: proc for proc in profile_process_list}
@@ -1076,8 +1090,8 @@ def _record_attested_cold_start_profiles(token: dict, running_profiles: set) -> 
     dead-but-attested default beside a still-running ``beta`` never got a cold-start obligation. Only
     Desktop-owned installs need this (elsewhere autostart brings the profile back); the active profile is
     left to the existing plan so it is never spawned twice. Best-effort: never blocks the pause."""
-    from hermes_cli.update_cmd import _desktop_owns_gateway_lifecycle
     from hermes_cli import gateway_windows
+    from hermes_cli.update_cmd import _desktop_owns_gateway_lifecycle
     with _best_effort("Could not evaluate per-profile attested cold-starts before update: %s"):
         if not _desktop_owns_gateway_lifecycle():
             return
@@ -1364,7 +1378,10 @@ def _relaunch_paused_gateways(profiles: dict, unmapped: list) -> tuple[dict, lis
     profiles, launched unmapped entries)``. Nothing leaves the token here: a watcher only proves a
     relaunch was scheduled, so every entry stays owed until ITS gateway is verified ready."""
     with _abort_on_error("Could not load Windows gateway restart helper"):
-        from hermes_cli.gateway import launch_detached_gateway_restart_by_cmdline, launch_detached_profile_gateway_restart
+        from hermes_cli.gateway import (
+            launch_detached_gateway_restart_by_cmdline,
+            launch_detached_profile_gateway_restart,
+        )
 
     # An exception from a launch (incl. bad pid/argv coercion) logs at debug and reads as a failed relaunch.
     launched = {}
@@ -1421,7 +1438,12 @@ def _unmapped_ready_filter(entry: dict, taken: set):
     captured (no key: a pre-durable-pause updater's token) keeps the argv-only match; a recorded
     ``home`` that is empty proves no runtime and is never matched."""
     import psutil
-    from gateway.status import _looks_like_gateway_process, _same_hermes_home, get_process_start_time
+
+    from gateway.status import (
+        _looks_like_gateway_process,
+        _same_hermes_home,
+        get_process_start_time,
+    )
     from hermes_cli.update_fleet_scope import gateway_pid_home
     tail, old = list(entry.get("argv") or [])[1:], int(entry.get("pid") or 0)
     home, old_ct = entry.get("home"), entry.get("ct")

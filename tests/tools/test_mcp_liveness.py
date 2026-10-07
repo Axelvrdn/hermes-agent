@@ -10,6 +10,7 @@ import pytest
 from hermes_platform import declaration
 from tools.mcp_liveness import parse_liveness
 
+
 def _decl(tmp_path, *, min_version=None):
     executable = tmp_path / "example-app"
     executable.write_text("fixture", encoding="utf-8")

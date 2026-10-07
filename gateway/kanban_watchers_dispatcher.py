@@ -7,8 +7,8 @@ the singleton lock and the health telemetry; everything that only needs the
 
 from __future__ import annotations
 
-import logging
 import contextlib
+import logging
 import os
 import sqlite3
 import time
@@ -315,7 +315,11 @@ def _default_profile_secret_scope():
     from that same home. No-op for single-profile gateways.
     """
     from agent.secret_scope import (
-        build_profile_secret_scope, is_multiplex_active, reset_secret_scope, set_secret_scope)
+        build_profile_secret_scope,
+        is_multiplex_active,
+        reset_secret_scope,
+        set_secret_scope,
+    )
     from hermes_constants import get_hermes_home
 
     if not is_multiplex_active():

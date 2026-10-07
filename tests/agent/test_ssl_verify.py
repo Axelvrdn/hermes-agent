@@ -91,14 +91,14 @@ with httpx.Client(verify=resolve_httpx_verify()) as client:
 
 def test_explicit_provider_ca_replaces_platform_trust_on_real_https(tmp_path):
     """A private endpoint trusts only its provider CA, never a global fallback."""
-    from datetime import datetime, timedelta, timezone
-    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-    from ipaddress import ip_address
     import os
     import ssl
     import subprocess
     import sys
     import threading
+    from datetime import datetime, timedelta, timezone
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from ipaddress import ip_address
 
     from cryptography import x509
     from cryptography.hazmat.primitives import hashes, serialization

@@ -8,21 +8,21 @@ except ModuleNotFoundError as exc:
     if exc.name != "hermes_bootstrap":
         raise  # the bootstrap exists but cannot load: skipping it would skip PM activation
 
-import logging
-import os
-import functools
-import shutil  # noqa: F401 — tests patch shutil/time through the cli facade
-import sys
-import re
 import atexit
 import errno
+import functools
+import logging
+import os
+import re
+import shutil  # noqa: F401 — tests patch shutil/time through the cli facade
+import sys
 import time  # noqa: F401 — see shutil
 from collections import deque
-from dataclasses import dataclass
 from contextlib import contextmanager, suppress
-from pathlib import Path
+from dataclasses import dataclass
 from datetime import datetime  # noqa: F401 — siblings import it lazily through cli
-from typing import List, Dict, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -30,50 +30,33 @@ os.environ["HERMES_QUIET"] = "1"  # suppress our modules' startup chatter
 
 
 from hermes_cli.cli_agent_setup_mixin import CLIAgentSetupMixin
-from hermes_cli.cli_commands_mixin import CLICommandsMixin
-from hermes_cli.cli_billing_mixin import CLIBillingMixin
-from hermes_cli.cli_loops_mixin import CLILoopsMixin
-from hermes_cli.cli_info_mixin import CLIInfoMixin
-from hermes_cli.cli_terminal_mixin import CLITerminalMixin
-from hermes_cli.cli_modal_mixin import CLIModalMixin
-from hermes_cli.cli_stream_mixin import CLIStreamMixin
-from hermes_cli.cli_session_mixin import CLISessionMixin
-from hermes_cli.cli_model_switch_mixin import CLIModelSwitchMixin
-from hermes_cli.cli_voice_mixin import CLIVoiceMixin
-from hermes_cli.cli_status_bar_mixin import CLIStatusBarMixin
-from hermes_cli.cli_tui_mixin import CLITuiMixin
-from hermes_cli.cli_process_notifications import CLIProcessNotificationsMixin
-from hermes_cli.cli_init_mixin import CLIInitMixin
-from hermes_cli.cli_tui_runtime_mixin import CLITuiRuntimeMixin
-# Extracted clusters (mechanical split, #116911); re-exported here so `cli.<name>` stays the seam.
-from hermes_cli.cli_shutdown import (  # noqa: F401,E402
-    _CLEANUP_STEPS,
-    _arm_exit_watchdog,
-    _emit_interrupted_session_end,
-    _exit_watchdog_timeout,
-    _finalize_single_query,
-    _float_env,
-    _flush_logging_and_stdio,
-    _flush_one_shot_session_store,
-    _interrupt_async_delegations,
-    _invoke_interrupted_session_end,
-    _notify_session_finalize,
-    _notify_single_query_session_finalize,
-    _oneshot_agent_and_session,
-    _should_emit_cleanup_session_finalize,
-    _shutdown_agent_memory_provider,
-    _shutdown_cached_aux_clients,
-    _shutdown_mcp_servers,
-    _stop_cli_wake_word,
-    _sync_process_session_id,
-    _wait_for_oneshot_background_completions,
-)
 from hermes_cli.cli_auto_maintenance import (  # noqa: F401,E402
     _run_checkpoint_auto_maintenance,
     _run_state_db_auto_maintenance,
 )
+from hermes_cli.cli_billing_mixin import CLIBillingMixin
+from hermes_cli.cli_commands_mixin import CLICommandsMixin
+from hermes_cli.cli_config_load import (  # noqa: F401,E402
+    _AUXILIARY_TASK_ENV,
+    _CWD_PLACEHOLDERS,
+    _TERMINAL_ENV_MAPPINGS,
+    _cli_config_defaults,
+    _init_logging_and_display_from_config,
+    _load_prefill_messages,
+    _merge_file_config,
+    _mirror_config_to_env,
+    _parse_reasoning_config,
+    _parse_service_tier_config,
+    _resolve_prefill_messages_file,
+    load_cli_config,
+)
+from hermes_cli.cli_info_mixin import CLIInfoMixin
+from hermes_cli.cli_init_mixin import CLIInitMixin
+from hermes_cli.cli_loops_mixin import CLILoopsMixin
+from hermes_cli.cli_modal_mixin import CLIModalMixin
+from hermes_cli.cli_model_switch_mixin import CLIModelSwitchMixin
+from hermes_cli.cli_process_notifications import CLIProcessNotificationsMixin
 from hermes_cli.cli_render import (  # noqa: F401,E402
-    ChatConsole,
     _ACCENT,
     _ACCENT_ANSI_DEFAULT,
     _BOLD,
@@ -87,10 +70,10 @@ from hermes_cli.cli_render import (  # noqa: F401,E402
     _RST,
     _STREAM_PAD,
     _STREAM_PARTIAL_PREVIEW_LEN,
-    _SkinAwareAnsi,
     _TOOL_CALL_TAGS,
     _TRUE_RE,
     _WINDOWS_PATH_WITH_DOT_SEGMENT_RE,
+    ChatConsole,
     _accent_hex,
     _add_suspect_rows,
     _append_blank_panel_line,
@@ -130,6 +113,7 @@ from hermes_cli.cli_render import (  # noqa: F401,E402
     _render_final_assistant_content,
     _rich_text_from_ansi,
     _set_chrome_floor,
+    _SkinAwareAnsi,
     _strip_markdown_syntax,
     _strip_reasoning_tags,
     _terminal_columns,
@@ -139,20 +123,49 @@ from hermes_cli.cli_render import (  # noqa: F401,E402
     _wrap_panel_text,
     _wrap_panel_text_keep_ws,
 )
-from hermes_cli.cli_config_load import (  # noqa: F401,E402
-    _AUXILIARY_TASK_ENV,
-    _CWD_PLACEHOLDERS,
-    _TERMINAL_ENV_MAPPINGS,
-    _cli_config_defaults,
-    _init_logging_and_display_from_config,
-    _load_prefill_messages,
-    _merge_file_config,
-    _mirror_config_to_env,
-    _parse_reasoning_config,
-    _parse_service_tier_config,
-    _resolve_prefill_messages_file,
-    load_cli_config,
+from hermes_cli.cli_session_mixin import CLISessionMixin
+
+# Extracted clusters (mechanical split, #116911); re-exported here so `cli.<name>` stays the seam.
+from hermes_cli.cli_shutdown import (  # noqa: F401,E402
+    _CLEANUP_STEPS,
+    _arm_exit_watchdog,
+    _emit_interrupted_session_end,
+    _exit_watchdog_timeout,
+    _finalize_single_query,
+    _float_env,
+    _flush_logging_and_stdio,
+    _flush_one_shot_session_store,
+    _interrupt_async_delegations,
+    _invoke_interrupted_session_end,
+    _notify_session_finalize,
+    _notify_single_query_session_finalize,
+    _oneshot_agent_and_session,
+    _should_emit_cleanup_session_finalize,
+    _shutdown_agent_memory_provider,
+    _shutdown_cached_aux_clients,
+    _shutdown_mcp_servers,
+    _stop_cli_wake_word,
+    _sync_process_session_id,
+    _wait_for_oneshot_background_completions,
 )
+from hermes_cli.cli_single_query import (  # noqa: F401,E402
+    _TERMINAL_PROVIDER_REASONS,
+    _TRANSIENT_PROVIDER_REASONS,
+    _collect_kanban_task_images,
+    _configure_quiet_agent,
+    _install_single_query_signal_handlers,
+    _int_or,
+    _interrupt_agent_for_signal,
+    _route_single_query_images,
+    _run_kanban_goal_loop_chat,
+    _run_kanban_goal_loop_q,
+    _run_quiet_single_query,
+    _run_single_query_mode,
+    _single_query_exit_code,
+    _sync_cli_session_id_from_agent,
+)
+from hermes_cli.cli_status_bar_mixin import CLIStatusBarMixin
+from hermes_cli.cli_stream_mixin import CLIStreamMixin
 from hermes_cli.cli_terminal_input import (  # noqa: F401,E402
     _BACKSLASH_LINE_CONTINUATION_RE,
     _DSR_CPR_ESC_RE,
@@ -191,22 +204,10 @@ from hermes_cli.cli_terminal_input import (  # noqa: F401,E402
     _terminal_supports_extended_enter_keys,
     _termux_example_image_path,
 )
-from hermes_cli.cli_single_query import (  # noqa: F401,E402
-    _TERMINAL_PROVIDER_REASONS,
-    _TRANSIENT_PROVIDER_REASONS,
-    _collect_kanban_task_images,
-    _configure_quiet_agent,
-    _install_single_query_signal_handlers,
-    _int_or,
-    _interrupt_agent_for_signal,
-    _route_single_query_images,
-    _run_kanban_goal_loop_chat,
-    _run_kanban_goal_loop_q,
-    _run_quiet_single_query,
-    _run_single_query_mode,
-    _single_query_exit_code,
-    _sync_cli_session_id_from_agent,
-)
+from hermes_cli.cli_terminal_mixin import CLITerminalMixin
+from hermes_cli.cli_tui_mixin import CLITuiMixin
+from hermes_cli.cli_tui_runtime_mixin import CLITuiRuntimeMixin
+from hermes_cli.cli_voice_mixin import CLIVoiceMixin
 
 try:
     from prompt_toolkit.patch_stdout import patch_stdout
@@ -218,6 +219,7 @@ except ImportError:  # partial prompt_toolkit stubs in tests
     EditingMode = None
 from prompt_toolkit import print_formatted_text as _pt_print
 from prompt_toolkit.formatted_text import ANSI as _PT_ANSI
+
 try:
     from prompt_toolkit.cursor_shapes import CursorShape
     _STEADY_CURSOR = CursorShape.BLOCK
@@ -236,8 +238,8 @@ try:
     del _pt_extras
 except Exception as _exc:
     logger.debug("Suppressed exception: %s", _exc, exc_info=True)
-import threading
 import queue
+import threading
 
 
 def _lazy_shim(module: str, name: str, alias: str | None = None):
@@ -329,9 +331,9 @@ _COMMAND_SPINNER_FRAMES = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧
 
 
 # ~/.hermes/.env first, project .env as dev fallback; user env files override stale shell exports.
-from hermes_constants import get_hermes_home
-from hermes_cli.env_loader import load_hermes_dotenv
 from agent.i18n import t as _t  # noqa: E402
+from hermes_cli.env_loader import load_hermes_dotenv
+from hermes_constants import get_hermes_home
 
 _hermes_home = get_hermes_home()
 _project_env = Path(__file__).parent / '.env'
@@ -350,8 +352,8 @@ _init_logging_and_display_from_config()
 # eager import costs ~166ms/30MB cold, and the patch is guaranteed to land before
 # instantiation. See ``agent.auxiliary_client.neuter_async_httpx_del``.
 try:
-    import sys as _httpx_neuter_sys
     import importlib.util as _httpx_neuter_imp_util
+    import sys as _httpx_neuter_sys
 
     class _AsyncHttpxDelNeuter:
         """Patch ``AsyncHttpxClientWrapper.__del__`` to a no-op when ``openai._base_client`` loads."""
@@ -460,8 +462,10 @@ def _prepare_deferred_agent_startup() -> None:
     except Exception:
         logger.debug("MCP tool discovery failed at deferred CLI startup", exc_info=True)
     try:
+        from agent.outbound_webhooks import (
+            register_from_config as register_outbound_webhooks,
+        )
         from agent.shell_hooks import register_from_config
-        from agent.outbound_webhooks import register_from_config as register_outbound_webhooks
         from hermes_cli.config import load_config
 
         _hooks_cfg = load_config()
@@ -693,7 +697,9 @@ def _replay_output_history(fit=None, output=None) -> None:
             if output is None:
                 _pt_print(_PT_ANSI("\n".join(rendered_lines)))
             else:
-                from prompt_toolkit.renderer import print_formatted_text as _paint_formatted_text
+                from prompt_toolkit.renderer import (
+                    print_formatted_text as _paint_formatted_text,
+                )
                 from prompt_toolkit.styles import Style
                 _paint_formatted_text(output, _PT_ANSI("\n".join(rendered_lines) + "\n"), Style([]))
                 size = output.get_size()
@@ -885,7 +891,6 @@ class _ChatTurn:
     voice_prefix: str = ""
 from hermes_cli.cli_chat_turn_mixin import CLIChatTurnMixin
 
-
 _PASTE_REF_RE = re.compile(r'\[Pasted text #\d+: \d+ lines \u2192 (.+?)\]')
 
 
@@ -927,7 +932,10 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
         if self._active_session_lease is not None:
             return True
         try:
-            from hermes_cli.active_sessions import format_refusal_stderr, try_acquire_active_session
+            from hermes_cli.active_sessions import (
+                format_refusal_stderr,
+                try_acquire_active_session,
+            )
 
             lease, message = try_acquire_active_session(
                 session_id=self.session_id,
@@ -969,7 +977,11 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
         set_sudo_password_callback(self._sudo_password_callback)
         set_approval_callback(self._approval_callback)
         set_secret_capture_callback(self._secret_capture_callback)
-        from agent.vault_backends.unlock import set_code_prompt_callback, set_save_login_prompt_callback, set_unlock_prompt_callback
+        from agent.vault_backends.unlock import (
+            set_code_prompt_callback,
+            set_save_login_prompt_callback,
+            set_unlock_prompt_callback,
+        )
         set_unlock_prompt_callback(self._vault_unlock_callback)
         set_save_login_prompt_callback(self._vault_save_login_callback)
         set_code_prompt_callback(self._vault_code_callback)
@@ -978,7 +990,10 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
     def _show_security_advisories(self):
         """Startup banner for unacked security advisories, on stderr (piped stdout stays clean); 24h rate-limited."""
         try:
-            from hermes_cli.security_advisories import detect_compromised, startup_banner
+            from hermes_cli.security_advisories import (
+                detect_compromised,
+                startup_banner,
+            )
 
             banner = startup_banner(detect_compromised())
             if banner:
@@ -1040,10 +1055,12 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
             # Runs on a daemon thread on the snapshot fast path: keep the imports to modules the
             # registry walk already loaded plus the pure notices module (a heavy import here races
             # importlib's module locks against the main thread).
-            from model_tools import check_tool_availability
             from hermes_cli.tool_availability_notices import (
-                current_terminal_backend, filter_to_enabled_toolsets, tool_availability_warning_lines,
+                current_terminal_backend,
+                filter_to_enabled_toolsets,
+                tool_availability_warning_lines,
             )
+            from model_tools import check_tool_availability
             from tools.terminal_tool import terminal_backend_unavailable_reason
             from toolsets import resolve_toolset
 
@@ -1181,7 +1198,9 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
         _cmd_def = _resolve_cmd(_base_word)
         canonical = _cmd_def.name if _cmd_def else _base_word
         if not redispatch and self._slash_metrics_surface:
-            from hermes_cli.observability.shared_metrics_events import record_slash_command
+            from hermes_cli.observability.shared_metrics_events import (
+                record_slash_command,
+            )
             record_slash_command(command=canonical, surface=self._slash_metrics_surface)
 
         # Observer-only pre_command plugin hook (return values ignored; never raises).
@@ -1251,8 +1270,8 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
         try:
             # shell=True is intentional (user-authored config snippets, never LLM controlled);
             # the env is sanitized because this process holds every API key.
-            from tools.environments.local import build_subprocess_env
             from hermes_cli._subprocess_compat import windows_hide_flags
+            from tools.environments.local import build_subprocess_env
             result = subprocess.run(
                 exec_cmd, shell=True, capture_output=True, text=True, encoding="utf-8", errors="replace",
                 timeout=30, env=build_subprocess_env(),
@@ -1272,7 +1291,10 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
         return True
 
     def _run_plugin_slash_command(self, base_cmd: str, user_args: str) -> None:
-        from hermes_cli.plugins import get_plugin_command_handler, resolve_plugin_command_result
+        from hermes_cli.plugins import (
+            get_plugin_command_handler,
+            resolve_plugin_command_result,
+        )
 
         plugin_handler = get_plugin_command_handler(base_cmd.lstrip("/"))
         if not plugin_handler:
@@ -1306,7 +1328,10 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
 
     def _run_skill_slash_command(self, base_cmd: str, skill_info: dict, rest: str) -> None:
         """``/<skill> ...``; stacked ``/skill-a /skill-b do XYZ`` loads every leading skill (up to 5)."""
-        from agent.skill_commands import build_stacked_skill_invocation_message, split_stacked_skill_commands
+        from agent.skill_commands import (
+            build_stacked_skill_invocation_message,
+            split_stacked_skill_commands,
+        )
 
         # Interactive surface: stacked tokens resolve against the interactive
         # map so plugin skills stack in the CLI like native skills.
@@ -1406,7 +1431,9 @@ class HermesCLI(CLIInitMixin, CLITuiRuntimeMixin, CLIProcessNotificationsMixin, 
         app = self._tui_build_application(layout, kb, style)
         _disable_prompt_toolkit_cpr_warning(app)
         app.after_render += self._pet_flush_kitty_frame
-        from hermes_cli.observability.shared_metrics_startup import cli_prompt_ready_handler
+        from hermes_cli.observability.shared_metrics_startup import (
+            cli_prompt_ready_handler,
+        )
         app.after_render += cli_prompt_ready_handler()
         self._app = app
 

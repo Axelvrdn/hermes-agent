@@ -10,10 +10,10 @@ import codecs
 import json
 import os
 import signal
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 
 def _write_json(path: Path, data: dict) -> None:
@@ -382,7 +382,12 @@ def _complete_selected(request: dict) -> bool:
     from hermes_cli.source_completion import complete_source_checkout
     from hermes_cli.update_inventory import RuntimeRecord, UpdatePlan
     from hermes_cli.update_receipt import (
-        TAIL_FOLLOWUPS, record_build_stage, record_followup, record_skip, record_stage)
+        TAIL_FOLLOWUPS,
+        record_build_stage,
+        record_followup,
+        record_skip,
+        record_stage,
+    )
 
     root = Path(request["source"])
     main.PROJECT_ROOT = root

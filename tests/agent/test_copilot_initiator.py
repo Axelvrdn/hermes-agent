@@ -14,6 +14,7 @@ accepts extra_headers).
 
 from run_agent import AIAgent
 
+
 def _tool_defs(*names):
     return [
         {"type": "function", "function": {"name": n, "description": n, "parameters": {}}}

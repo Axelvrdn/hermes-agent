@@ -724,7 +724,11 @@ def run_codex_scenario(root: Path, turns: list[dict], runs: list[dict], *, confi
     """Real ``hermes chat -q`` runs (``--resume`` after the first) against a fresh fake codex install.
 
     ``runs``: ``{"prompt", "args": [...], "then": {scenario changes applied after this run}}``."""
-    from tests.e2e.core.providers._native_helpers import latest_session, make_home, run_chat
+    from tests.e2e.core.providers._native_helpers import (
+        latest_session,
+        make_home,
+        run_chat,
+    )
 
     fake = FakeCodex(root, turns, **scenario)
     model = {"provider": "openai", "default": "gpt-5.5", "openai_runtime": "codex_app_server",

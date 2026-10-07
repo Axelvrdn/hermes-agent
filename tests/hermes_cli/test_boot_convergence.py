@@ -84,9 +84,10 @@ def test_each_start_checks_pm_once_before_dispatch(surface, tmp_path, monkeypatc
 @pytest.mark.parametrize("sibling_profile", [False, True])
 def test_concurrent_boots_bound_real_home_migration(tmp_path, monkeypatch, sibling_profile):
     import os
-    import subprocess
     import sqlite3
+    import subprocess
     import time
+
     from hermes_cli.config import DEFAULT_CONFIG
 
     root = tmp_path / "payload"

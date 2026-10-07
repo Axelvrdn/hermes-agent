@@ -74,7 +74,6 @@ def test_live_props_beats_catalog(hermes_home, monkeypatch):
     """A running child's modalities report wins over the catalog: the
     server that will receive the image is the authority."""
     import hermes_cli.local_runtime.capabilities as caps
-
     from hermes_cli.local_runtime.catalog import CATALOG
 
     entry = next(e for e in CATALOG if e.mmproj is not None)

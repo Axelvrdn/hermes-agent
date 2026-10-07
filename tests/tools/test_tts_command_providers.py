@@ -30,8 +30,14 @@ from tools.tts_command_provider import (
     _get_named_provider_config,
     _is_command_provider_config,
     _iter_command_providers,
+)
+from tools.tts_command_provider import (
     render_command_template as _render_command_tts_template,
+)
+from tools.tts_command_provider import (
     run_command_provider as _run_command_tts,
+)
+from tools.tts_command_provider import (
     shell_quote_context as _shell_quote_context,
 )
 from tools.tts_tool import (
@@ -43,7 +49,6 @@ from tools.tts_tool import (
     check_tts_requirements,
     text_to_speech_tool,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -509,7 +514,9 @@ class TestCommandTtsEnvPassthrough:
         assert "OPENAI_API_KEY" not in env
 
     def test_allowlist_parsed_from_provider_config(self):
-        from tools.tts_command_provider import command_env_passthrough as _command_provider_env_passthrough
+        from tools.tts_command_provider import (
+            command_env_passthrough as _command_provider_env_passthrough,
+        )
 
         assert _command_provider_env_passthrough(
             {"env_passthrough": ["A_KEY", " B_KEY ", ""]}

@@ -29,8 +29,12 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 import hermes_yaml as yaml
-
-from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall, write_hermes_home
+from tests.fakes.fake_llm_provider import (
+    FakeLLMServer,
+    Text,
+    ToolCall,
+    write_hermes_home,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 FIXTURE_MCP_SERVER = Path(__file__).with_name("fixture_mcp_server.py")

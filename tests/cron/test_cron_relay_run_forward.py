@@ -199,8 +199,9 @@ class TestManualRunPromptConsumption:
 class TestTriggerJobPromptStamp:
     def test_trigger_stamps_and_mark_run_clears(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-        import cron.jobs as jobs_mod
         import importlib
+
+        import cron.jobs as jobs_mod
 
         importlib.reload(jobs_mod)
         job = jobs_mod.create_job(
@@ -217,8 +218,9 @@ class TestTriggerJobPromptStamp:
 
     def test_retrigger_without_prompt_clears_stale_stamp(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-        import cron.jobs as jobs_mod
         import importlib
+
+        import cron.jobs as jobs_mod
 
         importlib.reload(jobs_mod)
         job = jobs_mod.create_job(

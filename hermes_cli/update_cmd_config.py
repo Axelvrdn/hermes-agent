@@ -45,9 +45,12 @@ def _migrate_sibling_profile_configs() -> list[tuple[str, int, int]]:
     from hermes_cli.config import check_config_version, migrate_config
     migrated: list[tuple[str, int, int]] = []
     with _best_effort('Sibling profile enumeration failed: %s'):
-        from hermes_constants import (
-            get_process_hermes_home, reset_hermes_home_override, set_hermes_home_override)
         from hermes_cli.backup import _sibling_profile_homes
+        from hermes_constants import (
+            get_process_hermes_home,
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         active_home = Path(get_process_hermes_home())
         for name, profile_home in _sibling_profile_homes(active_home):
             if not (profile_home / "config.yaml").is_file():
@@ -164,14 +167,14 @@ def _check_and_apply_config_migration(
 
     See #91360.
     """
-    from hermes_cli.update_cmd import _migrate_sibling_profile_configs
     from hermes_cli.config import check_config_version, migrate_config
+    from hermes_cli.update_cmd import _migrate_sibling_profile_configs
     print()
     print("→ Checking configuration for new options...")
-    from hermes_cli.config import get_missing_env_vars, get_missing_config_fields
+    from hermes_cli.config import get_missing_config_fields, get_missing_env_vars
     # A config-check failure must not break an otherwise-successful update.
     try:
-        from hermes_cli.config import get_missing_env_vars, get_missing_config_fields
+        from hermes_cli.config import get_missing_config_fields, get_missing_env_vars
         # Log, point at the manual command, and return. See #91360.
         missing_env = get_missing_env_vars(required_only=True)
         missing_config = get_missing_config_fields()

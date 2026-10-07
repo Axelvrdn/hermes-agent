@@ -19,6 +19,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any, NamedTuple, Optional
+
 from agent.secret_scope import get_secret_str
 from hermes_cli.urllib_security import url_origin
 
@@ -227,7 +228,11 @@ def probe_ollama_local_models(
     """Probe local Ollama-compatible models from native ``/api/tags`` (Ollama's authoritative local
     catalog; ``/v1/models`` is not required for local servers). ``None`` when the endpoint cannot be
     reached or returns malformed data; a list (possibly empty) when it was reachable."""
-    from hermes_cli.models import _HERMES_USER_AGENT, _get_ollama_base_url, _urlopen_model_catalog_request
+    from hermes_cli.models import (
+        _HERMES_USER_AGENT,
+        _get_ollama_base_url,
+        _urlopen_model_catalog_request,
+    )
     root = _root_for_ollama_native_api(base_url or _get_ollama_base_url())
     if not root:
         return None
@@ -372,8 +377,8 @@ def _lmstudio_server_root(base_url: Optional[str]) -> Optional[str]:
 
 def _lmstudio_request_headers(api_key: Optional[str] = None) -> dict:
     """HTTP headers for LM Studio native API requests."""
-    from hermes_cli.models import _HERMES_USER_AGENT
     from agent.command_token_source import materialize_probe_api_key
+    from hermes_cli.models import _HERMES_USER_AGENT
     token = materialize_probe_api_key(api_key)
     return {"User-Agent": _HERMES_USER_AGENT, **({"Authorization": f"Bearer {token}"} if token else {})}
 

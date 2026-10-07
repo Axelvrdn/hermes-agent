@@ -14,7 +14,7 @@ import pytest
 
 from gateway.config import Platform
 from gateway.session import SessionSource
-from gateway.wake import deliver_wake, adapter_supports_push
+from gateway.wake import adapter_supports_push, deliver_wake
 
 
 class PushAdapter:

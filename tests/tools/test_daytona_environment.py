@@ -6,7 +6,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers to build mock Daytona SDK objects
 # ---------------------------------------------------------------------------
@@ -25,9 +24,8 @@ def _make_sandbox(sandbox_id="sb-123", state="started"):
 
 def _patch_daytona_imports(monkeypatch):
     """Patch the daytona SDK so DaytonaEnvironment can be imported without it."""
-    import types as _types
-
     import enum
+    import types as _types
 
     class _SandboxState(str, enum.Enum):
         STARTED = "started"

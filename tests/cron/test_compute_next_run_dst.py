@@ -9,9 +9,10 @@ configures it (``HERMES_TIMEZONE``) instead of by patching ``get_timezone``, so
 unfixed code with the real symptom. Filed from the 09:00 America/Toronto morning routine.
 """
 
-import pytest
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
+import pytest
 
 pytest.importorskip("croniter")
 

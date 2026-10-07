@@ -11,14 +11,17 @@ from pathlib import Path
 import pytest
 
 from pm.plugin_inputs import Candidates, Selection, StagedUpdate
-
-from tests.pm.test_worker import client, isolated_python, _current_environment  # noqa: F401
 from tests.pm._fixtures import worker_toolchain
+from tests.pm.test_worker import (  # noqa: F401
+    _current_environment,
+    client,
+    isolated_python,
+)
 
 
 def test_worker_publishes_selection_even_when_dependencies_are_current(client, tmp_path, monkeypatch):
-    from pm.environments import install_state_dir
     from pm import receipt
+    from pm.environments import install_state_dir
 
     home = tmp_path / "home"
     home.mkdir()
@@ -49,10 +52,10 @@ def test_worker_publishes_selection_even_when_dependencies_are_current(client, t
 def test_staged_plugin_publication_uses_installed_identity_and_local_dependencies(
     client, tmp_path, monkeypatch, isolated_python, active, missing,
 ):
+    from pm import paths
     from pm.environments import install_state_dir, selected_venv
     from pm.store import tree_digest
     from tests.pm.test_environment_build import _wheel
-    from pm import paths
 
     worker_toolchain(client, monkeypatch, isolated_python)
     project = tmp_path / "project"
@@ -186,8 +189,8 @@ def test_memory_setup_sends_candidate_paths_instead_of_discovery_callbacks(tmp_p
 def test_worker_death_recovers_at_each_durable_publication_boundary(
     client, tmp_path, monkeypatch, isolated_python, kind, rebuild, phase,
 ):
-    from pm.environments import install_state_dir, selected_venv
     from pm import paths
+    from pm.environments import install_state_dir, selected_venv
     from pm.package import InstallError
     from pm.store import tree_digest
 

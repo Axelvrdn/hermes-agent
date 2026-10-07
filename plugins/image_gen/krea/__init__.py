@@ -19,11 +19,23 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import requests
 
+from agent.image_gen_provider import (
+    DEFAULT_ASPECT_RATIO,
+    resolve_aspect_ratio,
+    save_url_image,
+    success_response,
+)
 from agent.secret_scope import get_secret
-from agent.image_gen_provider import DEFAULT_ASPECT_RATIO, resolve_aspect_ratio, save_url_image, success_response
 from plugins.image_gen._common import (
-    ErrorFn, StaticImageGenProvider, collect_source_images, error_factory, load_image_gen_config, post_json,
-    prompt_required_error, resolve_static_model)
+    ErrorFn,
+    StaticImageGenProvider,
+    collect_source_images,
+    error_factory,
+    load_image_gen_config,
+    post_json,
+    prompt_required_error,
+    resolve_static_model,
+)
 
 logger = logging.getLogger(__name__)
 

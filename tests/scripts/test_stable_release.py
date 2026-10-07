@@ -11,15 +11,24 @@ from pathlib import Path
 
 import pytest
 
-from tests.scripts.test_release_r2 import r2_server  # noqa: F401
 from scripts.releases.draft_warning import (
-    WARNING_CLOSE, WARNING_OPEN, strip_draft_warning,
+    WARNING_CLOSE,
+    WARNING_OPEN,
+    strip_draft_warning,
 )
 from scripts.releases.stable import (
-    check_claim, ensure_final_tag, plan_receipt_transitions, plan_transitions, read_manifest,
-    require_stable_identity, require_success, validate_candidates, validate_receipt,
+    check_claim,
+    ensure_final_tag,
+    plan_receipt_transitions,
+    plan_transitions,
+    read_manifest,
+    require_stable_identity,
+    require_success,
+    validate_candidates,
+    validate_receipt,
 )
 from scripts.releases.versioning import tag_record
+from tests.scripts.test_release_r2 import r2_server  # noqa: F401
 
 BASE = "https://releases.example"
 ROOT = Path(__file__).resolve().parents[2]

@@ -1,9 +1,9 @@
 """Bundle commands run the prepared npm, including Nix's shell wrapper."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 from scripts.bundles.desktop import npm_command
 

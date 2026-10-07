@@ -18,7 +18,6 @@ from hermes_cli.active_sessions import (
 )
 from tui_gateway import server
 
-
 _LEASE_HOLDER_SCRIPT = """
 import os
 import time

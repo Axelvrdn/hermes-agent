@@ -30,8 +30,8 @@ def test_scoped_numbered_input_handles_navigation_keys(sequence, expected):
     from prompt_toolkit.output import DummyOutput
 
     from hermes_cli.curses_ui import (
-        MenuNavigationStart,
         _NUMBERED_BACK_ENABLED,
+        MenuNavigationStart,
         _NumberedNavigation,
         _read_numbered_input,
         reset_menu_navigation_handler,

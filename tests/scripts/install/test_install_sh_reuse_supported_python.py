@@ -7,12 +7,12 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import sys
 import venv
+from pathlib import Path
 
 import pytest
 

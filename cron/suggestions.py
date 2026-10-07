@@ -173,7 +173,8 @@ def accept_suggestion(ref: str, *, origin: Optional[Dict[str, Any]] = None) -> O
         return None
 
     from cron.scheduler import (
-        CronSchedulerRegistrationError, create_job_with_scheduler_registration,
+        CronSchedulerRegistrationError,
+        create_job_with_scheduler_registration,
     )
 
     spec = dict(s.get("job_spec") or {})

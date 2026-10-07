@@ -6,19 +6,19 @@ fresh selected interpreters never inherit its site-packages.
 """
 from __future__ import annotations
 
-import json
 import argparse
+import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-
+from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
-from tests.pm._fixtures import _wheel, isolated_python as isolated_python
+import hermes_yaml as yaml
+from tests.pm._fixtures import _wheel
+from tests.pm._fixtures import isolated_python as isolated_python
 
 
 def worker_command(worker: Path, uv: str, python: str, *, prelude: str = "", runtime_python: str | None = None) -> list[str]:

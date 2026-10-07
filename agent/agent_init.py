@@ -22,22 +22,27 @@ from types import SimpleNamespace
 from typing import Any, Callable, Dict, List, Optional
 from urllib.parse import parse_qs, urlparse, urlunparse
 
-from agent.context_compressor import ContextCompressor
-from agent.agent_init_fallback import _fallback_entries, _init_fallback_chain, recompute_init_fallback_api_mode
+from agent.agent_init_fallback import (
+    _fallback_entries,
+    _init_fallback_chain,
+    recompute_init_fallback_api_mode,
+)
 from agent.agent_runtime_helpers import _ra
+from agent.context_compressor import ContextCompressor
 from agent.iteration_budget import IterationBudget, normalize_budget_warning_ratio
 from agent.memory_manager import StreamingContextScrubber
 from agent.memory_provider import is_core_memory_provider
-from agent.session_activity import ActivityProvenance
 from agent.model_metadata import (
-    MINIMUM_CONTEXT_LENGTH, fetch_model_metadata, is_local_endpoint, query_ollama_num_ctx
+    MINIMUM_CONTEXT_LENGTH,
+    fetch_model_metadata,
+    is_local_endpoint,
+    query_ollama_num_ctx,
 )
 from agent.process_bootstrap import _install_safe_stdio
+from agent.session_activity import ActivityProvenance
 from agent.subdirectory_hints import SubdirectoryHintTracker
 from agent.think_scrubber import StreamingThinkScrubber
-from agent.tool_guardrails import (
-    ToolCallGuardrailConfig, ToolCallGuardrailController
-)
+from agent.tool_guardrails import ToolCallGuardrailConfig, ToolCallGuardrailController
 from hermes_cli.config import DEFAULT_CONFIG, cfg_get
 from hermes_cli.route_identity import normalize_route_base_url
 from hermes_cli.timeouts import get_provider_request_timeout
@@ -107,7 +112,9 @@ def _provider_default_routes(provider: str) -> set[str]:
     with suppress(Exception):
         from hermes_cli.auth import PROVIDER_REGISTRY
         from hermes_cli.models import normalize_provider as normalize_model_provider
-        from hermes_cli.providers import normalize_provider as normalize_registry_provider
+        from hermes_cli.providers import (
+            normalize_provider as normalize_registry_provider,
+        )
         for provider_id, config in PROVIDER_REGISTRY.items():
             if normalize_registry_provider(normalize_model_provider(provider_id)) == provider:
                 add(getattr(config, "inference_base_url", ""))
@@ -139,7 +146,9 @@ def _context_route_mismatch(
         configured_provider = configured_provider.lower()
         active_provider = active_provider.lower()
     with suppress(Exception):
-        from hermes_cli.providers import normalize_provider as normalize_registry_provider
+        from hermes_cli.providers import (
+            normalize_provider as normalize_registry_provider,
+        )
         configured_provider = normalize_registry_provider(configured_provider)
         active_provider = normalize_registry_provider(active_provider)
 
@@ -384,8 +393,8 @@ _EXPLICIT_API_MODES = {
 
 def _resolve_api_mode(agent, api_mode, provider_name, base_url):
     """Set ``agent.api_mode`` (and provider rewrites) — ordered ladder, first match wins."""
-    from hermes_cli.providers import is_actual_route
     from agent.transports import registered_api_modes
+    from hermes_cli.providers import is_actual_route
     host, url = agent._base_url_hostname, agent._base_url_lower
     if is_actual_route(agent.provider, base_url):
         agent.api_mode = "chat_completions"
@@ -426,7 +435,9 @@ def _resolve_api_mode(agent, api_mode, provider_name, base_url):
             # BY DESIGN, not provider-name-driven, because user config `providers.meta` may point at any
             # OpenAI-compatible endpoint, and forcing `codex_responses` on the provider name alone would
             # break custom endpoints named "meta" that do not host the Responses API. See #63425.
-            from hermes_cli.providers import host_mandated_api_mode as _host_mandated_api_mode
+            from hermes_cli.providers import (
+                host_mandated_api_mode as _host_mandated_api_mode,
+            )
             _mandated = _host_mandated_api_mode(base_url or "")
         except Exception:
             _mandated = None
@@ -466,7 +477,8 @@ def _finalize_routing(agent, api_mode, credential_pool):
 
     with suppress(Exception):
         from hermes_cli.model_normalize import (
-            _AGGREGATOR_PROVIDERS, normalize_model_for_provider
+            _AGGREGATOR_PROVIDERS,
+            normalize_model_for_provider,
         )
 
         if agent.provider not in _AGGREGATOR_PROVIDERS:
@@ -681,9 +693,9 @@ def _init_prompt_cache_config(agent):
     # inject their own cache_control markers (#13477).
     agent._cache_ttl = "5m"
     with suppress(Exception):
-        from hermes_cli.config import load_config_readonly as _load_pc_cfg
         from agent.agent_runtime_helpers import cache_ttl_means_disabled
         from agent.prompt_caching import AUTO_CACHE_TTL, auto_cache_ttl_for_source
+        from hermes_cli.config import load_config_readonly as _load_pc_cfg
         _pc_cfg = _load_pc_cfg().get("prompt_caching", {}) or {}
         _ttl = _pc_cfg.get("cache_ttl", "5m")
         if _ttl in {"5m", "1h"}:
@@ -941,10 +953,13 @@ def _routed_client_kwargs(agent, fallback_model, _provider_timeout) -> Optional[
             raise ProviderCredentialsExhaustedError(_exhausted_message, provider=_explicit)
     if _explicit and _explicit not in {"auto", "openrouter", "custom"}:
         # Explicit non-OpenRouter provider with no creds and no usable fallback: fail fast.
-        from agent.auxiliary_unavailable import ProviderNotConfiguredError, missing_provider_credentials_message
+        from agent.auxiliary_unavailable import (
+            ProviderNotConfiguredError,
+            missing_provider_credentials_message,
+        )
         raise ProviderNotConfiguredError(missing_provider_credentials_message(_explicit))
-    from hermes_constants import profile_cli_selector
     from agent.auxiliary_unavailable import ProviderNotConfiguredError
+    from hermes_constants import profile_cli_selector
     _sel = profile_cli_selector()
     raise ProviderNotConfiguredError(
         "No LLM provider configured. Run `hermes model` to "
@@ -972,7 +987,8 @@ def _apply_openai_header_policy(agent, client_kwargs: Dict[str, Any]) -> None:
     try:
         from hermes_cli.config import (
             apply_custom_provider_extra_headers_to_client_kwargs,
-            apply_custom_provider_tls_to_client_kwargs, get_compatible_custom_providers,
+            apply_custom_provider_tls_to_client_kwargs,
+            get_compatible_custom_providers,
             load_config,
         )
         _cp_entries = get_compatible_custom_providers(load_config())
@@ -1316,7 +1332,9 @@ def _init_memory(agent, _agent_cfg, skip_memory, platform, memory_manager=None):
         # Memory is optional — don't break agent init
         with suppress(Exception):
             from tools.memory_tool import (
-                MemoryStore, get_builtin_memory_config, get_builtin_memory_store_flags,
+                MemoryStore,
+                get_builtin_memory_config,
+                get_builtin_memory_store_flags,
             )
             mem_config = get_builtin_memory_config(_agent_cfg)
             agent._memory_enabled, agent._user_profile_enabled = get_builtin_memory_store_flags(
@@ -1467,7 +1485,11 @@ def _compression_threshold(agent, cfg: Dict[str, Any]) -> tuple[float, bool]:
     with suppress(Exception):
         from agent.auxiliary_client import (
             _compression_threshold_for_model as _cthresh_fn,
+        )
+        from agent.auxiliary_client import (
             _is_codex_gpt54_or_gpt55 as _is_codex_gpt54_or_gpt55_fn,
+        )
+        from agent.auxiliary_client import (
             _is_codex_spark as _is_codex_spark_fn,
         )
         _model_cthresh = _cthresh_fn(
@@ -1949,7 +1971,8 @@ def _compressor_max_tokens(agent):
         return agent.max_tokens
     with suppress(Exception):
         from agent.gemini_native_adapter import (
-            GEMINI_DEFAULT_MAX_OUTPUT_TOKENS, is_native_gemini_base_url
+            GEMINI_DEFAULT_MAX_OUTPUT_TOKENS,
+            is_native_gemini_base_url,
         )
         _gemini_provider = str(agent.provider or "").strip().lower() in {
             "gemini", "google", "google-gemini", "google-ai-studio",
@@ -2025,7 +2048,9 @@ def _build_context_engine(agent, _agent_cfg, cs, _custom_providers, _effective_c
         if hasattr(_cc, _attr):
             setattr(_cc, _attr, _value)
     agent.compression_checkpoint_required = cs.checkpoint_required
-    from agent.conversation_compression import _warn_checkpoint_required_without_capable_provider
+    from agent.conversation_compression import (
+        _warn_checkpoint_required_without_capable_provider,
+    )
     _warn_checkpoint_required_without_capable_provider(agent)
     agent.codex_app_server_auto_compaction = cs.codex_app_server_auto
     agent.codex_responses_native_compaction = cs.codex_responses_native

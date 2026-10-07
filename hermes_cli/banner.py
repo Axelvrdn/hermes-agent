@@ -7,11 +7,13 @@ import shutil
 import sys
 import threading
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
 from hermes_cli import source_check
+
 # Historical updater import (tests/compat/old_updater_surface.json). In-tree callers use the owner.
 from hermes_cli.source_check import _github_compare_behind  # noqa: F401
 from hermes_constants import get_hermes_home
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 # rich and prompt_toolkit are imported lazily: this module sits on the TUI gateway's critical
 # startup path purely for the lightweight update-check helpers, and eager rich/prompt_toolkit
@@ -342,6 +344,7 @@ def _render_markup_to_ansi(markup: str) -> str:
     the StdoutProxy, which sanitizes them into visible ``?[1;33m…`` artifacts (#83969).
     """
     from io import StringIO
+
     from rich.console import Console as _Console
     buf = StringIO()
     _Console(file=buf, force_terminal=True, color_system="truecolor", highlight=False).print(markup)
@@ -472,7 +475,7 @@ def compute_toolset_availability(enabled_toolsets: List[str] = None) -> Dict[str
 
     Split out so the result can be snapshotted and replayed without importing ``model_tools``.
     """
-    from model_tools import check_tool_availability, TOOLSET_REQUIREMENTS
+    from model_tools import TOOLSET_REQUIREMENTS, check_tool_availability
     enabled_toolsets = enabled_toolsets or []
     _, unavailable_toolsets = check_tool_availability(quiet=True)
     # The availability check walks the GLOBAL registry, so it includes toolsets outside this

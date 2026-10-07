@@ -490,6 +490,7 @@ class TestGuardJobCredentialExfil:
 
     def test_named_registry_provider_offhost_is_blocked(self):
         import pytest
+
         from cron.scheduler import _guard_job_credential_exfil
 
         job = {"id": "j1", "provider": "anthropic",
@@ -518,6 +519,7 @@ class TestGuardJobCredentialExfil:
         # (it cannot prove the stored pair is safe). Regression for the
         # fail-open `except Exception: err = None` path.
         import pytest
+
         import tools.cronjob_tools as ct
         from cron.scheduler import _guard_job_credential_exfil
 
@@ -845,6 +847,7 @@ def test_multiplex_ticker_reenumerates_profiles_each_cycle(tmp_path):
     so a profile created after the multiplexer started gets its jobs fired without a restart."""
     import threading
     from unittest.mock import patch
+
     from cron.scheduler_provider import InProcessCronScheduler
     from hermes_constants import get_hermes_home
 

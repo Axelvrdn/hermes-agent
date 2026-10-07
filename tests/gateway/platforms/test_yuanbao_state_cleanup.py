@@ -20,7 +20,6 @@ from types import SimpleNamespace
 from gateway.platforms.base import BasePlatformAdapter
 from gateway.platforms.yuanbao import MessageSender, YuanbaoAdapter
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

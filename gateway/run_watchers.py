@@ -177,8 +177,8 @@ class GatewaySessionWatchersMixin:
                         "fresh_idle=%s", session_key, still_pending, fresh_idle)
             notified_map.pop(session_key, None)  # re-arm so a FUTURE genuine stall notifies again
             return False
-        from gateway.warning_notifications import present_notification
         from gateway.run import _async_profile_runtime_scope
+        from gateway.warning_notifications import present_notification
         try:
             metadata = self._thread_metadata_for_source(source)
             notice = format_session_stall_notification(idle_seconds)

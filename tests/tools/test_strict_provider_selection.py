@@ -20,7 +20,6 @@ import pytest
 
 from tools import tool_backend_helpers as tbh
 
-
 MANAGED = SimpleNamespace(
     nous_user_token="managed-token",
     gateway_origin="https://gateway.nousresearch.com",

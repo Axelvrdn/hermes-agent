@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import importlib
-import os
-from pathlib import Path
 import json
+import os
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -172,8 +172,8 @@ def test_packaging_preserves_keychain_home_without_retargeting_build_state(tmp_p
 @pytest.mark.platforms("linux", "macos", "windows")
 def test_prepare_tools_uses_pm_native_pins_and_separate_cache(tmp_path, monkeypatch):
     import pm
-    from scripts.bundles import desktop_toolchain
     from pm import native_build
+    from scripts.bundles import desktop_toolchain
 
     source, work, cache = (tmp_path / name for name in ("source", "work", "cache"))
     env = desktop_toolchain.bootstrap_environment(source, work, cache, os.environ)
@@ -266,6 +266,7 @@ def test_native_cache_identity_tracks_compilers_sdk_and_openssl(tmp_path, monkey
 @pytest.mark.parametrize("complete", [False, True])
 def test_native_cache_leaves_room_for_sdist_compiler_outputs(tmp_path, monkeypatch, complete):
     from pathlib import PureWindowsPath
+
     from scripts.bundles import desktop_toolchain
 
     # Replay the Windows CI layout as path data, without faking the host OS.

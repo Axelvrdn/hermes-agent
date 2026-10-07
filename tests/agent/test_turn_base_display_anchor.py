@@ -23,6 +23,7 @@ from types import SimpleNamespace
 from agent.model_metadata import estimate_messages_tokens_rough
 from agent.usage_anchor import anchored_context_tokens, capture_usage_anchor
 
+
 def _msg(role, content, **extra):
     m = {"role": role, "content": content}
     m.update(extra)

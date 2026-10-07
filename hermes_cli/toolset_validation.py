@@ -73,7 +73,10 @@ def saved_toolset_resolver(config: dict) -> Callable[[str], bool]:
 
     @cache
     def plugin_names() -> frozenset:
-        from hermes_cli.plugins import get_plugin_toolset_keys_nowait, get_portable_mcp_server_names_nowait
+        from hermes_cli.plugins import (
+            get_plugin_toolset_keys_nowait,
+            get_portable_mcp_server_names_nowait,
+        )
 
         portable = get_portable_mcp_server_names_nowait()
         return frozenset(get_plugin_toolset_keys_nowait() | portable | {f"mcp-{name}" for name in portable})

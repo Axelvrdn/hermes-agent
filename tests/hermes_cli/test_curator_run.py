@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+
 def _args(**kwargs):
     values = {
         "dry_run": False,

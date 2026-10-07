@@ -451,7 +451,11 @@ class TestRunDebugShareRedaction:
     def test_fallback_provider_key_never_reaches_upload_bound_content(self, hermes_home_with_secret):
         """``hermes dump`` quotes ``fallback_providers`` from config.yaml; neither the CLI share
         bundle nor the gateway /debug report may carry a fallback entry's api_key."""
-        from hermes_cli.debug import _capture_dump, collect_debug_report, collect_share_bundle
+        from hermes_cli.debug import (
+            _capture_dump,
+            collect_debug_report,
+            collect_share_bundle,
+        )
 
         fallback_key = "fbk-opaque-0123456789abcdefghij"
         (hermes_home_with_secret / "config.yaml").write_text(
@@ -475,7 +479,11 @@ class TestRunDebugShareRedaction:
     def test_fallback_api_key_masked_whatever_its_yaml_shape(self, hermes_home_with_secret, yaml_value, secret):
         """The runtime ``str()``s any ``api_key`` value (fallback_config.resolve_entry_api_key), so the
         dump masks the field itself rather than relying on text redaction to recognise the value."""
-        from hermes_cli.debug import _capture_dump, collect_debug_report, collect_share_bundle
+        from hermes_cli.debug import (
+            _capture_dump,
+            collect_debug_report,
+            collect_share_bundle,
+        )
 
         (hermes_home_with_secret / "config.yaml").write_text(
             "fallback_providers:\n"
@@ -500,7 +508,11 @@ class TestRunDebugShareRedaction:
     def test_fallback_secret_fields_masked_by_repo_policy(self, hermes_home_with_secret, field, yaml_value, secret):
         """Every field ``agent.redact`` treats as a credential is masked by field, not only ``api_key``;
         env-var names and token budgets stay readable."""
-        from hermes_cli.debug import _capture_dump, collect_debug_report, run_debug_share
+        from hermes_cli.debug import (
+            _capture_dump,
+            collect_debug_report,
+            run_debug_share,
+        )
 
         (hermes_home_with_secret / "config.yaml").write_text(
             "fallback_providers:\n"
@@ -540,7 +552,11 @@ class TestRunDebugShareRedaction:
         """A fallback ``base_url`` can carry its credential in the URL (userinfo, query, fragment). The
         dump is config made to be pasted, so ``hermes dump`` itself and every upload of it get strict
         URL-credential redaction, not the log policy."""
-        from hermes_cli.debug import _capture_dump, collect_debug_report, collect_share_bundle
+        from hermes_cli.debug import (
+            _capture_dump,
+            collect_debug_report,
+            collect_share_bundle,
+        )
 
         secret = "urlCredOpaque0123456789abcdef"
         (hermes_home_with_secret / "config.yaml").write_text(
@@ -701,8 +717,9 @@ class TestScheduleAutoDelete:
 
     def test_records_pending_to_json(self, hermes_home):
         """Scheduled URLs are persisted to pending.json with expiration."""
-        from hermes_cli.debug import _schedule_auto_delete, _pending_file
         import json
+
+        from hermes_cli.debug import _pending_file, _schedule_auto_delete
 
         _schedule_auto_delete(
             ["https://paste.rs/abc", "https://paste.rs/def"],
@@ -727,7 +744,7 @@ class TestScheduleAutoDelete:
 
     def test_dedupes_same_url(self, hermes_home):
         """Same URL recorded twice → one entry with the later expire_at."""
-        from hermes_cli.debug import _schedule_auto_delete, _load_pending
+        from hermes_cli.debug import _load_pending, _schedule_auto_delete
 
         _schedule_auto_delete(["https://paste.rs/dup"], delay_seconds=10)
         _schedule_auto_delete(["https://paste.rs/dup"], delay_seconds=100)
@@ -742,12 +759,13 @@ class TestSweepExpiredPastes:
 
 
     def test_sweep_deletes_expired_entries(self, hermes_home):
-        from hermes_cli.debug import (
-            _sweep_expired_pastes,
-            _save_pending,
-            _load_pending,
-        )
         import time
+
+        from hermes_cli.debug import (
+            _load_pending,
+            _save_pending,
+            _sweep_expired_pastes,
+        )
 
         # Seed pending.json with one expired + one future entry
         _save_pending([
@@ -773,8 +791,9 @@ class TestSweepExpiredPastes:
         assert urls == {"https://paste.rs/future"}
 
     def test_sweep_leaves_future_entries_alone(self, hermes_home):
-        from hermes_cli.debug import _sweep_expired_pastes, _save_pending
         import time
+
+        from hermes_cli.debug import _save_pending, _sweep_expired_pastes
 
         _save_pending([
             {"url": "https://paste.rs/future1", "expire_at": time.time() + 3600},
@@ -790,12 +809,13 @@ class TestSweepExpiredPastes:
 
     def test_sweep_survives_network_failure(self, hermes_home):
         """Failed DELETEs stay in pending.json until the 24h grace window."""
-        from hermes_cli.debug import (
-            _sweep_expired_pastes,
-            _save_pending,
-            _load_pending,
-        )
         import time
+
+        from hermes_cli.debug import (
+            _load_pending,
+            _save_pending,
+            _sweep_expired_pastes,
+        )
 
         _save_pending([
             {"url": "https://paste.rs/flaky", "expire_at": time.time() - 100},

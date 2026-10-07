@@ -17,7 +17,6 @@ import pytest
 from gateway.config import PlatformConfig
 from gateway.platforms.event import MessageType
 
-
 # ---------------------------------------------------------------------------
 # Discord mock setup (copied from test_discord_free_response.py)
 # ---------------------------------------------------------------------------
@@ -59,7 +58,6 @@ _ensure_discord_mock()
 
 import plugins.platforms.discord.adapter as discord_platform  # noqa: E402
 from plugins.platforms.discord.adapter import DiscordAdapter  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Fake channel / thread types

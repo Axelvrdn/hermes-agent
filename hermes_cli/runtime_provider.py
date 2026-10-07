@@ -14,24 +14,49 @@ from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-from hermes_cli import auth as auth_mod
 from agent.credential_pool import (  # custom_provider_pool_key_candidates is read via origin by runtime_provider_custom
-    CredentialPool, PooledCredential, credential_pool_matches_provider, custom_provider_pool_key_candidates,  # noqa: F401
+    CredentialPool,  # noqa: F401
+    PooledCredential,
+    credential_pool_matches_provider,
+    custom_provider_pool_key_candidates,
     load_pool,
 )
 from agent.secret_scope import get_secret_str
-from hermes_cli.auth import (  # resolve_external_process_provider_credentials is read via origin by runtime_provider_backends
-    ACTUAL_LOCAL_NOAUTH_PLACEHOLDER, AuthError, DEFAULT_CODEX_BASE_URL, DEFAULT_QWEN_BASE_URL, DEFAULT_XAI_OAUTH_BASE_URL,
-    PROVIDER_REGISTRY, _agent_key_is_usable, _nous_inference_env_override, format_auth_error, resolve_provider,
-    resolve_nous_runtime_credentials, resolve_codex_runtime_credentials, resolve_xai_oauth_runtime_credentials,
-    resolve_qwen_runtime_credentials, resolve_api_key_provider_credentials,
-    resolve_external_process_provider_credentials,  # noqa: F401
-    has_usable_secret, is_actual_local_base_url, looks_like_openrouter_key, normalize_actual_base_url,
-)
+from hermes_cli import auth as auth_mod
 from hermes_cli import config as _config_mod
-from hermes_cli import models as _models  # attribute access keeps ``hermes_cli.models.<name>`` patches effective
+from hermes_cli import (
+    models as _models,  # attribute access keeps ``hermes_cli.models.<name>`` patches effective
+)
+from hermes_cli.auth import (  # resolve_external_process_provider_credentials is read via origin by runtime_provider_backends
+    ACTUAL_LOCAL_NOAUTH_PLACEHOLDER,
+    DEFAULT_CODEX_BASE_URL,
+    DEFAULT_QWEN_BASE_URL,
+    DEFAULT_XAI_OAUTH_BASE_URL,
+    PROVIDER_REGISTRY,
+    AuthError,
+    _agent_key_is_usable,
+    _nous_inference_env_override,
+    format_auth_error,
+    has_usable_secret,
+    is_actual_local_base_url,
+    looks_like_openrouter_key,
+    normalize_actual_base_url,
+    resolve_api_key_provider_credentials,
+    resolve_codex_runtime_credentials,
+    resolve_external_process_provider_credentials,  # noqa: F401
+    resolve_nous_runtime_credentials,
+    resolve_provider,
+    resolve_qwen_runtime_credentials,
+    resolve_xai_oauth_runtime_credentials,
+)
+from hermes_cli.providers import (
+    determine_api_mode,
+    get_provider,
+    is_actual_route,
+    is_official_openai_host,
+    nous_api_mode,
+)
 from hermes_constants import OPENROUTER_BASE_URL
-from hermes_cli.providers import determine_api_mode, get_provider, is_actual_route, is_official_openai_host, nous_api_mode
 from utils import base_url_host_matches, base_url_hostname, base_url_path, env_int
 
 
@@ -501,19 +526,35 @@ def resolve_requested_provider(requested: Optional[str] = None) -> str:
 
 # ── extracted collaborators (re-exported; see module docstring) ────────────────────────────
 
-from hermes_cli.runtime_provider_custom import (  # noqa: E402,F401
-    _LLAMACPP_ALIASES, _apply_custom_provider_extras, _custom_provider_request_overrides, _filter_capabilities, _find_custom_identity,
-    _get_named_custom_provider, _lift_common_custom_fields, _lift_extra_headers,
-    _lift_model_capabilities, _normalize_base_url_for_match, _normalize_custom_provider_name, _resolve_named_custom_runtime,
-    _try_resolve_from_custom_pool, canonical_custom_identity, codex_model_provider_id, expand_direct_api_alias,
-    find_custom_provider_identity,
-    find_custom_provider_identity_by_model, has_named_custom_provider, is_routable_provider,
-)
 from hermes_cli.runtime_provider_backends import (  # noqa: E402,F401
-    _is_external_process_provider, _resolve_azure_foundry_runtime, _resolve_bedrock_runtime,
-    _resolve_external_process_runtime, _resolve_openrouter_runtime,
+    _is_external_process_provider,
+    _resolve_azure_foundry_runtime,
+    _resolve_bedrock_runtime,
+    _resolve_external_process_runtime,
+    _resolve_openrouter_runtime,
 )
-
+from hermes_cli.runtime_provider_custom import (  # noqa: E402,F401
+    _LLAMACPP_ALIASES,
+    _apply_custom_provider_extras,
+    _custom_provider_request_overrides,
+    _filter_capabilities,
+    _find_custom_identity,
+    _get_named_custom_provider,
+    _lift_common_custom_fields,
+    _lift_extra_headers,
+    _lift_model_capabilities,
+    _normalize_base_url_for_match,
+    _normalize_custom_provider_name,
+    _resolve_named_custom_runtime,
+    _try_resolve_from_custom_pool,
+    canonical_custom_identity,
+    codex_model_provider_id,
+    expand_direct_api_alias,
+    find_custom_provider_identity,
+    find_custom_provider_identity_by_model,
+    has_named_custom_provider,
+    is_routable_provider,
+)
 
 # ── credential-pool entries ────────────────────────────────────────────────────────────────
 
@@ -1121,7 +1162,11 @@ def resolve_runtime_with_fallback(config: Optional[Dict[str, Any]], *, requested
         return resolve_runtime_provider(requested=requested, target_model=target_model,
                                         explicit_base_url=explicit_base_url, explicit_api_key=explicit_api_key), None
     except AuthError as primary_exc:
-        from hermes_cli.fallback_config import effective_runtime_provider, get_fallback_chain, resolve_entry_api_key
+        from hermes_cli.fallback_config import (
+            effective_runtime_provider,
+            get_fallback_chain,
+            resolve_entry_api_key,
+        )
         for entry in get_fallback_chain(config):
             provider = (entry.get("provider") or "").strip().lower()
             model = (entry.get("model") or "").strip()

@@ -1,14 +1,14 @@
 """Credential-free SQLite integration probe; run with --repo PATH."""
 import argparse
-from concurrent.futures import ThreadPoolExecutor
 import importlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 
 def main():
@@ -25,10 +25,11 @@ def main():
                 cwd=args.repo, env=env, check=False,
             ).returncode
     sys.path.insert(0, str(args.repo))
-    from hermes_cli import kanban_db as kb, kanban_db_connect as kbc
+    from hermes_cli import kanban_db as kb
+    from hermes_cli import kanban_db_connect as kbc
     from hermes_cli.kanban_db_dispatch import dispatch_once
-    from tools.kanban_tools import _handle_create
     from hermes_cli.kanban_decompose import _apply_fanout, _Routing
+    from tools.kanban_tools import _handle_create
     graph = importlib.import_module("hermes_cli.kanban_db_graph") if (args.repo / "hermes_cli/kanban_db_graph.py").exists() else kb
     decompose = graph.decompose_triage_task
     specs = [{"title": "work", "assignee": "default"}]

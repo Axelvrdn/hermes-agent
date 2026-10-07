@@ -8,7 +8,6 @@ Document URL (CIMD) when the server supports it, else RFC 7591 DCR. ``mcp_server
 (all optional): client_id, client_secret, scope, redirect_port, redirect_uri (proxy callback),
 redirect_host, client_name, client_metadata_url, cimd, user_agent, timeout."""
 
-from pm import install_hint
 import asyncio
 import contextlib
 import contextvars
@@ -27,6 +26,8 @@ import time
 import webbrowser
 from functools import partialmethod
 
+from pm import install_hint
+
 # Cross-process advisory file locking for the refresh fence. Mirrors
 # cron/jobs.py: fcntl is Unix-only, msvcrt is the Windows fallback.
 try:
@@ -43,12 +44,18 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, urlparse
 
 from hermes_constants import secure_parent_dir
+from tools.mcp_dashboard_oauth import contextvar_set as _contextvar_set
+from tools.mcp_dashboard_oauth import get_dashboard_oauth_flow
 from utils import atomic_json_write
-from tools.mcp_dashboard_oauth import contextvar_set as _contextvar_set, get_dashboard_oauth_flow
 
 if TYPE_CHECKING:  # annotations only; the SDK is imported lazily at runtime
     from mcp.client.auth import OAuthClientProvider
-    from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthMetadata, OAuthToken
+    from mcp.shared.auth import (
+        OAuthClientInformationFull,
+        OAuthClientMetadata,
+        OAuthMetadata,
+        OAuthToken,
+    )
 
 logger = logging.getLogger(__name__)
 

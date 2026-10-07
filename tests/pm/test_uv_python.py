@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import importlib
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -15,8 +15,6 @@ from pm.lock import Facts, Lockfile
 from pm.package import InstallError
 from pm.packages import Python, Uv
 from pm.store import current_target
-
-
 
 
 @pytest.fixture
@@ -105,8 +103,8 @@ def test_all_uv_commands_keep_the_pm_interpreter(installed_uv, monkeypatch):
 
 def test_project_environment_replaces_generation_when_pinned_python_moves(installed_uv, tmp_path, monkeypatch):
     """An unchanged dependency pin cannot reuse a venv made by another tools store."""
-    from pm import operations
     import pm.registry as registry
+    from pm import operations
     from tests.pm._fixtures import _run, _wheel, stage_host_python
 
     root, uv, facts, target, digest = installed_uv

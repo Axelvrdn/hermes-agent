@@ -14,8 +14,8 @@ Covers two salvaged fixes:
 
 import pytest
 
-from cron.scheduler_script import _DEFAULT_MEDIA_SEND_TIMEOUT, _get_media_send_timeout
 from cron.scheduler_delivery import _send_media_via_adapter
+from cron.scheduler_script import _DEFAULT_MEDIA_SEND_TIMEOUT, _get_media_send_timeout
 
 
 class TestMediaSendTimeoutResolution:

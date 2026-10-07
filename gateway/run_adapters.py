@@ -7,22 +7,26 @@ adapters for GatewayRunner (mixin bound via the MRO).
 
 from __future__ import annotations
 
-import logging
-from typing import TYPE_CHECKING
 import asyncio
 import contextlib
-from contextlib import suppress
 import functools
+import logging
 import os
 import time
 import weakref as _weakref
-from agent.async_utils import consume_detached_task_result
+from contextlib import suppress
 from contextvars import Context
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Dict, Optional
+
+from agent.async_utils import consume_detached_task_result
 from gateway.config import (
     ON_ALL_ADAPTERS_DOWN_POLICIES,
     SHARED_LISTENER_MIRROR_PLATFORMS,
     Platform,
+)
+from gateway.config import (
     platform_binds_port as _platform_binds_port,
 )
 from gateway.platforms.base import BasePlatformAdapter
@@ -30,9 +34,10 @@ from gateway.platforms.helpers import carry_inbound_dedup, hand_over_held_inboun
 from gateway.restart import is_global_startup_conflict
 from gateway.run_shutdown import _log_suppressed
 from gateway.session import SessionSource
-from hermes_cli.observability.shared_metrics_gateway import record_platform_connect, record_platform_disconnect
-from pathlib import Path
-from typing import Any, Awaitable, Callable, Dict, Optional
+from hermes_cli.observability.shared_metrics_gateway import (
+    record_platform_connect,
+    record_platform_disconnect,
+)
 
 if TYPE_CHECKING:  # string annotations only; never imported at runtime (cycle)
     from gateway.run import GatewayRunner  # noqa: F401
@@ -167,7 +172,8 @@ class GatewayAdapterLifecycleMixin:
         the full budget (and ``is_reconnect=True``, preserving the offline update queue — #46621).
         """
         from gateway.run import (
-            _PLATFORM_CONNECT_TIMEOUT_SECS_DEFAULT, _TELEGRAM_CONNECT_TIMEOUT_SECS_DEFAULT,
+            _PLATFORM_CONNECT_TIMEOUT_SECS_DEFAULT,
+            _TELEGRAM_CONNECT_TIMEOUT_SECS_DEFAULT,
             _TELEGRAM_INITIAL_CONNECT_TIMEOUT_SECS_DEFAULT,
         )
         override = self._env_timeout_override("HERMES_GATEWAY_PLATFORM_CONNECT_TIMEOUT")
@@ -531,7 +537,11 @@ class GatewayAdapterLifecycleMixin:
         """Process pending CLI→gateway session handoffs from ``state.db``: claim atomically (pending
         → running), re-bind the home channel to the CLI session_id, dispatch a synthetic event, mark
         ``completed``/``failed``."""
-        from gateway.run import _async_profile_runtime_scope, _reclaim_stale, _resolve_handoff_watch_scopes
+        from gateway.run import (
+            _async_profile_runtime_scope,
+            _reclaim_stale,
+            _resolve_handoff_watch_scopes,
+        )
         from gateway.run_idle_gates import off_loop_gate, profile_has_pending_handoff
         await asyncio.sleep(5)  # let platforms connect before dispatching through them
         # Does _process_handoff accept the profile argument? Test stand-ins bind a one-arg callable.
@@ -977,7 +987,11 @@ class GatewayAdapterLifecycleMixin:
                 publish_runtime_status(served_profiles=[])
             return 0
         try:
-            from hermes_cli.profiles import get_active_profile_name, profiles_to_serve, profile_is_parked
+            from hermes_cli.profiles import (
+                get_active_profile_name,
+                profile_is_parked,
+                profiles_to_serve,
+            )
         except Exception:
             return 0
         if self._multiplex_on():
@@ -1044,8 +1058,8 @@ class GatewayAdapterLifecycleMixin:
         """Record the served set (eligible for routing/HTTP prefixes/cron/runtime scope — broader
         than "has a connected adapter") for `hermes status`; seed per-profile PairingStores."""
         with _log_suppressed(logging.DEBUG, "could not record served_profiles", exc_info=True):
-            from gateway.status import publish_runtime_status
             from gateway.pairing import PairingStore
+            from gateway.status import publish_runtime_status
             served = [active] + sorted(name for name, _home in profile_homes if name != active)
             self._note_served_profiles(profile_homes)
             for name in served:
@@ -1056,7 +1070,11 @@ class GatewayAdapterLifecycleMixin:
             publish_runtime_status(served_profiles=served)
             # The host record is what a second `gateway run` reads to decide attach-vs-start; keep
             # its served set in step with the live one (it is republished, never re-claimed).
-            from gateway.host_rendezvous import ROLE_GATEWAY, owns_host_lock, publish_record
+            from gateway.host_rendezvous import (
+                ROLE_GATEWAY,
+                owns_host_lock,
+                publish_record,
+            )
             if owns_host_lock(ROLE_GATEWAY):
                 from hermes_constants import get_hermes_home
                 publish_record(ROLE_GATEWAY, profiles=tuple(served), home=str(get_hermes_home()))
@@ -1066,11 +1084,13 @@ class GatewayAdapterLifecycleMixin:
         ``MultiplexConfigError`` (open dm/group policy). Port-binding platforms are NOT refused: the
         default profile owns the single shared listener and a secondary's port-binders are built in
         shared-listener mode (``/p/<profile>/...``) by ``_start_one_profile_adapters``."""
-        from gateway.run import (
-            MultiplexConfigError, _load_gateway_config,
-            _own_policy_open_startup_violation, _profile_runtime_scope,
-        )
         from gateway.config import load_gateway_config
+        from gateway.run import (
+            MultiplexConfigError,
+            _load_gateway_config,
+            _own_policy_open_startup_violation,
+            _profile_runtime_scope,
+        )
         from hermes_cli.env_loader import hydrate_profile_secret_sources
         # Hydrate external secret sources off-loop ONCE: sync hydration would stall every heartbeat.
         await asyncio.to_thread(hydrate_profile_secret_sources, profile_home)
@@ -1417,11 +1437,12 @@ class GatewayAdapterLifecycleMixin:
         """One scoped attempt to rebuild+connect a secondary adapter → ``(adapter, success)``;
         ``(None, None)`` = give up for good (disabled, credential removed, adapter unavailable). Caller
         tears down a RETURNED adapter; one whose configure/connect raised is torn down here."""
+        from gateway.config import load_gateway_config
         from gateway.run import _platform_has_bot_credential, _profile_runtime_scope
+        from hermes_cli.env_loader import hydrate_profile_secret_sources
+
         # Lazy + per-attempt: keeps test monkeypatches on these modules live.
         from hermes_cli.profiles import get_profile_dir
-        from hermes_cli.env_loader import hydrate_profile_secret_sources
-        from gateway.config import load_gateway_config
         profile_home = get_profile_dir(profile_name)
         # Hydrate external secret sources off-loop so they cannot starve heartbeats.
         await asyncio.to_thread(hydrate_profile_secret_sources, profile_home)
@@ -1667,7 +1688,9 @@ class GatewayAdapterLifecycleMixin:
             return contextlib.nullcontext()
         if profile_home is not None:
             return scope_factory(profile_home)
-        from tui_gateway.launch_profile_policy import launch_profile_scope_if_multiplexed
+        from tui_gateway.launch_profile_policy import (
+            launch_profile_scope_if_multiplexed,
+        )
         return launch_profile_scope_if_multiplexed()
 
     @staticmethod
@@ -1677,7 +1700,9 @@ class GatewayAdapterLifecycleMixin:
             return contextlib.nullcontext()
         if profile_home is not None:
             return scope_factory(profile_home)
-        from tui_gateway.launch_profile_policy import async_launch_profile_scope_if_multiplexed
+        from tui_gateway.launch_profile_policy import (
+            async_launch_profile_scope_if_multiplexed,
+        )
         return async_launch_profile_scope_if_multiplexed()
 
     def _canonicalize(self, source, *, transport_profile: Optional[str] = None,

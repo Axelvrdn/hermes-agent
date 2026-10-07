@@ -27,7 +27,6 @@ from cron.scheduler_delivery import (
 from cron.scheduler_preflight import _preflight_check_delivery
 from hermes_cli.quiet_single_query import TURN_REPORT_FILE_ENV
 
-
 # ── token parsing ────────────────────────────────────────────────────────────
 
 def test_bare_token_targets_own_profile():

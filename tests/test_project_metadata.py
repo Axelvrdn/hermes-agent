@@ -1,7 +1,8 @@
 """Regression tests for packaging metadata in pyproject.toml."""
 
-from pathlib import Path
 import tomllib
+from pathlib import Path
+
 
 def _load_optional_dependencies():
     pyproject_path = Path(__file__).resolve().parents[1] / "pyproject.toml"

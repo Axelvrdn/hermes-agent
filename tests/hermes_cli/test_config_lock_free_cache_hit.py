@@ -20,7 +20,6 @@ import time
 
 import pytest
 
-
 # Generous: the point is 10s-vs-instant, not a tight timing assertion.
 MAX_BLOCKED_READ_SECS = 2.0
 

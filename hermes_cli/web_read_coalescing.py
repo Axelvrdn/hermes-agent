@@ -2,10 +2,11 @@
 import asyncio
 import inspect
 from functools import partial, wraps
-from weakref import WeakKeyDictionary
 from typing import get_type_hints
+from weakref import WeakKeyDictionary
 
 from anyio.to_thread import run_sync
+
 from hermes_constants import get_hermes_home
 
 

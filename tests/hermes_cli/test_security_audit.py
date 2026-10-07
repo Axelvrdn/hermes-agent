@@ -11,9 +11,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-
 from hermes_cli import security_audit as sa
-
 
 # ─── Parsers ──────────────────────────────────────────────────────────────────
 

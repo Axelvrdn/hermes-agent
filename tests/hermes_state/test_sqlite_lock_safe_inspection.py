@@ -35,7 +35,6 @@ from hermes_cli.sqlite_safe_read import (
     untrack_connection,
 )
 
-
 _INTRUDER = textwrap.dedent(
     """
     import sqlite3, sys

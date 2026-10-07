@@ -71,8 +71,9 @@ class _RecordingAdapter:
 
 
 def _make_runner_with_adapter(session_id: str = None):
-    from gateway.run import GatewayRunner
     import uuid
+
+    from gateway.run import GatewayRunner
 
     runner = object.__new__(GatewayRunner)
     runner.config = GatewayConfig(

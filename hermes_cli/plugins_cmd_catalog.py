@@ -19,9 +19,18 @@ from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, Optional
 
 from hermes_cli.plugin_catalog import (
-    PluginCatalogEntry, RemovedEntry, cached_removed_entries, entry_capability_summary, filter_entries,
-    find_removed, get_live_catalog_entry, load_catalog_live, match_removed, resolved_removed_entries,
-    _NAME_RE, _normalize_repo,
+    _NAME_RE,
+    PluginCatalogEntry,
+    RemovedEntry,
+    _normalize_repo,
+    cached_removed_entries,
+    entry_capability_summary,
+    filter_entries,
+    find_removed,
+    get_live_catalog_entry,
+    load_catalog_live,
+    match_removed,
+    resolved_removed_entries,
 )
 from pm.filesystem import is_junction
 
@@ -90,7 +99,11 @@ def write_catalog_sidecar(target: Path, entry: PluginCatalogEntry, sha: Optional
 
 def _install_record(plugin_dir: Path) -> Optional[dict]:
     """The installer-owned ``.install-metadata.json`` record for a dir under the plugins dir, else ``None``."""
-    from hermes_cli.plugins_cmd import PluginOperationError, _plugins_dir, _read_install_metadata
+    from hermes_cli.plugins_cmd import (
+        PluginOperationError,
+        _plugins_dir,
+        _read_install_metadata,
+    )
     if plugin_dir.parent != _plugins_dir():
         return None
     try:
@@ -316,7 +329,11 @@ def _revision_owned_without_git(rel: Path) -> bool:
 def _local_changes(target: Path) -> tuple[Optional[list[str]], list[str]]:
     """``(untracked_or_ignored, modified_tracked)`` in a git checkout. The first item is ``None``
     when git cannot classify the installed tree (notably subdirectory installs, which carry no ``.git``)."""
-    from hermes_cli.plugins_cmd import PluginOperationError, _resolve_git_executable, _run_plugin_git
+    from hermes_cli.plugins_cmd import (
+        PluginOperationError,
+        _resolve_git_executable,
+        _run_plugin_git,
+    )
     git_exe = _resolve_git_executable()
     if not (target / ".git").exists():
         return None, []
@@ -617,7 +634,11 @@ def repin_catalog_plugin(
                         f"{backup} (the previous version's files, re-apply by hand).")
     if new_target != target and target.exists():
         from hermes_cli.plugins_cmd import (
-            _admit_and_save_plugin_sets, _get_disabled_set, _get_enabled_set, _remove_plugin_core)
+            _admit_and_save_plugin_sets,
+            _get_disabled_set,
+            _get_enabled_set,
+            _remove_plugin_core,
+        )
         enabled, disabled = _get_enabled_set(), _get_disabled_set()
         selection_changed = False
         for selected in (enabled, disabled):
@@ -636,8 +657,14 @@ def repin_catalog_plugin(
 
 def cmd_update_catalog(name: str, target: Path, sidecar: dict, console, *, interactive: bool = True) -> None:
     from hermes_cli.plugins_cmd import (
-        PluginOperationError, _ask_yes, _declared_capabilities_from_manifest, _fail, _is_tty, _read_manifest,
-        _run_capability_consent)
+        PluginOperationError,
+        _ask_yes,
+        _declared_capabilities_from_manifest,
+        _fail,
+        _is_tty,
+        _read_manifest,
+        _run_capability_consent,
+    )
     console.print(f"[dim]Checking catalog pin for {name}...[/dim]")
 
     def _confirm_widening(delta: Dict[str, List[str]]) -> bool:
@@ -673,7 +700,10 @@ def cmd_update_catalog(name: str, target: Path, sidecar: dict, console, *, inter
         new_target = target.parent / result.installed_name
         declared = _declared_capabilities_from_manifest(_read_manifest(new_target), result.installed_name)
         if declared:
-            from hermes_cli.plugin_capabilities import declared_set_changed, pending_capabilities
+            from hermes_cli.plugin_capabilities import (
+                declared_set_changed,
+                pending_capabilities,
+            )
             if pending_capabilities(result.installed_name, declared) or declared_set_changed(result.installed_name, declared):
                 if interactive:
                     _run_capability_consent(console, result.installed_name, declared, context="update")

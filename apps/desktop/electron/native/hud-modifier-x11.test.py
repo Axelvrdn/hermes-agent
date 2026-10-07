@@ -3,8 +3,8 @@
 Usage: python3 hud-modifier-x11.test.py /path/to/hud-modifier-monitor
 Requires Xvfb and libXtst. No Desktop launch, global host input, or permission prompt.
 """
-import json
 import ctypes
+import json
 import os
 import select
 import subprocess

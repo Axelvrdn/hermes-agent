@@ -12,8 +12,8 @@ import asyncio
 
 import pytest
 
-from tools.mcp_tool import MCPServerTask
 import tools.mcp_tool_server_run as run_mod
+from tools.mcp_tool import MCPServerTask
 
 
 async def _drive_one_expired_proof_wake(task, monkeypatch, *, on_first_wake=None) -> tuple[str, int]:

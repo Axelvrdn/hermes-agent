@@ -24,7 +24,6 @@ from gateway.config import PlatformConfig
 from gateway.relay.adapter import RelayAdapter
 from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
 from gateway.relay.media import RelayMediaClient, media_base_url
-
 from tests.gateway.relay.stub_connector import StubConnector
 
 

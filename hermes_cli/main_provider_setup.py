@@ -5,9 +5,15 @@ Split out of ``hermes_cli/main.py``. Names that still live in main are imported 
 """
 
 import contextlib
-
 from typing import Optional
-from hermes_cli.model_setup_flows_common import _ask, _ensure_dict_section, _print_numbered, _radiolist, _say
+
+from hermes_cli.model_setup_flows_common import (
+    _ask,
+    _ensure_dict_section,
+    _print_numbered,
+    _radiolist,
+    _say,
+)
 
 
 def _is_profile_api_key_provider(provider_id: str) -> bool:
@@ -36,7 +42,7 @@ def _short_url(url: str) -> str:
 def _clear_stale_openai_base_url():
     """Remove OPENAI_BASE_URL from ~/.hermes/.env unless the active provider is 'custom' — a
     leftover value routes provider:auto auxiliary clients to the old custom endpoint."""
-    from hermes_cli.config import get_env_value, save_env_value, load_config
+    from hermes_cli.config import get_env_value, load_config, save_env_value
     model_cfg = load_config().get("model", {})
     provider = (model_cfg.get("provider") or "").strip().lower() if isinstance(model_cfg, dict) else ""
     if provider == "custom" or not provider:
@@ -757,14 +763,24 @@ def _infer_stepfun_region(base_url: str) -> str:
 
 
 def _stepfun_base_url_for_region(region: str) -> str:
-    from hermes_cli.auth import STEPFUN_STEP_PLAN_CN_BASE_URL, STEPFUN_STEP_PLAN_INTL_BASE_URL
+    from hermes_cli.auth import (
+        STEPFUN_STEP_PLAN_CN_BASE_URL,
+        STEPFUN_STEP_PLAN_INTL_BASE_URL,
+    )
     return STEPFUN_STEP_PLAN_CN_BASE_URL if region == "china" else STEPFUN_STEP_PLAN_INTL_BASE_URL
 
 
 def _run_anthropic_oauth_flow(save_env_value):
     """Run the Claude OAuth setup-token flow. Returns True if credentials were saved."""
-    from agent.anthropic_credentials import run_oauth_setup_token, read_claude_code_credentials, is_claude_code_token_valid
-    from hermes_cli.config import save_anthropic_oauth_token, use_anthropic_claude_code_credentials
+    from agent.anthropic_credentials import (
+        is_claude_code_token_valid,
+        read_claude_code_credentials,
+        run_oauth_setup_token,
+    )
+    from hermes_cli.config import (
+        save_anthropic_oauth_token,
+        use_anthropic_claude_code_credentials,
+    )
 
     def _activate_claude_code_credentials_if_available() -> bool:
         try:
@@ -900,8 +916,12 @@ def _build_provider_picker_rows(config: dict, active: str, provider_labels: dict
     fold into display groups (PROVIDER_GROUPS): a group row's ``members`` drive a sub-picker, leaf
     rows have ``members == []``; saved custom providers and trailing actions stay flat. Honors
     ``model_catalog.excluded_providers`` (slug or alias, case-insensitive) like the gateway/TUI."""
-    from hermes_cli.models import CANONICAL_PROVIDERS, _PROVIDER_ALIASES
-    from hermes_cli.models_catalog_static import group_providers, listed_canonical_providers, provider_group_for_slug
+    from hermes_cli.models import _PROVIDER_ALIASES, CANONICAL_PROVIDERS
+    from hermes_cli.models_catalog_static import (
+        group_providers,
+        listed_canonical_providers,
+        provider_group_for_slug,
+    )
     canonical_descs = {p.slug: p.tui_desc for p in CANONICAL_PROVIDERS}
     listed = listed_canonical_providers()
     _cli_excluded = {

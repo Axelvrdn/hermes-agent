@@ -1,9 +1,9 @@
 """GC and downloads acquire the same partial owner before changing its files."""
 from __future__ import annotations
 
-from contextlib import nullcontext
 import os
 import time
+from contextlib import nullcontext
 
 import pytest
 
@@ -41,6 +41,7 @@ def test_gc_respects_partial_ownership_and_recent_resume(tmp_path, monkeypatch, 
 
 def test_pause_interrupts_an_owner_wait(tmp_path):
     from threading import Event, Thread
+
     from pm.downloader import Download, DownloadPaused, Source
 
     destination = tmp_path / "already-present"

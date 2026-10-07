@@ -53,10 +53,10 @@ def _wait(operation):
 
 
 def _execute(mode: str, window_handle: int | None) -> dict:
-    from winrt.runtime.interop import initialize_with_window
-    from winrt.windows.services.store import StoreContext, StorePackageUpdateState
     import winrt.windows.applicationmodel  # noqa: F401 — projected Package values
     import winrt.windows.foundation.collections  # noqa: F401 — projected sequence
+    from winrt.runtime.interop import initialize_with_window
+    from winrt.windows.services.store import StoreContext, StorePackageUpdateState
 
     if mode != "check" and not window_handle:
         raise ValueError("A desktop window is required for Microsoft Store consent")

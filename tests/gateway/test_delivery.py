@@ -1,9 +1,9 @@
 """Tests for the delivery routing module."""
 
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
-from typing import Any, cast
 
 from gateway.config import GatewayConfig, HomeChannel, Platform, PlatformConfig
 from gateway.delivery import DeliveryRouter, DeliveryTarget

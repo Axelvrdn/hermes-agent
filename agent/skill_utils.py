@@ -623,8 +623,8 @@ def is_quarantined_project_skill(skill_md) -> bool:
     if key in _PROJECT_QUARANTINE_CACHE:
         return _PROJECT_QUARANTINE_CACHE[key]
     try:
-        from tools.skills_guard import scan_skill_cached
         from hermes_constants import get_hermes_home
+        from tools.skills_guard import scan_skill_cached
         cache_dir = get_hermes_home() / "cache" / "project_skill_scans"
         result, _prov = scan_skill_cached(skill_dir, source=_PROJECT_SCAN_SOURCE, cache_dir=cache_dir)
         quarantined = result.verdict == "dangerous"

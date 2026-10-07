@@ -15,14 +15,15 @@ import os
 from contextlib import redirect_stdout
 from types import SimpleNamespace
 
+
 def _fake_multiplexer(monkeypatch, tmp_path, *, multiplex: bool, pid_file: bool = True):
     """A live default gateway at ``tmp_path`` whose runtime record names this process; the process passes
     the identity check because its command line reads as a gateway's. ``pid_file=False`` models a
     launch-service gateway whose ``gateway.pid`` was unlinked while it kept serving."""
     import json
 
-    import hermes_constants
     import gateway.status as status
+    import hermes_constants
 
     (tmp_path / "profiles" / "beta").mkdir(parents=True)
     # A profile dir needs an identity marker to be listed/served (bare dirs are side-effect shells).

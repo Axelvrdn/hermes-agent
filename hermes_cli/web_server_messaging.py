@@ -7,9 +7,11 @@ import os
 import subprocess
 import threading
 from dataclasses import dataclass
-from fastapi import HTTPException
 from pathlib import Path
 from typing import Any, Optional
+
+from fastapi import HTTPException
+
 from hermes_cli.config import OPTIONAL_ENV_VARS, write_platform_config_field
 from hermes_cli.setup_hidden_env import is_setup_hidden_env as _is_setup_hidden_env
 from hermes_cli.version_info import get_version_info

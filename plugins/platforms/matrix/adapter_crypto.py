@@ -32,7 +32,9 @@ class _CryptoStateStore:
         if self._client is None:
             return None
         try:
-            from mautrix.types import EventType as _ET, RoomEncryptionStateEventContent as _Enc, RoomID as _RID
+            from mautrix.types import EventType as _ET
+            from mautrix.types import RoomEncryptionStateEventContent as _Enc
+            from mautrix.types import RoomID as _RID
             raw = await self._client.get_state_event(_RID(room_id), _ET.ROOM_ENCRYPTION)
         except Exception as exc:
             logger.debug("Matrix: homeserver encryption-info query failed for %s: %s", room_id, exc)

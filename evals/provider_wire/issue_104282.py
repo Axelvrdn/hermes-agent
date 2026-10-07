@@ -1,8 +1,12 @@
 """Live localhost Responses adapter video rejection/control probe."""
 
-import os, sys, tempfile, json, threading
+import json
+import os
+import sys
+import tempfile
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 root = Path(sys.argv[1]).resolve()
 arm = sys.argv[2]
@@ -64,6 +68,7 @@ class Handler(BaseHTTPRequestHandler):
 server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
 threading.Thread(target=server.serve_forever, daemon=True).start()
 from openai import OpenAI
+
 from agent.auxiliary_client import _CodexCompletionsAdapter
 from agent.codex_responses_adapter import _preflight_codex_input_items
 

@@ -7,7 +7,6 @@ host systemd/launchd/windows code path.
 """
 from __future__ import annotations
 
-
 import pytest
 
 

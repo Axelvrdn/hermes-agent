@@ -19,7 +19,12 @@ from agent.message_metadata import append_message
 from agent.message_sanitization import close_interrupted_tool_sequence
 from agent.repetition_guard import is_repetition_dominated
 from agent.turn_api_call import stop_thinking_spinner
-from agent.turn_failure_copy import content_policy_copy, provider_label_for, site_copy, stamp_failure
+from agent.turn_failure_copy import (
+    content_policy_copy,
+    provider_label_for,
+    site_copy,
+    stamp_failure,
+)
 from agent.turn_retry_state import TurnRetryState
 from agent.usage_pricing import normalize_usage
 from hermes_constants import PARTIAL_STREAM_STUB_ID
@@ -716,7 +721,10 @@ def handle_content_policy_refusal(
     """HTTP-200 refusal (``finish_reason`` ``content_filter`` / ``guardrail_intervened``).
     Deterministic for the unchanged prompt — never retried: one configured-fallback try,
     else surface the refusal (explanation may live only in the reasoning channel)."""
-    from agent.conversation_loop import _arm_fallback_restart, _content_policy_blocked_result
+    from agent.conversation_loop import (
+        _arm_fallback_restart,
+        _content_policy_blocked_result,
+    )
 
     _refusal_result = normalize_response_for_agent(agent, response)
     _refusal_text = (getattr(_refusal_result, "content", None) or "").strip()

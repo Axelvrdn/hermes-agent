@@ -5,9 +5,9 @@ Feishu adapter: credentials, connection mode, DM policy, and group policy.
 """
 
 import os
+import os as _os
 from unittest.mock import patch
 
-import os as _os
 _SYS_ENV = {k: _os.environ[k] for k in ("SYSTEMROOT", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "HOME") if k in _os.environ}
 
 

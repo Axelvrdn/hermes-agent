@@ -34,9 +34,9 @@ sys.path.insert(0, REPO_ROOT)
 os.environ.setdefault("HERMES_HOME", os.path.join(os.path.expanduser("~"), ".hermes"))
 
 from hermes_cli.models import (  # noqa: E402
+    _PROVIDER_MODELS,
     OPENROUTER_MODELS,
     PREFERRED_SILENT_DEFAULT_MODEL,
-    _PROVIDER_MODELS,
 )
 
 OUTPUT_PATH = os.path.join(REPO_ROOT, "website", "static", "api", "model-catalog.json")

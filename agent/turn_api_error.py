@@ -8,21 +8,33 @@ fallback → terminal result) and the interruptible backoff. Nothing here import
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import logging
 import ssl
 import time
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from agent.api_error_summary import is_provider_stream_parse_error
-from agent.error_classifier import RETRYABLE_CLIENT_REASONS, FailoverReason, classify_api_error
+from agent.error_classifier import (
+    RETRYABLE_CLIENT_REASONS,
+    FailoverReason,
+    classify_api_error,
+)
 from agent.turn_overflow import recover_from_overflow
 from agent.turn_recovery import (
-    _NONRETRYABLE_LABELS, abort_turn_on_interrupt, compute_error_backoff, free_tier_cooldown_ends_turn,
-    interruptible_backoff_sleep, log_api_error_attempt,
-    max_retries_exhausted_result, nonretryable_client_error_result, recover_after_classification,
-    recover_before_classification, route_classified_error, settle_delivered_partial,
+    _NONRETRYABLE_LABELS,
+    abort_turn_on_interrupt,
+    compute_error_backoff,
+    free_tier_cooldown_ends_turn,
+    interruptible_backoff_sleep,
+    log_api_error_attempt,
+    max_retries_exhausted_result,
+    nonretryable_client_error_result,
+    recover_after_classification,
+    recover_before_classification,
+    route_classified_error,
+    settle_delivered_partial,
 )
 
 logger = logging.getLogger("agent.conversation_loop")
@@ -264,7 +276,9 @@ def settle_unrecovered_error(
     result), else the interruptible error backoff. ``FailoverReason.billing`` (402) is deliberately
     treated as non-retryable (#31273)."""
     from agent.conversation_loop import (
-        _arm_fallback_restart, _is_copilot_provider, _is_stale_copilot_credential_error
+        _arm_fallback_restart,
+        _is_copilot_provider,
+        _is_stale_copilot_credential_error,
     )
 
     def _verdict(action: str, result: Optional[Dict[str, Any]] = None) -> UnrecoveredErrorVerdict:

@@ -14,8 +14,8 @@ Covers:
 from __future__ import annotations
 
 import json
-import re
 import os
+import re
 import stat
 import sys
 from pathlib import Path
@@ -546,8 +546,8 @@ class TestBrowserVaultTools:
         """A card is written only after the user confirms (a prompt injection reaching a checkout must not be
         able to spend); the secret eval then targets the classified card controls and the result carries
         the field tokens but never a value."""
-        from tools import browser_vault_tool
         from agent import redact
+        from tools import browser_vault_tool
 
         meta = store.add_item(kind="payment", label="Visa", origin="https://shop.test", secret=_CARD)
         controls = [
@@ -803,7 +803,11 @@ class TestTwoFactor:
     def test_several_code_like_inputs_that_are_not_a_digit_widget_get_one_field(self):
         """Reviewer case: a page with 4+ code-ish inputs (promo code, zip code, a real OTP box...) must never
         get a digit sprayed across them. Only an unmistakable maxlength=1 same-form adjacent group splits."""
-        from agent.vault_login_classifier import ClassifiedLoginControl, LoginControl, build_otp_fills
+        from agent.vault_login_classifier import (
+            ClassifiedLoginControl,
+            LoginControl,
+            build_otp_fills,
+        )
 
         def ctl(i, form=0, maxlen=None, score=70):
             return ClassifiedLoginControl(LoginControl("", form, i, "", f"code{i}", "text", maxlen), score, "one-time-code")

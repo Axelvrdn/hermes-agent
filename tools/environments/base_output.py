@@ -5,8 +5,8 @@ duck type, the SDK adapter ``_ThreadedProcessHandle``, stdin piping, and the
 stdout drain thread used by ``BaseEnvironment._wait_for_process``.
 """
 
-import logging
 import codecs
+import logging
 import os
 import select
 import subprocess
@@ -16,9 +16,9 @@ from collections import deque
 from pathlib import Path
 from typing import IO, Callable, Protocol
 
+from hermes_cli._subprocess_compat import windows_hide_flags
 from hermes_constants import get_hermes_home
 from tools.tool_output_truncate import head_tail_split, truncation_notice
-from hermes_cli._subprocess_compat import windows_hide_flags
 
 # Sentinel capacity for full-fidelity capture: large enough that the collector
 # never evicts, so bounded and unbounded modes share one code path.

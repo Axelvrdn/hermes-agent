@@ -8,6 +8,7 @@ import hermes_cli.banner as banner
 import model_tools
 import tools.mcp_tool_discovery
 
+
 def test_banner_snapshot_accepts_bom_without_weakening_freshness(tmp_path, monkeypatch):
     import json
 

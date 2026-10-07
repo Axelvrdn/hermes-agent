@@ -21,9 +21,9 @@ from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.session import SessionSource
 from gateway.relay.descriptor import CapabilityDescriptor
 from gateway.relay.transport import InboundHandler
+from gateway.session import SessionSource
 
 logger = logging.getLogger(__name__)
 
@@ -452,7 +452,9 @@ class WebSocketRelayTransport:
             # field ignores it. Only Discord has an app-command registry.
             if platform == "discord":
                 try:
-                    from gateway.relay.command_manifest import build_relay_command_manifest
+                    from gateway.relay.command_manifest import (
+                        build_relay_command_manifest,
+                    )
 
                     hello["command_manifest"] = build_relay_command_manifest()
                 except Exception:  # noqa: BLE001

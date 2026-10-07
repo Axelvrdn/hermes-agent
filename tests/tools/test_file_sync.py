@@ -10,7 +10,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tools.environments.file_sync import FileSyncManager, _FORCE_SYNC_ENV, iter_sync_files
+from tools.environments.file_sync import (
+    _FORCE_SYNC_ENV,
+    FileSyncManager,
+    iter_sync_files,
+)
 
 
 @pytest.fixture

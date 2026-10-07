@@ -19,6 +19,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
+
 from agent import relay_runtime
 from hermes_cli.observability import shared_metrics as shared_metrics_module
 from hermes_cli.observability.shared_metrics import SharedMetricsStore
@@ -64,14 +65,13 @@ from hermes_cli.observability.shared_metrics_contract import (
     tool_approval_counter,
     tool_approval_outcome,
     tool_call_dimensions,
-    tool_latency_dimensions,
-    tool_usage_dimensions,
     tool_category,
     tool_latency_bucket,
+    tool_latency_dimensions,
     tool_outcome,
     tool_retry_bucket,
+    tool_usage_dimensions,
 )
-
 
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[2]

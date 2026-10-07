@@ -2,7 +2,10 @@
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from agent.context_breakdown import compute_session_context_breakdown, render_context_breakdown_lines
+from agent.context_breakdown import (
+    compute_session_context_breakdown,
+    render_context_breakdown_lines,
+)
 from agent.context_compressor import ContextCompressor
 from agent.usage_anchor import capture_usage_anchor
 

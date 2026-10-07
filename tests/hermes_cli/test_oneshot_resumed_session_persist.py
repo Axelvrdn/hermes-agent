@@ -27,6 +27,7 @@ import pytest
 
 import cli as cli_mod
 
+
 @pytest.fixture(autouse=True)
 def _reset_finalize_state(monkeypatch):
     monkeypatch.setattr(cli_mod, "_single_query_finalize_attempted_session_ids", set())

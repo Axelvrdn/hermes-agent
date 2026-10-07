@@ -1,5 +1,7 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from agent.agent_runtime_helpers import create_openai_client
 
 

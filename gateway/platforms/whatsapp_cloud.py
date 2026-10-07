@@ -39,16 +39,21 @@ except ImportError:
     HTTPX_AVAILABLE = False
     httpx = None  # type: ignore[assignment]
 
-from gateway.config import Platform, PlatformConfig
 from agent.i18n import t
-from gateway.platforms.base import BasePlatformAdapter, ExecApprovalPrompt, SendResult, transcode_to_ogg_opus
-from gateway.platforms.base_exec_approval import ea_header_text
-from gateway.platforms.helpers import bounded_put
-from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms.whatsapp_common import WhatsAppBehaviorMixin, _get_wsecret
-from gateway.platforms.access_policy_mixin import OPTIN_TRUTHY as _OPTIN_TRUTHY
-from gateway.platforms.media_cache import ext_for_mime
 from gateway import rich_sent_store
+from gateway.config import Platform, PlatformConfig
+from gateway.platforms.access_policy_mixin import OPTIN_TRUTHY as _OPTIN_TRUTHY
+from gateway.platforms.base import (
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    transcode_to_ogg_opus,
+)
+from gateway.platforms.base_exec_approval import ea_header_text
+from gateway.platforms.event import MessageEvent, MessageType
+from gateway.platforms.helpers import bounded_put
+from gateway.platforms.media_cache import ext_for_mime
+from gateway.platforms.whatsapp_common import WhatsAppBehaviorMixin, _get_wsecret
 from hermes_constants import get_hermes_dir
 
 logger = logging.getLogger(__name__)

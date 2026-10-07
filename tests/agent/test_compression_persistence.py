@@ -21,8 +21,6 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-
-
 # ---------------------------------------------------------------------------
 # Part 1: Agent-side — _flush_messages_to_session_db after compression
 # ---------------------------------------------------------------------------
@@ -139,7 +137,9 @@ class TestFlushAfterCompression:
         conversation_history=None and _flush_messages_to_session_db() appended
         the compacted dicts again, doubling live context.
         """
-        from agent.conversation_compression import conversation_history_after_compression
+        from agent.conversation_compression import (
+            conversation_history_after_compression,
+        )
         from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -372,6 +372,7 @@ class TestStoredPromptCwdDrift:
     def test_stored_prompt_stale_when_cwd_differs(self):
         """Different cwd should force a prompt rebuild."""
         from unittest.mock import patch
+
         from agent.conversation_loop import _stored_prompt_matches_runtime
 
         agent = self._make_agent()
@@ -389,6 +390,7 @@ class TestStoredPromptCwdDrift:
     def test_stored_prompt_fresh_when_cwd_matches(self):
         """Matching cwd should allow prompt reuse."""
         from unittest.mock import patch
+
         from agent.conversation_loop import _stored_prompt_matches_runtime
 
         agent = self._make_agent()
@@ -417,6 +419,7 @@ class TestStoredPromptCwdDrift:
         check exists to catch.
         """
         from unittest.mock import patch
+
         from agent.conversation_loop import _stored_prompt_matches_runtime
 
         agent = self._make_agent()
@@ -446,6 +449,7 @@ class TestStoredPromptCwdDrift:
         could suppress genuine drift detection.
         """
         from unittest.mock import patch
+
         from agent.conversation_loop import _stored_prompt_matches_runtime
 
         agent = self._make_agent()
@@ -472,9 +476,10 @@ class TestStoredPromptCwdDrift:
         import tempfile
         from pathlib import Path
         from unittest.mock import patch
+
+        from agent.system_prompt import build_system_prompt_parts
         from hermes_state import SessionDB
         from run_agent import AIAgent
-        from agent.system_prompt import build_system_prompt_parts
 
         with tempfile.TemporaryDirectory() as tmpdir:
             db = SessionDB(db_path=Path(tmpdir) / "test.db")

@@ -1,11 +1,10 @@
 """The Python stamp writer binds tagless identity to the built checkout."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 

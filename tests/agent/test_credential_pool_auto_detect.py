@@ -5,7 +5,7 @@ the provider auto-detection works but the credential pool is discarded because
 pool validation runs before URL-based provider inference.
 """
 from types import SimpleNamespace
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 

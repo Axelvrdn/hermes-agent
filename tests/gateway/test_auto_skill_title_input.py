@@ -10,7 +10,7 @@ from agent import title_generator
 from gateway.config import GatewayConfig, Platform
 from gateway.platforms.event import MessageEvent
 from gateway.run import GatewayRunner
-from gateway.session import SessionSource, SessionEntry
+from gateway.session import SessionEntry, SessionSource
 from gateway.turn_context import TurnContext
 from run_agent import AIAgent
 
@@ -125,8 +125,9 @@ async def test_gateway_titles_original_request_without_changing_model_input(tmp_
         assert title_requests[-1] == "Explain transaction isolation"
         # Relay metadata belongs to upstream's facade, while title input belongs
         # to the conversation prologue. Both must survive the same admission.
-        from agent import relay_runtime
         from unittest.mock import Mock
+
+        from agent import relay_runtime
         begin_turn = Mock(wraps=relay_runtime.SESSION_COORDINATOR.begin_turn)
         monkeypatch.setattr(relay_runtime.SESSION_COORDINATOR, "begin_turn", begin_turn)
         metadata = {"source": "title-regression"}

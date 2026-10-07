@@ -7,6 +7,7 @@ import pytest
 
 from hermes_platform.host import facts
 
+
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [

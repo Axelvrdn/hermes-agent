@@ -82,7 +82,10 @@ def test_entitlement_400_benches_only_that_model_and_rotates(pool):
 
 
 def test_all_entries_rejecting_falls_back_to_session_marker(pool):
-    from agent.fallback_cooldown import _is_entitlement_rejected, _mark_entitlement_rejected_model
+    from agent.fallback_cooldown import (
+        _is_entitlement_rejected,
+        _mark_entitlement_rejected_model,
+    )
 
     agent = types.SimpleNamespace(
         provider="openai-codex", model=MODEL, _credential_pool=pool,

@@ -3,14 +3,6 @@ from unittest.mock import patch
 import pytest
 
 
-
-
-
-
-
-
-
-
 def test_code_scoped_stamp_wins_over_home_stamp(tmp_path):
     """The stamp next to the running code is authoritative over $HERMES_HOME.
 

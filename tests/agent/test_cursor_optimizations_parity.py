@@ -47,10 +47,10 @@ def build_history(n):
 # ---------- reference (pre-optimization) implementations ----------
 
 from agent.model_metadata import (
-    estimate_messages_tokens_rough,
-    _estimate_message_tokens_without_images,
-    _count_image_tokens,
     _MSG_TOKENS_CACHE,
+    _count_image_tokens,
+    _estimate_message_tokens_without_images,
+    estimate_messages_tokens_rough,
 )
 
 

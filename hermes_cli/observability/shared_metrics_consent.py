@@ -95,7 +95,11 @@ def save_consent(enabled: bool, send: bool, config: dict | None = None) -> None:
     profile was asked again on every surface. ``config`` (a caller's in-memory copy, e.g. the
     wizard's) gets the same answer so its later save agrees. Sending cannot outlive collection."""
     from hermes_cli.config import (
-        _write_user_config, get_config_path, is_managed, managed_error, require_readable_config_before_write,
+        _write_user_config,
+        get_config_path,
+        is_managed,
+        managed_error,
+        require_readable_config_before_write,
     )
     from hermes_cli.setup import _record_send_consent_change
 

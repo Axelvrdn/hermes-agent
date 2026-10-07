@@ -534,7 +534,10 @@ def test_normalize_mcp_input_schema_preserves_constraint_fragments():
     registered with "never effects" instead of "action OR effects" and every ``effects`` call
     failed client-side validation while the MCP server was healthy.
     """
-    from jsonschema.validators import Draft202012Validator  # what tool_search_validation selects
+    from jsonschema.validators import (
+        Draft202012Validator,  # what tool_search_validation selects
+    )
+
     from tools.mcp_tool_schema import _normalize_mcp_input_schema
 
     out = _normalize_mcp_input_schema({

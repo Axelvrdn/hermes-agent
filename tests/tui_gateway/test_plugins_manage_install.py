@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from tui_gateway import server
 
+
 def test_plugins_manage_install_missing_identifier():
     resp = server.handle_request(
         {

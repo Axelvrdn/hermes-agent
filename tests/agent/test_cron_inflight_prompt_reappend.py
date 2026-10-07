@@ -26,7 +26,6 @@ from agent.context_compressor import (
     ContextCompressor,
 )
 
-
 JOB_SENTINEL = "CRON_JOB_PROMPT_sentinel_brief_the_inbox_and_write_a_digest"
 
 

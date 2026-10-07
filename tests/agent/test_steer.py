@@ -760,7 +760,10 @@ class TestSteerCommandRegistry:
         handler. Otherwise it would be queued as user text and only
         delivered at turn end — defeating the whole point.
         """
-        from hermes_cli.commands import ACTIVE_SESSION_BYPASS_COMMANDS, should_bypass_active_session
+        from hermes_cli.commands import (
+            ACTIVE_SESSION_BYPASS_COMMANDS,
+            should_bypass_active_session,
+        )
 
         assert "steer" in ACTIVE_SESSION_BYPASS_COMMANDS
         assert should_bypass_active_session("steer") is True
@@ -808,7 +811,6 @@ class TestLegacyHiddenPlaceholderWireSubstitution:
         from unittest.mock import patch
 
         import agent.agent_runtime_helpers as _arh
-
         from tests.agent.test_run_agent import _mock_response
 
         agent = self._loop_agent()
@@ -872,9 +874,9 @@ class TestLegacyHiddenPlaceholderWireSubstitution:
         assert "api_content" not in history[1]
 
     def test_hidden_row_with_tool_calls_or_text_is_not_touched(self):
-        from agent.conversation_loop import _clone_message_for_send  # noqa: F401
         from unittest.mock import patch
 
+        from agent.conversation_loop import _clone_message_for_send  # noqa: F401
         from tests.agent.test_run_agent import _mock_response
 
         agent = self._loop_agent()

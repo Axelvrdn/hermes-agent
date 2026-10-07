@@ -1,8 +1,8 @@
 """Importing gateway helpers must not apply messaging-only cwd defaults."""
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -55,6 +55,7 @@ def test_gateway_start_keeps_messaging_cwd_defaults(
     monkeypatch, tmp_path, backend, mount, configured, legacy, expected,
 ):
     import asyncio
+
     from gateway.run import start_gateway
     from hermes_cli import resource_limits
 

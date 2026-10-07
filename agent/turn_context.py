@@ -18,19 +18,23 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from agent.conversation_compression import recover_rotated_compression_session
+from agent.image_token_cost import bind_image_token_cost
 from agent.iteration_budget import IterationBudget
 from agent.memory_manager import build_memory_context_block
 from agent.memory_provider import is_trivial_prompt
 from agent.message_content import flatten_message_text
-from agent.message_metadata import PERSISTENCE_ONLY_MESSAGE_FIELDS, append_message, stamp_message_timestamp
+from agent.message_metadata import (
+    PERSISTENCE_ONLY_MESSAGE_FIELDS,
+    append_message,
+    stamp_message_timestamp,
+)
 from agent.model_metadata import (
     estimate_messages_tokens_rough,
     estimate_native_anthropic_request_tokens_rough,
     estimate_request_tokens_rough,
 )
-from agent.image_token_cost import bind_image_token_cost
-from agent.usage_anchor import anchored_context_tokens, restore_usage_anchor
 from agent.turn_author import parse_turn_author
+from agent.usage_anchor import anchored_context_tokens, restore_usage_anchor
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +55,9 @@ def _preflight_request_tokens(
         return anchored
     tools = getattr(agent, "tools", None) or None
     try:
-        from agent.codex_responses_adapter import estimate_native_responses_preflight_tokens
+        from agent.codex_responses_adapter import (
+            estimate_native_responses_preflight_tokens,
+        )
 
         native = estimate_native_responses_preflight_tokens(
             agent, messages, system_prompt=system_prompt or "", tools=tools
@@ -67,12 +73,16 @@ def _preflight_request_tokens(
     charge_stale_thinking = _agent_stale_thinking_on_wire(agent)
     estimate_messages = messages
     if charge_stale_thinking and getattr(agent, "api_mode", "") == "anthropic_messages":
-        from agent.anthropic_thinking_policy import native_anthropic_preserves_prior_thinking
+        from agent.anthropic_thinking_policy import (
+            native_anthropic_preserves_prior_thinking,
+        )
 
         if native_anthropic_preserves_prior_thinking(
             getattr(agent, "base_url", ""), getattr(agent, "model", "")
         ):
-            from agent.anthropic_thinking_replay import apply_rejected_thinking_suppression
+            from agent.anthropic_thinking_replay import (
+                apply_rejected_thinking_suppression,
+            )
 
             # Preflight runs on canonical history, while the eventual request is a
             # filtered copy. Mirror suppression onto shallow message copies before
@@ -376,7 +386,10 @@ def _fail_closed_after_preflight_timeout(agent, request_tokens: int) -> None:
     request that merely sits above the compression threshold is sent unchanged, exactly as the
     cooldown-blocked path sends it every turn — otherwise a slow summariser turns a session that still
     fits its window into a turn that can never run (#113646, #114594)."""
-    from agent.conversation_compression import context_compression_timed_out, request_exceeds_model_window
+    from agent.conversation_compression import (
+        context_compression_timed_out,
+        request_exceeds_model_window,
+    )
 
     if not context_compression_timed_out(agent):
         return
@@ -406,7 +419,10 @@ def _fail_closed_on_insufficient_progress(agent, request_tokens: int) -> None:
     fitting request keeps the send-as-is behaviour — and a pass skipped by the summary-failure
     cooldown is a defer, not proof of incompressibility, so it keeps its typed cooldown result.
     """
-    from agent.conversation_compression import compression_blocked_transiently, request_exceeds_model_window
+    from agent.conversation_compression import (
+        compression_blocked_transiently,
+        request_exceeds_model_window,
+    )
 
     if request_exceeds_model_window(agent, request_tokens) is not True:
         return
@@ -554,8 +570,8 @@ def _refresh_mcp_tools_between_turns(agent: Any) -> None:
         # Import-cost gate: MCP tools are only registered by code that already imported
         # ``tools.mcp_tool`` (~0.4s); not in sys.modules => nothing to do.
         if not getattr(agent, "_skip_mcp_refresh", False) and "tools.mcp_tool" in sys.modules:
-            from tools.mcp_tool_discovery import has_registered_mcp_tools
             from tools.mcp_tool_agent import refresh_agent_mcp_tools
+            from tools.mcp_tool_discovery import has_registered_mcp_tools
             if has_registered_mcp_tools():
                 refresh_agent_mcp_tools(agent, quiet_mode=True, preserve_prefix=True)
     except Exception:
@@ -811,8 +827,9 @@ def _collect_pre_llm_call_context(
         try:
             # Spill oversized per-hook context to disk so a runaway plugin can't inflate every subsequent
             # turn's prompt. Ported from openai/codex PR #21069 ("Spill large hook outputs from context").
+            from tools.hook_output_spill import get_spill_config as _spill_cfg
             from tools.hook_output_spill import (
-                get_spill_config as _spill_cfg, spill_if_oversized as _spill_if_oversized
+                spill_if_oversized as _spill_if_oversized,
             )
             _spill_config_cached = _spill_cfg()
         except Exception:

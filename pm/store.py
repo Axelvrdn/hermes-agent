@@ -7,16 +7,14 @@ import platform
 import shutil
 import stat
 import sys
-import threading
 import tempfile
+import threading
 import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import IO
 
 from pm.filesystem import is_junction, long_root, retry_held
-
-
 
 ALL_TARGETS = (
     "win32-x64",
@@ -368,8 +366,8 @@ class Store:
         Completed archives enter the cache even if a later source pauses.
         The downloader owns partial bytes outside this disposable scratch.
         """
-        from pm.downloader import Download, DownloadPaused
         from pm.artifact_mirror import pinned_source
+        from pm.downloader import Download, DownloadPaused
 
         sources = []
         for artifact in artifacts:

@@ -4,8 +4,8 @@ from contextlib import contextmanager
 from types import SimpleNamespace
 
 import cron.scheduler as scheduler
-from cron import scheduler_preflight as sched_preflight
 import gateway.run as gateway_run
+from cron import scheduler_preflight as sched_preflight
 
 
 class _OneTickStopEvent:
@@ -175,7 +175,6 @@ def test_primary_drain_delivers_credentialless_satellite_queue_row_through_prima
     from unittest.mock import patch
 
     import hermes_yaml as yaml
-
     from cron import delivery_queue
     from gateway.config import Platform
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override

@@ -6,9 +6,9 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from gateway.lifecycle_ledger import get_lifecycle_sentinel_path
 from gateway.memory_status import classify_pressure, collect_memory_status
 from gateway.shutdown_watchdog import get_loop_heartbeat_path
-from gateway.lifecycle_ledger import get_lifecycle_sentinel_path
 
 _NOW = datetime(2026, 8, 13, 12, 0, 0, tzinfo=timezone.utc)
 

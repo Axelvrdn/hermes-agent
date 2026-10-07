@@ -1,11 +1,11 @@
 """One locked dependency builder for PM workers and packaged runtimes."""
 from __future__ import annotations
 
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 from pm.package import InstallError
 

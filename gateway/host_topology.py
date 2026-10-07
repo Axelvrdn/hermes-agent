@@ -81,7 +81,10 @@ def _from_host_record() -> Optional[HostGatewayTopology]:
 def _from_served_record() -> Optional[HostGatewayTopology]:
     """A gateway started before the host record existed still publishes ``served_profiles`` into
     the default home's ``gateway_state.json``; that plus a proven-live PID is the same fact."""
-    from hermes_cli.gateway_multiplex_served import live_default_gateway_pid, recorded_served_profiles
+    from hermes_cli.gateway_multiplex_served import (
+        live_default_gateway_pid,
+        recorded_served_profiles,
+    )
 
     pid = live_default_gateway_pid()
     if pid is None:

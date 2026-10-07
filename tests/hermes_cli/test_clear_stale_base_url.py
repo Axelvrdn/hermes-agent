@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-
-from hermes_cli.config import load_config, save_config, save_env_value, get_env_value
+from hermes_cli.config import get_env_value, load_config, save_config, save_env_value
 
 
 def _write_provider(provider: str, model: str = "test-model"):

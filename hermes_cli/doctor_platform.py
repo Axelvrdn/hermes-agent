@@ -9,10 +9,22 @@ import ssl
 import subprocess
 import sys
 from pathlib import Path
+
 from hermes_cli.colors import Colors, color
-from hermes_cli.config import is_nix_install_method, recommended_update_command_for_method
+from hermes_cli.config import (
+    is_nix_install_method,
+    recommended_update_command_for_method,
+)
 from hermes_cli.doctor_report import (
-    Finding, _fail_and_issue, _section, check_bool, check_fail, check_info, check_ok, check_warn, doctor_check,
+    Finding,
+    _fail_and_issue,
+    _section,
+    check_bool,
+    check_fail,
+    check_info,
+    check_ok,
+    check_warn,
+    doctor_check,
     warn_on_error,
 )
 from hermes_constants import is_termux as _is_termux
@@ -37,8 +49,8 @@ def _system_package_install_cmd(pkg: str) -> str:
 
 def _sqlite_upgrade_hint(install_method: str | None = None) -> str:
     """Return an actionable SQLite upgrade hint for this install layout."""
-    from hermes_cli.doctor import PROJECT_ROOT
     from hermes_cli.config import detect_install_method
+    from hermes_cli.doctor import PROJECT_ROOT
     method = install_method or detect_install_method(PROJECT_ROOT)
     cmd = recommended_update_command_for_method(method)
     action = cmd if is_nix_install_method(method) else {  # nix: prose guidance, not a shell command
@@ -79,7 +91,10 @@ def _read_journal_mode(db_path: Path) -> tuple[str | None, str | None]:
     process's POSIX advisory locks (see ``hermes_cli.sqlite_safe_read``), and the dashboard console runs
     ``run_doctor`` in-process with live ``SessionDB`` connections — the helper refuses then (unreadable).
     """
-    from hermes_cli.sqlite_safe_read import has_live_connection, read_header_bytes_preopen
+    from hermes_cli.sqlite_safe_read import (
+        has_live_connection,
+        read_header_bytes_preopen,
+    )
     header = read_header_bytes_preopen(db_path, length=20)
     if header is None:
         return None, "database is open in this process" if has_live_connection(db_path) else _unreadable_reason(db_path)
@@ -125,7 +140,10 @@ def _report_database_journal_modes(hermes_home: Path | None = None, version_info
     ``database.journal_mode: delete`` that never took effect."""
     from hermes_cli.doctor import HERMES_HOME
     from hermes_state_wal import (
-        _path_on_cross_vm_fs, _wal_reset_repair_hint, is_sqlite_wal_reset_vulnerable, resolve_journal_mode,
+        _path_on_cross_vm_fs,
+        _wal_reset_repair_hint,
+        is_sqlite_wal_reset_vulnerable,
+        resolve_journal_mode,
     )
     vulnerable = is_sqlite_wal_reset_vulnerable(version_info)
     configured = resolve_journal_mode()
@@ -260,8 +278,12 @@ def _check_gateway_service_linger(issues: list[str]) -> None:
     """
     try:
         from hermes_cli.gateway import (
-            _SERVICE_BASE, get_systemd_linger_status, get_systemd_unit_path, is_linux,
-            user_systemd_unit_dir)
+            _SERVICE_BASE,
+            get_systemd_linger_status,
+            get_systemd_unit_path,
+            is_linux,
+            user_systemd_unit_dir,
+        )
         from hermes_cli.service_manager import detect_service_manager
     except Exception as e:
         return check_warn("Gateway service linger", f"(could not import gateway helpers: {e})")
@@ -387,7 +409,12 @@ def check_macos_full_disk_access() -> None:
 @doctor_check("Security advisory check failed: {e}")
 def _check_security_advisories(should_fix: bool, f: Finding) -> None:
     """Compromised-package advisories, funnelled into manual issues; a bug here must never block the rest of doctor."""
-    from hermes_cli.security_advisories import detect_compromised, filter_unacked, full_remediation_text, get_acked_ids
+    from hermes_cli.security_advisories import (
+        detect_compromised,
+        filter_unacked,
+        full_remediation_text,
+        get_acked_ids,
+    )
     all_hits = detect_compromised()
     fresh_hits = filter_unacked(all_hits)
     if not fresh_hits:
@@ -439,6 +466,7 @@ def _check_python_environment(should_fix: bool, f: Finding) -> None:
     # python-build-standalone can keep a vulnerable SQLite across upgrades).
     with warn_on_error("SQLite version probe failed: {e}", ""):
         import sqlite3
+
         from hermes_state_wal import is_sqlite_wal_reset_vulnerable, sqlite_source_id
         src = sqlite_source_id()
         # Warn-only: Hermes already refuses WAL on fresh DBs and runtime repair is best-effort.

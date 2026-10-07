@@ -162,8 +162,9 @@ def _bg_session(server, sid: str) -> dict:
 
 class TestPromptBackgroundClosesAgent:
     def _call(self, monkeypatch, sid, agent_cls):
-        from tui_gateway import server
         import contextlib
+
+        from tui_gateway import server
 
         monkeypatch.setattr(server, "_start_agent_build", lambda sid_, session_: None)
         monkeypatch.setattr(

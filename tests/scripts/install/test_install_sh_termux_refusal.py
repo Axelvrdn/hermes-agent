@@ -1,7 +1,7 @@
 """install.sh sends Termux hosts to the APT package instead of building a source install."""
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
 

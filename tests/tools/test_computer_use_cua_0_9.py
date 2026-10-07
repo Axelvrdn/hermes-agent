@@ -9,14 +9,14 @@ from __future__ import annotations
 
 import asyncio
 import json
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 FIXTURE = Path(__file__).parents[1] / "fixtures" / "cua_driver_0_9_tools_list.json"
 

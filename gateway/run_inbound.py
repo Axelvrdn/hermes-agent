@@ -7,17 +7,17 @@ so ``patch("gateway.run.X")`` keeps intercepting them at call time.
 
 from __future__ import annotations
 
-import logging
-from typing import TYPE_CHECKING
 import asyncio
 import concurrent.futures  # noqa: F401 -- kept public after the plugin-injection move
 import dataclasses
 import json
+import logging
 import os
 import re
 import time
 from contextlib import suppress
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 from agent.i18n import t
 from gateway.config import Platform
@@ -26,17 +26,21 @@ from gateway.platforms.event import MessageEvent, MessageType
 from gateway.run_busy import approval_input_words
 from gateway.run_common import _UNSET
 from gateway.run_inbound_media import rehome_inbound_media
-from gateway.run_plugin_injection import GatewayPluginInjectionMixin
 from gateway.run_inbound_unauthorized import (
-    UnauthorizedOwnerNotifier, pairing_code_reply, pairing_profile_arg, pairing_rate_limited_reply,
+    UnauthorizedOwnerNotifier,
+    pairing_code_reply,
+    pairing_profile_arg,
+    pairing_rate_limited_reply,
     unauthorized_owner_hint,
 )
+from gateway.run_plugin_injection import GatewayPluginInjectionMixin
 from gateway.session import (
-    SessionSource, build_session_context, is_shared_multi_user_session,
+    SessionSource,
+    build_session_context,
+    is_shared_multi_user_session,
     neutralize_untrusted_inline_text,
 )
 from gateway.turn_lease import TurnLeaseTimeoutError
-from typing import Any, Dict, List, Optional, Tuple
 
 if TYPE_CHECKING:  # string annotations only; never imported at runtime (cycle)
     from gateway.run import GatewayRunner  # noqa: F401
@@ -344,7 +348,9 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         else:
             if cmd:
                 with suppress(Exception):
-                    from hermes_cli.commands import resolve_command as _resolve_update_cmd
+                    from hermes_cli.commands import (
+                        resolve_command as _resolve_update_cmd,
+                    )
                     _cmd_def = _resolve_update_cmd(cmd)
                     _recognized_cmd = _cmd_def.name if _cmd_def else None
             response_text = "" if _recognized_cmd else (event.text or "").strip()
@@ -517,7 +523,9 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         if _stale_agent and hasattr(_stale_agent, "get_activity_summary"):
             with suppress(Exception):
                 _sa = _stale_agent.get_activity_summary()
-                from gateway.session_stall import resolve_session_idle_seconds_from_activity
+                from gateway.session_stall import (
+                    resolve_session_idle_seconds_from_activity,
+                )
 
                 _sa_d = _sa if isinstance(_sa, dict) else {}
                 _resolved_idle = resolve_session_idle_seconds_from_activity(
@@ -574,7 +582,10 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
             logger.debug("reaped-session staleness check failed", exc_info=True)
 
     def _hm_evict_running_agent(self, _quick_key: str, reason: str) -> None:
-        from gateway.run import _INTERRUPT_REASON_EVICTED, _INTERRUPT_TOOL_REASON_EVICTED
+        from gateway.run import (
+            _INTERRUPT_REASON_EVICTED,
+            _INTERRUPT_TOOL_REASON_EVICTED,
+        )
         _generation_at_interrupt = self._interrupt_running_turn(
             _quick_key, interrupt_reason=_INTERRUPT_REASON_EVICTED, invalidation_reason=reason,
             tool_reason=_INTERRUPT_TOOL_REASON_EVICTED)
@@ -813,7 +824,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
     ) -> Tuple[bool, Optional[str], Optional[str], Optional[str]]:
         """Resolve the slash command (aliases, access gate, hooks) → ``(handled, result, command,
         canonical)``; when ``handled`` the caller returns ``result`` as-is (may be None)."""
-        from hermes_cli.commands import is_gateway_known_command, resolve_command as _resolve_cmd
+        from hermes_cli.commands import is_gateway_known_command
+        from hermes_cli.commands import resolve_command as _resolve_cmd
 
         def _canon(cmd):
             # Aliases resolve to the canonical name so dispatch and hook names don't depend on them.
@@ -976,8 +988,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         # /moa is one-shot sugar only: run a single prompt through the default MoA preset, then
         # restore the prior model. To *switch* to a MoA preset for the session, pick it from the
         # model picker (MoA presets surface as a virtual "Mixture of Agents" provider).
-        from hermes_cli.moa_config import moa_usage, normalize_moa_config
         from hermes_cli.config import load_config
+        from hermes_cli.moa_config import moa_usage, normalize_moa_config
 
         moa_payload = event.get_command_args().strip()
         if not moa_payload:
@@ -1111,7 +1123,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         Skill bundles take precedence over individual skill commands (mirrors CLI dispatch)."""
         try:
             from agent.skill_bundles import (
-                build_bundle_invocation_message, resolve_bundle_command_key
+                build_bundle_invocation_message,
+                resolve_bundle_command_key,
             )
             bundle_key = resolve_bundle_command_key(command)
             if bundle_key is None:
@@ -1165,7 +1178,9 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
             return None
         try:
             from agent.skill_commands import (
-                get_skill_commands, build_skill_invocation_message, resolve_skill_command_key
+                build_skill_invocation_message,
+                get_skill_commands,
+                resolve_skill_command_key,
             )
             skill_cmds = get_skill_commands()
             cmd_key = resolve_skill_command_key(command)
@@ -1178,6 +1193,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
             try:
                 from agent.skill_commands import (
                     build_stacked_skill_invocation_message as _build_stacked,
+                )
+                from agent.skill_commands import (
                     split_stacked_skill_commands,
                 )
                 extra_keys, stacked_instruction = split_stacked_skill_commands(user_instruction)
@@ -1189,7 +1206,9 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
                 # Per-platform disabled check: get_skill_commands() only applies the *global*
                 # disabled list at scan time (process-global cache across platforms), and
                 # split_stacked_skill_commands() only checks each extra token is a KNOWN skill.
-                from agent.skill_utils import get_disabled_skill_names as _get_plat_disabled
+                from agent.skill_utils import (
+                    get_disabled_skill_names as _get_plat_disabled,
+                )
                 _plat_disabled = _get_plat_disabled(platform=_plat)
                 if _skill_name and _skill_name in _plat_disabled:
                     return t("gateway.skills.disabled_for_platform", name=_skill_name, platform=_plat)
@@ -1291,7 +1310,9 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
             return None
         event, source, is_internal = _admitted
         if not is_internal:
-            from hermes_cli.observability.shared_metrics_events import record_gateway_slash_command
+            from hermes_cli.observability.shared_metrics_events import (
+                record_gateway_slash_command,
+            )
             record_gateway_slash_command(event)
         # TERMINAL-DECLINE LATCH TEARDOWN. Deliberately placed AFTER admission,
         # not on the adapter's raw inbound: profile routing, the ignored-channel
@@ -1451,7 +1472,11 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         """Split ``event.media_urls`` into (image, STT-voice, audio-file, video) paths. Per-attachment
         MIME wins over the message-level type (a document sent alongside an image must not be routed
         as an image). MessageType.AUDIO / mixed DOCUMENT audio is a file attachment, never STT."""
-        from gateway.run import _event_media_is_audio, _event_media_is_image, _event_media_is_stt_input
+        from gateway.run import (
+            _event_media_is_audio,
+            _event_media_is_image,
+            _event_media_is_stt_input,
+        )
         image_paths, audio_paths, audio_file_paths, video_paths = [], [], [], []
         for i, path in enumerate(event.media_urls or []):
             mtype = event.media_types[i] if i < len(event.media_types) else ""
@@ -1562,7 +1587,9 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
     def _prepend_inbound_document_notes(cls, event: MessageEvent, message_text: str) -> str:
         """Prepend a context note per non-media attachment (anything not routed as image/audio/video)."""
         from gateway.run import (
-            _build_document_context_note, _event_media_is_audio, _event_media_is_image,
+            _build_document_context_note,
+            _event_media_is_audio,
+            _event_media_is_image,
             _event_media_is_video,
         )
         if not event.media_urls:
@@ -1619,8 +1646,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
     async def _inbound_model_context_length(self, source: SessionSource, session_key: str) -> int:
         """Context length of the model this turn runs on. A global ``model.context_length`` pin
         belongs to the configured model, not a /model or channel override; custom-provider limits win."""
-        from gateway.run import _load_gateway_config
         from agent.model_metadata import get_model_context_length_async
+        from gateway.run import _load_gateway_config
 
         _msg_config_ctx = None
         _msg_cfg = None
@@ -1818,8 +1845,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         sets the auxiliary_client runtime globals, so resolve the per-session runtime bundle the
         upcoming turn will use, not just the persisted default."""
         try:
-            from agent.image_routing import decide_image_input_mode
             from agent.auxiliary_client import _read_main_model, _read_main_provider
+            from agent.image_routing import decide_image_input_mode
             from hermes_cli.config import load_config
 
             cfg = user_config if isinstance(user_config, dict) else load_config()
@@ -1857,8 +1884,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
         """Auto-analyze user-attached images with the vision tool and prepend the descriptions.
         Description *and* local cache path are injected so the model understands the image without
         a tool call and can re-examine it with vision_analyze."""
-        from tools.vision_tools import vision_analyze_tool
         from agent.memory_manager import sanitize_context
+        from tools.vision_tools import vision_analyze_tool
 
         analysis_prompt = (
             "Concisely describe this image in 2-4 sentences "
@@ -1960,7 +1987,8 @@ class GatewayInboundMixin(GatewayPluginInjectionMixin):
 
         try:
             from tools.transcription_tools import (
-                transcribe_audio, transcribe_audio_local_fallback
+                transcribe_audio,
+                transcribe_audio_local_fallback,
             )
         except ModuleNotFoundError as e:
             logger.error("Transcription module unavailable: %s", e)

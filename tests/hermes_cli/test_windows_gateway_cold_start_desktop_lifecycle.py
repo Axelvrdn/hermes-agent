@@ -22,12 +22,10 @@ import json
 
 import pytest
 
-from hermes_cli import gateway as hermes_gateway
-from hermes_cli import gateway_windows
-from hermes_cli import main as cli_main
-from hermes_cli import process_identity
-from hermes_cli import update_cmd
 import hermes_cli.update_cmd_windows as update_cmd_windows
+from hermes_cli import gateway as hermes_gateway
+from hermes_cli import gateway_windows, process_identity, update_cmd
+from hermes_cli import main as cli_main
 
 
 def _live_serve_ledger_entry() -> dict:
@@ -95,6 +93,7 @@ def test_orphaned_control_plane_does_not_own_lifecycle(monkeypatch):
 def _running_beta_pause_fixture(monkeypatch, tmp_path):
     """Windows update with ``beta`` (PID 777) running and the default profile home at ``tmp_path``."""
     from types import SimpleNamespace
+
     import hermes_cli.profiles as profiles_mod
 
     homes = {"default": tmp_path, "beta": tmp_path / "profiles" / "beta"}

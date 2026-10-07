@@ -345,68 +345,69 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-
+from hermes_cli.subcommands.acp import build_acp_parser
+from hermes_cli.subcommands.approvals import build_approvals_parser
+from hermes_cli.subcommands.auth import build_auth_parser
+from hermes_cli.subcommands.backup import build_backup_parser
+from hermes_cli.subcommands.browser import build_browser_parser
+from hermes_cli.subcommands.bundles import build_bundles_parser
+from hermes_cli.subcommands.checkpoints import build_checkpoints_parser
+from hermes_cli.subcommands.claw import build_claw_parser
+from hermes_cli.subcommands.codex_runtime import build_codex_runtime_parser
+from hermes_cli.subcommands.completion import build_completion_parser
+from hermes_cli.subcommands.computer_use import build_computer_use_parser
+from hermes_cli.subcommands.config import build_config_parser
+from hermes_cli.subcommands.console import build_console_parser
 from hermes_cli.subcommands.cron import build_cron_parser
+from hermes_cli.subcommands.curator import build_curator_parser
+from hermes_cli.subcommands.dashboard import build_dashboard_parser, build_serve_parser
+from hermes_cli.subcommands.debug import build_debug_parser
+from hermes_cli.subcommands.doctor import build_doctor_parser
+from hermes_cli.subcommands.dump import build_dump_parser
+from hermes_cli.subcommands.egress import build_egress_parser
+from hermes_cli.subcommands.fallback import build_fallback_parser
 from hermes_cli.subcommands.gateway import build_gateway_parser
-from hermes_cli.subcommands.profile import build_profile_parser
-from hermes_cli.subcommands.model import build_model_parser
-from hermes_cli.subcommands.setup import build_setup_parser
-
-from hermes_cli.subcommands.whatsapp import build_whatsapp_parser, build_whatsapp_cloud_parser
-from hermes_cli.subcommands.slack import build_slack_parser
+from hermes_cli.subcommands.gui import build_gui_parser
+from hermes_cli.subcommands.hooks import build_hooks_parser
+from hermes_cli.subcommands.import_agent import build_import_agent_parser
+from hermes_cli.subcommands.import_cmd import build_import_cmd_parser
+from hermes_cli.subcommands.insights import build_insights_parser
+from hermes_cli.subcommands.journey import build_journey_parser
 from hermes_cli.subcommands.login import build_login_parser
 from hermes_cli.subcommands.logout import build_logout_parser
-from hermes_cli.subcommands.auth import build_auth_parser
-from hermes_cli.subcommands.status import build_status_parser
-from hermes_cli.subcommands.pause import build_pause_parser
-from hermes_cli.subcommands.webhook import build_webhook_parser
-from hermes_cli.subcommands.hooks import build_hooks_parser
-from hermes_cli.subcommands.doctor import build_doctor_parser
-from hermes_cli.subcommands.verify import build_verify_parser
-from hermes_cli.subcommands.security import build_security_parser
-from hermes_cli.subcommands.approvals import build_approvals_parser
-from hermes_cli.subcommands.dump import build_dump_parser
-from hermes_cli.subcommands.debug import build_debug_parser
-from hermes_cli.subcommands.backup import build_backup_parser
-from hermes_cli.subcommands.import_cmd import build_import_cmd_parser
-from hermes_cli.subcommands.import_agent import build_import_agent_parser
-from hermes_cli.subcommands.config import build_config_parser
-from hermes_cli.subcommands.skin import build_skin_parser
-from hermes_cli.subcommands.console import build_console_parser
-from hermes_cli.subcommands.update import build_update_parser
-from hermes_cli.subcommands.uninstall import build_uninstall_parser
-from hermes_cli.subcommands.dashboard import build_dashboard_parser, build_serve_parser
-from hermes_cli.subcommands.gui import build_gui_parser
 from hermes_cli.subcommands.logs import build_logs_parser
-from hermes_cli.subcommands.prompt_size import build_prompt_size_parser
-from hermes_cli.subcommands.memory import build_memory_parser
-from hermes_cli.subcommands.acp import build_acp_parser
-from hermes_cli.subcommands.tools import build_tools_parser
-from hermes_cli.subcommands.insights import build_insights_parser
-from hermes_cli.subcommands.usage import build_usage_parser
-from hermes_cli.subcommands.monitoring import build_monitoring_parser
-from hermes_cli.subcommands.skills import build_skills_parser
-from hermes_cli.subcommands.pairing import build_pairing_parser
-from hermes_cli.subcommands.plugins import build_plugins_parser
 from hermes_cli.subcommands.mcp import build_mcp_parser
-from hermes_cli.subcommands.claw import build_claw_parser
-from hermes_cli.subcommands.vault import build_vault_parser
-from hermes_cli.subcommands.moa import build_moa_parser
-from hermes_cli.subcommands.fallback import build_fallback_parser
-from hermes_cli.subcommands.worktree import build_worktree_parser
-from hermes_cli.subcommands.browser import build_browser_parser
-from hermes_cli.subcommands.secrets import build_secrets_parser
-from hermes_cli.subcommands.codex_runtime import build_codex_runtime_parser
-from hermes_cli.subcommands.egress import build_egress_parser
+from hermes_cli.subcommands.memory import build_memory_parser
 from hermes_cli.subcommands.migrate import build_migrate_parser
-from hermes_cli.subcommands.checkpoints import build_checkpoints_parser
-from hermes_cli.subcommands.bundles import build_bundles_parser
-from hermes_cli.subcommands.curator import build_curator_parser
+from hermes_cli.subcommands.moa import build_moa_parser
+from hermes_cli.subcommands.model import build_model_parser
+from hermes_cli.subcommands.monitoring import build_monitoring_parser
+from hermes_cli.subcommands.pairing import build_pairing_parser
+from hermes_cli.subcommands.pause import build_pause_parser
 from hermes_cli.subcommands.pets import build_pets_parser
-from hermes_cli.subcommands.journey import build_journey_parser
-from hermes_cli.subcommands.computer_use import build_computer_use_parser
+from hermes_cli.subcommands.plugins import build_plugins_parser
+from hermes_cli.subcommands.profile import build_profile_parser
+from hermes_cli.subcommands.prompt_size import build_prompt_size_parser
+from hermes_cli.subcommands.secrets import build_secrets_parser
+from hermes_cli.subcommands.security import build_security_parser
 from hermes_cli.subcommands.sessions import build_sessions_parser
-from hermes_cli.subcommands.completion import build_completion_parser
+from hermes_cli.subcommands.setup import build_setup_parser
+from hermes_cli.subcommands.skills import build_skills_parser
+from hermes_cli.subcommands.skin import build_skin_parser
+from hermes_cli.subcommands.slack import build_slack_parser
+from hermes_cli.subcommands.status import build_status_parser
+from hermes_cli.subcommands.tools import build_tools_parser
+from hermes_cli.subcommands.uninstall import build_uninstall_parser
+from hermes_cli.subcommands.update import build_update_parser
+from hermes_cli.subcommands.usage import build_usage_parser
+from hermes_cli.subcommands.vault import build_vault_parser
+from hermes_cli.subcommands.verify import build_verify_parser
+from hermes_cli.subcommands.webhook import build_webhook_parser
+from hermes_cli.subcommands.whatsapp import (
+    build_whatsapp_cloud_parser,
+    build_whatsapp_parser,
+)
+from hermes_cli.subcommands.worktree import build_worktree_parser
 
 
 def _require_tty(command_name: str) -> None:
@@ -633,7 +634,9 @@ def _apply_profile_override() -> None:
         hermes_home = _resolve_sudo_user_profile_env(profile_name)
         error = str(exc)
         if not hermes_home and from_sticky_profile:
-            from hermes_cli.main_profile_recovery import is_stale_profile_recovery_command
+            from hermes_cli.main_profile_recovery import (
+                is_stale_profile_recovery_command,
+            )
 
             if is_stale_profile_recovery_command(argv):
                 hermes_home = resolve_profile_env("default")
@@ -721,7 +724,9 @@ try:
     # The effective-config cache (shared raw parse with read_raw_config()) means this SAME parse
     # serves hermes_logging, hermes_time and later raw reads: 3-4 config.yaml parses become one.
     # Managed overlay included: administrator-pinned redact_secrets / force_ipv4 win here too.
-    from hermes_cli.config_effective import load_user_config_effective as _load_effective_early
+    from hermes_cli.config_effective import (
+        load_user_config_effective as _load_effective_early,
+    )
 
     _cfg_path = get_hermes_home() / "config.yaml"
     if _cfg_path.exists():
@@ -769,29 +774,30 @@ import threading
 from datetime import datetime
 
 from hermes_cli.model_setup_flows import (
-    _model_flow_openrouter,
-    _model_flow_nous,
-    _model_flow_openai_codex,
-    _model_flow_xai_oauth,
-    _model_flow_qwen_oauth,
-    _model_flow_minimax_oauth,
-    _model_flow_custom,
+    _is_profile_plugin_flow_provider,
+    _model_flow_ai_gateway,
+    _model_flow_anthropic,
+    _model_flow_api_key_provider,
     _model_flow_azure_foundry,
-    _model_flow_named_custom,
+    _model_flow_bedrock,
     _model_flow_copilot,
     _model_flow_copilot_acp,
+    _model_flow_custom,
     _model_flow_kimi,
-    _model_flow_stepfun,
-    _model_flow_bedrock,
-    _model_flow_vertex,
-    _model_flow_api_key_provider,
-    _model_flow_anthropic,
+    _model_flow_minimax_oauth,
     _model_flow_moa,
-    _model_flow_ai_gateway,
+    _model_flow_named_custom,
+    _model_flow_nous,
+    _model_flow_openai_codex,
+    _model_flow_openrouter,
     _model_flow_plugin_provider,
-    _is_profile_plugin_flow_provider,
+    _model_flow_qwen_oauth,
+    _model_flow_stepfun,
+    _model_flow_vertex,
+    _model_flow_xai_oauth,
 )
 from hermes_cli.model_setup_flows_local import _model_flow_local
+
 logger = logging.getLogger(__name__)
 from hermes_cli.main_agent_cmds import (
     cmd_acp,
@@ -801,13 +807,7 @@ from hermes_cli.main_agent_cmds import (
     cmd_skills,
     cmd_tools,
 )
-from hermes_cli.main_platform_setup import (
-    cmd_slack,
-    cmd_whatsapp,
-    cmd_whatsapp_cloud,
-)
-from hermes_cli.process_identity import is_desktop_owned_backend as _is_desktop_owned_backend
-from hermes_cli.main_dashboard import (
+from hermes_cli.main_dashboard import (  # frozen updater surface: update_cmd*.py resolve these via _m()
     _attach_to_host_backend,
     _finalize_update_output,
     _find_stale_dashboard_pids,
@@ -817,10 +817,40 @@ from hermes_cli.main_dashboard import (
     _read_ssh_session_token_file,
     _report_dashboard_status,
     _resolve_dashboard_web_dist,
+    _respawn_dashboard_processes,
     _route_named_profile_dashboard,
 )
-from hermes_cli.main_dashboard import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _respawn_dashboard_processes,
+from hermes_cli.main_desktop import (  # frozen updater surface: update_cmd*.py resolve these via _m()
+    _desktop_build_needed,
+    _desktop_dist_exists,
+    _desktop_macos_relaunchable_fixup,
+    _desktop_packaged_executable,
+    _install_rebuilt_desktop_app,
+    _installed_desktop_apps,
+    cmd_gui,
+)
+from hermes_cli.main_install_repair import (  # frozen updater surface: update_cmd*.py resolve these via _m()
+    _UPDATE_REEXEC_ENV,
+    _cleanup_quarantined_exes,
+    _clear_lazy_refresh_incomplete_marker,
+    _clear_marker_file,
+    _clear_update_incomplete_marker,
+    _is_termux_env,
+    _is_windows,
+    _is_windows_npm_path,
+    _lazy_refresh_marker_path,
+    _pytest_owns_live_checkout,
+    _recover_update_debts_on_startup,
+    _reexec_dependency_sync_off_windows_shim,
+    _resolve_node_runtime_npm,
+    _resolve_update_branch,
+    _update_marker_path,
+    _venv_scripts_dir,
+)
+from hermes_cli.main_platform_setup import (
+    cmd_slack,
+    cmd_whatsapp,
+    cmd_whatsapp_cloud,
 )
 from hermes_cli.main_provider_setup import (
     _GENERIC_API_KEY_PROVIDERS,
@@ -834,11 +864,25 @@ from hermes_cli.main_provider_setup import (
     _prompt_provider_choice,
     _remove_custom_provider,
 )
+from hermes_cli.main_tui_launch import (
+    _launch_tui,
+    _pin_kanban_board_env,
+    _resolve_use_tui,
+    _sync_bundled_skills_quietly,
+)
+from hermes_cli.main_web_build import (  # frozen updater surface: update_cmd*.py resolve these via _m()
+    _build_web_ui,
+    _nixos_build_env,
+    _record_bytecode_fingerprint,
+    _run_npm_install_deterministic,
+    _sweep_stale_bytecode_if_checkout_changed,
+)
+
 # Frozen external updater API: old in-memory siblings still import these names
 # after a checkout swap. Keep their inert shims separate from live launch helpers.
 from hermes_cli.old_updater_main import (
-    ShimQuarantineError,
     _BYTECODE_FINGERPRINT_FILE,
+    ShimQuarantineError,
     _desktop_stamp_path,
     _detect_broken_lazy_refresh_imports,
     _expected_windows_pe_machines,
@@ -863,48 +907,8 @@ from hermes_cli.old_updater_main import (
     _windows_shim_in_process_chain,
     _write_web_ui_build_stamp,
 )
-from hermes_cli.main_install_repair import _cleanup_quarantined_exes, _recover_update_debts_on_startup
-from hermes_cli.main_install_repair import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _UPDATE_REEXEC_ENV,
-    _clear_lazy_refresh_incomplete_marker,
-    _clear_marker_file,
-    _clear_update_incomplete_marker,
-    _is_termux_env,
-    _is_windows,
-    _is_windows_npm_path,
-    _lazy_refresh_marker_path,
-    _pytest_owns_live_checkout,
-    _reexec_dependency_sync_off_windows_shim,
-    _resolve_node_runtime_npm,
-    _resolve_update_branch,
-    _update_marker_path,
-    _venv_scripts_dir,
-)
-from hermes_cli.main_desktop import (
-    cmd_gui,
-)
-from hermes_cli.main_desktop import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _desktop_build_needed,
-    _desktop_dist_exists,
-    _desktop_macos_relaunchable_fixup,
-    _desktop_packaged_executable,
-    _install_rebuilt_desktop_app,
-    _installed_desktop_apps,
-)
-from hermes_cli.main_web_build import (
-    _sweep_stale_bytecode_if_checkout_changed,
-)
-from hermes_cli.main_web_build import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _build_web_ui,
-    _nixos_build_env,
-    _record_bytecode_fingerprint,
-    _run_npm_install_deterministic,
-)
-from hermes_cli.main_tui_launch import (
-    _launch_tui,
-    _pin_kanban_board_env,
-    _resolve_use_tui,
-    _sync_bundled_skills_quietly,
+from hermes_cli.process_identity import (
+    is_desktop_owned_backend as _is_desktop_owned_backend,
 )
 
 
@@ -1099,8 +1103,13 @@ def _has_any_provider_configured(*, strict_profile_scope: bool = False) -> bool:
     env and host-wide fallbacks (gh auth, Claude Code credentials) must not
     make it appear ready. Unscoped callers keep the legacy behavior.
     """
-    from hermes_cli.config import DEFAULT_CONFIG, get_env_path, get_hermes_home, load_config
     from hermes_cli.auth import PROVIDER_REGISTRY, get_auth_status
+    from hermes_cli.config import (
+        DEFAULT_CONFIG,
+        get_env_path,
+        get_hermes_home,
+        load_config,
+    )
 
     cfg = load_config()
     model_cfg = cfg.get("model")
@@ -1167,7 +1176,10 @@ def _has_any_provider_configured(*, strict_profile_scope: bool = False) -> bool:
     # configured — having Claude Code installed isn't consent to use its tokens.
     if _has_hermes_config and not strict_profile_scope:
         try:
-            from agent.anthropic_credentials import read_claude_code_credentials, is_claude_code_token_valid
+            from agent.anthropic_credentials import (
+                is_claude_code_token_valid,
+                read_claude_code_credentials,
+            )
 
             creds = read_claude_code_credentials()
             if creds and (
@@ -1586,13 +1598,13 @@ def _resolve_chat_session_args(args, use_tui: bool) -> None:
 def _warn_retired_xai_models() -> None:
     """One-shot xAI retirement warning on stderr; non-blocking, never fails startup."""
     try:
+        from hermes_cli.config import load_config as _load_config_for_xai_check
         from hermes_cli.xai_retirement import (
             MIGRATION_GUIDE_URL,
             RETIREMENT_DATE,
             find_retired_xai_refs,
             format_issue,
         )
-        from hermes_cli.config import load_config as _load_config_for_xai_check
 
         _retired_xai_refs = find_retired_xai_refs(_load_config_for_xai_check())
         if _retired_xai_refs:
@@ -1773,7 +1785,9 @@ def cmd_chat(args):
         os.environ["HERMES_SESSION_SOURCE_EXPLICIT"] = "1"
 
     _pin_kanban_board_env()
-    from hermes_cli.observability.shared_metrics_consent import offer_consent_before_chat
+    from hermes_cli.observability.shared_metrics_consent import (
+        offer_consent_before_chat,
+    )
 
     offer_consent_before_chat(args)
     _confirm_startup_expensive_model_override(args)
@@ -2774,7 +2788,7 @@ def cmd_completion(args, parser=None):
 
 def cmd_logs(args):
     """View and filter Hermes log files."""
-    from hermes_cli.logs import tail_log, list_logs
+    from hermes_cli.logs import list_logs, tail_log
 
     log_name = getattr(args, "log_name", "agent") or "agent"
 
@@ -2996,8 +3010,8 @@ def _prepare_agent_startup(args) -> None:
                 exc_info=True,
             )
     try:
-        from hermes_cli.config import load_config
         from agent.shell_hooks import register_from_config
+        from hermes_cli.config import load_config
 
         _hooks_cfg = load_config()
         register_from_config(_hooks_cfg, accept_hooks=_accept_hooks)
@@ -3331,8 +3345,8 @@ def _register_plugin_cli_commands(subparsers) -> None:
     if not _plugin_cli_discovery_needed():
         return
     try:
-        from plugins.memory import discover_plugin_cli_commands
         from hermes_cli.plugins import discover_plugins, get_plugin_manager
+        from plugins.memory import discover_plugin_cli_commands
 
         seen_plugin_commands = set()
         for cmd_info in discover_plugin_cli_commands():

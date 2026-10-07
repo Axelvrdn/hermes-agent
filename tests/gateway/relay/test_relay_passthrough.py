@@ -21,7 +21,6 @@ from gateway.config import Platform, PlatformConfig
 from gateway.relay.adapter import RelayAdapter
 from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
 from gateway.relay.ws_transport import PassthroughForward, _passthrough_from_wire
-
 from tests.gateway.relay.stub_connector import StubConnector
 
 

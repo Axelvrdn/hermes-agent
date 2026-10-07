@@ -25,7 +25,6 @@ from hermes_cli.dashboard_auth import LoginStart, ProviderError, Session
 from plugins.dashboard_auth._shared import (
     DEFAULT_TOKEN_LEEWAY_SECONDS,
     JSON_HEADERS,
-    TOKEN_ENDPOINT_TIMEOUT_SEC as _TOKEN_ENDPOINT_TIMEOUT_SEC,
     JwtOAuthProvider,
     SkipRegistration,
     exchange_token,
@@ -38,7 +37,11 @@ from plugins.dashboard_auth._shared import (
     resolve_env_or_cfg,
     session_from_claims,
     validate_redirect_uri,
-    verify_jwt)
+    verify_jwt,
+)
+from plugins.dashboard_auth._shared import (
+    TOKEN_ENDPOINT_TIMEOUT_SEC as _TOKEN_ENDPOINT_TIMEOUT_SEC,
+)
 
 logger = logging.getLogger(__name__)
 _TAG = "dashboard-auth-self-hosted"

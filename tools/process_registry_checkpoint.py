@@ -19,7 +19,7 @@ class ProcessCheckpointMixin:
 
     def _write_checkpoint(self, extra_entries: Optional[List[Dict[str, Any]]] = None):
         """Write running process metadata to the checkpoint file atomically."""
-        from tools.process_registry import _checkpoint_path, _CHECKPOINT_FIELDS
+        from tools.process_registry import _CHECKPOINT_FIELDS, _checkpoint_path
 
         try:
             with self._lock:
@@ -51,8 +51,12 @@ class ProcessCheckpointMixin:
         """On gateway startup, probe PIDs from the checkpoint file; returns how many
         were recovered as detached sessions."""
         from tools.process_registry import (
-            ProcessSession, _CHECKPOINT_FIELDS, _checkpoint_path,
-            _CHECKPOINT_DEFAULTS, _WATCHER_ROUTE_KEYS, _stop_systemd_unit,
+            _CHECKPOINT_DEFAULTS,
+            _CHECKPOINT_FIELDS,
+            _WATCHER_ROUTE_KEYS,
+            ProcessSession,
+            _checkpoint_path,
+            _stop_systemd_unit,
         )
 
         checkpoint_path = _checkpoint_path()

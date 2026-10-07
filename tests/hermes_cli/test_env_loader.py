@@ -60,8 +60,8 @@ def test_bom_first_key_is_seen_by_installer_and_scrub_alike(tmp_path, monkeypatc
     the key set the installers define (``load_hermes_dotenv`` into os.environ, ``load_env_file`` into a
     profile scope). A BOM'd first line, ``export``, quotes and inline comments must not split them —
     a key one side sees and the other doesn't is a scrub miss."""
-    from hermes_cli.env_loader import _env_keys_defined_in_dotenv
     from agent.secret_scope import load_env_file
+    from hermes_cli.env_loader import _env_keys_defined_in_dotenv
 
     home = tmp_path / "hermes"
     home.mkdir()

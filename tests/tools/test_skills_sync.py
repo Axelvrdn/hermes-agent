@@ -1,20 +1,21 @@
 """Tests for tools/skills_sync.py — manifest-based skill seeding and updating."""
 
-import shutil
 import json
 import os
+import shutil
 import stat
-import pytest
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from tools.skills_sync import (
+    _dir_hash,
+    _discover_bundled_skills,
     _get_bundled_dir,
     _read_manifest,
     _read_skill_name,
     _write_manifest,
-    _discover_bundled_skills,
-    _dir_hash,
     sync_skills,
 )
 from tools.skills_sync_bundled_ops import reset_bundled_skill
@@ -982,8 +983,11 @@ class TestCallTimeDirResolution:
     """
 
     def test_accessors_follow_hermes_home_override(self, tmp_path):
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
         import tools.skills_sync as ss
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profiles" / "research"
         token = set_hermes_home_override(str(profile_home))
@@ -995,8 +999,11 @@ class TestCallTimeDirResolution:
             reset_hermes_home_override(token)
 
     def test_explicit_module_patch_wins_over_override(self, tmp_path):
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
         import tools.skills_sync as ss
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         patched = tmp_path / "patched-skills"
         token = set_hermes_home_override(str(tmp_path / "other-profile"))
@@ -1014,8 +1021,11 @@ class TestCallTimeDirResolution:
         was computed against the wrong home (#65828's sharpest edge): a
         legitimate delete in the scoped profile would be refused, and a stale
         path under the import-time home would pass the guard."""
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
         import tools.skills_sync as ss
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         profile_home = tmp_path / "profiles" / "worker"
         victim = profile_home / "skills" / "doomed-skill"

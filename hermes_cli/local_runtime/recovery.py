@@ -107,6 +107,7 @@ def legacy_recorded_process(state: dict):
     and launch arguments together keep old records usable without adopting an unrelated process.
     """
     from urllib.parse import urlsplit
+
     from hermes_cli.local_runtime.bootstrap import models_dir
     from hermes_cli.local_runtime.supervisor import state_path
 

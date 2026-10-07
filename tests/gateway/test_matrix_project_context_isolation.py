@@ -12,7 +12,6 @@ import pytest
 
 from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.platforms.event import MessageEvent
-from hermes_state import AsyncSessionDB
 from gateway.session import (
     SessionContext,
     SessionEntry,
@@ -20,6 +19,7 @@ from gateway.session import (
     build_session_context_prompt,
     build_session_key,
 )
+from hermes_state import AsyncSessionDB
 
 PROJECT_A_ROOM_ID = "!projectA:example.org"
 PROJECT_B_ROOM_ID = "!projectB:example.org"

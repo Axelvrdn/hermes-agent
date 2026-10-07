@@ -30,6 +30,7 @@ def curator_env(tmp_path, monkeypatch):
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     import importlib
+
     import hermes_constants
     importlib.reload(hermes_constants)
     from agent import curator
@@ -207,7 +208,8 @@ def test_parse_structured_summary_missing_block(curator_env):
 def test_reconcile_model_block_visible_in_full_report(curator_env):
     """End-to-end: LLM final response with the YAML block → reasons in REPORT.md."""
     import json as _json
-    from datetime import datetime as _dt, timezone as _tz
+    from datetime import datetime as _dt
+    from datetime import timezone as _tz
 
     start = _dt.now(_tz.utc)
     before = [

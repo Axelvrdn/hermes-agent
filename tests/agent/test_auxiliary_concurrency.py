@@ -3,17 +3,17 @@
 import asyncio
 import threading
 import time
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from agent.auxiliary_client import (
-    call_llm,
-    async_call_llm,
-    _acquire_sync_aux_semaphore,
     _acquire_async_aux_semaphore,
+    _acquire_sync_aux_semaphore,
     _get_task_max_concurrency,
     _reset_aux_semaphores,
+    async_call_llm,
+    call_llm,
 )
 
 

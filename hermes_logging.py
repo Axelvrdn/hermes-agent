@@ -21,7 +21,10 @@ from time import monotonic as _monotonic
 from typing import Optional, Sequence
 
 from hermes_constants import (
-    get_config_path, get_hermes_home, mkdir_under_hermes_home, named_profile_is_deleted,
+    get_config_path,
+    get_hermes_home,
+    mkdir_under_hermes_home,
+    named_profile_is_deleted,
 )
 
 # setup_logging() is idempotent: a second call is a no-op unless ``force=True``.
@@ -51,8 +54,9 @@ def _portalocker_probe() -> bool:
     if sys.platform != "win32":
         return True
     try:
-        import portalocker
         import tempfile
+
+        import portalocker
     except Exception as exc:
         _WINDOWS_CLH_FALLBACK_REASON = repr(exc)
         return False
@@ -682,7 +686,10 @@ class _ProfileRoutingFileHandler(logging.Handler):
                 return
             # Formatted here, on the listener thread, where the record's profile scope is gone: bind its home so
             # RedactingFormatter applies THAT profile's redact_secrets policy and vault values, not the launch's.
-            from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+            from hermes_constants import (
+                reset_hermes_home_override,
+                set_hermes_home_override,
+            )
             token = set_hermes_home_override(str(home))
             try:
                 handler.handle(record)

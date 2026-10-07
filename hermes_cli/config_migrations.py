@@ -438,7 +438,11 @@ def _migrate_to_34(results: Dict[str, Any], quiet: bool) -> None:
     # had turned off. Reset display.personality → "" and scrub agent.system_prompt ONLY when it
     # verbatim-equals a known personality's rendered text; any other text is user-owned.
     from hermes_cli.personality import (
-        available_personalities, normalize_personality_name, prompt_text, render_personality_prompt)
+        available_personalities,
+        normalize_personality_name,
+        prompt_text,
+        render_personality_prompt,
+    )
 
     config = read_raw_config()
     touched = False
@@ -539,7 +543,12 @@ def _migrate_to_41(results: Dict[str, Any], quiet: bool) -> None:
     # server injects the live Bot Mode section in Bot Chat sessions; the frozen SOUL copy taxed
     # every other session (~600 tok) and shadowed the live roster in Bot Chat itself.
     from hermes_constants import get_hermes_home
-    from tools.bot_mode_probe import _PROTOCOL_HEADING, _hermes_root, _roster, strip_legacy_protocol
+    from tools.bot_mode_probe import (
+        _PROTOCOL_HEADING,
+        _hermes_root,
+        _roster,
+        strip_legacy_protocol,
+    )
 
     cleaned: List[str] = []
     for name, profile_dir in _roster(_hermes_root(get_hermes_home())):

@@ -319,7 +319,9 @@ def test_successive_attempts_reserve_increasing_native_epochs(source):
 
 def test_draft_body_is_fenced_at_top_and_bottom():
     from scripts.releases.draft_warning import (
-        WARNING_CLOSE, WARNING_OPEN, draft_body,
+        WARNING_CLOSE,
+        WARNING_OPEN,
+        draft_body,
     )
 
     body = draft_body(version="0.21.5", attempt_ref="rc.2-v0.21.5",

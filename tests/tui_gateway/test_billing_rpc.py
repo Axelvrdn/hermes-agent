@@ -11,9 +11,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-
-import tui_gateway.server as srv
 import agent.billing_view as bv
+import tui_gateway.server as srv
 from agent.billing_view import BillingState, CardInfo, MonthlyCap, PaymentMethodInfo
 
 

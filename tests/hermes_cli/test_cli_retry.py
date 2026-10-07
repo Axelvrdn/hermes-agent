@@ -6,12 +6,11 @@ from unittest.mock import MagicMock
 import pytest
 
 from agent.context_compressor import (
+    _SUMMARY_END_MARKER,
     HISTORICAL_TASK_HEADING,
     SUMMARY_PREFIX,
-    _SUMMARY_END_MARKER,
 )
 from hermes_state import SessionDB
-
 from tests.hermes_cli.test_cli_init import _make_cli
 
 

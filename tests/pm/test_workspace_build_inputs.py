@@ -1,17 +1,15 @@
 """Workspace generation carries the source inputs of a buildable core."""
 import json
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 from pm import workspace
-from tests.pm import _fixtures
 from pm.environment import managed_environment
-
-
+from tests.pm import _fixtures
 
 
 def _buildable_source(plugin):

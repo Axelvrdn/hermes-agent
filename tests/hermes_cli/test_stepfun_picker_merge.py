@@ -69,7 +69,10 @@ class TestStepfunPickerMergesLiveWithCurated:
         """Outage fallback unchanged: the curated list, flagged as placeholder."""
         with step_plan_live_listing([]):
             ids = provider_model_ids("stepfun")
-        from hermes_cli.models_catalog_static import CuratedFallbackModels, _PROVIDER_MODELS
+        from hermes_cli.models_catalog_static import (
+            _PROVIDER_MODELS,
+            CuratedFallbackModels,
+        )
 
         assert list(ids) == list(_PROVIDER_MODELS["stepfun"])
         # The placeholder flag rides on the list subclass, so the disk cache can

@@ -8,9 +8,18 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from tools.connectors.contract import Actor, SettleReason, TargetState, allowed
 from tools.connectors.gateway.config import operation_session_key
 from tools.connectors.gateway.errors import RateLimited
-from tools.connectors.operation import ConnectionOperation, DetachedOperation, IllegalTransition, Target
+from tools.connectors.operation import (
+    ConnectionOperation,
+    DetachedOperation,
+    IllegalTransition,
+    Target,
+)
 from tools.connectors.run import Kind, run_operation
-from tools.connectors.targets import catalog_names, hosted_names, misrouted_to_hosted_error
+from tools.connectors.targets import (
+    catalog_names,
+    hosted_names,
+    misrouted_to_hosted_error,
+)
 from tools.registry import tool_error
 
 logger = logging.getLogger(__name__)

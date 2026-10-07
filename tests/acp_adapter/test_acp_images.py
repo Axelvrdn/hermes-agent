@@ -7,6 +7,7 @@ from acp.schema import (
 
 from acp_adapter.server import HermesACPAgent, _content_blocks_to_openai_user_content
 
+
 def test_acp_image_blocks_convert_to_openai_multimodal_content():
     content = _content_blocks_to_openai_user_content([
         TextContentBlock(type="text", text="What is in this image?"),

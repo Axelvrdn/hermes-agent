@@ -7,8 +7,17 @@ import logging
 import os
 import subprocess
 from pathlib import Path
+
 from hermes_cli.doctor_report import (
-    Finding, _fail_and_issue, _section, check_bool, check_info, check_ok, check_warn, doctor_check, ensure_dir,
+    Finding,
+    _fail_and_issue,
+    _section,
+    check_bool,
+    check_info,
+    check_ok,
+    check_warn,
+    doctor_check,
+    ensure_dir,
     warn_on_error,
 )
 from hermes_cli.sizefmt import format_bytes as _human_bytes
@@ -133,7 +142,7 @@ def check_legacy_desktop_checkout() -> None:
     if sealed_steward(Path(PROJECT_ROOT)) != STEWARD_DESKTOP:
         return
 
-    from hermes_cli.doctor import HERMES_HOME, _DHH
+    from hermes_cli.doctor import _DHH, HERMES_HOME
 
     checkout = HERMES_HOME / "hermes-agent"
     if not (checkout / ".git").exists():
@@ -190,7 +199,7 @@ def _check_directory_structure(should_fix: bool, f: Finding) -> None:
         check_legacy_desktop_checkout()
     except Exception as _exc:
         logging.debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort report; must never break the directory check
-    from hermes_cli.doctor import HERMES_HOME, _DHH
+    from hermes_cli.doctor import _DHH, HERMES_HOME
     hermes_home = HERMES_HOME
     ensure_dir(f, should_fix, hermes_home, f"{_DHH} directory exists", f"Created {_DHH} directory", f"{_DHH} not found")
     _memory_enabled, _user_profile_enabled = _memory_store_flags(hermes_home)
@@ -259,7 +268,11 @@ def unpruned_cache_hogs(hermes_home: Path, min_bytes: int = _UNPRUNED_CACHE_WARN
 def _check_scratch_dir(hermes_home: Path, _DHH: str) -> None:
     """Report the scratch dir (TMPDIR target) and its size; a user-set TMPDIR elsewhere is shown, not judged."""
     from hermes_constants import (
-        SCRATCH_DIR_MARKER_ENV, SCRATCH_MAX_IDLE_HOURS, get_scratch_dir, scratch_dir_usage_bytes)
+        SCRATCH_DIR_MARKER_ENV,
+        SCRATCH_MAX_IDLE_HOURS,
+        get_scratch_dir,
+        scratch_dir_usage_bytes,
+    )
     scratch = get_scratch_dir(hermes_home, prune=False)
     size = _human_bytes(scratch_dir_usage_bytes(scratch))
     check_ok(f"{_DHH}/cache/scratch/ is the scratch dir (TMPDIR; {size}, entries pruned after {SCRATCH_MAX_IDLE_HOURS}h idle)")
@@ -428,7 +441,10 @@ def _state_db_wal(f: Finding, should_fix: bool, state_db_path: Path) -> None:
             # joins the live WAL — under a running gateway that second-writer handling corrupts state.db.
             # Holder scan first (any other process holding the DB, or an unknown, fails closed), then run the
             # checkpoint on the exclusive repair guard so an opener arriving in between is refused, not joined.
-            from hermes_state_repair import _exclusive_repair_db_guard, _live_writer_holds_db
+            from hermes_state_repair import (
+                _exclusive_repair_db_guard,
+                _live_writer_holds_db,
+            )
             title = f"WAL file is large ({size // (1024*1024)} MB)"
             _SKIP = ("Large WAL file — cannot prove state.db is quiet (stop the profile's gateway first, then "
                      "run 'hermes doctor --fix' to checkpoint)")
@@ -479,7 +495,7 @@ def _retired_wal_holders(f: Finding, state_db_path: Path, _DHH: str) -> bool:
 @doctor_check()
 def _check_state_db(should_fix: bool, f: Finding) -> None:
     """state.db session count, FTS write health, schema repair, stats snapshot, WAL size."""
-    from hermes_cli.doctor import HERMES_HOME, _DHH
+    from hermes_cli.doctor import _DHH, HERMES_HOME
     state_db_path = HERMES_HOME / "state.db"
     # A read-only connect on the new generation is itself another opener, so nothing below may run.
     if _retired_wal_holders(f, state_db_path, _DHH):
@@ -495,8 +511,8 @@ def _check_state_db(should_fix: bool, f: Finding) -> None:
 @doctor_check()
 def _check_cron_store(should_fix: bool, f: Finding) -> None:
     """The cron store accepts writes and its filesystem is not nearly full (jobs skip otherwise)."""
-    from hermes_cli.doctor import HERMES_HOME, _DHH
     from cron.store_health import LOW_FREE_BYTES, free_bytes, probe_report
+    from hermes_cli.doctor import _DHH, HERMES_HOME
     cron_dir = HERMES_HOME / "cron"
     if (report := probe_report(cron_dir)) is not None:
         check_warn(f"{_DHH}/cron/ is NOT writable ({report['error']}) — scheduled cron jobs are being skipped")
@@ -575,7 +591,7 @@ def _gh_authenticated() -> bool:
 
 @doctor_check()
 def _check_skills_hub(should_fix: bool, f: Finding) -> None:
-    from hermes_cli.doctor import HERMES_HOME, _DHH
+    from hermes_cli.doctor import _DHH, HERMES_HOME
     hub_dir = HERMES_HOME / "skills" / ".hub"
     if check_bool(hub_dir.exists(), "Skills Hub directory exists", ("Skills Hub directory not initialized", "(run: hermes skills list)")):
         lock_file = hub_dir / "lock.json"
@@ -610,16 +626,16 @@ def _memory_provider_generic(name: str) -> None:
     elif _provider:
         check_warn(f"{name} configured but not available", "run: hermes memory status")
     else:
-        from plugins.memory import find_provider_dir
         from hermes_cli.memory_provider_migration import catalog_install_hint
+        from plugins.memory import find_provider_dir
         hint = catalog_install_hint(name, category="memory") if find_provider_dir(name) is None else None
         check_warn(f"{name} plugin not found", f"run: {hint or 'hermes memory setup'}")
 
 
 @doctor_check()
 def _check_memory_provider(should_fix: bool, f: Finding) -> None:
-    from hermes_cli.doctor import HERMES_HOME
     from agent.memory_provider import is_core_memory_provider
+    from hermes_cli.doctor import HERMES_HOME
     name = _doctor_memory_config(HERMES_HOME).get("provider", "")
     if is_core_memory_provider(name):
         check_ok("Built-in memory active", "(no external provider configured — this is fine)")
@@ -638,8 +654,9 @@ def _check_memory_provider(should_fix: bool, f: Finding) -> None:
 
 @doctor_check("")  # best-effort: profile enumeration must never break doctor
 def _check_profiles(should_fix: bool, f: Finding) -> None:
-    from hermes_cli.profiles import list_profiles, _get_wrapper_dir, profile_exists
     import re as _re
+
+    from hermes_cli.profiles import _get_wrapper_dir, list_profiles, profile_exists
     named_profiles = [p for p in list_profiles() if not p.is_default]
     if not named_profiles:
         return

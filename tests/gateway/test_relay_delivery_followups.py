@@ -39,12 +39,11 @@ from gateway.config import Platform
 from gateway.relay.ws_transport import (
     _DISCONNECT_DRAIN_GRACE_S,
     _TEARDOWN_AWAIT_TIMEOUT_S,
-    _disconnect_drain_grace_s,
     WebSocketRelayTransport,
+    _disconnect_drain_grace_s,
 )
-from gateway.run import GatewayRunner, _USER_BOUNDARY_END_REASONS
+from gateway.run import _USER_BOUNDARY_END_REASONS, GatewayRunner
 from gateway.session import AsyncSessionStore, SessionEntry
-
 
 # ---------------------------------------------------------------------------
 # 1. Classifier/resolver coherence (the falsely-acked-loss class)

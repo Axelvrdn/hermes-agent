@@ -13,9 +13,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 from hermes_cli.active_sessions import active_session_registry_snapshot
 from hermes_cli.browser_connect import ChromeDebugLaunch
+from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 from tools import async_delegation as ad
 from tui_gateway import server
 from tui_gateway.transport import bind_transport, reset_transport
@@ -2699,7 +2699,11 @@ def test_history_to_messages_preserves_tool_calls_for_resume_display():
 def test_history_to_messages_types_the_failed_turn_boundary_for_resume():
     """Desktop keys the failed-turn boundary on ``display_kind`` (a room poller must not post it
     as the member's reply); rows written before the closer typed it are typed on read."""
-    from agent.turn_failure_copy import FAILED_TURN_DISPLAY_KIND, FAILED_TURN_NOTICE, PARTIAL_FAILED_TURN_NOTICE
+    from agent.turn_failure_copy import (
+        FAILED_TURN_DISPLAY_KIND,
+        FAILED_TURN_NOTICE,
+        PARTIAL_FAILED_TURN_NOTICE,
+    )
 
     history = [
         {"role": "user", "content": "a"},
@@ -2717,9 +2721,9 @@ def test_history_to_messages_types_the_failed_turn_boundary_for_resume():
 
 def test_history_to_messages_drops_pure_compaction_scaffolding():
     from agent.context_compressor import (
+        _SUMMARY_END_MARKER,
         HISTORICAL_TASK_HEADING,
         SUMMARY_PREFIX,
-        _SUMMARY_END_MARKER,
     )
 
     summary = (
@@ -2738,9 +2742,9 @@ def test_history_to_messages_drops_pure_compaction_scaffolding():
 
 def test_history_to_messages_preserves_live_ask_without_compaction_scaffolding():
     from agent.context_compressor import (
+        _SUMMARY_END_MARKER,
         HISTORICAL_TASK_HEADING,
         SUMMARY_PREFIX,
-        _SUMMARY_END_MARKER,
     )
 
     carrier = (
@@ -2764,11 +2768,11 @@ def test_history_to_messages_preserves_live_ask_without_compaction_scaffolding()
 
 def test_history_to_messages_unwraps_merged_assistant_carrier():
     from agent.context_compressor import (
-        HISTORICAL_TASK_HEADING,
-        SUMMARY_PREFIX,
         _MERGED_PRIOR_CONTEXT_HEADER,
         _MERGED_SUMMARY_DELIMITER,
         _SUMMARY_END_MARKER,
+        HISTORICAL_TASK_HEADING,
+        SUMMARY_PREFIX,
     )
 
     carrier = (
@@ -9502,6 +9506,7 @@ def test_setup_status_answers_from_the_bootstrap_record_once_it_exists(monkeypat
     its record (blocking for it while it is in flight) instead of re-probing, so a client's first poll
     sees the identity that exists rather than racing the mint."""
     import threading
+
     from hermes_cli import free_tier_bootstrap as fb
     fb.reset_for_tests()
     monkeypatch.setattr("hermes_cli.main._has_any_provider_configured",
@@ -12621,10 +12626,10 @@ def test_rollback_restore_skips_legacy_compaction_handoff(monkeypatch):
     only by the is_user_originated_turn predicate.
     """
     from agent.context_compressor import (
+        _SUMMARY_END_MARKER,
         COMPRESSED_SUMMARY_METADATA_KEY,
         HISTORICAL_TASK_HEADING,
         SUMMARY_PREFIX,
-        _SUMMARY_END_MARKER,
     )
 
     class _Mgr:
@@ -12682,9 +12687,9 @@ def test_rollback_restore_skips_legacy_compaction_handoff(monkeypatch):
 def test_rollback_restore_preserves_composite_carrier_scaffold(monkeypatch, tmp_path):
     """A checkpoint restore drops the live ask but keeps compacted context."""
     from agent.context_compressor import (
+        _SUMMARY_END_MARKER,
         HISTORICAL_TASK_HEADING,
         SUMMARY_PREFIX,
-        _SUMMARY_END_MARKER,
     )
     from hermes_state import SessionDB
 
@@ -14169,9 +14174,9 @@ def test_prompt_submit_row_id_accepts_full_lineage_ordinal(monkeypatch):
     agreement, not #82756 drift — and the cut stays aimed by the row id.
     """
     from agent.context_compressor import (
+        _SUMMARY_END_MARKER,
         HISTORICAL_TASK_HEADING,
         SUMMARY_PREFIX,
-        _SUMMARY_END_MARKER,
     )
 
     tip_history = [
@@ -14292,6 +14297,7 @@ def test_interrupt_only_clears_own_session_pending():
     and must NOT touch session B's — otherwise B's clarify/sudo/secret prompt silently resolves as if
     the user cancelled it."""
     import types
+
     from tui_gateway import server_requests
 
     session_a = _session()
@@ -18299,11 +18305,11 @@ def test_browser_manage_use_swaps_the_profiles_browser_tools_for_new_agents(monk
     """Desktop/TUI ``/browser use [off]``: the target profile's ``browser.backend`` flips, ``status``
     reports it, and the tool surface a NEW agent resolves swaps (stale check_fn verdicts dropped).
     ``profile`` scopes the write: the launch profile's config stays untouched."""
+    import hermes_yaml as yaml
+    import model_tools
     from hermes_cli.config import read_raw_config
     from hermes_constants import get_hermes_home
     from tools import browser_use_cli
-    import model_tools
-    import hermes_yaml as yaml
 
     monkeypatch.setattr(browser_use_cli, "_find_cli", lambda: ["browser-harness"])
     manage = lambda **p: server.handle_request({"id": "1", "method": "browser.manage", "params": p})["result"]

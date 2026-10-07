@@ -21,6 +21,7 @@ from gateway.agent_cache_pressure import (
     transcript_persistence_caught_up,
 )
 
+
 class TestBoundsResolution:
     """Absent config must stay absent so gateway/run.py keeps its defaults."""
 

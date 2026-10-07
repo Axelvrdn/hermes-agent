@@ -18,11 +18,8 @@ on the native Gemini path, and ONLY there.
 
 from unittest.mock import patch
 
-
-
 import agent.context_compressor as cc_mod
 from agent.gemini_native_adapter import GEMINI_DEFAULT_MAX_OUTPUT_TOKENS
-
 
 CFG = {"agent": {}}
 

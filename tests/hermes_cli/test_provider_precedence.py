@@ -8,7 +8,7 @@ OPENAI_API_KEY exported (or model.provider set) got routed to Anthropic.
 """
 import pytest
 
-from hermes_cli.auth import resolve_provider, AuthError
+from hermes_cli.auth import AuthError, resolve_provider
 
 
 def _login(monkeypatch, provider_id):

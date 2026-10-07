@@ -5,6 +5,7 @@ Each function takes the parent ``AIAgent`` as ``agent`` except the stateless mes
 """
 
 from __future__ import annotations
+
 import contextlib
 import copy
 import json
@@ -15,26 +16,47 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-from hermes_cli.timeouts import get_provider_request_timeout
-from agent.message_sanitization import (
-    _FULL_ARGS_LOG_BOUND, coalesce_tool_call_id, coerce_tool_name, tool_call_id_variants, tool_result_id_variants
-)
-from agent.message_metadata import (
-    TOOL_CALL_UIDS, merge_tool_call_uids, per_occurrence_tool_call_uids, record_absorbed_message)
-from agent.prompt_builder import STEER_DISPLAY_KIND, steer_user_row
-from agent.tool_dispatch_helpers import _trajectory_normalize_msg, make_tool_result_message
-from agent.think_scrubber import THINK_TAG_NAMES
-from agent.trajectory import convert_scratchpad_to_think
+
+from agent.agent_runtime_helpers_placeholders import _INTERRUPTED_PLACEHOLDER
 from agent.credential_pool import (
-    STATUS_EXHAUSTED, _parse_absolute_timestamp, credential_pool_entry_serves_endpoint,
-    credential_pool_matches_provider, resolve_runtime_pool_key,
+    STATUS_EXHAUSTED,
+    _parse_absolute_timestamp,
+    credential_pool_entry_serves_endpoint,
+    credential_pool_matches_provider,
+    resolve_runtime_pool_key,
 )
 from agent.error_classifier import FailoverReason
+from agent.message_metadata import (
+    MERGED_TURN_PREFIX,
+    TOOL_CALL_UIDS,
+    merge_tool_call_uids,
+    per_occurrence_tool_call_uids,
+    record_absorbed_message,
+)
+from agent.message_sanitization import (
+    _FULL_ARGS_LOG_BOUND,
+    coalesce_tool_call_id,
+    coerce_tool_name,
+    tool_call_id_variants,
+    tool_result_id_variants,
+)
+from agent.prompt_builder import STEER_DISPLAY_KIND, steer_user_row
 from agent.retry_utils import parse_retry_after_seconds, reset_delay_from_message
-from agent.message_metadata import MERGED_TURN_PREFIX
+from agent.think_scrubber import THINK_TAG_NAMES
+from agent.tool_dispatch_helpers import (
+    _trajectory_normalize_msg,
+    make_tool_result_message,
+)
+from agent.trajectory import convert_scratchpad_to_think
 from agent.turn_context import drop_stale_api_content
-from agent.agent_runtime_helpers_placeholders import _INTERRUPTED_PLACEHOLDER
-from utils import base_url_host_matches, base_url_hostname, env_var_enabled, atomic_json_write
+from hermes_cli.timeouts import get_provider_request_timeout
+from utils import (
+    atomic_json_write,
+    base_url_host_matches,
+    base_url_hostname,
+    env_var_enabled,
+)
+
 logger = logging.getLogger(__name__)
 
 # Cap same-entry OAuth refreshes on a persistent auth failure, else a single-entry pool re-mints forever.
@@ -468,7 +490,11 @@ def _remember_absorbed_row(survivor: Dict[str, Any], dropped: Dict[str, Any], *,
     text survives). An empty incoming turn still merges; stamping an empty list would change a message that
     absorbed nothing. A dropped id that equals the survivor's own live id (the display-marker merge adopts
     the plain row's id, #94486) is not an absorbed row: the survivor IS that row."""
-    from agent.conversation_compression_archive import OWN_ROW, RETIRED_DURABLE_ROWS, UNNAMED_DURABLE_ROWS
+    from agent.conversation_compression_archive import (
+        OWN_ROW,
+        RETIRED_DURABLE_ROWS,
+        UNNAMED_DURABLE_ROWS,
+    )
 
     own_id = survivor.get("_row_id")
     ids = []
@@ -503,7 +529,11 @@ def _count_unnamed_row(survivor: Dict[str, Any], retired: Dict[str, Any]) -> Non
     recorded so the commit can name its row."""
     from agent.context_compressor import _DB_PERSISTED_MARKER
     from agent.conversation_compression_archive import (
-        OWN_ROW, RETIRED_DURABLE_ROWS, UNNAMED_DURABLE_ROWS, retired_row_payload)
+        OWN_ROW,
+        RETIRED_DURABLE_ROWS,
+        UNNAMED_DURABLE_ROWS,
+        retired_row_payload,
+    )
 
     def loaded(message: Dict[str, Any]) -> bool:
         return bool(message.get(_DB_PERSISTED_MARKER) or message.get(UNNAMED_DURABLE_ROWS))
@@ -520,7 +550,11 @@ def _remember_own_row(survivor: Dict[str, Any]) -> None:
     """An assistant fold rewrites *survivor*'s text, so on a reload without row ids its own row no longer
     matches it by content. Record its loaded fields first, once."""
     from agent.context_compressor import _DB_PERSISTED_MARKER
-    from agent.conversation_compression_archive import OWN_ROW, RETIRED_DURABLE_ROWS, retired_row_payload
+    from agent.conversation_compression_archive import (
+        OWN_ROW,
+        RETIRED_DURABLE_ROWS,
+        retired_row_payload,
+    )
 
     recorded = survivor.get(RETIRED_DURABLE_ROWS) or ()
     if (survivor.get(_DB_PERSISTED_MARKER) and not isinstance(survivor.get("_row_id"), int)
@@ -661,7 +695,10 @@ def _prune_unanswered_tool_calls(messages: List[Dict]) -> Tuple[List[Dict], int]
 
 def _merge_consecutive_users(messages: List[Dict]) -> Tuple[List[Dict], int]:
     """Pass 3: merge consecutive plain-text user messages (no user input lost)."""
-    from agent.context_compressor import _DB_PERSISTED_MARKER, split_user_originated_turn
+    from agent.context_compressor import (
+        _DB_PERSISTED_MARKER,
+        split_user_originated_turn,
+    )
     from agent.conversation_compression_archive import MERGED_DURABLE_ROWS
     from hermes_state import SessionDB
 
@@ -749,7 +786,9 @@ def _normalize_sentinel_encoded_content(messages: List[Dict]) -> None:
     image-bearing turn is never merged as text (#125299). A multimodal turn can re-enter the working set
     as its ``\\x00json:[…]`` string (e.g. after a proactive prune re-inserts history, #124102). A body
     that no longer parses stays a sentinel string; ``_merge_consecutive_users`` refuses to weld it."""
-    from hermes_state import SessionDB  # lazy: the persistence layer owns the sentinel codec
+    from hermes_state import (
+        SessionDB,  # lazy: the persistence layer owns the sentinel codec
+    )
 
     for msg in messages:
         if not isinstance(msg, dict):
@@ -1680,8 +1719,11 @@ def plan_cache_sections_for_destination(
     the user turned caching off (#76085).
     """
     from agent.prompt_caching import (
-        build_prompt_cache_plan, effective_cache_ttl, envelope_tool_part_cache_markers_supported,
-        strip_anthropic_cache_control, strip_anthropic_tool_cache_control,
+        build_prompt_cache_plan,
+        effective_cache_ttl,
+        envelope_tool_part_cache_markers_supported,
+        strip_anthropic_cache_control,
+        strip_anthropic_tool_cache_control,
     )
     # The policy function reads agent.* only as fallbacks for kwargs we don't pass; blank_cache_policy_stub
     # is the only sanctioned stub so _cache_disabled cannot be left off again (#76085).
@@ -1958,7 +2000,10 @@ def _ensure_copilot_headers(client_kwargs: dict) -> None:
 
 def _gemini_native_client(agent, client_kwargs: dict, httpx_verify, *, reason: str, shared: bool):
     """Native Gemini client when the base_url is the Gemini API, else None."""
-    from agent.gemini_native_adapter import GeminiNativeClient, is_native_gemini_base_url
+    from agent.gemini_native_adapter import (
+        GeminiNativeClient,
+        is_native_gemini_base_url,
+    )
     base_url = str(client_kwargs.get("base_url", "") or "")
     if not is_native_gemini_base_url(base_url):
         return None
@@ -2106,7 +2151,7 @@ def _apply_switched_provider_request_overrides(agent, new_provider):
     custom_providers = getattr(agent, "_custom_providers", None)
     if custom_providers is None:
         try:
-            from hermes_cli.config import load_config, get_compatible_custom_providers
+            from hermes_cli.config import get_compatible_custom_providers, load_config
             custom_providers = get_compatible_custom_providers(load_config())
         except Exception:
             custom_providers = []
@@ -2152,9 +2197,9 @@ def _restore_switch_snapshot(agent, snapshot: Dict[str, Any]) -> None:
 
 def _resolve_switch_destination(agent, new_model, new_provider, base_url, api_mode, capabilities, old_norm, new_norm):
     """Resolve ``(api_mode, base_url, destination_capabilities)`` for the switch target."""
-    from hermes_cli.providers import determine_api_mode, is_actual_route
     from agent.native_compaction import resolve_native_compaction_capabilities
     from hermes_cli.models import opencode_provider_family
+    from hermes_cli.providers import determine_api_mode, is_actual_route
     # Pass model so dual-wire providers (Nous Portal anthropic/* -> Messages) resolve correctly.
     if not api_mode:
         api_mode = determine_api_mode(new_provider, base_url, model=new_model)
@@ -2208,7 +2253,10 @@ def _build_switched_client(agent, new_provider, api_key, base_url, api_mode, new
         return
     if api_mode == "anthropic_messages":
         from agent.anthropic_adapter import build_anthropic_client
-        from agent.anthropic_credentials import resolve_anthropic_token, anthropic_route_is_oauth
+        from agent.anthropic_credentials import (
+            anthropic_route_is_oauth,
+            resolve_anthropic_token,
+        )
         # Only fall back to ANTHROPIC_TOKEN for native Anthropic; other anthropic_messages providers
         # must never receive Anthropic credentials.
         is_native_anthropic = new_provider == "anthropic"
@@ -2240,7 +2288,8 @@ def _build_switched_client(agent, new_provider, api_key, base_url, api_mode, new
     agent._client_kwargs = {"api_key": api_key or agent.api_key, "base_url": effective_base}
     try:
         from hermes_cli.config import (
-            apply_custom_provider_tls_to_client_kwargs, get_compatible_custom_providers,
+            apply_custom_provider_tls_to_client_kwargs,
+            get_compatible_custom_providers,
             load_config_readonly,
         )
         # Read live config, not agent._custom_providers, so mid-session ssl_ca_cert / ssl_verify
@@ -2312,10 +2361,12 @@ def _resolve_switch_context_length(agent, snapshot):
     """Resolve the destination context length (LM Studio preload first); returns ``(custom_providers, effective_len)``."""
     custom_providers = None
     try:
-        from hermes_cli.config import (
-            get_compatible_custom_providers, get_custom_provider_context_length, load_config
-        )
         from agent.agent_init import config_context_length_for_runtime
+        from hermes_cli.config import (
+            get_compatible_custom_providers,
+            get_custom_provider_context_length,
+            load_config,
+        )
         switch_cfg = load_config()
         custom_providers = get_compatible_custom_providers(switch_cfg)
         # The durable ``model.context_length`` pin is re-read from live config (never carried over
@@ -2502,8 +2553,8 @@ def switch_model(
     # Re-read the per-model reasoning_effort override so it applies immediately (per-model > global;
     # YAML False = disabled).
     try:
-        from hermes_constants import resolve_reasoning_config
         from hermes_cli.config import load_config as _sm_load_config
+        from hermes_constants import resolve_reasoning_config
         agent.reasoning_config = resolve_reasoning_config(_sm_load_config() or {}, agent.model)
         logger.info(
             "switch_model: reasoning_config resolved for %s: %s", agent.model, agent.reasoning_config
@@ -2554,8 +2605,11 @@ def invoke_tool(agent, function_name: str, function_args: dict, effective_task_i
     no display logic. Used by the concurrent path; the sequential path keeps its own inline
     invocation for display."""
     from agent.inline_tool_executors import (
-        InlineToolContext, apply_transform_tool_result, emit_terminal_post_tool_call,
-        resolve_invoke_tool_executor, tool_hook_ids
+        InlineToolContext,
+        apply_transform_tool_result,
+        emit_terminal_post_tool_call,
+        resolve_invoke_tool_executor,
+        tool_hook_ids,
     )
     if not isinstance(function_args, dict):
         function_args = {}

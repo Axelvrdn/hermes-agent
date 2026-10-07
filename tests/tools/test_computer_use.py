@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-import logging, base64
+import base64
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -42,8 +42,7 @@ def noop_backend():
 
 class TestRegistration:
     def test_cua_driver_cmd_env_override_is_resolved_dynamically(self, tmp_path, monkeypatch):
-        from tools.computer_use import cua_backend
-        from tools.computer_use import cua_backend_driver
+        from tools.computer_use import cua_backend, cua_backend_driver
 
         driver = tmp_path / "custom-cua-driver"
         driver.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
@@ -126,6 +125,7 @@ class TestDispatch:
         normal state, misleading the model into thinking the action succeeded.
         """
         from unittest.mock import patch
+
         from tools.computer_use.backend import ActionResult
         from tools.computer_use.tool import handle_computer_use
 
@@ -205,8 +205,8 @@ class TestCaptureResponse:
 
     def test_capture_vision_mode_with_image_returns_multimodal_envelope(self):
         """Inject a fake backend that returns a PNG to exercise the envelope path."""
-        from tools.computer_use.backend import CaptureResult
         from tools.computer_use import tool as cu_tool
+        from tools.computer_use.backend import CaptureResult
 
         fake_png = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAADUlEQVR4nGNgGAUgAAABCAABgukLHQAAAABJRU5ErkJggg=="
 
@@ -243,8 +243,8 @@ class TestCaptureResponse:
         assert any(p.get("type") == "text" for p in out["content"])
 
     def test_capture_som_with_elements_formats_index(self):
-        from tools.computer_use.backend import CaptureResult, UIElement
         from tools.computer_use import tool as cu_tool
+        from tools.computer_use.backend import CaptureResult, UIElement
 
         fake_png = "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAADUlEQVR4nGNgGAUgAAABCAABgukLHQAAAABJRU5ErkJggg=="
 
@@ -431,7 +431,10 @@ class TestAnthropicAdapterMultimodal:
 
         # Build screenshots interleaved with assistant messages. The eviction frontier
         # advances in whole batches, so use a count that lands exactly on one advance.
-        from agent.image_eviction_policy import IMAGE_EVICTION_BATCH, OUTBOUND_IMAGE_LIMIT
+        from agent.image_eviction_policy import (
+            IMAGE_EVICTION_BATCH,
+            OUTBOUND_IMAGE_LIMIT,
+        )
 
         total = OUTBOUND_IMAGE_LIMIT + 1
         messages: List[Dict[str, Any]] = [{"role": "user", "content": "start"}]
@@ -480,7 +483,10 @@ class TestAnthropicAdapterMultimodal:
         """Sibling tool_results in one user message are oldest-first; eviction must not
         retire the newest of them (#103217)."""
         from agent.anthropic_message_convert import _evict_old_screenshots
-        from agent.image_eviction_policy import IMAGE_EVICTION_BATCH, OUTBOUND_IMAGE_LIMIT
+        from agent.image_eviction_policy import (
+            IMAGE_EVICTION_BATCH,
+            OUTBOUND_IMAGE_LIMIT,
+        )
 
         img = {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": "A"}}
         n = OUTBOUND_IMAGE_LIMIT + 1
@@ -547,7 +553,10 @@ class TestAnthropicAdapterMultimodal:
         reclaims.
         """
         from agent.anthropic_message_convert import convert_messages_to_anthropic
-        from agent.image_eviction_policy import IMAGE_EVICTION_BATCH, OUTBOUND_IMAGE_LIMIT
+        from agent.image_eviction_policy import (
+            IMAGE_EVICTION_BATCH,
+            OUTBOUND_IMAGE_LIMIT,
+        )
 
         fake_png = "iVBORw0KGgo="
 
@@ -812,8 +821,8 @@ class TestLazyMcpInstall:
         """When mcp can't be installed (lazy installs off / network), start()
         surfaces the actionable FeatureUnavailable rather than a session that
         crashes later on a bare import."""
-        from tools.computer_use import cua_backend
         from pm import InstallError as FeatureUnavailable
+        from tools.computer_use import cua_backend
         unavailable = FeatureUnavailable(
             "computer-use", "lazy installs disabled"
         )
@@ -842,8 +851,8 @@ class TestCaptureAfterAppContext:
 
     def test_capture_after_uses_last_app(self):
         """capture_after=True should pass _last_app to the follow-up capture."""
-        from tools.computer_use.backend import ActionResult, CaptureResult
         from tools.computer_use import tool as cu_tool
+        from tools.computer_use.backend import ActionResult, CaptureResult
 
         captured_app_args = []
 
@@ -1009,6 +1018,7 @@ class TestCuaDriverSessionReconnect:
     def _make_session(self, bridge):
         import threading
         from typing import Any, cast
+
         from tools.computer_use.cua_backend_session import _CuaDriverSession
         session = cast(Any, _CuaDriverSession.__new__(_CuaDriverSession))
         session._bridge = bridge
@@ -1199,6 +1209,7 @@ class TestCuaDriverSessionReconnect:
         (screenshot_out_file path) when no inline base64 is present."""
         import base64 as _b64
         from typing import Any, cast
+
         from tools.computer_use.cua_backend_session import _CuaDriverSession
 
         monkeypatch.setattr(
@@ -1248,6 +1259,7 @@ class TestCaptureEmptyResultClipFallback:
 
     def test_capture_refetches_via_cli_on_empty_gws(self):
         from typing import Any, cast
+
         from tools.computer_use.cua_backend import CuaDriverBackend
 
         windows = [{
@@ -1453,9 +1465,13 @@ class TestCuaEnvironmentScrubbing:
         all the MCP/stdio plumbing mocked, captures the env arg passed
         to StdioServerParameters, and asserts the scrub contract.
         """
-        from unittest.mock import MagicMock, patch, AsyncMock
-        from tools.computer_use.cua_backend_session import _CuaDriverSession, _AsyncBridge
         import asyncio
+        from unittest.mock import AsyncMock, MagicMock, patch
+
+        from tools.computer_use.cua_backend_session import (
+            _AsyncBridge,
+            _CuaDriverSession,
+        )
 
         bridge = _AsyncBridge()
         session = _CuaDriverSession(bridge)
@@ -1546,7 +1562,10 @@ class TestCuaCliFallbackResolution:
         ``~/.local/bin``. Falling back to the bare ``cua-driver`` command
         would reintroduce the original bug at runtime.
         """
-        from tools.computer_use.cua_backend_session import _AsyncBridge, _CuaDriverSession
+        from tools.computer_use.cua_backend_session import (
+            _AsyncBridge,
+            _CuaDriverSession,
+        )
 
         proc = MagicMock(stdout="{}", stderr="", returncode=0)
         session = _CuaDriverSession(_AsyncBridge())
@@ -1575,6 +1594,7 @@ class TestClickButtonPassthrough:
 
     def _backend_with_active_target(self):
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend import CuaDriverBackend
         backend = CuaDriverBackend()
         backend._session = MagicMock()
@@ -1651,6 +1671,7 @@ class TestKeyboardWindowIdRouting:
 
     def _backend_with_active_target(self):
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend import CuaDriverBackend
         backend = CuaDriverBackend()
         backend._session = MagicMock()
@@ -1736,6 +1757,7 @@ class TestImageMimeTypePropagation:
 
     def test_extract_tool_result_captures_mime_alongside_image(self):
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend_parse import _extract_tool_result
 
         image_part = MagicMock()
@@ -1806,6 +1828,7 @@ class TestMcpInvocationResolution:
 
     def test_manifest_with_invocation_block_drives_subcommand(self):
         from unittest.mock import patch
+
         from tools.computer_use.cua_backend_driver import _resolve_mcp_invocation
 
         manifest = (
@@ -1821,6 +1844,7 @@ class TestMcpInvocationResolution:
         """If the manifest knows the args but not the command, keep our
         resolved driver path (so HERMES_CUA_DRIVER_CMD still wins)."""
         from unittest.mock import patch
+
         from tools.computer_use.cua_backend_driver import _resolve_mcp_invocation
 
         manifest = '{"mcp_invocation":{"args":["mcp"]}}'
@@ -1834,6 +1858,7 @@ class TestMcpInvocationResolution:
         a string instead of a list, etc.), we still fall back rather than
         passing junk to subprocess.Popen."""
         from unittest.mock import patch
+
         from tools.computer_use.cua_backend_driver import _resolve_mcp_invocation
 
         manifest = (
@@ -1931,7 +1956,10 @@ class TestCapabilityDiscovery:
     """
 
     def test_supports_capability_global_match_any_tool(self):
-        from tools.computer_use.cua_backend_session import _CuaDriverSession, _AsyncBridge
+        from tools.computer_use.cua_backend_session import (
+            _AsyncBridge,
+            _CuaDriverSession,
+        )
 
         session = _CuaDriverSession(_AsyncBridge())
         session._capabilities = {
@@ -1945,7 +1973,10 @@ class TestCapabilityDiscovery:
         assert session.supports_capability("never.heard.of.it") is False
 
     def test_supports_capability_scoped_to_specific_tool(self):
-        from tools.computer_use.cua_backend_session import _CuaDriverSession, _AsyncBridge
+        from tools.computer_use.cua_backend_session import (
+            _AsyncBridge,
+            _CuaDriverSession,
+        )
 
         session = _CuaDriverSession(_AsyncBridge())
         session._capabilities = {
@@ -1981,6 +2012,7 @@ class TestElementTokenAttachment:
     def _backend_with_session(self, capabilities):
         """Build a backend whose session reports the given capabilities map."""
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend import CuaDriverBackend
 
         backend = CuaDriverBackend()
@@ -2028,6 +2060,7 @@ class TestElementTokenAttachment:
         previous snapshot — token cache invariant: only the latest
         capture's tokens are eligible for attachment."""
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend import CuaDriverBackend
 
         backend = CuaDriverBackend()
@@ -2078,6 +2111,7 @@ class TestSessionLifecycle:
 
     def _backend_with_mock_session(self):
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend import CuaDriverBackend
         backend = CuaDriverBackend()
         backend._session = MagicMock()
@@ -2093,6 +2127,7 @@ class TestSessionLifecycle:
 
     def test_start_invokes_start_session_with_run_id(self):
         from unittest.mock import MagicMock, patch
+
         from tools.computer_use.cua_backend import CuaDriverBackend
 
         backend = CuaDriverBackend()
@@ -2122,6 +2157,7 @@ class TestSessionLifecycle:
     def test_session_lifecycle_failures_are_non_fatal(self):
         """A lifecycle-label failure does not discard an otherwise valid runtime."""
         from unittest.mock import MagicMock, patch
+
         from tools.computer_use.cua_backend import CuaDriverBackend
 
         backend = CuaDriverBackend()
@@ -2150,6 +2186,7 @@ class TestCuaToolCoverageExpansion:
     def _backend(self, structured: Optional[Dict[str, Any]] = None,
                  data: Any = "ok"):
         from unittest.mock import MagicMock
+
         from tools.computer_use.cua_backend import CuaDriverBackend
         backend = CuaDriverBackend()
         backend._session = MagicMock()
@@ -2259,8 +2296,8 @@ class TestCapturePayloadBudget:
     def test_aux_vision_branch_respects_element_cap(self):
         """The aux-vision payload must carry the same capped element list as
         every other capture branch, not the full untruncated tree."""
-        from tools.computer_use.backend import CaptureResult, UIElement
         from tools.computer_use import tool as cu_tool
+        from tools.computer_use.backend import CaptureResult, UIElement
 
         elements = [
             UIElement(index=i, role="Button", label=f"btn{i}",

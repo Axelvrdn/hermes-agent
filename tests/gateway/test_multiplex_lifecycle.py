@@ -9,6 +9,7 @@ class TestServedProfilesStatus:
     def test_write_and_read_served_profiles(self, tmp_path, monkeypatch):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
         import importlib
+
         import gateway.status as status
         importlib.reload(status)
         try:
@@ -79,8 +80,8 @@ class TestNamedProfileMultiplexerGuard:
 
     def _fake_running_default_gateway(self, monkeypatch, tmp_path):
         """Make the guard believe a live default gateway exists at tmp_path."""
-        from hermes_cli import gateway as gw
         import gateway.status as status
+        from hermes_cli import gateway as gw
 
         monkeypatch.setattr(gw, "_profile_suffix", lambda: "coder")
         monkeypatch.setattr(

@@ -9,11 +9,11 @@ import pytest
 import gateway.run as gateway_run
 from gateway.config import GatewayConfig, Platform
 from gateway.platforms.event import MessageEvent
-from gateway.session import SessionEntry, SessionSource
 from gateway.response_filters import (
     is_intentional_silence_agent_result,
     is_intentional_silence_response,
 )
+from gateway.session import SessionEntry, SessionSource
 
 
 def _source():

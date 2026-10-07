@@ -234,7 +234,12 @@ def _resolve_managed_fal_video_gateway():
     """Resolve the FAL video route from the stored ``video_gen`` selection: ``"nous"`` → managed only (unentitled ⇒
     selection-naming error); other stored provider → direct only (missing FAL_KEY ⇒ error); never-configured → autodetect."""
     from tools.managed_tool_gateway import resolve_managed_tool_gateway
-    from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, fal_key_is_configured, read_selection, selection_error
+    from tools.tool_backend_helpers import (
+        NOUS_MANAGED_PROVIDER,
+        fal_key_is_configured,
+        read_selection,
+        selection_error,
+    )
     selected = read_selection("video_gen")
     if selected == NOUS_MANAGED_PROVIDER:
         gateway = resolve_managed_tool_gateway("fal-queue")
@@ -275,7 +280,9 @@ def _submit_fal_video_request(endpoint: str, arguments: Dict[str, Any]):
     if managed_gateway is None:
         return client.submit(endpoint, arguments=arguments, headers=headers)
     from tools.fal_common import (
-        _extract_http_status, _managed_fal_billing_error, submit_managed_fal_with_rate_limit_retry,
+        _extract_http_status,
+        _managed_fal_billing_error,
+        submit_managed_fal_with_rate_limit_retry,
     )
     try:
         return submit_managed_fal_with_rate_limit_retry(

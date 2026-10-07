@@ -18,16 +18,6 @@ from agent.context_compressor import (
 )
 
 
-
-
-
-
-
-
-
-
-
-
 def test_inherited_handoff_detected_in_resumed_protected_head():
     """On a resumed lineage the handoff commonly sits right after the system
     prompt (in the protected head). ``_find_latest_context_summary`` must

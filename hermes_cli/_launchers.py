@@ -11,8 +11,8 @@ interpreter before it publishes either command.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import shlex
 import sys

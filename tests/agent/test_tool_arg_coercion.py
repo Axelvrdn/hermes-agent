@@ -10,14 +10,13 @@ from unittest.mock import patch
 
 import model_tools  # noqa: F401 — populates the tool registry the "real schema" tests read
 from tools.arg_coercion import (
-    coerce_tool_args,
-    _coerce_value,
-    _coerce_number,
     _coerce_boolean,
-    _schema_accepts_kind,
+    _coerce_number,
+    _coerce_value,
     _normalize_json_strings_for_schema,
+    _schema_accepts_kind,
+    coerce_tool_args,
 )
-
 
 # ── Low-level coercion helpers ────────────────────────────────────────────
 

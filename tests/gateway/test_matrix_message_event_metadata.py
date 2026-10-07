@@ -20,10 +20,9 @@ MXID and display name on the MessageEvent (not buried in `source`), and
 reply-targeted messages must carry the replied-to message's text and author.
 """
 
+import time
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
-
-import time
 
 import pytest
 
@@ -40,9 +39,8 @@ def _make_adapter(require_mention=False, auto_thread=False, monkeypatch=None):
         os.environ["MATRIX_REQUIRE_MENTION"] = "true" if require_mention else "false"
         os.environ["MATRIX_AUTO_THREAD"] = "true" if auto_thread else "false"
 
-    from plugins.platforms.matrix.adapter import MatrixAdapter
-
     from gateway.config import PlatformConfig
+    from plugins.platforms.matrix.adapter import MatrixAdapter
 
     config = PlatformConfig(
         enabled=True,

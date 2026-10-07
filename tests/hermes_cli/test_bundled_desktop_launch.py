@@ -239,8 +239,8 @@ class TestCmdGuiOnABundle:
             launches.append([str(a) for a in argv])
             return SimpleNamespace(pid=4242)
 
-        from hermes_cli import main_desktop, source_build
         import pm
+        from hermes_cli import main_desktop, source_build
         monkeypatch.setattr(cli_main, "PROJECT_ROOT", repo)
         monkeypatch.setattr(source_build, "source_build_env", lambda env, **kwargs: dict(env))
         monkeypatch.setattr(pm, "ensure", lambda name, *, base_env: SimpleNamespace(env=base_env))

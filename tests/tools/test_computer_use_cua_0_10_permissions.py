@@ -44,8 +44,7 @@ def test_gateway_session_key_yolo_maps_to_unrestricted_mode():
     """Gateway /yolo keys bypass off the gateway session_key contextvar,
     not the DB session_id the tool path passes. Mode resolution must consult
     both namespaces or /yolo is silently dead on messaging platforms."""
-    from tools import approval
-    from tools import approval_context
+    from tools import approval, approval_context
     from tools.computer_use import tool as computer_use
 
     gateway_key = "agent:main:telegram:private:12345"

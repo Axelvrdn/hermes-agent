@@ -2,10 +2,7 @@
 
 from argparse import Namespace
 
-
 import hermes_cli.sessions_cmd as sessions_cmd
-
-
 
 
 def test_sessions_observational_commands_on_missing_store_stay_empty(monkeypatch, tmp_path, capsys):

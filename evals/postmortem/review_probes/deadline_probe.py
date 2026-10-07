@@ -4,8 +4,17 @@ Independent-review probe (written by the /review subagent for tracking issue #10
 It reproduced a defect in the first version of the PR; the fixed head must pass it. Paths are taken
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
-import os, sys, tempfile, pathlib, json, time, threading, socket, subprocess
+import json
+import os
+import pathlib
+import socket
+import subprocess
+import sys
+import tempfile
+import threading
+import time
 from types import SimpleNamespace as NS
+
 root = pathlib.Path(sys.argv[1]).resolve()
 sys.path.insert(0, str(root)); os.chdir(root)
 for k in list(os.environ):
@@ -20,12 +29,13 @@ def no_connect(*args, **kwargs):
     raise RuntimeError('OFFLINE PROBE: network forbidden')
 socket.socket.connect = no_connect
 socket.create_connection = no_connect
+import agent.codex_runtime as cr
 import agent.tool_executor as te
 import agent.turn_usage as tu
-import tools.delegate_tool_results as dr
 import agent.usage_pricing as up
-import agent.codex_runtime as cr
+import tools.delegate_tool_results as dr
 from run_agent import AIAgent
+
 for mod in (te, tu, dr, up, cr):
     assert pathlib.Path(mod.__file__).is_relative_to(root), mod.__file__
 print(json.dumps({'sha': subprocess.check_output(['git','rev-parse','HEAD'],text=True, encoding='utf-8', errors='replace').strip(), 'modules': {m.__name__:m.__file__ for m in (te,tu,dr,up,cr)}, 'home':home.name}), flush=True)
@@ -96,6 +106,7 @@ for provider,mode,raw in cases:
 # Raw native adapter response -> production conversion -> writer -> budget.
 from agent.bedrock_adapter import normalize_converse_response
 from agent.gemini_native_adapter import _usage_from_metadata
+
 native=[]
 for provider, raw in [('bedrock',normalize_converse_response({'usage':{'inputTokens':5000,'cacheReadInputTokens':20000,'cacheWriteInputTokens':5000,'outputTokens':100}}).usage),('google',_usage_from_metadata({'promptTokenCount':30000,'cachedContentTokenCount':25000,'candidatesTokenCount':100,'totalTokenCount':30100}))]:
     b=parent(provider); values=record(b,raw); assert values['prompt']==30000
@@ -103,6 +114,7 @@ for provider, raw in [('bedrock',normalize_converse_response({'usage':{'inputTok
 print(json.dumps({'provider_writers':usage_rows,'native_adapters':native}),flush=True)
 # Exercise the actual MoA accounting deposit/consume path without model calls.
 from agent.moa_loop import MoAClient
+
 moa_client = MoAClient('offline')
 moa_client.chat.completions._fold_pending_accounting(up.CanonicalUsage(input_tokens=240000), None)
 b=parent('moa',client=moa_client)

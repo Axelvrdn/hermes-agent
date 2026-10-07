@@ -2,7 +2,6 @@
 
 from unittest.mock import patch as mock_patch
 
-
 from tools.terminal_hints import annotate_failure, annotate_masked_success
 
 

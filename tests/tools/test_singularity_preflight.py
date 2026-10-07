@@ -6,13 +6,13 @@ singularity is installed, instead of a cryptic FileNotFoundError.
 See: https://github.com/NousResearch/hermes-agent/issues/1511
 """
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from tools.environments.singularity import (
-    _find_singularity_executable,
     _ensure_singularity_available,
+    _find_singularity_executable,
 )
 
 

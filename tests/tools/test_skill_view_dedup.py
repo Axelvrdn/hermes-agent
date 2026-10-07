@@ -10,6 +10,7 @@ from tools.skills_tool import (
     reset_skill_view_dedup,
 )
 
+
 @pytest.fixture
 def skills_home(tmp_path, monkeypatch):
     home = tmp_path / ".hermes"

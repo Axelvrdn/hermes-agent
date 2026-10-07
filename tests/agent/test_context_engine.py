@@ -3,8 +3,8 @@
 import json
 from typing import Any, Dict, List
 
-from agent.context_engine import ContextEngine
 from agent.context_compressor import ContextCompressor
+from agent.context_engine import ContextEngine
 
 # ---------------------------------------------------------------------------
 # A minimal concrete engine for testing the ABC
@@ -124,7 +124,7 @@ class TestPluginContextEngineSlot:
     """Test register_context_engine on PluginContext."""
 
     def test_register_engine(self):
-        from hermes_cli.plugins import PluginManager, PluginContext, PluginManifest
+        from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
         mgr = PluginManager()
         manifest = PluginManifest(name="test-lcm")
         ctx = PluginContext(manifest, mgr)

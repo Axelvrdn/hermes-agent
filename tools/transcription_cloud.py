@@ -16,14 +16,26 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 from urllib.parse import urljoin
 
-from utils import is_truthy_value
 from tools.transcription_audio import _transcode_audio_for_stt
 from tools.transcription_common import (
-    DEFAULT_GROQ_STT_MODEL, DEFAULT_STT_MODEL, ELEVENLABS_STT_BASE_URL,
-    GROQ_BASE_URL, GROQ_MODELS, OPENAI_BASE_URL, OPENAI_MODELS, RETIRED_GROQ_MODELS, STTResponseError,
+    DEFAULT_GROQ_STT_MODEL,
+    DEFAULT_STT_MODEL,
+    ELEVENLABS_STT_BASE_URL,
+    GROQ_BASE_URL,
+    GROQ_MODELS,
+    OPENAI_BASE_URL,
+    OPENAI_MODELS,
+    RETIRED_GROQ_MODELS,
     XAI_STT_BASE_URL,
-    _error_result, _get_stt_section, _lazy_ensure_quietly, _log_prompt_unsupported, _ok_result,
-    normalize_xai_stt_model)
+    STTResponseError,
+    _error_result,
+    _get_stt_section,
+    _lazy_ensure_quietly,
+    _log_prompt_unsupported,
+    _ok_result,
+    normalize_xai_stt_model,
+)
+from utils import is_truthy_value
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("tools.transcription_tools")
@@ -47,6 +59,7 @@ def _with_openai_client(api_key: str, base_url: Optional[str], file_path: str, l
     subclass) so timeouts report as connection errors, as they always have."""
     try:
         from openai import OpenAI
+
         from tools.transcription_common import DEFAULT_STT_TIMEOUT, _config_number
         from tools.transcription_tools import _load_stt_config
         openai_config = _get_stt_section(_load_stt_config(), "openai")
@@ -64,7 +77,7 @@ def _with_openai_client(api_key: str, base_url: Optional[str], file_path: str, l
                 close()
     except Exception as exc:
         try:
-            from openai import APIError, APIConnectionError, APITimeoutError
+            from openai import APIConnectionError, APIError, APITimeoutError
         except ImportError:  # pragma: no cover — callers gate on _HAS_OPENAI
             APIError = APIConnectionError = APITimeoutError = ()
         if isinstance(exc, PermissionError):
@@ -99,7 +112,11 @@ def _transcribe_groq(
     file_path: str, model_name: str, *, language: Optional[str] = None, prompt: Optional[str] = None
 ) -> Dict[str, Any]:
     """Transcribe via the Groq Whisper API; language: hook > ``stt.groq.language`` > ``stt.language`` > env > auto."""
-    from tools.transcription_tools import _HAS_OPENAI, _resolve_provider_key, _resolve_stt_language
+    from tools.transcription_tools import (
+        _HAS_OPENAI,
+        _resolve_provider_key,
+        _resolve_stt_language,
+    )
     api_key = _resolve_provider_key("GROQ_API_KEY", "groq")
     if not api_key:
         return _error_result("GROQ_API_KEY not set")
@@ -331,7 +348,11 @@ def _transcribe_elevenlabs(
 ) -> Dict[str, Any]:
     """Transcribe using ElevenLabs Scribe STT API."""
     from hermes_cli.config import get_env_value
-    from tools.transcription_tools import _load_stt_config, _resolve_provider_key, _resolve_stt_language
+    from tools.transcription_tools import (
+        _load_stt_config,
+        _resolve_provider_key,
+        _resolve_stt_language,
+    )
     if prompt:
         _log_prompt_unsupported("STT provider 'elevenlabs'")
     api_key = _resolve_provider_key("ELEVENLABS_API_KEY", "elevenlabs")
@@ -386,8 +407,8 @@ def _is_local_or_private_url(url: str) -> bool:
     """True for loopback/RFC-1918/LAN-internal hosts, where an empty ``stt.openai.api_key`` is acceptable
     (local OpenAI-compatible servers ignore the auth header — no sham ``api_key: not-needed`` needed)."""
     try:
-        from urllib.parse import urlparse
         import ipaddress
+        from urllib.parse import urlparse
         host = (urlparse(url).hostname or "").lower()
         if host == "localhost" or host.endswith((".local", ".lan", ".internal")):
             return True
@@ -416,11 +437,15 @@ def _resolve_openai_audio_client_config() -> tuple[str, str]:
     ``"nous"`` -> managed gateway ONLY (a direct OPENAI_API_KEY must NOT override it); any other
     stored provider -> direct credentials ONLY (no silent managed fallback); never-configured ->
     legacy ladder: direct credentials, then the managed gateway. Failures raise ValueError."""
-    from tools.transcription_tools import _load_stt_config
     from tools.managed_tool_gateway import resolve_managed_tool_gateway
     from tools.tool_backend_helpers import (
-        NOUS_MANAGED_PROVIDER, managed_nous_tools_enabled, nous_tool_gateway_unavailable_message,
-        read_selection, selection_error)
+        NOUS_MANAGED_PROVIDER,
+        managed_nous_tools_enabled,
+        nous_tool_gateway_unavailable_message,
+        read_selection,
+        selection_error,
+    )
+    from tools.transcription_tools import _load_stt_config
     openai_cfg = _load_stt_config().get("openai") or {}
     selected = read_selection("stt")
 

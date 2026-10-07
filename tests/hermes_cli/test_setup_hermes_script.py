@@ -1,6 +1,5 @@
-from pathlib import Path
 import subprocess
-
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SETUP_SCRIPT = REPO_ROOT / "setup-hermes.sh"

@@ -48,7 +48,13 @@ def repo(tmp_path, monkeypatch):
 
 def _runners(repo: Path):
     """Every updater git runner, as ``args -> stdout``."""
-    from hermes_cli import gitlock, update_cmd, update_cmd_check, update_cmd_git, update_cmd_stash
+    from hermes_cli import (
+        gitlock,
+        update_cmd,
+        update_cmd_check,
+        update_cmd_git,
+        update_cmd_stash,
+    )
 
     yield "update_cmd._git_run", lambda a: update_cmd._git_run(["git"], a, cwd=repo).stdout
     yield "update_cmd_git._git_run", lambda a: update_cmd_git._git_run(["git"], a, cwd=repo).stdout

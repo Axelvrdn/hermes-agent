@@ -2,17 +2,17 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
 import hashlib
 import json
-import re
-from copy import deepcopy
 import os
-from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
+from copy import deepcopy
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -278,9 +278,9 @@ def prepare(request: BuildRequest) -> Path:
 
 
 def _prepare(request: BuildRequest) -> Path:
-    from scripts.bundles.desktop_toolchain import run_preparation
-    from pm.lock import _write
     from hermes_cli.runtime_state import _lock
+    from pm.lock import _write
+    from scripts.bundles.desktop_toolchain import run_preparation
 
     require_source(request.source, request.commit)
     owner = request.work / ".desktop-preparation"
@@ -306,9 +306,9 @@ def _prepare(request: BuildRequest) -> Path:
 
 
 def prepare_in_worker(request: BuildRequest) -> Path:
+    from scripts.build.icon_environment import prepare_icon_environment
     from scripts.bundles.desktop import run
     from scripts.bundles.desktop_toolchain import prepare_tools
-    from scripts.build.icon_environment import prepare_icon_environment
     from scripts.bundles.native import prepare_native
 
     require_source(request.source, request.commit)

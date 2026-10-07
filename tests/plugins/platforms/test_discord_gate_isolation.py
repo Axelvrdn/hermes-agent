@@ -22,8 +22,7 @@ import os
 import pytest
 
 from gateway.config import Platform, PlatformConfig
-from plugins.platforms.discord.adapter import DiscordAdapter, _GATE_ENV_KEYS
-
+from plugins.platforms.discord.adapter import _GATE_ENV_KEYS, DiscordAdapter
 
 GATE_VARS = [
     "DISCORD_ALLOWED_CHANNELS",

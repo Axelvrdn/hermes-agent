@@ -18,7 +18,6 @@ from hermes_cli.profiles import (
     _maybe_unregister_gateway_service,
 )
 
-
 # ---------------------------------------------------------------------------
 # _maybe_register_gateway_service / _maybe_unregister_gateway_service
 # ---------------------------------------------------------------------------

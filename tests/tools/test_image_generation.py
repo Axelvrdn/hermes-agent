@@ -13,7 +13,6 @@ from unittest.mock import patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -22,6 +21,7 @@ import pytest
 def image_tool():
     """Fresh import of tools.image_generation_tool per test."""
     import importlib
+
     import tools.image_generation_tool as mod
     return importlib.reload(mod)
 
@@ -436,9 +436,9 @@ class TestManagedKreaRouting:
     def test_routes_native_krea_model_to_krea_plugin_in_managed_mode(
         self, image_tool, monkeypatch
     ):
+        import json as _json
         from types import SimpleNamespace
         from unittest.mock import MagicMock
-        import json as _json
 
         monkeypatch.setattr(image_tool, "_read_configured_image_provider", lambda: None)
         monkeypatch.setattr(
@@ -598,8 +598,8 @@ class TestUpscaleDispatchForwarding:
     """The tool handler forwards explicit upscale to plugin providers."""
 
     def test_dispatch_forwards_upscale(self, image_tool, monkeypatch):
-        from unittest.mock import MagicMock
         import json as _json
+        from unittest.mock import MagicMock
 
         monkeypatch.setattr(image_tool, "_read_configured_image_provider", lambda: "krea")
         monkeypatch.setattr(image_tool, "_read_configured_image_model", lambda: None)

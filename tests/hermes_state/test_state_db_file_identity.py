@@ -13,14 +13,13 @@ from pathlib import Path
 
 import pytest
 
-from tests.posix_lock_probe import own_posix_locks
-
 from hermes_state import (
     SessionDB,
     StateDbReplacedError,
     classify_persistence_error,
     divert_session_transcript_jsonl,
 )
+from tests.posix_lock_probe import own_posix_locks
 
 
 def _make_db(path: Path, session_id: str, content: str) -> SessionDB:

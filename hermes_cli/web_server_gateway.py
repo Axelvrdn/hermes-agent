@@ -2,8 +2,8 @@
 subprocess spawning, gateway restart plumbing, system platform display.
 """
 
-import logging
 import json
+import logging
 import os
 import re
 import subprocess
@@ -13,6 +13,7 @@ import time
 import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
 from hermes_cli._subprocess_compat import windows_detach_flags
 from hermes_cli.config import get_hermes_home
 
@@ -130,7 +131,10 @@ def _profile_gateway_writer_identity(profile_home: Path, runtime: Optional[dict]
     the record, so equality is exact (no unit/clock-source mismatch).
     """
     try:
-        from gateway.status import _get_process_start_time, get_runtime_status_running_pid
+        from gateway.status import (
+            _get_process_start_time,
+            get_runtime_status_running_pid,
+        )
         pid = get_runtime_status_running_pid(runtime, expected_home=profile_home)
         if pid is None:
             return None
@@ -169,8 +173,12 @@ def _collect_profile_gateway_topology() -> Dict[str, Any]:
     platform maps per live gateway, an internal aggregation input never exposed directly.
     """
     try:
-        from hermes_cli.profiles import _check_gateway_running, profiles_to_serve, profile_is_parked
         from gateway.status import read_runtime_status
+        from hermes_cli.profiles import (
+            _check_gateway_running,
+            profile_is_parked,
+            profiles_to_serve,
+        )
         homes = profiles_to_serve(True, include_standalone=True, include_parked=True)
     except Exception:
         _log.debug("profile/gateway topology enumeration failed", exc_info=True)
@@ -388,11 +396,16 @@ def _profile_action_environment(
         action_env = dict(os.environ)
     else:
         from hermes_cli.env_loader import (
-            _PROFILE_MANAGED_ENV_KEYS, _env_keys_defined_in_dotenv, get_secret_source_values,
+            _PROFILE_MANAGED_ENV_KEYS,
+            _env_keys_defined_in_dotenv,
+            get_secret_source_values,
         )
         from hermes_cli.web_server_profiles import _resolve_profile_dir
         from hermes_constants import apply_subprocess_home_env, get_default_hermes_root
-        from tools.environments.local import build_subprocess_env, strip_launch_profile_env
+        from tools.environments.local import (
+            build_subprocess_env,
+            strip_launch_profile_env,
+        )
 
         target_home = _resolve_profile_dir(profile)
         action_env = build_subprocess_env(base=os.environ, scrub_secrets=True)
@@ -576,7 +589,11 @@ def _has_own_gateway(profile_dir: Path) -> bool:
     serves it. Gateway liveness reports a served profile as running on the multiplexer's PID (#97120),
     so reading liveness alone made every served profile look self-hosted and the refusal below never
     fired while a multiplexer was live, which is the only time it is needed."""
-    from gateway.status import get_running_pid, multiplexer_liveness_for_profile, resolve_gateway_liveness
+    from gateway.status import (
+        get_running_pid,
+        multiplexer_liveness_for_profile,
+        resolve_gateway_liveness,
+    )
     from hermes_cli.profiles import _check_gateway_running
     if not _check_gateway_running(profile_dir):
         return False

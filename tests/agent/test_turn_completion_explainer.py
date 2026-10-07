@@ -18,9 +18,10 @@ pass identically in CI and locally.
 """
 
 import os
-import pytest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from run_agent import AIAgent
 
@@ -336,9 +337,11 @@ def test_classify_persistence_error_compression_busy_is_distinct():
     storage damage — but its message contains neither 'locked' nor 'busy',
     so it must classify by exception type (and by phrase for RPC-wrapped
     strings). This is the exact failure mode of issue #81227."""
-    from hermes_state import SessionCompressionInProgressError
+    from hermes_state import (
+        SessionCompressionInProgressError,
+        classify_persistence_error,
+    )
     from hermes_state_errors import CompressionSessionBusyError
-    from hermes_state import classify_persistence_error
 
     assert classify_persistence_error(
         SessionCompressionInProgressError(

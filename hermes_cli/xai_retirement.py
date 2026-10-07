@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-
 MIGRATION_GUIDE_URL = "https://docs.x.ai/developers/migration/may-15-retirement"
 RETIREMENT_DATE = "May 15, 2026"
 

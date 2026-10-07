@@ -44,10 +44,10 @@ Exit code: 0 if every file's pytest exited 0; 1 otherwise.
 
 from __future__ import annotations
 
-import logging
 import argparse
 import fnmatch
 import json
+import logging
 import os
 import re
 import shutil
@@ -56,7 +56,7 @@ import sys
 import tempfile
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, Future
+from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 

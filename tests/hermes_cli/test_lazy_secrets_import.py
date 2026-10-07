@@ -1,8 +1,8 @@
 """Regression test: hermes update must not load cryptography eagerly."""
 
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 

@@ -14,7 +14,10 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli.update_cmd_git import UpstreamTargetBroken, _sync_with_upstream_if_needed
+from hermes_cli.update_cmd_git import (
+    UpstreamTargetBroken,
+    _sync_with_upstream_if_needed,
+)
 
 
 def _env(home: Path) -> dict:

@@ -16,13 +16,13 @@ from __future__ import annotations
 
 import contextlib
 import json
+import logging
 import os
 import re
 import secrets
 import sqlite3
 import subprocess
 import sys
-import logging
 import time
 from contextvars import ContextVar, Token
 from dataclasses import dataclass
@@ -1209,7 +1209,7 @@ def create_task(
     ``workspace_kind=None`` (omitted) inherits a project-scoped board's project;
     an explicit ``"scratch"`` or ``project_id=""`` is a request for no project.
     """
-    from hermes_cli.kanban_db_graph import initial_task_state, inherit_creator_origin
+    from hermes_cli.kanban_db_graph import inherit_creator_origin, initial_task_state
     from hermes_cli.kanban_pr_acceptance import validate_contract
 
     completion_contract = validate_contract(completion_contract)
@@ -2682,7 +2682,10 @@ def complete_task(
     # Cheap pre-check; re-checked inside the txn to close the parent-reopen race.
     if not _parents_satisfied(conn, task_id):
         return False
-    from hermes_cli.kanban_pr_acceptance_store import prepare_acceptance, record_acceptance
+    from hermes_cli.kanban_pr_acceptance_store import (
+        prepare_acceptance,
+        record_acceptance,
+    )
     verified_cards = _gate_created_cards(conn, task_id, created_cards, summary or result)
     _gate_empty_completion(conn, task_id, result=result, summary=summary)
     metadata = _merge_completion_prose_artifacts(
@@ -4429,12 +4432,6 @@ from hermes_cli.kanban_db_connect import (  # noqa: E402
     init_db,
     write_txn,
 )
-from hermes_cli.kanban_db_workspace import (  # noqa: E402
-    _cleanup_workspace,
-    _is_managed_scratch_path,
-    _managed_scratch_path_info,
-    _scratch_workspace,
-)
 from hermes_cli.kanban_db_dispatch import (  # noqa: E402
     DEFAULT_FAILURE_LIMIT,
     DEFAULT_RATE_LIMIT_COOLDOWN_SECONDS,
@@ -4447,4 +4444,10 @@ from hermes_cli.kanban_db_dispatch import (  # noqa: E402
     _worker_alive,
     _worker_survived_termination,
     _worker_terminal_timeout_env,
+)
+from hermes_cli.kanban_db_workspace import (  # noqa: E402
+    _cleanup_workspace,
+    _is_managed_scratch_path,
+    _managed_scratch_path_info,
+    _scratch_workspace,
 )

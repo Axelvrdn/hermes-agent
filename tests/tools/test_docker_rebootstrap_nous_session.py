@@ -9,8 +9,8 @@ These are pure-stdlib tmp_path tests (no container build).
 from __future__ import annotations
 
 import importlib.util
-import os
 import json
+import os
 from pathlib import Path
 
 # Import the stdlib-only boot helper by path (it lives under scripts/, not an

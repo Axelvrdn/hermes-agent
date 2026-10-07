@@ -7,8 +7,8 @@ Tests cover:
 - Path resolution (absolute, relative to HERMES_HOME/scripts/)
 """
 
-import logging
 import json
+import logging
 import os
 import re
 import subprocess
@@ -169,8 +169,8 @@ class TestRunJobScript:
 
     def test_script_subprocess_env_sanitized(self, cron_env, monkeypatch):
         """Cron scripts must not inherit Hermes provider env (SECURITY.md §2.3)."""
-        from tools.environments.local_env_policy import _HERMES_PROVIDER_ENV_BLOCKLIST
         from cron.scheduler_script import _run_job_script
+        from tools.environments.local_env_policy import _HERMES_PROVIDER_ENV_BLOCKLIST
 
         # sorted() so the probed var is deterministic across runs
         # (frozenset iteration order varies with PYTHONHASHSEED).

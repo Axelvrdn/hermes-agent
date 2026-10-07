@@ -23,6 +23,7 @@ from agent.system_prompt import (
     build_system_prompt_parts,
 )
 
+
 def _stable_prompt(agent):
     with (
         patch("agent.prompt_builder.load_soul_md", return_value=""),

@@ -1,9 +1,9 @@
 """Public channel resolution is strict, pinned, and independent of name registries."""
-from copy import deepcopy
 import hashlib
-import json
-from pathlib import Path
 import importlib.util
+import json
+from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
@@ -32,7 +32,7 @@ def seed_manifest(pub, request, objects):
 
 
 def test_resolve_verifies_exact_manifest_and_preserves_retirement_constraints():
-    from hermes_cli.release_channels import ChannelReader, ChannelError, canonical_json
+    from hermes_cli.release_channels import ChannelError, ChannelReader, canonical_json
     with object_server() as (url, objects, headers, requests, faults):
         pub = publisher(url)
         for name in ("old-preview", "next-preview"):
@@ -75,6 +75,7 @@ def test_names_are_validated_without_normalizing(name):
 def test_update_reads_retry_transient_http_and_honor_retry_after(monkeypatch):
     from email.message import Message
     from urllib.error import HTTPError
+
     from hermes_cli.release_channels import ChannelReader, retrying_reads
 
     url = "http://127.0.0.1:12345/releases/fixture.json"
@@ -116,7 +117,13 @@ def test_passive_reads_and_missing_objects_make_one_attempt(monkeypatch):
     import errno
     from email.message import Message
     from urllib.error import HTTPError, URLError
-    from hermes_cli.release_channels import ChannelError, ChannelNotFound, ChannelReader, retrying_reads
+
+    from hermes_cli.release_channels import (
+        ChannelError,
+        ChannelNotFound,
+        ChannelReader,
+        retrying_reads,
+    )
 
     waits = []
     monkeypatch.setattr("pm.network.time.sleep", waits.append)
@@ -142,7 +149,7 @@ def test_passive_reads_and_missing_objects_make_one_attempt(monkeypatch):
 
 
 def test_reader_rejects_cycles_identity_substitution_and_cross_authority():
-    from hermes_cli.release_channels import ChannelReader, ChannelError, canonical_json
+    from hermes_cli.release_channels import ChannelError, ChannelReader, canonical_json
     with object_server() as (url, objects, headers, requests, faults):
         pub = publisher(url)
         pub.create("alpha")
@@ -171,7 +178,7 @@ def test_reader_rejects_cycles_identity_substitution_and_cross_authority():
 
 
 def test_legacy_bootstrap_uses_real_archive_keys_and_source_main_has_no_bundle():
-    from hermes_cli.release_channels import canonical_json, ChannelError
+    from hermes_cli.release_channels import ChannelError, canonical_json
     with object_server() as (url, objects, headers, requests, faults):
         pub = publisher(url, verify_build=lambda request, manifest: True)
         preview = pub.create("temporary")
@@ -217,7 +224,7 @@ def test_sequence_versions_remain_monotonic_at_native_rollover(sequence):
 
 @pytest.mark.parametrize("sequence", [0, -1, True, 2**32, "1"])
 def test_sequence_exhaustion_never_wraps(sequence):
-    from hermes_cli.release_channels import package_versions, ChannelError
+    from hermes_cli.release_channels import ChannelError, package_versions
     with pytest.raises(ChannelError):
         package_versions(sequence)
 
@@ -250,7 +257,7 @@ def test_malformed_record_and_unqualified_retirement_never_resolve():
 
 @pytest.mark.parametrize("field,value", [("policy", []), ("state", {}), ("revision", True), ("head", []), ("identity", None)])
 def test_malformed_wire_types_are_channel_errors(field, value):
-    from hermes_cli.release_channels import validate_record, ChannelError
+    from hermes_cli.release_channels import ChannelError, validate_record
     from scripts.releases.channels import preview_identity
     record = {"schema": 1, "name": "arbitrary", "repository": "example/hermes-agent", "policy": "preview",
               "state": "active", "revision": 1, "nextSequence": 1, "head": None,
@@ -296,7 +303,7 @@ def test_archive_ref_names_the_protected_archive_prefix():
 
 
 def test_stable_manifest_without_archive_ref_fails_closed_outside_the_tag_prefix():
-    from hermes_cli.release_channels import validate_manifest, ChannelError
+    from hermes_cli.release_channels import ChannelError, validate_manifest
     request = stable_request()
     manifest, record = stable_manifest(request, "releases/tag/rc.2-v1.2.3/")
     with pytest.raises(ChannelError, match="namespace"):
@@ -312,7 +319,7 @@ def test_archive_ref_equal_to_the_release_tag_keeps_the_tag_prefix():
 
 
 def test_archive_ref_must_name_the_release_version():
-    from hermes_cli.release_channels import validate_request, ChannelError
+    from hermes_cli.release_channels import ChannelError, validate_request
     with pytest.raises(ChannelError, match="(?i)archive ref"):
         validate_request(stable_request(archive_ref="rc.2-v1.2.4"), policy="stable-release")
 
@@ -326,6 +333,6 @@ def test_attempt_ref_shapes_are_attempt_refs(ref):
 @pytest.mark.parametrize("ref", ["v0.21.5-rc", "v0.21.5-rc.1", "rc.01-v0.21.5", "rc.0-v0.21.5",
                                  "rc.1-v2026.9.21", "v0.21.5", "abandoned-rc.1-v0.21.5"])
 def test_non_attempt_ref_shapes_are_rejected_as_archive_refs(ref):
-    from hermes_cli.release_channels import validate_request, ChannelError
+    from hermes_cli.release_channels import ChannelError, validate_request
     with pytest.raises(ChannelError, match="(?i)archive ref"):
         validate_request(stable_request(archive_ref=ref), policy="stable-release")

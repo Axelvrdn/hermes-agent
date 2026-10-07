@@ -14,13 +14,13 @@ from __future__ import annotations
 
 import pytest
 
-from hermes_state import SessionDB
 from hermes_cli.oneshot import (
     _apply_stored_session_runtime,
     _load_resume_target,
     _ModelChoice,
     run_oneshot,
 )
+from hermes_state import SessionDB
 
 
 def _db_with_session(tmp_path, sid, *, messages=()):

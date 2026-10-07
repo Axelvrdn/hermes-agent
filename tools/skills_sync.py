@@ -23,11 +23,18 @@ for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         with suppress(ValueError, TypeError):
             _stream.reconfigure(encoding="utf-8", errors="replace")
-from hermes_constants import get_bundled_skills_dir, get_hermes_home, get_optional_skills_dir
 from agent.skill_utils import ESSENTIAL_SKILLS, is_excluded_skill_path
+from hermes_constants import (
+    get_bundled_skills_dir,
+    get_hermes_home,
+    get_optional_skills_dir,
+)
 from tools.skill_usage import _read_skill_name
 from tools.skills_sync_optional import (
-    _backfill_optional_provenance, _ignore_runtime_cache, _is_runtime_cache, _read_hub_install_paths,
+    _backfill_optional_provenance,
+    _ignore_runtime_cache,
+    _is_runtime_cache,
+    _read_hub_install_paths,
 )
 from utils import atomic_write_text
 
@@ -100,7 +107,7 @@ def _iter_active_skill_mds(sort: bool = False) -> Iterator[Path]:
 def _build_external_skill_index() -> Set[str]:
     """Names (directory and frontmatter) of every skill provided by external_dirs,
     so sync_skills never shadows an externally-delegated skill."""
-    from agent.skill_utils import get_external_skills_dirs, _external_dirs_cache_clear
+    from agent.skill_utils import _external_dirs_cache_clear, get_external_skills_dirs
     _external_dirs_cache_clear()  # so a config edit (or a test patch) is seen
     external_names: Set[str] = set()
     for ext_dir in get_external_skills_dirs():

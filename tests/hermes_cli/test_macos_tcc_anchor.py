@@ -25,8 +25,8 @@ from pathlib import Path
 import pytest
 
 import hermes_cli.macos_tcc_anchor as tcc
-from pm.environments import venv_python
 from hermes_cli import doctor_platform
+from pm.environments import venv_python
 
 
 def _build_store(tmp_path, version: str = "3.11.15", *, with_libpython: bool = False) -> Path:

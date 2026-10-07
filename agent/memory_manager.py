@@ -16,9 +16,13 @@ from concurrent.futures import Future, ThreadPoolExecutor, wait
 from functools import partial
 from typing import Any, Callable, Dict, List, Optional
 
+from agent.memory_provider import (
+    PRE_COMPRESS_CHECKPOINT_API_VERSION,
+    MemoryProvider,
+    ctx_bound,
+    spawn_context_thread,
+)
 from agent.redact import redact_for_egress
-
-from agent.memory_provider import MemoryProvider, PRE_COMPRESS_CHECKPOINT_API_VERSION, ctx_bound, spawn_context_thread
 from agent.skill_commands import extract_user_instruction_from_skill_message
 from tools.hook_output_spill import get_spill_config, spill_if_oversized
 from tools.registry import tool_error
@@ -709,7 +713,9 @@ class MemoryManager:
         if provider is None:
             return tool_error(f"No memory provider handles tool '{tool_name}'")
         args = _redact_for_provider(args)
-        from hermes_cli.observability.shared_metrics_loop import record_provider_memory_call
+        from hermes_cli.observability.shared_metrics_loop import (
+            record_provider_memory_call,
+        )
         try:
             result = provider.handle_tool_call(tool_name, args, **kwargs)
         except Exception as e:

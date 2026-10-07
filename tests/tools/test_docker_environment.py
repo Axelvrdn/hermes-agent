@@ -1,9 +1,9 @@
 import logging
 import os
 import re
-from io import StringIO
 import subprocess
 import tempfile
+from io import StringIO
 
 import pytest
 

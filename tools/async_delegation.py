@@ -100,6 +100,7 @@ def _db_path():
 
 def _connect() -> sqlite3.Connection:
     from hermes_cli.sqlite_util import open_db
+
     # Same state.db as hermes_state.SessionDB -- reuse its owner-only (0600)
     # hardening so this writer doesn't create/leave the file (and its WAL
     # sidecars) at the process umask. See hermes_state._secure_state_db_files.
@@ -247,7 +248,11 @@ def _owner_liveness() -> Optional[Callable[[Any, Any], bool]]:
     """``alive(owner_pid, owner_started_at)`` over the shared drift-tolerant start-time comparator,
     or None when the liveness probes cannot be imported."""
     try:
-        from gateway.status import _pid_exists, get_process_start_time, start_time_fingerprints_match
+        from gateway.status import (
+            _pid_exists,
+            get_process_start_time,
+            start_time_fingerprints_match,
+        )
     except Exception:
         return None
 
@@ -283,7 +288,10 @@ def recover_abandoned_delegations() -> int:
             diagnostics = {"last_known_status": last_state, "task_transcripts": task.get("task_transcripts") or {}}
             # Verbatim transcript tails + a git snapshot of the owner's cwd, so the parent can
             # continue or re-dispatch from the event alone instead of opening files (#116000).
-            from tools.async_delegation_recovery_hints import git_state_hint, transcript_tails
+            from tools.async_delegation_recovery_hints import (
+                git_state_hint,
+                transcript_tails,
+            )
             if tails := transcript_tails(diagnostics["task_transcripts"]):
                 diagnostics["transcript_tails"] = tails
             if hint := git_state_hint(task.get("owner_cwd")):

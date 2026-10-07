@@ -68,6 +68,7 @@ def test_commit_version_banner_uses_stamp_not_shared_checkout(commit_build, monk
 @pytest.mark.parametrize("managed", [False, True])
 def test_commit_backend_update_routes_refuse_before_checks_or_spawns(commit_build, monkeypatch, tmp_path, managed):
     from starlette.testclient import TestClient
+
     import hermes_cli.web_server as server
     import hermes_cli.web_server_gateway as gateway
     from hermes_cli import banner, source_check

@@ -5,12 +5,6 @@ from hermes_cli.session_export_html import (
 )
 
 
-
-
-
-
-
-
 def test_single_session_untitled_coalesces_none_title_and_model():
     """An un-named session (title/model still ``None`` until async title
     generation completes) is the default state, so the single-session export

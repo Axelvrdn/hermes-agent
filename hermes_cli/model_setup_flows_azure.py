@@ -6,11 +6,17 @@ Prompt strings and config write order are behavior.
 
 from __future__ import annotations
 
-from pm import install_hint
 from dataclasses import dataclass, field
 
 from hermes_cli.config import clear_model_endpoint_credentials
-from hermes_cli.model_setup_flows_common import _HTTP, _ask, _commit_model_config, _load_config_model_section, _say
+from hermes_cli.model_setup_flows_common import (
+    _HTTP,
+    _ask,
+    _commit_model_config,
+    _load_config_model_section,
+    _say,
+)
+from pm import install_hint
 
 
 def _azure_mode_label(mode: str) -> str:
@@ -46,8 +52,12 @@ def _azure_entra_preflight(current_entra: dict):
     when the user cancelled; ``False`` when the adapter is missing (fall back to API key)."""
     try:
         from agent.azure_identity_adapter import (
-            EntraIdentityConfig, SCOPE_AI_AZURE_DEFAULT, build_token_provider, describe_active_credential,
-            has_azure_identity_installed)
+            SCOPE_AI_AZURE_DEFAULT,
+            EntraIdentityConfig,
+            build_token_provider,
+            describe_active_credential,
+            has_azure_identity_installed,
+        )
     except ImportError as exc:
         _say("", f"⚠ Could not import azure-identity adapter: {exc}", "  Falling back to API key auth.")
         return False
@@ -154,8 +164,8 @@ def _model_flow_azure_foundry(config, current_model=""):
     (``AZURE_FOUNDRY_API_KEY``) or Microsoft Entra ID (keyless RBAC via ``azure-identity``; the
     ``Azure AI User`` role covers both transports). Detection: ``/anthropic`` URL suffix → Anthropic;
     ``GET <base>/models`` → OpenAI-style + picker; Anthropic Messages probe; manual entry."""
-    from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli import azure_detect
+    from hermes_cli.config import get_env_value, save_env_value
 
     cur = _azure_current(config)
     _say("", "Azure Foundry Configuration", "=" * 50, "",

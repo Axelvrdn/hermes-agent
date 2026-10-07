@@ -13,16 +13,34 @@ from contextlib import suppress
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple, Optional
 
-from hermes_cli.providers import (
-    LLAMACPP_ALIASES, ProviderDef, custom_provider_aliases, determine_api_mode, get_label,
-    host_mandated_api_mode, is_aggregator, normalize_provider, resolve_provider_full)
-from hermes_cli.model_normalize import normalize_model_for_provider
 from agent.models_dev import (
-    ModelCapabilities, ModelInfo, get_model_capabilities, get_model_info, list_provider_models)
-from utils import base_url_host_matches, base_url_hostname, base_url_origin, file_signature
+    ModelCapabilities,
+    ModelInfo,
+    get_model_capabilities,
+    get_model_info,
+    list_provider_models,
+)
+from hermes_cli.model_normalize import normalize_model_for_provider
+
 # Re-exported: callers/tests patch hermes_cli.model_switch.<name>.
 from hermes_cli.model_switch_providers import list_authenticated_providers
-
+from hermes_cli.providers import (
+    LLAMACPP_ALIASES,
+    ProviderDef,
+    custom_provider_aliases,
+    determine_api_mode,
+    get_label,
+    host_mandated_api_mode,
+    is_aggregator,
+    normalize_provider,
+    resolve_provider_full,
+)
+from utils import (
+    base_url_host_matches,
+    base_url_hostname,
+    base_url_origin,
+    file_signature,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -409,7 +427,8 @@ def resolve_startup_model_route(
 
     if current_provider:
         try:
-            from hermes_cli.providers import is_routing_aggregator, normalize_provider as _norm_prov
+            from hermes_cli.providers import is_routing_aggregator
+            from hermes_cli.providers import normalize_provider as _norm_prov
             if is_routing_aggregator(_norm_prov(current_provider)):
                 from hermes_cli.models import _find_openrouter_slug
                 if _find_openrouter_slug(raw):
@@ -952,7 +971,10 @@ def _configured_provider_identity(slug: str, cfg: dict) -> tuple[str, str, str, 
     normalizer that builds the compat view, so a ``providers.<slug>`` row, its ``custom:<name>``
     projection and a legacy duplicate of the same endpoint reduce to one tuple. Any difference in
     endpoint, credential identity or wire protocol keeps two rows distinct."""
-    from hermes_cli.config_providers import _canonical_api_mode, _normalize_custom_provider_entry
+    from hermes_cli.config_providers import (
+        _canonical_api_mode,
+        _normalize_custom_provider_entry,
+    )
     # ``provider_key`` is the compat view's stamp, not a config key: drop it so the normalizer does
     # not warn about it as unknown.
     entry = _normalize_custom_provider_entry({k: v for k, v in cfg.items() if k != "provider_key"},
@@ -1479,7 +1501,10 @@ def _creds_for_current_provider(st: _Switch) -> None:
     """Credentials when staying on the current provider. Mid-session ``/model <name>`` on a local
     Ollama-compatible endpoint keeps the endpoint in use; re-resolving bare ``custom`` from config
     can fall through to an unrelated default provider."""
-    from hermes_cli.models_local import _get_ollama_request_headers, _same_ollama_native_root
+    from hermes_cli.models_local import (
+        _get_ollama_request_headers,
+        _same_ollama_native_root,
+    )
     keep_current_ollama_endpoint = False
     ollama_headers: dict[str, str] = {}
     if st.current_provider == "custom" and st.current_base_url:
@@ -1542,7 +1567,9 @@ def _custom_endpoint_source() -> str:
         if env_url:
             return env_url
         from hermes_cli.runtime_provider import (
-            _config_base_url_trustworthy_for_bare_custom, _get_model_config)
+            _config_base_url_trustworthy_for_bare_custom,
+            _get_model_config,
+        )
         model_cfg = _get_model_config() or {}
         base = model_cfg.get("base_url") if isinstance(model_cfg.get("base_url"), str) else ""
         provider = model_cfg.get("provider") if isinstance(model_cfg.get("provider"), str) else ""
@@ -1722,7 +1749,10 @@ def _build_switch_result(st: _Switch) -> ModelSwitchResult:
     # chat_template_kwargs) so the gateway applies them like the default-provider path does.
     request_overrides = None
     try:
-        from hermes_cli.runtime_provider import _get_named_custom_provider, _custom_provider_request_overrides
+        from hermes_cli.runtime_provider import (
+            _custom_provider_request_overrides,
+            _get_named_custom_provider,
+        )
         cp_for_ro = _get_named_custom_provider(st.target_provider)
         request_overrides = _custom_provider_request_overrides(cp_for_ro) or None if cp_for_ro else None
     except Exception:
@@ -1828,6 +1858,7 @@ def persist_model_selection(result: ModelSwitchResult, config_path: Any = None) 
     user set there (``model_slots``, ``model_fallback``, ...). ``should_clear_context_pin`` can do
     cold-start disk I/O — async callers run this on a worker thread."""
     from pathlib import Path
+
     from hermes_cli.config import get_config_path, read_user_config_raw
     from utils import atomic_roundtrip_yaml_update
     path = Path(config_path) if config_path else get_config_path()
@@ -1859,7 +1890,11 @@ def _scoped_key_env(name: str) -> str:
     if not name:
         return ""
     try:
-        from agent.secret_scope import current_secret_scope, get_secret, is_multiplex_active
+        from agent.secret_scope import (
+            current_secret_scope,
+            get_secret,
+            is_multiplex_active,
+        )
         if current_secret_scope() is not None or is_multiplex_active():
             return (get_secret(name, "") or "").strip()
         from agent.credential_pool import get_env_prefer_dotenv

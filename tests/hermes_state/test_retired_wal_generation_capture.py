@@ -21,10 +21,18 @@ import pytest
 import hermes_state
 from hermes_state import DeletedWalGenerationError, SessionDB
 from hermes_state_dbfile import (
-    RETIRED_GENERATION_MANIFEST, RetiredGenerationCaptureError, capture_retired_wal_generation,
+    RETIRED_GENERATION_MANIFEST,
+    RetiredGenerationCaptureError,
+    capture_retired_wal_generation,
 )
 from tests.hermes_state._wal_generation_harness import (
-    gateway_writer, integrity_ok_conn, lose_sidecars, make_db, pin_wal, require_wal, write_second_generation,
+    gateway_writer,
+    integrity_ok_conn,
+    lose_sidecars,
+    make_db,
+    pin_wal,
+    require_wal,
+    write_second_generation,
 )
 
 FD_DIRECTORY = "/proc/self/fd" if sys.platform.startswith("linux") else "/dev/fd"

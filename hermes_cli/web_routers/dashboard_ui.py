@@ -12,15 +12,25 @@ from typing import Callable, Optional
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 
-from hermes_cli.web_deps import LateState, late
 from hermes_cli.config import cfg_get
+from hermes_cli.web_deps import LateState, late
+from hermes_cli.web_models import (
+    FontSetBody,
+    ThemeSetBody,
+    _AgentPluginInstallBody,
+    _PluginProvidersPutBody,
+    _PluginVisibilityBody,
+)
 from hermes_cli.web_routers._common import config_scoped_to_thread
 from hermes_cli.web_server_dashboard import (
-    _BUILTIN_DASHBOARD_THEMES, _discover_user_themes, _invalidate_plugins_hub_cache, _merged_plugins_hub,
+    _BUILTIN_DASHBOARD_THEMES,
+    _discover_user_themes,
+    _invalidate_plugins_hub_cache,
+    _merged_plugins_hub,
 )
-from hermes_cli.web_server_memory import _normalize_memory_provider_name, _require_memory_provider_ready
-from hermes_cli.web_models import (
-    FontSetBody, ThemeSetBody, _AgentPluginInstallBody, _PluginProvidersPutBody, _PluginVisibilityBody,
+from hermes_cli.web_server_memory import (
+    _normalize_memory_provider_name,
+    _require_memory_provider_ready,
 )
 
 _log = logging.getLogger("hermes_cli.web_server")
@@ -109,7 +119,7 @@ async def set_dashboard_font(body: FontSetBody, profile: Optional[str] = None):
 def _plugin_enable_sets() -> tuple[set, set]:
     """(enabled, disabled) plugin name sets; empty on any failure."""
     try:
-        from hermes_cli.plugins_cmd import _get_enabled_set, _get_disabled_set
+        from hermes_cli.plugins_cmd import _get_disabled_set, _get_enabled_set
         return _get_enabled_set(), _get_disabled_set()
     except Exception:
         return set(), set()
@@ -186,7 +196,11 @@ async def get_plugins_catalog(request: Request):
     _require_token(request)
 
     def _run():
-        from hermes_cli.plugins_cmd import _discover_all_plugins, _get_disabled_set, _get_enabled_set
+        from hermes_cli.plugins_cmd import (
+            _discover_all_plugins,
+            _get_disabled_set,
+            _get_enabled_set,
+        )
         from hermes_cli.plugins_cmd_catalog import installed_catalog_state
         from hermes_cli.web_server_dashboard import _plugin_runtime_status
         enabled, disabled = _get_enabled_set(), _get_disabled_set()

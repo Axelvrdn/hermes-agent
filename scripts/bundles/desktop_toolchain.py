@@ -4,16 +4,15 @@ This module is stdlib-only until preparation runs inside the isolated child.
 """
 from __future__ import annotations
 
-from collections.abc import Mapping
 import hashlib
 import json
 import os
-from pathlib import Path
 import platform
 import subprocess
 import sys
 import uuid
-
+from collections.abc import Mapping
+from pathlib import Path
 
 _INSTALL_ENV = {
     "HERMES_INSTALL_ROOT", "HERMES_PAYLOAD_ROOT", "HERMES_PAYLOAD_TAG", "HERMES_BUILD_COMMIT",
@@ -187,6 +186,7 @@ def native_cache_path(cache: Path, env: Mapping[str, str]) -> Path:
 
 if __name__ == "__main__":
     import runpy
+
     import truststore
 
     # Like pm/launch.py: initialize platform trust before PM creates HTTPS clients.

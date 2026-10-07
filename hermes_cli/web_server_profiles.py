@@ -2,16 +2,18 @@
 the profile/config scope context managers, skills-hub and tools/analytics catalog helpers.
 """
 
-import logging
 import hashlib
+import logging
 import os
 import re
 import sys
 import threading
 from contextlib import contextmanager, nullcontext
-from fastapi import HTTPException
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
+
+from fastapi import HTTPException
+
 from hermes_cli.config import DEFAULT_CONFIG, get_process_hermes_home
 from hermes_cli.web_models import MCPServerCreate
 from hermes_cli.web_server_gateway import _ACTION_LOG_FILES
@@ -38,7 +40,7 @@ def _is_current_profile(profile: Optional[str]) -> bool:
 def _hermes_home_scope(path) -> Any:
     """Scope ``load_config``/``save_config`` (anything resolving ``get_hermes_home()`` at call
     time) to ``path`` for the block via the context-local HERMES_HOME override."""
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     token = set_hermes_home_override(str(path))
     try:
         yield
@@ -257,8 +259,8 @@ def _profile_scope(profile: Optional[str]):
     1.
     """
     from hermes_constants import get_hermes_home
-    from tools import skills_tool as _skills_tool
     from tools import skill_manager_tool as _skill_mgr
+    from tools import skills_tool as _skills_tool
     with _config_profile_scope(profile) as scoped:
         profile_dir = get_hermes_home() if scoped is None else scoped
         modules = (_skills_tool, _skill_mgr)
@@ -291,9 +293,16 @@ def _config_profile_scope(profile: Optional[str]):
     Explicit names resolving to the process home retain current-profile semantics.
     Still enter the requested home so a nested scope cannot retain another profile.
     """
-    from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
+    from agent.secret_scope import (
+        build_profile_secret_scope,
+        reset_secret_scope,
+        set_secret_scope,
+    )
     from hermes_cli.env_loader import hydrate_profile_secret_sources
-    from tui_gateway.launch_profile_policy import activate_multi_profile_hosting, launch_secret_scope
+    from tui_gateway.launch_profile_policy import (
+        activate_multi_profile_hosting,
+        launch_secret_scope,
+    )
 
     process_home = get_process_hermes_home()
     if _is_current_profile(profile):

@@ -179,7 +179,10 @@ def test_guard_refusal_is_recorded_in_runtime_status_and_cleared_on_default(tmp_
     """A guard refusal must be visible to `hermes gateway status`, not only in the boot log; a later
     boot that multiplexes clears it (a stale reason would misdescribe the live gateway)."""
     from gateway import status as gw_status
-    from hermes_cli.gateway_multiplex_mode import MultiplexDecision, record_multiplex_decision
+    from hermes_cli.gateway_multiplex_mode import (
+        MultiplexDecision,
+        record_multiplex_decision,
+    )
     monkeypatch.setattr(gw_status, "_get_runtime_status_path", lambda: tmp_path / "gateway_state.json")
     record_multiplex_decision(MultiplexDecision(False, "guard", "profile(s) 'coder' still run their own gateway"))
     assert "coder" in gw_status.read_runtime_status(tmp_path / "gateway_state.json")["multiplex_standalone_reason"]
@@ -189,8 +192,9 @@ def test_guard_refusal_is_recorded_in_runtime_status_and_cleared_on_default(tmp_
 
 def test_recorded_standalone_warning_lines_suppressed_for_dead_or_stale_record(tmp_path, monkeypatch):
     """Dead or stale gateway_state.json must not emit standalone warnings (#120991)."""
-    import gateway.status as gw_status
     from datetime import datetime, timezone
+
+    import gateway.status as gw_status
 
     state_file = tmp_path / "gateway_state.json"
     monkeypatch.setattr(gw_status, "_get_runtime_status_path", lambda: state_file)

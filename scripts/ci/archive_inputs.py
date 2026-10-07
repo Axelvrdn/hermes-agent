@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
 import json
-from pathlib import Path, PurePosixPath
 import re
 import shutil
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
 from urllib.parse import quote, urlsplit
 
 # The runner invokes this before setup-pm has installed the checkout.

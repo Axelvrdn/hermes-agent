@@ -34,7 +34,10 @@ def answer_in_reasoning_capability(agent: Any) -> bool:
         return False
 
     # Returns None on unreadable config, so no guard is needed here.
-    from hermes_cli.config import _entries_for_route, get_custom_provider_model_capability
+    from hermes_cli.config import (
+        _entries_for_route,
+        get_custom_provider_model_capability,
+    )
 
     model = str(getattr(agent, "model", "") or "")
     custom_providers = getattr(agent, "_custom_providers", None)

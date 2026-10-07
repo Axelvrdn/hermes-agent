@@ -5,7 +5,7 @@ body.  A previous version sent ``sessionKey`` which caused a 400 Bad Request
 on every ``browser_navigate`` call.  See issue #37960.
 """
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 def test_ensure_tab_sends_list_item_id():

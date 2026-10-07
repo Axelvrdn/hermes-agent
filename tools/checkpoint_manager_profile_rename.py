@@ -14,8 +14,8 @@ import shutil
 from pathlib import Path
 from typing import Dict
 
-from tools import checkpoint_manager as cm
 from tools import checkpoint_maintenance as maintenance
+from tools import checkpoint_manager as cm
 
 logger = logging.getLogger(__name__)
 

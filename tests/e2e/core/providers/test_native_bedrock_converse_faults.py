@@ -20,11 +20,27 @@ pytest.importorskip("botocore")
 
 from tests.e2e.core._pending_fixes import known_gate  # noqa: E402
 from tests.e2e.core.providers._native_helpers import (  # noqa: E402
-    ChatResult, KnownSymptom, NativeHome, assert_no_duplicate_assistant_text, make_home, messages, run_chat,
+    ChatResult,
+    KnownSymptom,
+    NativeHome,
+    assert_no_duplicate_assistant_text,
+    make_home,
+    messages,
+    run_chat,
 )
 from tests.fakes.providers.bedrock_converse import (  # noqa: E402
-    ACCESS_KEY, REGION, SECRET_KEY, Drop, FakeBedrock, HttpError, Reasoning, Reply, StreamException, Text,
-    Turn, seq,
+    ACCESS_KEY,
+    REGION,
+    SECRET_KEY,
+    Drop,
+    FakeBedrock,
+    HttpError,
+    Reasoning,
+    Reply,
+    StreamException,
+    Text,
+    Turn,
+    seq,
 )
 
 MODEL = "deepseek.v3-v1:0"

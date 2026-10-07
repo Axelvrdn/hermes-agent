@@ -28,8 +28,8 @@ from unittest.mock import MagicMock
 
 def _make_adapter():
     """Construct a DiscordAdapter without going through __init__ / token checks."""
-    from plugins.platforms.discord.adapter import DiscordAdapter
     from gateway.platforms.base import Platform
+    from plugins.platforms.discord.adapter import DiscordAdapter
     adapter = object.__new__(DiscordAdapter)
     adapter.config = MagicMock()
     adapter.config.extra = {}
@@ -99,7 +99,7 @@ class TestHandleReloadSkillsCallsRefreshSkillGroup:
         skipped without raising.
         """
         import asyncio
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         # Import without constructing a real runner — test the method
         # directly against an ``object.__new__`` instance.

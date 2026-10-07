@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import pytest
 
+
 @pytest.fixture(autouse=True)
 def _clear_env(monkeypatch):
     monkeypatch.delenv("HERMES_GATEWAY_HTTPX_KEEPALIVE_EXPIRY", raising=False)

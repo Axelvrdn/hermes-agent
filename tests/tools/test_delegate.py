@@ -16,18 +16,18 @@ import types
 import unittest
 from unittest.mock import MagicMock, patch
 
+from hermes_state import SessionDB
 from tools.delegate_tool import (
     DELEGATE_BLOCKED_TOOLS,
     DELEGATE_TASK_SCHEMA,
+    _build_child_agent,
     _get_max_concurrent_children,
     _load_config,
-    delegate_task,
-    _build_child_agent,
-    _strip_blocked_tools,
     _resolve_child_credential_pool,
     _resolve_delegation_credentials,
+    _strip_blocked_tools,
+    delegate_task,
 )
-from hermes_state import SessionDB
 
 
 def _make_mock_parent(depth=0):
@@ -1902,11 +1902,14 @@ class TestSubagentApprovalCallback(unittest.TestCase):
         not the parent's — verifies the fix actually scopes to workers.
         """
         from concurrent.futures import ThreadPoolExecutor
+
+        from tools.delegate_tool import _subagent_auto_deny
         from tools.terminal_tool import (
-            set_approval_callback as _set_cb,
             _get_approval_callback,
         )
-        from tools.delegate_tool import _subagent_auto_deny
+        from tools.terminal_tool import (
+            set_approval_callback as _set_cb,
+        )
 
         # Parent thread has no callback.
         _set_cb(None)

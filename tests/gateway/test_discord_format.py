@@ -1,7 +1,7 @@
 """Discord format_message: tables converted to bullet groups."""
 
-import types
 import sys
+import types
 
 
 def _make_discord_adapter():

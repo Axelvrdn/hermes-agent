@@ -13,9 +13,9 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Optional
 
-from utils import is_truthy_value
 from agent.i18n import t
 from hermes_constants import INDICATOR_STYLES
+from utils import is_truthy_value
 
 logger = logging.getLogger(__name__)
 

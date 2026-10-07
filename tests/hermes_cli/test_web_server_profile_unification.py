@@ -10,19 +10,20 @@ import json
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
+
 import gateway.status as _gw_status
 import hermes_cli.config as _cfg_mod
 import hermes_cli.web_server_chat as _web_server_chat
 import hermes_cli.web_server_gateway as _web_server_gateway
 import hermes_cli.web_server_messaging as _web_server_messaging
+import hermes_yaml as yaml
 
 
 @pytest.fixture
 def isolated_profiles(tmp_path, monkeypatch, _isolate_hermes_home):
     """Isolated default home + one named profile, each with config + .env."""
-    from hermes_constants import get_hermes_home
     from hermes_cli import profiles
+    from hermes_constants import get_hermes_home
 
     default_home = get_hermes_home()
     profiles_root = default_home / "profiles"
@@ -45,8 +46,8 @@ def client(monkeypatch, isolated_profiles):
         pytest.skip("fastapi/starlette not installed")
 
     import hermes_state
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
     from hermes_constants import get_hermes_home
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
     monkeypatch.setattr(hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db")
     c = TestClient(app)

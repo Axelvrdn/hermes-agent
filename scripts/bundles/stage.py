@@ -37,8 +37,8 @@ def main(argv=None) -> int:
     with tempfile.TemporaryDirectory(prefix="hermes-products-") as temp:
         products = Path(temp)
         source = products / "source"
-        from scripts.bundles.payload import snapshot
         from scripts.build.icon_environment import prepare_icon_environment
+        from scripts.bundles.payload import snapshot
         snapshot(ROOT, args.ref, source)
         # The staging interpreter need not be a Hermes runtime; render icons on one.
         icon_python = prepare_icon_environment(source, products / "icon-environment", args.cache)

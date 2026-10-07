@@ -297,6 +297,7 @@ class TestMultiSelectTextFallback:
 
     def test_duplicate_selections_deduped(self):
         import json
+
         from tools import clarify_gateway as cm
         entry = self._register_multi()
         coerced = cm._coerce_text_response(entry, "1, 1, 2")
@@ -305,6 +306,7 @@ class TestMultiSelectTextFallback:
     def test_resolve_text_response_end_to_end(self):
         """resolve_text_response_for_session delivers the JSON array to the waiter."""
         import json
+
         from tools import clarify_gateway as cm
         self._register_multi(cid="m3")
         result_box = {}

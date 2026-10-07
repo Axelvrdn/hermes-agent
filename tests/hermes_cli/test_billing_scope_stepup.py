@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+
 import pytest
 
 import hermes_cli.auth as auth
@@ -12,7 +13,6 @@ from hermes_cli.auth import (
     nous_token_has_billing_scope,
     step_up_nous_billing_scope,
 )
-
 
 # ---------------------------------------------------------------------------
 # nous_token_has_billing_scope

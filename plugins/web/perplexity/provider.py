@@ -218,7 +218,10 @@ class PerplexityWebSearchProvider(WebSearchProvider):
             managed = False if direct else _managed_web_search()
             gateway = resolve_free_search_gateway() if managed else None
             if gateway is None and managed:
-                from tools.tool_backend_helpers import NOUS_MANAGED_PROVIDER, selection_error
+                from tools.tool_backend_helpers import (
+                    NOUS_MANAGED_PROVIDER,
+                    selection_error,
+                )
 
                 raise ValueError(selection_error(
                     "web", NOUS_MANAGED_PROVIDER, "there is no usable Nous identity (sign in with `/login`)"))

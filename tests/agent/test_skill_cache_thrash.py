@@ -1,6 +1,7 @@
 """Regression test for #104849: skill command cache thrash from platform/home flapping."""
 from pathlib import Path
 from unittest.mock import patch
+
 from agent.skill_commands import get_skill_commands, scan_skill_commands
 
 
@@ -25,6 +26,7 @@ def test_cache_survives_platform_empty_string_none_flapping(tmp_path):
     to `None` so both spellings share one slot (scan once, hit forever).
     """
     import os
+
     import agent.skill_commands as sc_mod
 
     _make_skill(tmp_path, "test-skill")
@@ -70,6 +72,7 @@ def test_cache_creates_multiple_slots_for_distinct_platform_or_home(tmp_path):
     cache that breaks the #14536 / #88023 fixes (platform/profile isolation).
     """
     import os
+
     import agent.skill_commands as sc_mod
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
@@ -207,9 +210,10 @@ def test_reload_invalidates_every_identity_slot(tmp_path):
     """reload_skills() clears the whole multi-slot dict: a skill edit can affect
     any (platform, home, project) identity, so every cached view must rescan."""
     import os
+
     import agent.skill_commands as sc_mod
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from agent.skill_commands import reload_skills
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     profile_a = tmp_path / "profile_a"
     profile_b = tmp_path / "profile_b"

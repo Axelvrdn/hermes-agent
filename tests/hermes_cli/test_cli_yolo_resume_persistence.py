@@ -17,18 +17,17 @@ The fix persists a ``yolo_mode`` flag inside the session row's
   and re-enables the in-memory bypass.
 """
 
-import logging
 import json
+import logging
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 
 import tools.approval as approval_module
-from tools import approval_context
 from cli import HermesCLI
 from hermes_state import SessionDB
-
+from tools import approval_context
 
 SESSION_ID = "yolo_persist_session"
 

@@ -7,13 +7,13 @@ from unittest.mock import patch
 import pytest
 
 from agent.context_compressor import (
+    _NO_USER_TASK_SENTINEL,
     COMPRESSED_SUMMARY_HAS_USER_TURN_KEY,
     COMPRESSED_SUMMARY_METADATA_KEY,
     HISTORICAL_TASK_HEADING,
     MAX_ITERATIONS_SUMMARY_REQUEST,
     SUMMARY_PREFIX,
     ContextCompressor,
-    _NO_USER_TASK_SENTINEL,
 )
 from agent.conversation_compression import (
     compress_context,

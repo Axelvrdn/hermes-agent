@@ -15,11 +15,12 @@ Usage in execute_code:
     result = auto_jailbreak(model="anthropic/claude-sonnet-4")
 """
 
-import os
 import json
+import os
 import time
-from ruamel.yaml import YAML
 from pathlib import Path
+
+from ruamel.yaml import YAML
 
 yaml = YAML(typ="safe", pure=True)
 yaml.version = (1, 1)
@@ -53,6 +54,7 @@ _race_path = _SCRIPTS_DIR / "godmode_race.py"
 
 # Use the calling frame's globals so functions are accessible everywhere
 import inspect as _inspect
+
 _caller_globals = _inspect.stack()[0][0].f_globals if len(_inspect.stack()) > 0 else globals()
 
 if _parseltongue_path.exists():

@@ -1589,8 +1589,8 @@ def test_repair_decodes_sentinel_multimodal_and_skips_text_merge():
     """A multimodal turn re-inserted as its ``\x00json:`` string (e.g. after a proactive prune
     re-inserts history) must be decoded back to structured content, not glued onto an adjacent
     text turn as a giant base64 blob; an undecodable one is left unmerged (#125299)."""
-    from hermes_state import SessionDB
     from agent.agent_runtime_helpers import repair_message_sequence
+    from hermes_state import SessionDB
 
     parts = [
         {"type": "text", "text": "look at this"},
@@ -1629,9 +1629,10 @@ def test_repair_decode_of_durable_sentinel_row_does_not_reappend(tmp_path):
     count and role order do not change — a regression the content-only repair tests cannot catch."""
     import os
     from unittest.mock import patch
-    from hermes_state import SessionDB
+
     from agent.agent_runtime_helpers import repair_message_sequence_with_cursor
     from agent.context_compressor import _DB_PERSISTED_MARKER
+    from hermes_state import SessionDB
 
     parts = [
         {"type": "text", "text": "look"},

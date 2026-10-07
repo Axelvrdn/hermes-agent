@@ -4,8 +4,8 @@ models.dev consumer — capability lookup, context lookup, the picker's reasonin
 from copy import deepcopy
 
 import providers
-from providers.base import ProviderProfile
 from agent import models_dev
+from providers.base import ProviderProfile
 
 
 def _isolated_registry(monkeypatch, catalog=None):

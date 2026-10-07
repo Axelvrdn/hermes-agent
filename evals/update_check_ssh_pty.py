@@ -1,7 +1,6 @@
 """Linux live Git/OpenSSH PTY probe; fixture ssh config, no user state."""
 import json
 import os
-from pathlib import Path
 import pty
 import pwd
 import select
@@ -10,6 +9,7 @@ import socket
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 BASE = Path(os.environ['AUDIT_DIR'])
 REPO = Path(os.environ['AUDIT_REPO'])

@@ -14,7 +14,7 @@ class TestTTSProviderNullGuard:
 
     def test_missing_provider_keeps_free_default_with_cloud_credentials(self):
         """A chat-provider key must not silently opt the user into paid TTS."""
-        from tools.tts_tool import _get_provider, DEFAULT_PROVIDER
+        from tools.tts_tool import DEFAULT_PROVIDER, _get_provider
 
         assert _get_provider({}) == DEFAULT_PROVIDER
         assert _get_provider({"provider": None}) == DEFAULT_PROVIDER

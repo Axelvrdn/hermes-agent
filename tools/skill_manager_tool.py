@@ -10,30 +10,43 @@ existing skills (bundled, hub, user) are modified in place. Layout:
 import contextvars as _ctxvars
 import hashlib
 import json
-from contextlib import ExitStack, suppress
 import logging
 import re
 import shutil
+from contextlib import ExitStack, suppress
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import hermes_yaml as yaml
-
-from hermes_constants import get_hermes_home
-from utils import atomic_write_text, is_truthy_value
-from hermes_cli.config import cfg_get
 from agent.skill_utils import (
+    SKILL_PROMPT_DESC_LIMIT,
     extract_skill_description,
     is_skill_description_truncated_for_prompt,
-    parse_frontmatter as _parse_frontmatter,
-    SKILL_PROMPT_DESC_LIMIT)
-from tools.skill_manager_guards import (
-    _background_review_delete_guard, _background_review_preflight, _background_review_read_before_write_guard,
-    _containing_skills_root, _curator_consolidation_delete_guard, _is_path_redirect, _pinned_guard,
-    _validate_delete_target, _is_background_review, _refusal as _err)
+)
+from agent.skill_utils import parse_frontmatter as _parse_frontmatter
+from hermes_cli.config import cfg_get
+from hermes_constants import get_hermes_home
 from tools.skill_manager_batch import (
-    _PATCH_EITHER_OR, _PATCH_NEEDS_NEW_STRING, _PATCH_NEEDS_OLD_STRING, _op_shape_error, _skill_manage_batch)
-from tools.skills_guard import scan_skill, should_allow_install, format_scan_report
+    _PATCH_EITHER_OR,
+    _PATCH_NEEDS_NEW_STRING,
+    _PATCH_NEEDS_OLD_STRING,
+    _op_shape_error,
+    _skill_manage_batch,
+)
+from tools.skill_manager_guards import (
+    _background_review_delete_guard,
+    _background_review_preflight,
+    _background_review_read_before_write_guard,
+    _containing_skills_root,
+    _curator_consolidation_delete_guard,
+    _is_background_review,
+    _is_path_redirect,
+    _pinned_guard,
+    _validate_delete_target,
+)
+from tools.skill_manager_guards import _refusal as _err
+from tools.skills_guard import format_scan_report, scan_skill, should_allow_install
+from utils import atomic_write_text, is_truthy_value
 
 logger = logging.getLogger(__name__)
 
@@ -428,7 +441,10 @@ def _attach_lint_findings(result: Dict[str, Any], skill_md: Path, before: Option
     With ``before`` (the pre-write content) only rules the write INTRODUCED are attached, so a
     patch reports the line it crossed rather than re-listing the skill's standing findings."""
     try:
-        from tools.skill_linter import lint_content, lint_skill  # local import: optional path
+        from tools.skill_linter import (  # local import: optional path
+            lint_content,
+            lint_skill,
+        )
         findings = lint_skill(skill_md)
         if before is not None:
             standing = {f.rule for f in lint_content(before, skill_dir=skill_md.parent)}
@@ -746,13 +762,13 @@ def _record_success(action, name, result, *, file_path, absorbed_into, task_id,
     # (foreground creates belong to the user). A recoverable curator archive keeps its
     # record as STATE_ARCHIVED (`hermes curator status`/`restore`); only a hard delete forgets.
     with suppress(Exception):
-        from tools.skill_usage import bump_patch, forget, record_created
         # During the curator consolidation pass, a verified consolidation must be RECOVERABLE: archival into
         # ~/.hermes/skills/.archive/ is documented as the maximum destructive action the curator may take,
         # and `hermes curator restore` promises the skill can be brought back. Route through the recoverable
         # archive primitive instead of permanent rmtree so a misjudged consolidation can be undone (#29912).
         # Foreground, user-directed deletes keep their existing hard-delete semantics.
         from tools.skill_provenance import is_background_review
+        from tools.skill_usage import bump_patch, forget, record_created
         if action == "create":
             record_created(name, agent_created=is_background_review(),
                            task_id=task_id, session_id=session_id)

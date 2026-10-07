@@ -2,8 +2,8 @@
 
 import json
 
-from hermes_state import SessionDB
 import tui_gateway.server as server
+from hermes_state import SessionDB
 
 
 def test_deferred_desktop_resume_exposes_todo_older_than_display_tail(tmp_path, monkeypatch):

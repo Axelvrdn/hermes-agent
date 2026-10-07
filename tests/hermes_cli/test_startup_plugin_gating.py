@@ -20,7 +20,6 @@ from hermes_cli.main import (
     _resolve_deferred_platform_cli_command,
 )
 
-
 # ── _resolve_deferred_platform_cli_command (issue #54678) ──────────────────
 
 

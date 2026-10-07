@@ -14,7 +14,6 @@ from tests.gateway.feishu_helpers import (
     stub_mention,
 )
 
-
 # --- FeishuAdapterSettings wiring ------------------------------------------
 
 

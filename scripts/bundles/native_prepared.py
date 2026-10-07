@@ -1,17 +1,17 @@
 """Job-local native preparation admission; never a portable environment cache."""
 from __future__ import annotations
 
-from contextlib import contextmanager
-from dataclasses import asdict
 import hashlib
 import json
 import os
 import re
 import tomllib
+from contextlib import contextmanager
+from dataclasses import asdict
 from pathlib import Path
 
 from pm.store import current_target, tree_digest
-from scripts.build.inputs import AgentInputs, RESOURCE_ENV
+from scripts.build.inputs import RESOURCE_ENV, AgentInputs
 
 
 def prepared_path(out: Path) -> Path:

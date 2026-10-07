@@ -22,7 +22,10 @@ def test_use_anthropic_claude_code_credentials_clears_env_slots(tmp_path, monkey
     home.mkdir()
     monkeypatch.setenv("HERMES_HOME", str(home))
 
-    from hermes_cli.config import save_anthropic_oauth_token, use_anthropic_claude_code_credentials
+    from hermes_cli.config import (
+        save_anthropic_oauth_token,
+        use_anthropic_claude_code_credentials,
+    )
 
     save_anthropic_oauth_token("sk-ant-oat01-token")
     use_anthropic_claude_code_credentials()

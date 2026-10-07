@@ -3,7 +3,6 @@ appended to final gateway replies."""
 
 from __future__ import annotations
 
-
 import pytest
 
 from gateway.runtime_footer import (
@@ -13,7 +12,6 @@ from gateway.runtime_footer import (
     format_runtime_footer,
     resolve_footer_config,
 )
-
 
 # ---------------------------------------------------------------------------
 # _model_short + _home_relative_cwd

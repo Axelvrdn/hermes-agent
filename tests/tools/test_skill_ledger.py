@@ -16,7 +16,6 @@ from pathlib import Path
 
 import pytest
 
-
 VALID_SKILL_CONTENT = """---
 name: my-skill
 description: test skill
@@ -60,13 +59,13 @@ def test_background_review_patch_ledgers_and_rolls_back(ledger_env, monkeypatch)
     """A curator-pass patch lands in the ledger tagged 'curator', and a
     single-entry rollback restores the exact pre-patch content."""
     from tools import skill_ledger
+    from tools.skill_manager_guards import mark_background_review_skill_read
     from tools.skill_manager_tool import skill_manage
     from tools.skill_provenance import (
         BACKGROUND_REVIEW,
         reset_current_write_origin,
         set_current_write_origin,
     )
-    from tools.skill_manager_guards import mark_background_review_skill_read
 
     token = set_current_write_origin(BACKGROUND_REVIEW)
     try:
@@ -345,10 +344,9 @@ def test_rollback_removes_files_created_by_the_mutation(ledger_env):
 
 
 def test_config_gate_off_no_ledger_writes(ledger_env, monkeypatch):
+    import hermes_cli.config as _cfg
     from tools import skill_ledger
     from tools.skill_manager_tool import skill_manage
-
-    import hermes_cli.config as _cfg
 
     off = {"skills": {"ledger": False}}
     monkeypatch.setattr(_cfg, "load_config", lambda *a, **k: off)
@@ -620,9 +618,8 @@ def test_auto_compact_triggers_at_threshold(ledger_env, monkeypatch):
     order survive, and nothing is trimmed when dedup alone reaches the cap."""
     import json
 
-    from tools import skill_ledger
-
     import hermes_cli.config as _cfg
+    from tools import skill_ledger
 
     cap = {"skills": {"ledger_max_bytes": 8192}}
     monkeypatch.setattr(_cfg, "load_config", lambda *a, **k: cap)
@@ -657,9 +654,8 @@ def test_trim_oldest_when_still_over_cap(ledger_env, monkeypatch):
     not immediately re-trigger the sweep). The newest entry survives, and lines
     in the retained tail are never parsed or rewritten: a malformed last line
     survives verbatim."""
-    from tools import skill_ledger
-
     import hermes_cli.config as _cfg
+    from tools import skill_ledger
 
     cap = {"skills": {"ledger_max_bytes": 0}}  # no sweeps while seeding
     monkeypatch.setattr(_cfg, "load_config", lambda *a, **k: cap)
@@ -718,9 +714,8 @@ def test_concurrent_appends_never_lose_a_middle_row(ledger_env, monkeypatch):
     lock correctly blocks B, until a generous bound expires — green never depends on timing)."""
     import threading
 
-    from tools import skill_ledger
-
     import hermes_cli.config as _cfg
+    from tools import skill_ledger
 
     cap = {"skills": {"ledger_max_bytes": 4096}}  # padded rows ~600 B: a trim on nearly every append
     monkeypatch.setattr(_cfg, "load_config", lambda *a, **k: cap)

@@ -237,7 +237,9 @@ class ElevenLabsStreamer(StreamingTTSProvider):
     def stream(self, text: str) -> Iterator[bytes]:
         from tools.tts_tool import _import_elevenlabs
         from tools.tts_tool_providers import (
-            DEFAULT_ELEVENLABS_STREAMING_MODEL_ID, DEFAULT_ELEVENLABS_VOICE_ID, _elevenlabs_environment_kwargs,
+            DEFAULT_ELEVENLABS_STREAMING_MODEL_ID,
+            DEFAULT_ELEVENLABS_VOICE_ID,
+            _elevenlabs_environment_kwargs,
         )
         client = _import_elevenlabs()(
             api_key=_resolve_key("ELEVENLABS_API_KEY", "elevenlabs"), **_elevenlabs_environment_kwargs(self.section),
@@ -297,6 +299,7 @@ class OpenAIStreamer(StreamingTTSProvider):
 
     def stream(self, text: str) -> Iterator[bytes]:
         from openai import OpenAI
+
         from hermes_cli.config import get_env_value
         client = OpenAI(
             api_key=(self.section.get("api_key") or resolve_openai_audio_api_key()),
@@ -331,10 +334,15 @@ class GeminiStreamer(StreamingTTSProvider):
     def stream(self, text: str) -> Iterator[bytes]:
         import base64
         import json as _json
+
         import requests
-        from tools.tts_tool_providers import (
-            DEFAULT_GEMINI_TTS_BASE_URL, DEFAULT_GEMINI_TTS_MODEL, DEFAULT_GEMINI_TTS_VOICE)
+
         from hermes_cli.config import get_env_value
+        from tools.tts_tool_providers import (
+            DEFAULT_GEMINI_TTS_BASE_URL,
+            DEFAULT_GEMINI_TTS_MODEL,
+            DEFAULT_GEMINI_TTS_VOICE,
+        )
         api_key = _gemini_key()
         model = str(self.section.get("model", DEFAULT_GEMINI_TTS_MODEL)).strip() or DEFAULT_GEMINI_TTS_MODEL
         voice = str(self.section.get("voice", DEFAULT_GEMINI_TTS_VOICE)).strip() or DEFAULT_GEMINI_TTS_VOICE

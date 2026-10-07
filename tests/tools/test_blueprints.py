@@ -14,12 +14,11 @@ import pytest
 from tools.blueprints import (
     BlueprintError,
     BlueprintSpec,
+    blueprint_spec_for_installed,
     create_blueprint_job,
     export_blueprint,
     parse_blueprint,
-    blueprint_spec_for_installed,
 )
-
 
 BLUEPRINT_SKILL = """---
 name: morning-brief

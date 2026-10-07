@@ -2,6 +2,7 @@
 import sys
 
 import pytest
+
 from tests._fixtures.platform_gating import _host_matches_platforms, _platform_machine
 
 

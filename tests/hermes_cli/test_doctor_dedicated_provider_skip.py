@@ -12,6 +12,7 @@ See: NousResearch/hermes-agent#22346
 """
 
 from __future__ import annotations
+
 from hermes_cli import doctor_connectivity
 
 

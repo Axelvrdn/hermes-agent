@@ -15,7 +15,6 @@ import logging
 
 from hermes_cli.auth import AuthError, _quarantine_nous_oauth_state
 
-
 # A distinctive, obviously-fake refresh token so the redaction assertion is
 # unambiguous if it ever leaks.
 _FAKE_RT = "nous_rt_LEAK_CANARY_do_not_log_raw_0123456789abcdef"

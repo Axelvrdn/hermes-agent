@@ -12,14 +12,26 @@ import webbrowser
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional, Tuple
 from urllib.parse import urlencode, urlparse
+
 from hermes_cli.auth_constants import (
-    AuthError, DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL, DEFAULT_SPOTIFY_API_BASE_URL, DEFAULT_SPOTIFY_REDIRECT_URI,
-    DEFAULT_SPOTIFY_SCOPE, SPOTIFY_ACCESS_TOKEN_REFRESH_SKEW_SECONDS, SPOTIFY_DASHBOARD_URL, SPOTIFY_DOCS_URL,
-    _spotify_err, httpx,
+    DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL,
+    DEFAULT_SPOTIFY_API_BASE_URL,
+    DEFAULT_SPOTIFY_REDIRECT_URI,
+    DEFAULT_SPOTIFY_SCOPE,
+    SPOTIFY_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
+    SPOTIFY_DASHBOARD_URL,
+    SPOTIFY_DOCS_URL,
+    AuthError,
+    _spotify_err,
+    httpx,
 )
 from hermes_cli.auth_device_flow import (
-    _bind_loopback_callback_server, _make_loopback_callback_handler, _pkce_code_challenge,
-    _pkce_code_verifier, _serve_loopback_callback)
+    _bind_loopback_callback_server,
+    _make_loopback_callback_handler,
+    _pkce_code_challenge,
+    _pkce_code_verifier,
+    _serve_loopback_callback,
+)
 
 logger = logging.getLogger("hermes_cli.auth")
 
@@ -201,7 +213,16 @@ def resolve_spotify_runtime_credentials(
     *, force_refresh: bool = False, refresh_if_expiring: bool = True,
     refresh_skew_seconds: int = SPOTIFY_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
 ) -> Dict[str, Any]:
-    from hermes_cli.auth import _auth_store_lock, _is_expiring, _load_auth_store, _load_provider_state, _quarantine_flat_oauth_state, _refresh_spotify_oauth_state, _save_auth_store, _store_provider_state
+    from hermes_cli.auth import (
+        _auth_store_lock,
+        _is_expiring,
+        _load_auth_store,
+        _load_provider_state,
+        _quarantine_flat_oauth_state,
+        _refresh_spotify_oauth_state,
+        _save_auth_store,
+        _store_provider_state,
+    )
     with _auth_store_lock():
         auth_store = _load_auth_store()
         state = _load_provider_state(auth_store, "spotify")
@@ -312,7 +333,16 @@ def _spotify_interactive_setup(redirect_uri_hint: str) -> str:
 
 
 def login_spotify_command(args) -> None:
-    from hermes_cli.auth import _auth_store_lock, _can_open_graphical_browser, _is_remote_session, _load_auth_store, _print_loopback_ssh_hint, _save_auth_store, _store_provider_state, get_provider_auth_state
+    from hermes_cli.auth import (
+        _auth_store_lock,
+        _can_open_graphical_browser,
+        _is_remote_session,
+        _load_auth_store,
+        _print_loopback_ssh_hint,
+        _save_auth_store,
+        _store_provider_state,
+        get_provider_auth_state,
+    )
     existing_state = get_provider_auth_state("spotify") or {}
 
     # No client_id anywhere -> wizard instead of "HERMES_SPOTIFY_CLIENT_ID is required".

@@ -10,16 +10,15 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path, PurePosixPath
 import platform
 import re
 import sys
+from pathlib import Path, PurePosixPath
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.ci.setup_toolchain import current_target, file_commands
-
 
 CACHE_DOMAINS = ("tools", "python/runtime", "python/build", "npm/_cacache", "native", "packager")
 _INPUT_FILES = (

@@ -1,6 +1,7 @@
 """Tests for Slack channel_skill_bindings auto-skill resolution."""
 from unittest.mock import MagicMock
 
+
 def _make_adapter(extra=None):
     """Create a minimal SlackAdapter stub with the given ``config.extra``."""
     from plugins.platforms.slack.adapter import SlackAdapter

@@ -1,11 +1,11 @@
 """Tests for Ollama Cloud provider integration."""
 
-import pytest
 from unittest.mock import patch
 
-from hermes_cli.auth import resolve_provider, resolve_api_key_provider_credentials
-from agent.models_dev import list_agentic_models
+import pytest
 
+from agent.models_dev import list_agentic_models
+from hermes_cli.auth import resolve_api_key_provider_credentials, resolve_provider
 
 # ── Provider Aliases ──
 
@@ -177,6 +177,7 @@ class TestOllamaCloudMergedDiscovery:
         live-only ids, and makes the next probing call serve the trimmed list for an hour."""
         import json
         import time
+
         from hermes_cli.models import fetch_ollama_cloud_models
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))

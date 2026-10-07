@@ -131,7 +131,9 @@ class TestNativeImageAttach:
         import asyncio
         import io
         from unittest.mock import AsyncMock, patch
+
         from PIL import Image
+
         from tools import mcp_tool
         from tools.mcp_tool_registration import _register_server_tools
         from tools.registry import ToolRegistry
@@ -202,7 +204,9 @@ class TestNativeImageAttach:
         """The prep pool runs in the caller's context: a managed local runtime (stb_image, no WebP) set on the
         calling session converts a small WebP instead of attaching bytes its server silently cannot decode."""
         import io
+
         from PIL import Image
+
         from agent.auxiliary_client import reset_runtime_main, set_runtime_main
         buf = io.BytesIO()
         Image.new("RGB", (64, 64), (200, 30, 30)).save(buf, "WEBP")
@@ -218,6 +222,7 @@ class TestNativeImageAttach:
         """Four damaged images ahead of a good fifth: the fifth still attaches. An embed the resizer could not
         bring under vision.embed_target_bytes stays a MEDIA: path instead of riding history over budget."""
         import io
+
         from PIL import Image
         jpeg, good = io.BytesIO(), io.BytesIO()
         Image.effect_noise((256, 256), 64).convert("RGB").save(jpeg, "JPEG")
@@ -247,6 +252,7 @@ class TestNativeImageAttach:
         assert isinstance(repeat, str) and "already in context" in repeat and "MEDIA:" in repeat
         assert "already in context" in json.loads(repeat)["result"]  # still the handler's JSON envelope
         import io
+
         from PIL import Image
         # A valid JPEG header over a truncated pixel stream passes the cache's and the sniff's header checks.
         buf = io.BytesIO()

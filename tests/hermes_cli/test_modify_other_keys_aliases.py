@@ -16,8 +16,8 @@ the raw byte would.
 from __future__ import annotations
 
 import logging
-import pytest
 
+import pytest
 from prompt_toolkit.input.ansi_escape_sequences import ANSI_SEQUENCES
 from prompt_toolkit.input.vt100_parser import Vt100Parser
 from prompt_toolkit.keys import Keys
@@ -402,7 +402,7 @@ def test_buffer_level_shift_space_no_raw_csi():
     from prompt_toolkit import Application
     from prompt_toolkit.buffer import Buffer
     from prompt_toolkit.input import create_pipe_input
-    from prompt_toolkit.layout import HSplit, Layout, Window, BufferControl
+    from prompt_toolkit.layout import BufferControl, HSplit, Layout, Window
 
     from hermes_cli.pt_input_extras import install_keypress_data_normalization
 
@@ -454,7 +454,7 @@ def test_buffer_level_shift_letter_no_raw_csi():
     from prompt_toolkit import Application
     from prompt_toolkit.buffer import Buffer
     from prompt_toolkit.input import create_pipe_input
-    from prompt_toolkit.layout import HSplit, Layout, Window, BufferControl
+    from prompt_toolkit.layout import BufferControl, HSplit, Layout, Window
 
     from hermes_cli.pt_input_extras import install_keypress_data_normalization
 

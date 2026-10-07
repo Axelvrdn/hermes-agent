@@ -13,9 +13,13 @@ import logging
 import re
 import time
 import uuid
+
 from tools import approval_context as _ctx
 from tools.approval_detection import (
-    _MALFORMED_EXEC_DESCRIPTION, _PARSER_LIMIT_DESCRIPTION, _deny_command_variants)
+    _MALFORMED_EXEC_DESCRIPTION,
+    _PARSER_LIMIT_DESCRIPTION,
+    _deny_command_variants,
+)
 
 logger = logging.getLogger("tools.approval")
 

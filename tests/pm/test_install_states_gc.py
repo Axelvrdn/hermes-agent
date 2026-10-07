@@ -6,8 +6,9 @@ from __future__ import annotations
 import os
 import subprocess
 
-import pm.environments
 import pytest
+
+import pm.environments
 from hermes_cli.worktree_ops import _prune_stale_worktrees
 from pm.filesystem import lock_fd
 from pm.install_states import collect_orphan_install_states, orphan_install_states

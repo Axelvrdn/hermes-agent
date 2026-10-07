@@ -26,11 +26,12 @@ from urllib.parse import urlparse
 
 from agent.i18n import t
 from agent.secret_scope import is_multiplex_active
-from gateway.platforms._shared import (
-    get_scoped_secret as _get_scoped_secret, seed_extra_from_env as _seed_extra_from_env, send_error
-)
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms._shared import send_error
 
-from .cards import card_spec_to_cards_v2, format_message as _format_message
+from .cards import card_spec_to_cards_v2
+from .cards import format_message as _format_message
 
 
 def _adc_would_borrow_foreign_credentials() -> bool:
@@ -126,13 +127,17 @@ from gateway.config import Platform, PlatformConfig
 # Register the dynamic enum member at import time so ``Platform.GOOGLE_CHAT``
 # resolves before any adapter instance exists.
 Platform("google_chat")
-from gateway.platforms.helpers import MessageDeduplicator
 from gateway.platforms.base import (
-    gateway_trust_env, BasePlatformAdapter, SendResult,
-    cache_audio_from_bytes_async, cache_document_from_bytes_async, cache_image_from_bytes_async,
+    BasePlatformAdapter,
+    SendResult,
+    cache_audio_from_bytes_async,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
     cache_video_from_bytes_async,
+    gateway_trust_env,
 )
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
+from gateway.platforms.helpers import MessageDeduplicator
 
 # Pinned to the legacy module path so operator log filters keep matching.
 logger = logging.getLogger("gateway.platforms.google_chat")
@@ -580,8 +585,9 @@ class GoogleChatAdapter(BasePlatformAdapter):
         """Legacy single-user OAuth (per-user tokens load lazily on first send).
         Failure is NON-fatal: only attachments degrade to a text notice."""
         try:
-            from .oauth import load_user_credentials as _load_user_creds, build_user_chat_service as _build_user_chat
+            from .oauth import build_user_chat_service as _build_user_chat
             from .oauth import list_authorized_emails as _list_emails
+            from .oauth import load_user_credentials as _load_user_creds
             user_creds = await asyncio.to_thread(_load_user_creds)
             if user_creds is not None:
                 self._user_credentials = user_creds
@@ -991,8 +997,9 @@ class GoogleChatAdapter(BasePlatformAdapter):
         if resource_name:
             def _fetch_media() -> bytes:
                 req = self._chat_api.media().download_media(resourceName=resource_name)
-                from googleapiclient.http import MediaIoBaseDownload
                 import io
+
+                from googleapiclient.http import MediaIoBaseDownload
 
                 buf = io.BytesIO()
                 downloader, done = MediaIoBaseDownload(buf, req), False
@@ -1419,7 +1426,8 @@ class GoogleChatAdapter(BasePlatformAdapter):
         """Get (or build + cache) a user-authed Chat client for ``email``.
         Cache hit → refresh creds (evict on failure so the next request goes back
         through disk / the text-notice fallback). Miss → load token, build, cache."""
-        from .oauth import load_user_credentials as _load, build_user_chat_service as _build
+        from .oauth import build_user_chat_service as _build
+        from .oauth import load_user_credentials as _load
         cached_api = self._user_chat_api_by_email.get(email)
         cached_creds = self._user_creds_by_email.get(email)
         if cached_api is not None and cached_creds is not None:
@@ -1626,7 +1634,13 @@ Full guide: website/docs/user-guide/messaging/google_chat.md
 
 def interactive_setup() -> None:
     """``hermes setup`` wizard: print GCP instructions, prompt for env vars, persist to ``~/.hermes/.env``."""
-    from hermes_cli.cli_output import print_info, print_success, print_warning, prompt, prompt_yes_no
+    from hermes_cli.cli_output import (
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+        prompt_yes_no,
+    )
     from hermes_cli.config import get_env_value, save_env_value
     from hermes_cli.setup_platforms import declines_reconfigure
     if declines_reconfigure("Google Chat", "Reconfigure Google Chat?", "GOOGLE_CHAT_SUBSCRIPTION_NAME"):

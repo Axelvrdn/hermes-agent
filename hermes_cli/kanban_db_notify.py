@@ -11,11 +11,7 @@ import json
 import sqlite3
 import time
 from pathlib import Path
-from typing import Any
-from typing import Iterable
-from typing import Mapping
-from typing import Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Iterable, Mapping, Optional
 
 if TYPE_CHECKING:
     from hermes_cli.kanban_db import Event

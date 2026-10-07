@@ -26,7 +26,6 @@ pytest.importorskip("discord")
 
 from plugins.platforms.discord.adapter import VoiceReceiver
 
-
 KEY_A = bytes(range(32))
 KEY_B = bytes(range(32, 64))
 

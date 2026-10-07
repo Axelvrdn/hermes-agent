@@ -14,13 +14,13 @@ command afterward.
 
 from __future__ import annotations
 
-from hermes_cli import update_cmd
-from hermes_cli import main
-import pytest
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from hermes_cli import main, update_cmd
 
 # ---------------------------------------------------------------------------
 # _validate_critical_files_syntax

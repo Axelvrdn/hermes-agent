@@ -26,7 +26,6 @@ import pytest
 
 from agent.proxy_sources import iron_proxy as ip
 
-
 pytestmark = pytest.mark.skipif(
     os.environ.get("HERMES_RUN_E2E", "0") != "1",
     reason="E2E proxy test — set HERMES_RUN_E2E=1 to run (requires network + curl + openssl)",

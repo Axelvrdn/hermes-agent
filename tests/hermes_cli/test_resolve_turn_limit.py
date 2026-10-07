@@ -6,9 +6,10 @@ Covers the full spelling table (int, float, numeric string, ``"none"``,
 garbage) and the config→env bridge in the gateway and TUI resolvers.
 """
 import os
+
 import pytest
 
-from hermes_cli.config import resolve_turn_limit, TURN_LIMIT_UNLIMITED
+from hermes_cli.config import TURN_LIMIT_UNLIMITED, resolve_turn_limit
 
 
 class TestNumericValues:

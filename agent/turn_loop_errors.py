@@ -7,10 +7,10 @@ module level (cycle); loop-internal constants resolve lazily.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
 import os
 import sys
+from dataclasses import dataclass
 from typing import Any
 
 from agent.message_metadata import append_message
@@ -42,8 +42,11 @@ def handle_outer_loop_error(
     message is never appended here: a prefill/interim assistant may already be the tail
     (assistant→assistant); ``finalize_turn`` appends only when safe."""
     from agent.conversation_loop import (
-        _API_CALL_MODULES, _LOCAL_PROCESSING_MODULES, _MAX_OUTER_LOOP_ERRORS,
-        _is_interpreter_shutdown_error, _ra,
+        _API_CALL_MODULES,
+        _LOCAL_PROCESSING_MODULES,
+        _MAX_OUTER_LOOP_ERRORS,
+        _is_interpreter_shutdown_error,
+        _ra,
     )
 
     def _verdict(action: str) -> OuterErrorVerdict:

@@ -14,7 +14,6 @@ from gateway.delivery import (
     _is_silence_narration,
 )
 
-
 # --- Truth table -----------------------------------------------------------
 
 POSITIVE_CASES = [

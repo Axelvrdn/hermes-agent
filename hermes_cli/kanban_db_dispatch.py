@@ -7,7 +7,8 @@ late-bound via ``_kb`` (import-cycle breaking) so monkeypatching
 
 from __future__ import annotations
 
-import logging, contextlib
+import contextlib
+import logging
 import os
 import re
 import signal
@@ -15,15 +16,9 @@ import sqlite3
 import subprocess
 import sys
 import time
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
-from typing import Callable
-from typing import Iterable
-from typing import Mapping
-from typing import Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Optional
 
 from hermes_cli.quiet_single_query import KANBAN_WORKER_EXIT_TRAILER
 
@@ -2660,10 +2655,24 @@ def _worker_profile_scope(hermes_home: str, *, bind_home: bool = True):
     env-over-``.env`` precedence (``launch_secret_scope``) so systemd / ``op run`` injection still
     resolves for a standalone dispatcher.
     """
-    from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
-    from hermes_constants import get_process_hermes_home, reset_hermes_home_override, set_hermes_home_override
-    from tools.terminal_scope import install_profile_terminal_scope, reset_terminal_scope
-    from tui_gateway.launch_profile_policy import launch_secret_scope, launch_terminal_env
+    from agent.secret_scope import (
+        build_profile_secret_scope,
+        reset_secret_scope,
+        set_secret_scope,
+    )
+    from hermes_constants import (
+        get_process_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
+    from tools.terminal_scope import (
+        install_profile_terminal_scope,
+        reset_terminal_scope,
+    )
+    from tui_gateway.launch_profile_policy import (
+        launch_secret_scope,
+        launch_terminal_env,
+    )
 
     home = Path(hermes_home)
     is_launch_home = str(home.resolve()) == str(Path(get_process_hermes_home()).resolve())
@@ -2846,7 +2855,11 @@ def _default_spawn(task: Task, workspace: str, *, board: Optional[str] = None) -
     profile_arg = normalize_profile_name(task.assignee)
 
     from agent.secret_scope import is_multiplex_active
-    from tools.environments.local import _is_routed_home, build_subprocess_env, strip_launch_profile_env
+    from tools.environments.local import (
+        _is_routed_home,
+        build_subprocess_env,
+        strip_launch_profile_env,
+    )
 
     try:
         profile_home = resolve_profile_env(profile_arg)

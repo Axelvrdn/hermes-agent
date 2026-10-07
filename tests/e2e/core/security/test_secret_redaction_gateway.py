@@ -14,12 +14,26 @@ import sys
 import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
+from tests.e2e.core.delivery._fake_platform import wait_until
 from tests.e2e.core.security._helpers import BoundaryBreach, write_home
 from tests.e2e.core.security._redact import (
-    CONFIG, SCENARIOS, Ctx, Director, LoggingGateway, Secrets, World, assert_harness_sane, cell_id, cells, chat_for,
-    check, collect, echo_preconditions, prompt_for, seed_workspace,
+    CONFIG,
+    SCENARIOS,
+    Ctx,
+    Director,
+    LoggingGateway,
+    Secrets,
+    World,
+    assert_harness_sane,
+    cell_id,
+    cells,
+    chat_for,
+    check,
+    collect,
+    echo_preconditions,
+    prompt_for,
+    seed_workspace,
 )
-from tests.e2e.core.delivery._fake_platform import wait_until
 from tests.fakes.fake_llm_provider import FakeLLMServer
 
 pytestmark = pytest.mark.skipif(sys.platform == "win32", reason="POSIX shell commands and process groups")

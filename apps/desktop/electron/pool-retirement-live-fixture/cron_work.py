@@ -2,8 +2,8 @@
 
 import json
 import os
-from pathlib import Path
 import time
+from pathlib import Path
 
 home = Path.cwd()
 (home / "cron-started").write_text(json.dumps({"pid": os.getpid()}))

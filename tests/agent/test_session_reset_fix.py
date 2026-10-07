@@ -10,7 +10,6 @@ import sys
 import types
 from pathlib import Path
 
-
 # Ensure repo root is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
@@ -19,8 +18,8 @@ sys.modules.setdefault("fire", types.SimpleNamespace(Fire=lambda *a, **k: None))
 sys.modules.setdefault("firecrawl", types.SimpleNamespace(Firecrawl=object))
 sys.modules.setdefault("fal_client", types.SimpleNamespace())
 
-from run_agent import AIAgent
 from agent.context_compressor import ContextCompressor
+from run_agent import AIAgent
 
 
 def _make_minimal_agent() -> AIAgent:

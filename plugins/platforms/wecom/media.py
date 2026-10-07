@@ -15,7 +15,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import unquote, urlparse
 
 from agent.i18n import t
-from gateway.platforms.base import SendResult, cache_document_from_bytes_async, cache_image_from_bytes_async
+from gateway.platforms.base import (
+    SendResult,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+)
 
 logger = logging.getLogger("plugins.platforms.wecom.adapter")
 
@@ -180,8 +184,8 @@ class WeComMediaMixin:
 
     async def _download_remote_bytes(self, url: str, max_bytes: int) -> Tuple[bytes, Dict[str, str]]:
         from gateway.platforms.base import _ssrf_redirect_guard
-        from tools.url_safety import create_ssrf_safe_async_client, is_safe_url
         from plugins.platforms.wecom import adapter as _adapter_mod
+        from tools.url_safety import create_ssrf_safe_async_client, is_safe_url
         if not is_safe_url(url):
             raise ValueError(f"Blocked unsafe URL (SSRF protection): {url[:80]}")
         if not _adapter_mod.HTTPX_AVAILABLE:

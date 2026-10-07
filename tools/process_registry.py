@@ -5,7 +5,6 @@ Nothing runs on the host unless TERMINAL_ENV=local; other backends run in their 
 """
 
 import codecs
-from contextlib import suppress
 import json
 import logging
 import os
@@ -18,6 +17,7 @@ import tempfile
 import threading
 import time
 import uuid
+from contextlib import suppress
 from pathlib import Path
 
 _IS_WINDOWS = platform.system() == "Windows"
@@ -25,18 +25,21 @@ _IS_WINDOWS = platform.system() == "Windows"
 # (not merely "not Windows") so macOS and other POSIX platforms never touch systemd.
 # See #70716.
 _IS_LINUX = platform.system() == "Linux"
-from tools.environments.local import _find_shell, _resolve_safe_cwd, _sanitize_subprocess_env
-from hermes_cli._subprocess_compat import windows_hide_flags
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Literal, NamedTuple, Optional
 
+from hermes_cli._subprocess_compat import windows_hide_flags
 from hermes_cli.config import get_hermes_home
-
-from tools.process_registry_notifications import format_process_notification
+from tools.environments.local import (
+    _find_shell,
+    _resolve_safe_cwd,
+    _sanitize_subprocess_env,
+)
 from tools.process_registry_checkpoint import ProcessCheckpointMixin
-from tools.process_registry_termination import ProcessTerminationMixin
-from tools.process_registry_results import load_completed_results, save_completed_result
 from tools.process_registry_env_log import log_delta_command
+from tools.process_registry_notifications import format_process_notification
+from tools.process_registry_results import load_completed_results, save_completed_result
+from tools.process_registry_termination import ProcessTerminationMixin
 
 logger = logging.getLogger(__name__)
 
@@ -1844,7 +1847,10 @@ class ProcessRegistry(ProcessTerminationMixin, ProcessCheckpointMixin):
         if self._completions_restored:
             return 0
         self._completions_restored = True
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         token = set_hermes_home_override(None)
         try:
             from tools.async_delegation import restore_undelivered_completions
@@ -2084,7 +2090,8 @@ class ProcessRegistry(ProcessTerminationMixin, ProcessCheckpointMixin):
         mid-turn user message (steer/redirect → ``request_yield``) releases the wait.
         ``timeout`` defaults to (and is clamped by) TERMINAL_TIMEOUT. Returns a dict
         with status exited|timeout|interrupted|not_found|error and an output snapshot."""
-        from tools.interrupt import consume_yield as _consume_yield, is_interrupted as _is_interrupted
+        from tools.interrupt import consume_yield as _consume_yield
+        from tools.interrupt import is_interrupted as _is_interrupted
 
         try:
             max_timeout = int(os.getenv("TERMINAL_TIMEOUT", "180"))

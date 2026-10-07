@@ -7,17 +7,17 @@ imported LAZILY inside each method — the mixin never imports ``cli`` at module
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import queue
 import sys
 import threading
 import time as _time
 import webbrowser
+from typing import Optional
 
 from agent.i18n import t
 from hermes_cli.callbacks import prompt_for_secret
-from typing import Optional
 
 _TIMED_OUT = object()  # sentinel returned by _poll_modal_queue when the deadline passes
 
@@ -562,7 +562,10 @@ class CLIModalMixin:
         flag = "bell_on_prompt" if prompt else "bell_on_complete"
         if not getattr(self, flag, False) or getattr(self, "_terminal_io_broken", False):
             return
-        from hermes_cli.cli_terminal_mixin import _run_on_app_loop, _write_terminal_sequence
+        from hermes_cli.cli_terminal_mixin import (
+            _run_on_app_loop,
+            _write_terminal_sequence,
+        )
         from hermes_cli.terminal_notify import notification_sequence, write_tty
         body = context or (t("cli.modal.bell_input_needed") if prompt else t("cli.modal.bell_turn_complete"))
         try:
@@ -1002,7 +1005,7 @@ class CLIModalMixin:
         all questions, one active, and blocks until the key bindings lock every answer. Returns
         ``{"answers": {qid: raw | None}, "outcome"}`` (None = skipped): ``submitted`` when every
         question is locked, ``timed_out`` when the deadline expires, ``cancelled`` on an interrupt."""
-        from cli import CLI_CONFIG, _DIM, _RST, _cprint
+        from cli import _DIM, _RST, CLI_CONFIG, _cprint
         from tools.clarify_gateway import resolve_clarify_timeout
 
         timeout = resolve_clarify_timeout(CLI_CONFIG)
@@ -1071,7 +1074,7 @@ class CLIModalMixin:
         commands. ``_approval_lock`` serializes concurrent requests (parallel delegation subtasks)
         so the shared ``_approval_state`` / ``_approval_deadline`` aren't clobbered.
         """
-        from cli import CLI_CONFIG, _DIM, _RST, _cprint
+        from cli import _DIM, _RST, CLI_CONFIG, _cprint
 
         with self._approval_lock:
             timeout = int(CLI_CONFIG.get("approvals", {}).get("timeout", 300))

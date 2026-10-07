@@ -81,7 +81,11 @@ def relay_explicitly_disabled() -> bool:
     is for every other platform, and an absent key keeps URL-only activation.
     """
     from gateway.config import Platform, PlatformConfig
-    from gateway.config_loader import bridge_platform_shared_keys, merge_platform_sections, read_yaml_layers
+    from gateway.config_loader import (
+        bridge_platform_shared_keys,
+        merge_platform_sections,
+        read_yaml_layers,
+    )
     from hermes_constants import get_hermes_home
 
     try:

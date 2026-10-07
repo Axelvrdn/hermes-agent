@@ -99,7 +99,10 @@ class TestRoutedForeignHomeScope:
     the .env-overlay fallthrough is only safe when the scope's home IS ours."""
 
     def test_scoped_miss_under_foreign_home_returns_default(self, monkeypatch, tmp_path):
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         monkeypatch.setenv("OPENAI_API_KEY", "sk-launch-profile")
         home_token = set_hermes_home_override(str(tmp_path / "other-profile"))
@@ -115,7 +118,11 @@ class TestRoutedForeignHomeScope:
     def test_scoped_miss_under_own_home_keeps_env_overlay(self, monkeypatch, tmp_path):
         """The deliberate single-profile overlay: a scope bound for the process's
         own home still falls through to os.environ (systemd / op run credentials)."""
-        from hermes_constants import get_process_hermes_home, set_hermes_home_override, reset_hermes_home_override
+        from hermes_constants import (
+            get_process_hermes_home,
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         monkeypatch.setenv("OPENAI_API_KEY", "sk-own-env")
         home_token = set_hermes_home_override(str(get_process_hermes_home()))
@@ -129,7 +136,10 @@ class TestRoutedForeignHomeScope:
 
     def test_scope_hit_under_foreign_home_still_wins(self, monkeypatch, tmp_path):
         """A scoped hit is unaffected: only the miss branch changes."""
-        from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         monkeypatch.setenv("OPENAI_API_KEY", "sk-launch-profile")
         home_token = set_hermes_home_override(str(tmp_path / "other-profile"))
@@ -248,8 +258,8 @@ class TestScopeSetupRecovery:
         bind must release what it already bound (home override + secret scope).
         Driven through ``server`` — the split module's functions run rebound on
         server.py's globals (``bind_module``)."""
-        from tui_gateway import server
         from hermes_constants import get_hermes_home_override
+        from tui_gateway import server
 
         home = tmp_path / "profiles" / "b"
         home.mkdir(parents=True)

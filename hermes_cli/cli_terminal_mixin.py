@@ -3,9 +3,9 @@ CLI. Mixin on ``HermesCLI``; cli.py symbols are imported lazily inside methods (
 
 from __future__ import annotations
 
-import logging
 import base64
 import errno
+import logging
 import os
 import shutil
 import sys
@@ -23,7 +23,6 @@ from hermes_cli.cli_render import (
     _take_suspect_rows,
 )
 from hermes_constants import get_hermes_home
-
 
 # A replay ``fit`` with no room: nothing is replayed.
 _NO_REPLAY = (0, 0, False, None)
@@ -602,8 +601,15 @@ class CLITerminalMixin:
     def _recover_terminal_input_modes(self, *, reason: str) -> None:
         """Best-effort reset when leaked mouse reports indicate mode drift."""
         from cli import (
-            CLI_CONFIG, _DIM, _RST, _TERMINAL_INPUT_MODE_RESET_SEQ,
-            _cli_multiline_shortcuts_enabled, _cprint, _enable_extended_enter_keys, logger)
+            _DIM,
+            _RST,
+            _TERMINAL_INPUT_MODE_RESET_SEQ,
+            CLI_CONFIG,
+            _cli_multiline_shortcuts_enabled,
+            _cprint,
+            _enable_extended_enter_keys,
+            logger,
+        )
         now = time.monotonic()
         # Rate-limit to avoid thrashing if a terminal floods reports. None = never
         # (monotonic epoch is arbitrary, see _invalidate).

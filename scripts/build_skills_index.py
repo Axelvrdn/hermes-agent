@@ -31,13 +31,14 @@ sys.path.insert(0, REPO_ROOT)
 # Ensure HERMES_HOME is set (needed by tools/skills_hub*.py imports)
 os.environ.setdefault("HERMES_HOME", os.path.join(os.path.expanduser("~"), ".hermes"))
 
+import httpx
+
 from tools.skills_hub_clawhub import ClawHubSource
 from tools.skills_hub_github import GitHubAuth, GitHubSource
 from tools.skills_hub_models import SkillMeta
 from tools.skills_hub_official import OptionalSkillSource
 from tools.skills_hub_skillssh import SkillsShSource
 from tools.skills_hub_sources import BrowseShSource, LobeHubSource, WellKnownSkillSource
-import httpx
 
 OUTPUT_PATH = os.path.join(REPO_ROOT, "website", "static", "api", "skills-index.json")
 INDEX_VERSION = 1

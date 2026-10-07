@@ -30,16 +30,16 @@ probe and the runtime-credential fetch are external boundaries).
 """
 
 import asyncio
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import socket
 import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Optional
 
 import pytest
-import hermes_yaml as yaml
 
 import agent.auxiliary_client as aux
+import hermes_yaml as yaml
 
 AUX_MODEL = "z-ai/glm-5.3-flash"
 FALLBACK_MODEL = "fallback-model"

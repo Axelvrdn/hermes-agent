@@ -18,8 +18,8 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.connectors.contract import SettleReason, TargetState
 from tools.connectors import live
+from tools.connectors.contract import SettleReason, TargetState
 from tools.connectors.mcp import apply_answer
 from tools.connectors.tool import manage_connections
 from tools.registry import registry

@@ -10,6 +10,7 @@ import html as _html
 
 from gateway.platforms.base import BasePlatformAdapter
 
+
 def _bare(cls):
     """Bare instance without running __init__ (documented test pattern)."""
     return object.__new__(cls)

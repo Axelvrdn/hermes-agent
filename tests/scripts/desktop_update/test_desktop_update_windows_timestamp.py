@@ -1,12 +1,12 @@
 """The Windows handoff writes numeric Unix seconds under comma-decimal locales."""
 
 import json
-import re
 import os
-from pathlib import Path
+import re
 import shutil
 import subprocess
 import time
+from pathlib import Path
 
 import pytest
 

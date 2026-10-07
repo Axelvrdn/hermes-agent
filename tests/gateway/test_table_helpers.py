@@ -5,8 +5,6 @@ from gateway.platforms.helpers import (
 )
 
 
-
-
 class TestConvertTableToBullets:
 
     def test_basic_table(self):

@@ -9,10 +9,6 @@ import pm
 from hermes_cli import main, update_cmd
 
 
-
-
-
-
 @pytest.mark.parametrize("failure,exception,code", [
     (None, None, 0), (SystemExit(3), SystemExit, 3),
     (SystemExit(None), SystemExit, 1), (RuntimeError("tail exploded"), RuntimeError, 1),

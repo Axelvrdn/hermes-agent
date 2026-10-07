@@ -14,10 +14,12 @@ from unittest.mock import patch
 import pytest
 
 from hermes_cli import main as cli_main
-from hermes_cli import main_desktop
-from hermes_cli import main_desktop_tcc
-from hermes_cli import main_install_repair
-from hermes_cli import main_web_build
+from hermes_cli import (
+    main_desktop,
+    main_desktop_tcc,
+    main_install_repair,
+    main_web_build,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -227,6 +229,7 @@ def test_packaged_launch_opens_the_refreshed_installed_app(tmp_path, monkeypatch
 def test_packaged_renderer_bom_does_not_bypass_entry_validation(tmp_path):
     import json
     import struct
+
     from hermes_cli.desktop_update_verify import _verify_packaged_entry
 
     resources = tmp_path / "resources"

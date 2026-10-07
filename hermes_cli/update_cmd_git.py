@@ -6,14 +6,18 @@ test patches on ``update_cmd`` stay effective).
 """
 
 import logging
-from contextlib import nullcontext, suppress
 import subprocess
 import sys
+from contextlib import nullcontext, suppress
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
-from hermes_cli._subprocess_compat import NO_LAZY_FETCH_ENV, noninteractive_git_env, windows_hide_flags
+from hermes_cli._subprocess_compat import (
+    NO_LAZY_FETCH_ENV,
+    noninteractive_git_env,
+    windows_hide_flags,
+)
 from hermes_cli.update_cmd_common import _record_stop
 
 logger = logging.getLogger("hermes_cli.update_cmd")  # log-record parity with the origin module
@@ -387,7 +391,12 @@ def _sync_with_upstream_if_needed(git_cmd: list[str], cwd: Path, *, assume_yes: 
 
     See #97052.
     """
-    from hermes_cli.update_cmd import _count_commits_between, _has_upstream_remote, _no_prompt_git_kwargs, _should_skip_upstream_prompt
+    from hermes_cli.update_cmd import (
+        _count_commits_between,
+        _has_upstream_remote,
+        _no_prompt_git_kwargs,
+        _should_skip_upstream_prompt,
+    )
     from hermes_cli.update_cmd_check import tracking_refspec
     from hermes_cli.update_custody import run_git
     if not _has_upstream_remote(git_cmd, cwd) and (

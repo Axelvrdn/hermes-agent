@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 import sqlite3
 import threading
 import time
@@ -12,24 +12,24 @@ from types import SimpleNamespace
 
 import pytest
 
-from gateway import hosted_room_driver as driver
 from gateway import hosted_room_discussion as discussion
+from gateway import hosted_room_driver as driver
 from gateway import hosted_rooms
-from gateway.hosted_room_policy_checkpoint import MAX_ACTIVE_POLICY_EVENTS
 from gateway.hosted_room_peer import (
+    PROTOCOL_VERSION,
     GatewayRoomCatalog,
     HostedMemberDispatch,
-    PROTOCOL_VERSION,
     catalog_mapping,
     issue_room_grant,
 )
+from gateway.hosted_room_policy_checkpoint import MAX_ACTIVE_POLICY_EVENTS
+from tui_gateway.hosted_room_peer_http import PeerRunsHTTPError
+from tui_gateway.hosted_room_peer_transport import PeerMemberRoute
 from tui_gateway.hosted_room_service import (
     HostedRoomService,
-    _RouteStatusPeerClient,
     _grant_revoke_is_terminal,
+    _RouteStatusPeerClient,
 )
-from tui_gateway.hosted_room_peer_transport import PeerMemberRoute
-from tui_gateway.hosted_room_peer_http import PeerRunsHTTPError
 
 
 def _append_room_event(db, **kwargs):

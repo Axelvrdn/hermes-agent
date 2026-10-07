@@ -3,8 +3,6 @@
 from hermes_cli.setup import setup_agent_settings
 
 
-
-
 def test_setup_agent_settings_prefers_config_over_stale_env(tmp_path, monkeypatch, capsys):
     """Config.yaml wins even when a stale .env value disagrees.
 

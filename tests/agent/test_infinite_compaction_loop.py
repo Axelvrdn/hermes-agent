@@ -15,9 +15,8 @@ The fix adds two safeguards:
    fires without burning anti-thrash strikes on transcript-shape facts.
 """
 
-from unittest.mock import patch
-
 import time
+from unittest.mock import patch
 
 from agent.context_compressor import ContextCompressor
 

@@ -6,8 +6,8 @@ never connects, and holds no cache: the callers that need a TTL (the tool regist
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 from typing import Literal, Protocol
 
 from hermes_platform.host import facts

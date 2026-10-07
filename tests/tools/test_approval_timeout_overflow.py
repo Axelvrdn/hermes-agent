@@ -9,7 +9,6 @@ ceiling, and the tool_executor authorization gate — is covered at once.
 from __future__ import annotations
 
 import threading
-
 from unittest.mock import patch
 
 from agent.deadline import MAX_SAFE_TIMEOUT_S

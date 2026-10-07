@@ -20,7 +20,6 @@ from unittest.mock import MagicMock, patch
 import run_agent
 from run_agent import AIAgent
 
-
 # A representative Cloudflare "managed challenge" body, matching the shape the
 # Codex backend returned in the field report (no <title>, large inline
 # ``_cf_chl_opt`` script).  Padded so length-based assertions are meaningful.

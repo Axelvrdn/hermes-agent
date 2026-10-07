@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-
 DONE_SSE_FRAME = b"data: [DONE]\n\n"
 
 

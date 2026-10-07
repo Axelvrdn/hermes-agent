@@ -34,6 +34,7 @@ from gateway.platforms.base import (
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.run import GatewayRunner  # noqa: E402
 
+
 def _make_event(text: str = "hello", chat_id: str = "123") -> MessageEvent:
     source = SessionSource(
         platform=MagicMock(value="telegram"),

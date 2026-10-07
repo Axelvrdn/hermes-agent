@@ -16,10 +16,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 pytest.importorskip("mcp.client.auth.oauth2")
 from tools import mcp_tool_loop as _mcp_loop  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -336,11 +334,12 @@ def test_circuit_breaker_cleared_on_reconnect(monkeypatch, tmp_path):
     """
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
 
+    from mcp.client.auth import OAuthFlowError
+
     from tools import mcp_tool
     from tools import mcp_tool_handlers as _mcp_handlers
     from tools import mcp_tool_loop as _mcp_loop
     from tools.mcp_oauth_manager import get_manager, reset_manager_for_tests
-    from mcp.client.auth import OAuthFlowError
 
     reset_manager_for_tests()
 

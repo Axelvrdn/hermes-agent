@@ -15,17 +15,30 @@ from typing import Any
 
 from gateway import hosted_room_discussion as discussion
 from gateway import hosted_room_driver as driver
-from gateway import hosted_room_links
-from gateway import hosted_rooms
-from gateway.hosted_room_policy_checkpoint import HostedRoomPolicyCheckpoint, PolicySnapshot
+from gateway import hosted_room_links, hosted_rooms
 from gateway.hosted_room_peer import (
-    GatewayRoomCatalog, HostedMemberDispatch, PROTOCOL_VERSION, room_grant_needs_dispatch_refresh)
+    PROTOCOL_VERSION,
+    GatewayRoomCatalog,
+    HostedMemberDispatch,
+    room_grant_needs_dispatch_refresh,
+)
+from gateway.hosted_room_policy_checkpoint import (
+    HostedRoomPolicyCheckpoint,
+    PolicySnapshot,
+)
 from tui_gateway.hosted_room_driver import HostedRoomBinding, HostedRoomRuntime
-from tui_gateway.hosted_room_server_rpc import HostedRoomServerRPC
 from tui_gateway.hosted_room_peer_http import (
-    PeerRunsHTTPClient, PeerRunsHTTPError, digest_reauthorization_error)
+    PeerRunsHTTPClient,
+    PeerRunsHTTPError,
+    digest_reauthorization_error,
+)
 from tui_gateway.hosted_room_peer_transport import (
-    HostedRoomPeerClient, PeerHostedRoomTransport, PeerMemberRoute, build_member_dispatch)
+    HostedRoomPeerClient,
+    PeerHostedRoomTransport,
+    PeerMemberRoute,
+    build_member_dispatch,
+)
+from tui_gateway.hosted_room_server_rpc import HostedRoomServerRPC
 
 _HOSTED_ROOM_IDLE_FALLBACK_SECONDS = 5.0
 _HOSTED_ROOM_ACTIVE_POLL_SECONDS = 0.25
@@ -124,7 +137,10 @@ class HostedRoomService:
         return self.db_path.parent
 
     def local_profiles(self) -> tuple[str, ...]:
-        from hermes_constants import named_profile_has_identity, named_profile_is_deleted
+        from hermes_constants import (
+            named_profile_has_identity,
+            named_profile_is_deleted,
+        )
 
         profiles, profiles_dir = {"default"}, self.root / "profiles"
         if profiles_dir.is_dir():

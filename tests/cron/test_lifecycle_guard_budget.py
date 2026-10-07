@@ -10,9 +10,10 @@ deterministic; ``_LifecycleScanBudget`` reads them at construction time.
 
 from __future__ import annotations
 
-import pytest
 import shlex
 from pathlib import Path
+
+import pytest
 
 import cron.lifecycle_guard as lifecycle_guard
 

@@ -383,7 +383,13 @@ def _serve(spool: Path) -> None:  # pragma: no cover - runs in the child process
     import gateway.delivery_ledger as ledger
     ledger._RETRY_BACKOFF_SECONDS = tuple(cfg.get("ledger_backoff", (0.5, 1.0)))
 
-    from gateway.config import GatewayConfig, HomeChannel, Platform, PlatformConfig, StreamingConfig
+    from gateway.config import (
+        GatewayConfig,
+        HomeChannel,
+        Platform,
+        PlatformConfig,
+        StreamingConfig,
+    )
     from gateway.platform_registry import PlatformEntry, platform_registry
     from gateway.run import GatewayRunner
 
@@ -628,7 +634,11 @@ RECOVERY_MARKER_PREFIXES: tuple = ()
 
 
 def recovery_markers() -> tuple:
-    from gateway.delivery_ledger import FLOOD_MARKER, RECONNECTED_MARKER, RECOVERED_MARKER
+    from gateway.delivery_ledger import (
+        FLOOD_MARKER,
+        RECONNECTED_MARKER,
+        RECOVERED_MARKER,
+    )
     return (RECOVERED_MARKER, RECONNECTED_MARKER, FLOOD_MARKER)
 
 

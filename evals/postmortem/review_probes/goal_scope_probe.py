@@ -4,19 +4,30 @@ Independent-review probe (written by the /review subagent for tracking issue #10
 It reproduced a defect in the first version of the PR; the fixed head must pass it. Paths are taken
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
-import os,sys,tempfile,json,subprocess,time,queue,asyncio,contextlib
+import asyncio
+import contextlib
+import json
+import os
+import queue
+import subprocess
+import sys
+import tempfile
+import time
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+
 sys.path.insert(0,os.getcwd())
 home=tempfile.TemporaryDirectory(prefix='goals-probe-')
 os.environ['HERMES_HOME']=home.name
 os.environ['HERMES_TEST_MODE']='1'
-from hermes_cli import goals
-from tools import process_registry as pr,async_delegation as ad
-from hermes_cli.cli_loops_mixin import CLILoopsMixin
 from gateway.run_goals import GatewayGoalsMixin
+from hermes_cli import goals
+from hermes_cli.cli_loops_mixin import CLILoopsMixin
+from tools import async_delegation as ad
+from tools import process_registry as pr
 from tui_gateway import server as pt
+
 out={'module':goals.__file__,'sha':subprocess.check_output(['git','rev-parse','HEAD'],text=True, encoding='utf-8', errors='replace').strip()}
 proc=subprocess.Popen([sys.executable,'-c','import time; time.sleep(300)'],stdin=subprocess.DEVNULL)
 try:

@@ -35,7 +35,7 @@ from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.platforms.helpers import MessageDeduplicator, send_chunks
-from plugins.platforms.wecom.wecom_crypto import WXBizMsgCrypt, WeComCryptoError
+from plugins.platforms.wecom.wecom_crypto import WeComCryptoError, WXBizMsgCrypt
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +129,10 @@ class WecomCallbackAdapter(BasePlatformAdapter):
         if not check_wecom_callback_requirements():
             logger.warning("[WecomCallback] aiohttp/httpx not installed")
             return False
-        from gateway.platforms.shared_ingress import bind_listener, shared_ingress_profile
+        from gateway.platforms.shared_ingress import (
+            bind_listener,
+            shared_ingress_profile,
+        )
         if not shared_ingress_profile(self):
             try:  # quick port-in-use check
                 with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as sock:

@@ -29,8 +29,8 @@ def _gate_on(monkeypatch):
     {"HERMES_SESSION_PLATFORM": "webhook"},
 ], ids=["single_query", "cron", "webhook"])
 def test_registered_callback_is_never_asked_without_a_user(tmp_path, monkeypatch, env):
-    from tools.terminal_tool import set_approval_callback
     from tools.file_tools import write_file_tool
+    from tools.terminal_tool import set_approval_callback
 
     for name, value in env.items():
         monkeypatch.setenv(name, value)

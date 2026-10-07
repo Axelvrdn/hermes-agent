@@ -3,23 +3,30 @@ explicit resets and the dynamic "Current Session Context" system prompt section.
 
 import asyncio
 import hashlib
+import json
 import logging
 import os
-import json
 import threading
-from pathlib import Path
-from datetime import datetime, timedelta
 from dataclasses import dataclass, field, fields
-from typing import Dict, List, Optional, Any
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from .config import Platform, GatewayConfig, HomeChannel
-from .whatsapp_identity import canonical_whatsapp_identifier
 from gateway.session_identity import transport_profile_of
-from gateway.session_persistence import SessionPersistenceMixin, _DB_UNPINNED
+from gateway.session_lifecycle import (
+    SessionLifecycleMixin,
+    _iso,
+    _new_session_id,
+    _now,
+    _parse_iso,
+)
+from gateway.session_persistence import _DB_UNPINNED, SessionPersistenceMixin
 from gateway.session_prompt_pin import SessionPromptPinMixin, sanitize_prompt_pin
 from gateway.session_recovery import SessionRecoveryMixin
-from gateway.session_lifecycle import SessionLifecycleMixin, _iso, _new_session_id, _now, _parse_iso
 from gateway.session_transcript import SessionTranscriptMixin
+
+from .config import GatewayConfig, HomeChannel, Platform
+from .whatsapp_identity import canonical_whatsapp_identifier
 
 logger = logging.getLogger(__name__)
 
@@ -248,6 +255,7 @@ def _discord_tools_loaded() -> bool:
     toolset enabled AND `DISCORD_BOT_TOKEN` set (the tool's `check_fn` gates on it)."""
     try:
         from agent.secret_scope import get_secret
+
         # Read-only loader: this runs per turn via _ephemeral_change_key, and _get_platform_tools
         # only reads the config. load_config()'s defensive deepcopy is ~half this probe's cost.
         from hermes_cli.config import load_config_readonly

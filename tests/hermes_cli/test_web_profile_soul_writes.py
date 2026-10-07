@@ -22,7 +22,6 @@ import pytest
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
-
 SOUL = "# Persona\n\nYou are a careful, terse assistant.\n"
 
 

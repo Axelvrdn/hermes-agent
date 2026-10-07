@@ -12,11 +12,11 @@ import pytest
 
 from gateway.hosted_room_execution_policy import execution_policy_mapping
 from gateway.hosted_room_peer import (
+    PROTOCOL_VERSION,
     GatewayRoomCatalog,
     HostedMemberDispatch,
     HostedRoomGrantError,
     HostedRoomPeerError,
-    PROTOCOL_VERSION,
     catalog_mapping,
     derive_room_grant_secret,
     gateway_room_grant_secret,
@@ -25,7 +25,6 @@ from gateway.hosted_room_peer import (
     verify_room_grant,
 )
 from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-
 
 SECRET = b"s" * 32
 EXECUTION_POLICY = execution_policy_mapping(target_profile="reviewer", config={"approvals": {"mode": "manual"}})

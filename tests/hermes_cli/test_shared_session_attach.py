@@ -64,8 +64,8 @@ def test_discovery_uses_exact_profile_and_owner_handshake(tmp_path):
 
 
 def test_discovery_refuses_unsupported_owner_without_releasing_lease(tmp_path, monkeypatch):
-    from hermes_cli.shared_session_attach import discover_attach_url
     from hermes_cli.active_sessions import active_session_registry_snapshot
+    from hermes_cli.shared_session_attach import discover_attach_url
 
     lease, error = try_acquire_active_session(
         session_id="old", surface="desktop", config={}, registry_home=tmp_path,

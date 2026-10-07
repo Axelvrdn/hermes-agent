@@ -7,6 +7,7 @@ import json
 import logging
 import mimetypes
 from typing import Any, Dict, List, Optional, Tuple
+
 from tools.ansi_strip import strip_unicode_tags
 from tools.mcp_tool_common import mcp_field
 from tools.mcp_tool_schema import mcp_prefixed_tool_name
@@ -136,12 +137,21 @@ def _mcp_native_image_part(path: str) -> Optional[Tuple[Dict[str, Any], Optional
     to a provider-accepted format (BMP and friends → PNG). None when the file cannot be embedded safely. The
     note maps embedded coordinates back to the original image (a screenshot's pixels are the screen's)."""
     from pathlib import Path
+
     from PIL import Image
-    from tools.vision_tools import (_EMBED_MAX_DIMENSION, _MAX_BASE64_BYTES, _build_scale_note,
-                                    _resize_image_for_vision)
+
+    from tools.vision_tools import (
+        _EMBED_MAX_DIMENSION,
+        _MAX_BASE64_BYTES,
+        _build_scale_note,
+        _resize_image_for_vision,
+    )
     from tools.vision_tools_history_budget import resolve_embed_target_bytes
-    from tools.vision_tools_image_prep import (_detect_image_mime_type_from_bytes, _normalize_to_supported_image,
-                                               _validate_raster_image_decodable)
+    from tools.vision_tools_image_prep import (
+        _detect_image_mime_type_from_bytes,
+        _normalize_to_supported_image,
+        _validate_raster_image_decodable,
+    )
     src = Path(path)
     mime = _detect_image_mime_type_from_bytes(src.read_bytes())
     if not mime:
@@ -183,7 +193,11 @@ def _mcp_result_with_native_images(text: str, image_paths: List[str]) -> Any:
         return text
     try:
         import contextvars
-        from tools.vision_tools import _should_use_native_vision_fast_path, _vision_cpu_executor
+
+        from tools.vision_tools import (
+            _should_use_native_vision_fast_path,
+            _vision_cpu_executor,
+        )
         from tools.vision_tools_history_budget import repeat_refusal
         if not _should_use_native_vision_fast_path():
             return text
@@ -249,7 +263,7 @@ def _mcp_resource_filename(uri: str, mime_type: str) -> str:
     can't steer the cache location."""
     import re as _re
     from pathlib import Path
-    from urllib.parse import urlparse, unquote
+    from urllib.parse import unquote, urlparse
     name = ""
     if uri:
         try:

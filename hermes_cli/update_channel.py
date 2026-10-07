@@ -31,14 +31,15 @@ installers and boot paths read it before the full config machinery loads.
 
 from __future__ import annotations
 
-from pm.environments import install_key, installs_root
-from hermes_cli.release_channels import validate_name
-from contextlib import contextmanager
 import logging
 import os
 import re
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Optional
+
+from hermes_cli.release_channels import validate_name
+from pm.environments import install_key, installs_root
 from pm.paths import install_root
 
 logger = logging.getLogger(__name__)
@@ -284,9 +285,8 @@ def _write_channel_record_locked(sha16: str, path: str, channel: str,
     the dotted writer would otherwise turn a scalar into a mapping and
     destroy whatever the user had there.
     """
-    from utils import atomic_roundtrip_yaml_update
-
     from hermes_cli.config import require_readable_config_before_write
+    from utils import atomic_roundtrip_yaml_update
     existing = require_readable_config_before_write(config_path)
     update_cfg = existing.get("update")
     if update_cfg is not None and not isinstance(update_cfg, dict):

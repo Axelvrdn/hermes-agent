@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from ruamel.yaml import YAML
 
 from tests.ci.desktop_release_roles import DOWNLOADABLE_DISPATCHES, gate, needs_of

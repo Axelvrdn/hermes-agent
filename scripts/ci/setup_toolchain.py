@@ -4,10 +4,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import platform
 import re
 import sys
+from pathlib import Path
 
 # The runner invokes this file before the checkout has been installed.
 if __package__ in (None, ""):
@@ -187,10 +187,10 @@ def dependencies(args) -> None:
         return
     import tomllib
 
-    from pm.environments import selected_venv
     from pm import check_project_lock, sync_venv
-    from pm.plugin_inputs import Members
+    from pm.environments import selected_venv
     from pm.paths import repo_root
+    from pm.plugin_inputs import Members
 
     project = repo_root()
     metadata = tomllib.loads((project / "pyproject.toml").read_text(encoding="utf-8-sig"))

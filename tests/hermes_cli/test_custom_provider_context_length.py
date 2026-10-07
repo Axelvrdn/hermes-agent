@@ -187,7 +187,10 @@ class TestGetModelContextLengthHonorsOverride:
         """With custom_providers=None and all probes disabled, resolver
         returns DEFAULT_FALLBACK_CONTEXT (256K after the stepdown bump).
         """
-        from agent.model_metadata import get_model_context_length, DEFAULT_FALLBACK_CONTEXT
+        from agent.model_metadata import (
+            DEFAULT_FALLBACK_CONTEXT,
+            get_model_context_length,
+        )
         patches = self._mock_all_probes()
         for p in patches:
             p.start()

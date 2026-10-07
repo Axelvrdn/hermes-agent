@@ -6,8 +6,8 @@ downloads are stubbed at the urllib boundary — never live."""
 
 from __future__ import annotations
 
-import io
 import hashlib
+import io
 import json
 import os
 import time
@@ -18,7 +18,8 @@ from fastapi.testclient import TestClient
 
 # The real loopback range server (shared with tests/pm): importing the
 # fixture name at module scope registers it for these tests too.
-from tests.pm._range_server import dl_server, url as _srv_url  # noqa: F401
+from tests.pm._range_server import dl_server  # noqa: F401
+from tests.pm._range_server import url as _srv_url
 
 
 @pytest.fixture
@@ -102,8 +103,17 @@ def test_status_tracks_preset_spill_and_restored_window(client, tmp_path, monkey
 
     from hermes_cli.local_runtime import bootstrap, presets
     from hermes_cli.local_runtime.binaries import runtimes_root
-    from hermes_cli.local_runtime.context_policy import FLOOR, RUNTIME_OVERHEAD_BYTES, ub_logits_bytes
-    from hermes_cli.local_runtime.estimator import HardwareBudget, LayerKind, ModelProfile, ctx_bytes
+    from hermes_cli.local_runtime.context_policy import (
+        FLOOR,
+        RUNTIME_OVERHEAD_BYTES,
+        ub_logits_bytes,
+    )
+    from hermes_cli.local_runtime.estimator import (
+        HardwareBudget,
+        LayerKind,
+        ModelProfile,
+        ctx_bytes,
+    )
     from hermes_cli.local_runtime.growth import save_window_override
     from hermes_cli.web_routers import local_models
 
@@ -296,8 +306,8 @@ def test_download_short_of_server_length_errors_and_cleans_up(client, monkeypatc
     fewer bytes than the server promised means a dropped connection, so
     the job errors and nothing is staged."""
 
-    from hermes_cli.web_routers import local_models as lm
     from hermes_cli.local_runtime.bootstrap import models_dir
+    from hermes_cli.web_routers import local_models as lm
     requests = []
     class Truncated(_FakeRangeOpener):
         def open(self, req, timeout=None):
@@ -531,10 +541,10 @@ def _serve_plan(monkeypatch, dl_server, tmp_partials, bodies):
     """Point the download plan at the real loopback range server: one
     served body per plan file, dests under the temp models dir, partials
     under a temp dir (never the machine's cache)."""
-    from pm import paths as pm_paths
-    from tests.pm._range_server import RangeHandler
     from hermes_cli.local_runtime.bootstrap import models_dir
     from hermes_cli.web_routers import local_models as lm
+    from pm import paths as pm_paths
+    from tests.pm._range_server import RangeHandler
 
     RangeHandler.chunk = 128 * 1024
     RangeHandler.slow_per_chunk = 0.2
@@ -590,10 +600,10 @@ def test_download_resume_completes_bytes(client, monkeypatch, dl_server,
     """Resume after a mid-flight pause finishes the remaining ranges and
     stages the exact file the server serves."""
     _pin_budget(monkeypatch)
-    from tests.pm._range_server import RangeHandler
     from hermes_cli.local_runtime.bootstrap import models_dir
     from hermes_cli.local_runtime.catalog import CATALOG
     from hermes_cli.web_routers import local_models as lm
+    from tests.pm._range_server import RangeHandler
 
     _serve_plan(monkeypatch, dl_server, tmp_path / "partials",
                 {"PartA": _BIG_BODY})
@@ -626,9 +636,9 @@ def test_repeated_resume_never_spawns_concurrent_writers(
     import threading as _threading
 
     _pin_budget(monkeypatch)
-    from tests.pm._range_server import RangeHandler
     from hermes_cli.local_runtime.catalog import CATALOG
     from hermes_cli.web_routers import local_models as lm
+    from tests.pm._range_server import RangeHandler
 
     _serve_plan(monkeypatch, dl_server, tmp_path / "partials",
                 {"PartA": _BIG_BODY})
@@ -676,8 +686,8 @@ def test_quickstart_pause_stops_the_sequence(client, monkeypatch, dl_server,
     server start, no default assignment — the job parks for a resume, and
     its resume handle stays registered."""
     _pin_budget(monkeypatch)
-    from tests.pm._range_server import RangeHandler
     from hermes_cli.web_routers import local_models as lm
+    from tests.pm._range_server import RangeHandler
 
     _serve_plan(monkeypatch, dl_server, tmp_path / "partials",
                 {"QsPartA": _BIG_BODY, "QsPartB": _BIG_BODY})

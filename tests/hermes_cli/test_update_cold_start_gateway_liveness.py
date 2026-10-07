@@ -12,11 +12,10 @@ from __future__ import annotations
 
 import pytest
 
-from hermes_cli import gateway as hermes_gateway
-from hermes_cli import gateway_windows
-from hermes_cli import main as cli_main
 import hermes_cli.main_install_repair as main_install_repair
-from hermes_cli import update_cmd
+from hermes_cli import gateway as hermes_gateway
+from hermes_cli import gateway_windows, update_cmd
+from hermes_cli import main as cli_main
 
 
 def _run_cold_start(monkeypatch, capsys, *, surviving_pids):

@@ -11,21 +11,20 @@ We mock the slack modules at import time to avoid collection errors.
 import asyncio
 import contextlib
 import importlib
-from importlib.machinery import PathFinder
 import os
 import socket
 import sys
 import time
+from importlib.machinery import PathFinder
 from types import ModuleType, SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock, patch, call
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 
 import agent.secret_scope as secret_scope
 from gateway.config import GatewayConfig, Platform, PlatformConfig
-from gateway.run import GatewayRunner
 from gateway.platforms.event import MessageEvent, MessageType
-
+from gateway.run import GatewayRunner
 
 # ---------------------------------------------------------------------------
 # Mock the slack-bolt package if it's not installed
@@ -2727,9 +2726,9 @@ class TestReactions:
         assert "1234567890.000001" in adapter._reacting_message_ids
 
         # Simulate the base class calling on_processing_start
+        from gateway.config import Platform
         from gateway.platforms.base import SessionSource
         from gateway.platforms.event import MessageType
-        from gateway.config import Platform
 
         source = SessionSource(
             platform=Platform.SLACK,
@@ -3740,6 +3739,7 @@ class TestSlashEphemeralAck:
         """Failed response_url POST falls back to chat.postEphemeral — never
         a public channel post (#19688)."""
         import time
+
         from plugins.platforms.slack.adapter import _slash_user_id
 
         adapter._slash_command_contexts[("C1", "U1")] = {
@@ -3789,6 +3789,7 @@ class TestSlashEphemeralAck:
         """When response_url AND chat.postEphemeral both fail, the reply is
         dropped with an error — never leaked to the public channel (#19688)."""
         import time
+
         from plugins.platforms.slack.adapter import _slash_user_id
 
         adapter._slash_command_contexts[("C1", "U1")] = {
@@ -3834,6 +3835,7 @@ class TestSlashEphemeralAck:
         """aiohttp exception on response_url falls back to chat.postEphemeral,
         not to public channel delivery (#19688)."""
         import time
+
         from plugins.platforms.slack.adapter import _slash_user_id
 
         adapter._slash_command_contexts[("C1", "U1")] = {
@@ -4600,9 +4602,9 @@ class TestThreadImageContext:
 # =========================================================================
 
 from plugins.platforms.slack.adapter import (  # noqa: E402
-    _wrap_markdown_tables,
     _align_table,
     _disp_width,
+    _wrap_markdown_tables,
 )
 
 

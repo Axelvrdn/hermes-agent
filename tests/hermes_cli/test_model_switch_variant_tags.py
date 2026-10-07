@@ -8,11 +8,11 @@ The fix: Step c now skips colon→slash conversion when the model name already
 contains a forward slash (i.e. is already in ``vendor/model`` format), since
 the colon is a variant tag, not a vendor separator.
 """
-import pytest
 from unittest.mock import patch
 
-from hermes_cli.model_switch import switch_model
+import pytest
 
+from hermes_cli.model_switch import switch_model
 
 # Shared mock context — skip network calls, credential resolution, catalog lookups
 _MOCK_VALIDATION = {"accepted": True, "persist": True, "recognized": True, "message": None}

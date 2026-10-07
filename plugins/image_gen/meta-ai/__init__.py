@@ -8,12 +8,23 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
-from agent.secret_scope import get_secret, get_secret_str
 from agent.image_gen_provider import (
-    DEFAULT_ASPECT_RATIO, resolve_aspect_ratio, save_b64_image, save_url_image, success_response)
+    DEFAULT_ASPECT_RATIO,
+    resolve_aspect_ratio,
+    save_b64_image,
+    save_url_image,
+    success_response,
+)
+from agent.secret_scope import get_secret, get_secret_str
 from plugins.image_gen._common import (
-    StaticImageGenProvider, error_factory, import_openai, openai_importable, prompt_required_error,
-    resolve_static_model, size_for)
+    StaticImageGenProvider,
+    error_factory,
+    import_openai,
+    openai_importable,
+    prompt_required_error,
+    resolve_static_model,
+    size_for,
+)
 
 logger = logging.getLogger(__name__)
 

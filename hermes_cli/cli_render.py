@@ -6,9 +6,9 @@ cli-level names through ``from cli import ...`` at call time so facade monkeypat
 
 from __future__ import annotations
 
-import logging
 import functools
 import itertools
+import logging
 import os
 import re
 import shutil
@@ -17,12 +17,15 @@ import textwrap
 import threading
 import time
 from contextlib import contextmanager, suppress
+from typing import Any
+
+from rich.console import Console
+from rich.text import Text as _RichText
+
 from agent.i18n import t
 from agent.think_scrubber import THINK_TAG_NAMES
 from hermes_cli.banner import format_banner_version_label
-from rich.console import Console
-from rich.text import Text as _RichText
-from typing import Any
+
 
 def _cli():
     """Late import of the ``cli`` facade: mutable CLI module state (and its test seams) lives there."""
@@ -63,7 +66,10 @@ def _strip_reasoning_tags(text: str) -> str:
         '', cleaned, flags=re.DOTALL | re.IGNORECASE,
     )
     # Stray closers and cut tool-call fragments share storage's compiled patterns (#101899, #102303).
-    from agent.agent_runtime_helpers import _STRAY_TOOL_CALL_CLOSER_PATTERN, _UNTERMINATED_TOOL_CALL_PATTERN
+    from agent.agent_runtime_helpers import (
+        _STRAY_TOOL_CALL_CLOSER_PATTERN,
+        _UNTERMINATED_TOOL_CALL_PATTERN,
+    )
     cleaned = _STRAY_TOOL_CALL_CLOSER_PATTERN.sub('', cleaned)
     cleaned = _UNTERMINATED_TOOL_CALL_PATTERN.sub('', cleaned)
     return cleaned.strip()
@@ -240,7 +246,13 @@ def _heal_cooked_mode_drift(fd: int) -> bool:
 
 def _detect_light_mode_uncached() -> bool:
     """The detection ladder documented above; may raise (caller maps errors to dark)."""
-    from cli import _FALSE_RE, _LIGHT_DEFAULT_TERM_PROGRAMS, _TRUE_RE, _luminance_from_hex, _query_osc11_background
+    from cli import (
+        _FALSE_RE,
+        _LIGHT_DEFAULT_TERM_PROGRAMS,
+        _TRUE_RE,
+        _luminance_from_hex,
+        _query_osc11_background,
+    )
     for var in ("HERMES_LIGHT", "HERMES_TUI_LIGHT"):
         v = (os.environ.get(var) or "").strip().lower()
         if _TRUE_RE.match(v):
@@ -434,8 +446,15 @@ def _terminal_width_for_streaming() -> int:
 
 def _render_final_assistant_content(text: str, mode: str = "render"):
     """Render final assistant content as markdown, stripped text, or raw text."""
-    from cli import _preserve_windows_dot_segments_for_markdown, _rich_text_from_ansi, _strip_markdown_syntax, _terminal_columns, realign_markdown_tables
     from rich.markdown import Markdown
+
+    from cli import (
+        _preserve_windows_dot_segments_for_markdown,
+        _rich_text_from_ansi,
+        _strip_markdown_syntax,
+        _terminal_columns,
+        realign_markdown_tables,
+    )
 
     # 1 border cell each side + margin so resize races don't push a borderline table into soft-wrap.
     panel_width = max(20, _terminal_columns() - 4)
@@ -585,7 +604,11 @@ def _terminal_reflows() -> bool | None:
 
 def _line_rows(line: str, columns: int) -> int:
     """Rows ``line`` fills when the terminal soft-wraps it at ``columns``."""
-    from prompt_toolkit.formatted_text import ANSI, fragment_list_width, to_formatted_text
+    from prompt_toolkit.formatted_text import (
+        ANSI,
+        fragment_list_width,
+        to_formatted_text,
+    )
     width = fragment_list_width(to_formatted_text(ANSI(line)))
     return max(1, -(-width // columns)) if columns and columns > 0 else 1
 
@@ -741,7 +764,13 @@ def _cprint(text: str):
     From a background thread while an Application runs, a direct print races the input
     redraw and gets buried, so those are painted on the app's loop via ``call_soon_threadsafe``.
     """
-    from cli import _PT_ANSI, _output_history_recording, _pt_print, _pt_print_ansi, _record_output_history
+    from cli import (
+        _PT_ANSI,
+        _output_history_recording,
+        _pt_print,
+        _pt_print_ansi,
+        _record_output_history,
+    )
     recording = _output_history_recording()
     seq = next(_PAINT_SEQ)
 
@@ -793,7 +822,9 @@ def _cprint(text: str):
 
     def _print_now():
         from prompt_toolkit.formatted_text import to_formatted_text
-        from prompt_toolkit.renderer import print_formatted_text as _paint_formatted_text
+        from prompt_toolkit.renderer import (
+            print_formatted_text as _paint_formatted_text,
+        )
         from prompt_toolkit.styles import Style
         _paint_formatted_text(app.output, to_formatted_text(_PT_ANSI(text)) + [("", "\n")], Style([]))
     paint_now = _painted(_print_now)

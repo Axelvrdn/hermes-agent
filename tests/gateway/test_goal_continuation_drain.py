@@ -152,9 +152,9 @@ async def test_runner_goal_hook_enqueues_into_the_key_the_adapter_drains(hermes_
     _session_key_for_source; the adapter drain uses build_session_key on the
     event source. These must agree or the continuation is orphaned under a
     key nobody drains (the silent-stall shape from #47699)."""
-    from unittest.mock import MagicMock, patch
-    from datetime import datetime
     import uuid
+    from datetime import datetime
+    from unittest.mock import MagicMock, patch
 
     from gateway.run import GatewayRunner
     from gateway.session import SessionEntry

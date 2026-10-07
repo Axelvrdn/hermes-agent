@@ -18,7 +18,10 @@ from pathlib import Path
 
 class TestExecutionGuidanceText:
     def test_full_text_when_toolset_has_every_named_tool_or_is_unknown(self):
-        from agent.prompt_builder import OPENAI_MODEL_EXECUTION_GUIDANCE, execution_guidance_text
+        from agent.prompt_builder import (
+            OPENAI_MODEL_EXECUTION_GUIDANCE,
+            execution_guidance_text,
+        )
         assert execution_guidance_text(None) == OPENAI_MODEL_EXECUTION_GUIDANCE
         assert execution_guidance_text(
             {"terminal", "execute_code", "read_file", "search_files"}

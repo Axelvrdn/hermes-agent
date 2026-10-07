@@ -10,17 +10,18 @@ Covers:
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 
 from gateway.run import _AGENT_PENDING_SENTINEL
+from gateway.session import build_session_key
 from tests.gateway.test_steer_command import (
     _make_event,
     _make_runner,
-    _session_entry,
     _make_source,
+    _session_entry,
 )
-from gateway.session import build_session_key
-from unittest.mock import MagicMock
 
 
 def _prequeue(runner, adapter, sk):

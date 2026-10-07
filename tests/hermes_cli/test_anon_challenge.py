@@ -10,7 +10,6 @@ import httpx
 import pytest
 
 from hermes_cli import anon_auth, anon_challenge
-
 from tests.hermes_cli.anon_portal import PORTAL, install_portal  # noqa: F401
 
 
@@ -400,6 +399,7 @@ class TestPresenting:
 
     def test_a_terminal_opens_one_tab_per_ticket_however_many_attempts_resume_it(self, monkeypatch, capsys):
         import webbrowser
+
         from hermes_cli import auth_device_flow
         opened = []
         monkeypatch.setattr(auth_device_flow, "_is_remote_session", lambda: False)

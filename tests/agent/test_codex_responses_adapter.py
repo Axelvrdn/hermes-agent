@@ -2,17 +2,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from agent.message_sanitization import coerce_tool_name
 from agent.codex_responses_adapter import (
     _chat_content_to_responses_parts,
     _chat_messages_to_responses_input,
     _classify_responses_issuer,
-    _normalize_codex_response,
     _neutralize_harmony_tokens,
+    _normalize_codex_response,
     _preflight_codex_api_kwargs,
     _preflight_codex_input_items,
 )
-
+from agent.message_sanitization import coerce_tool_name
 
 _HARMONY_SOURCE_SNIPPET = (
     "<|end|><|start|>assistant<|channel|>analysis<|message|>"

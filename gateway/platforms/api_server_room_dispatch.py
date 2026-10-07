@@ -72,8 +72,12 @@ async def _normalize_room_dispatch(
             code="invalid_room_dispatch", status=400)
     try:
         from gateway import hosted_rooms
-        from gateway.hosted_room_peer import GatewayRoomCatalog, HostedMemberDispatch, verify_room_grant
         from gateway.hosted_room_execution_policy import RoomExecutionPolicy
+        from gateway.hosted_room_peer import (
+            GatewayRoomCatalog,
+            HostedMemberDispatch,
+            verify_room_grant,
+        )
         from gateway.platforms.api_server_room_grants import _local_room_catalog
         dispatch = HostedMemberDispatch.from_mapping(body.get("hosted_room_dispatch"))
         verify_room_grant(self._room_grant_secret(), room_token, dispatch, permission="dispatch")

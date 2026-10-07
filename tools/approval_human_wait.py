@@ -55,8 +55,8 @@ def human_wait_ceiling() -> float:
     holding ``_human_wait_lock`` — it reads the config cache.
     ``_get_approval_timeout`` caps at ``agent.deadline.MAX_SAFE_TIMEOUT_S`` so the
     value is always safe for ``Lock.acquire(timeout=...)`` / ``Thread.join(timeout=...)``."""
-    from tools import approval_context
     from agent.deadline import MAX_SAFE_TIMEOUT_S
+    from tools import approval_context
     return min(MAX_SAFE_TIMEOUT_S, float(approval_context._get_approval_timeout()) + HUMAN_WAIT_MARGIN_S)
 
 

@@ -11,7 +11,6 @@ from gateway import hosted_room_discussion as discussion
 from gateway import hosted_room_driver as driver
 from gateway import hosted_rooms
 
-
 ROOM_ID = "room-1"
 GATEWAY_ID = "gateway-a"
 LOCAL_PROFILES = ("research", "build", "review", "ops", "qa", "docs")

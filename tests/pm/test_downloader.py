@@ -16,11 +16,17 @@ from pathlib import Path
 
 import pytest
 
-from pm.downloader import (Download, DownloadError, DownloadPaused,
-                           HashError, Source, replace_when_released)
-
-from tests.pm._range_server import RangeHandler as _Handler, url as _url
+from pm.downloader import (
+    Download,
+    DownloadError,
+    DownloadPaused,
+    HashError,
+    Source,
+    replace_when_released,
+)
+from tests.pm._range_server import RangeHandler as _Handler
 from tests.pm._range_server import dl_server as dl_server
+from tests.pm._range_server import url as _url
 
 
 def _payload(n: int, seed: bytes = b"x") -> bytes:

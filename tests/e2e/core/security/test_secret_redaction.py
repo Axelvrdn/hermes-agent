@@ -28,8 +28,20 @@ import pytest
 from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core.security._helpers import BoundaryBreach, run_hermes, write_home
 from tests.e2e.core.security._redact import (
-    CONFIG, SCENARIOS, Ctx, Director, Secrets, World, assert_harness_sane, cell_id, cells, check, collect,
-    echo_preconditions, prompt_for, seed_workspace,
+    CONFIG,
+    SCENARIOS,
+    Ctx,
+    Director,
+    Secrets,
+    World,
+    assert_harness_sane,
+    cell_id,
+    cells,
+    check,
+    collect,
+    echo_preconditions,
+    prompt_for,
+    seed_workspace,
 )
 from tests.fakes.fake_llm_provider import FakeLLMServer
 

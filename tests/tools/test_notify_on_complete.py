@@ -11,8 +11,9 @@ Covers:
 import json
 import os
 import time
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from tools.process_registry import (
     ProcessRegistry,
@@ -299,9 +300,10 @@ def _silent_bg_base_config(tmp_path):
 def _silent_bg_harness(monkeypatch, tmp_path):
     """Common test fixture: patch enough of terminal_tool to spawn a fake
     background process and capture the JSON result the agent sees."""
+    from types import SimpleNamespace
+
     import tools.terminal_tool as terminal_tool_module
     from tools import process_registry as process_registry_module
-    from types import SimpleNamespace
 
     config = _silent_bg_base_config(tmp_path)
     dummy_env = SimpleNamespace(env={})

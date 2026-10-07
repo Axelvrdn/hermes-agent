@@ -10,6 +10,7 @@ test pins the enforcement contract on the recorder:
 """
 from tools.voice_mode import AudioRecorder
 
+
 def test_cap_enforced_when_set():
     r = AudioRecorder()
     r._max_recording_seconds = 120

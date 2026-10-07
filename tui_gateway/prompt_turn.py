@@ -9,8 +9,8 @@ post-turn follow-ups (queued prompt, goal continuation, notifications).
 
 from __future__ import annotations
 
-import logging
 import dataclasses
+import logging
 
 from .method_ctx import HandlerRegistry, bind_module
 
@@ -215,7 +215,10 @@ def _route_turn_images(agent, prompt: Any, images: list[str]) -> Any:
     references the agent analyzes in-loop (never blocking submit on vision calls).
     Decision table: agent/image_routing.py."""
     try:
-        from agent.image_routing import build_native_content_parts, decide_image_input_mode
+        from agent.image_routing import (
+            build_native_content_parts,
+            decide_image_input_mode,
+        )
         from hermes_cli.config import load_config as _tui_load_config
         _provider, _model = _active_image_routing_identity(agent)
         mode = decide_image_input_mode(
@@ -362,7 +365,8 @@ def _goal_followup_after_turn(
         if session.get("session_key") and (goal_mgr := _active_goal_manager(session)) is not None:
             _active_deleg = 0
             try:
-                from hermes_cli.goals import count_active_delegations, gather_background_processes as _gather_bg
+                from hermes_cli.goals import count_active_delegations
+                from hermes_cli.goals import gather_background_processes as _gather_bg
                 # Only THIS session's processes (TUI turns register under session_key): subagents'
                 # pollers must not park the parent's goal. Same rule as the CLI and gateway loops.
                 _bg_procs = _gather_bg(owner_task_id=session.get("session_key") or None)
@@ -807,7 +811,10 @@ def _invoke_agent(
         "session.title", sid, {"session_id": _k, "title": t})
     _usage_stop, _usage_thread = _start_usage_ticker(sid, agent)
     try:
-        from agent.notification_presentation import notification_turn, event_presentation_muted
+        from agent.notification_presentation import (
+            event_presentation_muted,
+            notification_turn,
+        )
         with notification_turn(agent, muted=event_presentation_muted("message.delta", sid), session_id=sid):
             st.result = agent.run_conversation(run_message, **st.run_kwargs)
     finally:
@@ -1138,8 +1145,8 @@ def _run_prompt_submit(
     if admitted is None:
         return False
     images, agent = admitted
-    from gateway.warning_notifications import diagnostic_turn_muted
     from agent.notification_presentation import notification_config_snapshot
+    from gateway.warning_notifications import diagnostic_turn_muted
     with _session_profile_runtime_scope(session):
         notification_config = notification_config_snapshot()
         muted = diagnostic_turn_muted(display_metadata, "tui", notification_config)
@@ -1242,10 +1249,12 @@ def _run_prompt_submit(
                 _post_turn_housekeeping(sid, session, st)
         return st.result, goal_followup
     def run():
-        from agent.notification_presentation import notification_turn
         # _prepare_turn_input owns profile binding for the worker. The context
         # here only gates presentation; do not introduce a second runtime scope.
-        from agent.notification_presentation import notification_policy_snapshot
+        from agent.notification_presentation import (
+            notification_policy_snapshot,
+            notification_turn,
+        )
         with notification_policy_snapshot(agent, "tui", notification_config), notification_turn(agent, muted=muted, session_id=sid):
             followup = run_body()
         if followup is not None:

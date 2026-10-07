@@ -7,7 +7,7 @@ so grounding must replace it (and any duplicate task section) rather than prepen
 
 from unittest.mock import patch
 
-from agent.context_compressor import ContextCompressor, HISTORICAL_TASK_HEADING
+from agent.context_compressor import HISTORICAL_TASK_HEADING, ContextCompressor
 
 _LEGACY_ACTIVE_TASK_HEADING = "## Active Task"
 

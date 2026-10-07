@@ -40,7 +40,11 @@ def clear_git_debris(root: Path) -> None:
     ``tmp_pack_*`` debris: unchecked it reached 6 GB and corrupted the pack dir (#93732).
     A partial clone also gets its commit-graph-off keys re-applied (#127711).
     """
-    from hermes_cli.gitlock import clear_stale_git_locks, clear_stale_tmp_packs, settle_partial_clone_maintenance
+    from hermes_cli.gitlock import (
+        clear_stale_git_locks,
+        clear_stale_tmp_packs,
+        settle_partial_clone_maintenance,
+    )
 
     for lock_path in clear_stale_git_locks(root):
         print(f"  (removed stale git lock: {lock_path})")
@@ -136,7 +140,10 @@ def repair_shallow_grafts(root: Path) -> None:
     Git never removes old grafts; unpruned, the file keeps growing and merge-base / the
     orphan-divergence heuristic stop working (#105951).
     """
-    from hermes_cli.gitlock import prune_stale_shallow_grafts, repair_broken_shallow_boundaries
+    from hermes_cli.gitlock import (
+        prune_stale_shallow_grafts,
+        repair_broken_shallow_boundaries,
+    )
 
     repaired = repair_broken_shallow_boundaries(root)
     if repaired:

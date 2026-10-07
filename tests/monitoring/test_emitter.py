@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from agent.monitoring.emitter import MonitoringEmitter
 
+
 def test_emit_never_raises_when_disabled():
     em = MonitoringEmitter(enabled=False)
     em.emit({"event": "gateway_health", "name": "gateway.health_snapshot"})

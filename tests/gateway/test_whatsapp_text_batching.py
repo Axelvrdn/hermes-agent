@@ -11,8 +11,8 @@ Batch delays are read from ``config.extra`` (config.yaml), not env vars.
 
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.event import MessageEvent, MessageType
-from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
 from gateway.session import SessionSource
+from plugins.platforms.whatsapp.adapter import WhatsAppAdapter
 
 
 def _make_adapter(**extra):

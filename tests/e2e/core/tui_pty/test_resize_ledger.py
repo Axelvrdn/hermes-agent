@@ -22,7 +22,14 @@ import time
 import pytest
 
 from tests.e2e.core.tui_pty._helpers import (
-    TITLE, TmuxTui, cell_params, layout_problem, ledger_problems, paragraph, require_tui, run_cells,
+    TITLE,
+    TmuxTui,
+    cell_params,
+    layout_problem,
+    ledger_problems,
+    paragraph,
+    require_tui,
+    run_cells,
     words,
 )
 from tests.fakes.fake_llm_provider import FakeLLMServer, Text

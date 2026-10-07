@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import hermes_time
-from agent.context_compressor import ContextCompressor, HISTORICAL_TASK_HEADING
+from agent.context_compressor import HISTORICAL_TASK_HEADING, ContextCompressor
 
 
 def _compressor() -> ContextCompressor:

@@ -8,14 +8,13 @@ Covers:
 """
 from __future__ import annotations
 
-import logging
 import json
+import logging
 from typing import Any, Dict
 
 import pytest
 
 from tests.tools.conftest import register_all_web_providers
-
 
 # ---------------------------------------------------------------------------
 # ABC enforcement
@@ -179,8 +178,8 @@ class TestUnconfiguredErrorEnvelopeParity:
         on, a zero-credential install routes to the keyless tier instead of
         erroring (covered in test_web_keyless_fallback.py).
         """
-        from tools import web_tools
         from agent import web_search_registry
+        from tools import web_tools
 
         self._clear_web_creds(monkeypatch)
         monkeypatch.setattr(web_tools, "_firecrawl_client", None, raising=False)
@@ -202,8 +201,8 @@ class TestUnconfiguredErrorEnvelopeParity:
         keyless cloud client (PR #50659 salvage) — a keyless ring peer must not
         silently take over, and the request must hit api.firecrawl.dev.
         """
-        from tools import web_tools
         from plugins.web.firecrawl import provider as fc
+        from tools import web_tools
 
         self._clear_web_creds(monkeypatch)
         monkeypatch.setattr(web_tools, "_firecrawl_client", None, raising=False)
@@ -296,8 +295,9 @@ class TestDispatchersTriggerPluginDiscovery:
         import asyncio
         import json
         from unittest.mock import MagicMock
-        from agent.web_search_provider import WebSearchProvider
+
         from agent import web_search_registry
+        from agent.web_search_provider import WebSearchProvider
         from tools import web_tools
 
         restore = self._clear_registry()
@@ -380,8 +380,9 @@ class TestDispatchersTriggerPluginDiscovery:
         """
         import json
         from unittest.mock import MagicMock
-        from agent.web_search_provider import WebSearchProvider
+
         from agent import web_search_registry
+        from agent.web_search_provider import WebSearchProvider
         from tools import web_tools
 
         restore = self._clear_registry()

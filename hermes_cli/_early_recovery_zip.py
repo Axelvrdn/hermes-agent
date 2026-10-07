@@ -16,8 +16,14 @@ import time
 from pathlib import Path
 
 from hermes_cli._early_recovery import (
-    _CLAIM_HELD_ERRNOS, ZIP_SWAP_JOURNAL, _keep_aside, _lock_fd, _project_root, _pytest_owns_live_checkout,
-    write_durable_text)
+    _CLAIM_HELD_ERRNOS,
+    ZIP_SWAP_JOURNAL,
+    _keep_aside,
+    _lock_fd,
+    _project_root,
+    _pytest_owns_live_checkout,
+    write_durable_text,
+)
 
 # A journal in the install root naming every entry the swap stages/renames and whether it existed
 # before, plus an OS lock its owner holds for the whole stage+swap (the kernel drops it with the

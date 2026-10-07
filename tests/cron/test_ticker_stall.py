@@ -32,7 +32,6 @@ from cron.jobs import (
     save_jobs,
 )
 
-
 try:
     import fcntl
 except ImportError:  # pragma: no cover - non-POSIX

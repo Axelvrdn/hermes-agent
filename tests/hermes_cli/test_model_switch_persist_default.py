@@ -12,7 +12,6 @@ from unittest.mock import patch
 
 from hermes_cli.model_switch import resolve_persist_behavior
 
-
 # ---------------------------------------------------------------------------
 # resolve_persist_behavior
 # ---------------------------------------------------------------------------

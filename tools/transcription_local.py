@@ -8,21 +8,35 @@ stay in ``transcription_tools`` (module state) and are read from it lazily.
 
 from __future__ import annotations
 
+import importlib.util as _ilu
 import logging
 import os
 import platform
 import shlex
 import subprocess
 import tempfile
-import importlib.util as _ilu
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from tools.transcription_audio import _find_whisper_binary, _prepare_local_audio, _run_quiet
+from tools.transcription_audio import (
+    _find_whisper_binary,
+    _prepare_local_audio,
+    _run_quiet,
+)
 from tools.transcription_common import (
-    DEFAULT_LOCAL_MODEL, DEFAULT_LOCAL_STT_LANGUAGE, GROQ_MODELS, LOCAL_STT_COMMAND_ENV, RETIRED_GROQ_MODELS,
-    OPENAI_MODELS, STT_MODEL_CATALOG, _config_number, _error_result, _log_prompt_unsupported, _ok_result,
-    _process_error_detail)
+    DEFAULT_LOCAL_MODEL,
+    DEFAULT_LOCAL_STT_LANGUAGE,
+    GROQ_MODELS,
+    LOCAL_STT_COMMAND_ENV,
+    OPENAI_MODELS,
+    RETIRED_GROQ_MODELS,
+    STT_MODEL_CATALOG,
+    _config_number,
+    _error_result,
+    _log_prompt_unsupported,
+    _ok_result,
+    _process_error_detail,
+)
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("tools.transcription_tools")
@@ -311,7 +325,10 @@ def _transcribe_local_command(
     normalized_model = _normalize_local_model(model_name)
     try:
         if not os.getenv(LOCAL_STT_COMMAND_ENV, "").strip():
-            from tools.transcription_whisper_cpp import ensure_whisper_cpp_models, whisper_cpp_command
+            from tools.transcription_whisper_cpp import (
+                ensure_whisper_cpp_models,
+                whisper_cpp_command,
+            )
             if command_template == whisper_cpp_command():
                 ensure_whisper_cpp_models(normalized_model)
         with tempfile.TemporaryDirectory(prefix="hermes-local-stt-") as output_dir:

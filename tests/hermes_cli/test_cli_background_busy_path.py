@@ -21,7 +21,6 @@ mirroring tests/hermes_cli/test_cli_steer_busy_path.py.
 from __future__ import annotations
 
 
-
 def _make_cli():
     """Bare HermesCLI (no __init__): the detector only reads _agent_running."""
     from cli import HermesCLI

@@ -2,28 +2,29 @@
 """
 
 import asyncio
-import logging
 import importlib.util
 import json
+import logging
 import os
 import sys
 import threading
 import time
-import hermes_yaml as yaml
-from fastapi import Depends, FastAPI, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
-from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
+
+import hermes_yaml as yaml
 from hermes_cli.config import cfg_get, get_process_hermes_home
-from utils import env_var_enabled
 
 # Serve assets with explicit MIME types: the host's map (on Windows the
 # registry can map .js -> text/plain) must not decide the Content-Type of
 # dashboard bundles (#28987). Runs before any StaticFiles/FileResponse below
 # serves a request, and is idempotent.
 from hermes_cli.web_asset_mime_types import normalize_web_asset_mime_types
+from utils import env_var_enabled
 
 normalize_web_asset_mime_types()
 
@@ -112,8 +113,8 @@ def mount_spa(application: FastAPI):
     with a missing dist per-request (404 JSON / ``check_dir=False``), so a long-lived
     ``--skip-build`` process recovers the moment a build appears on disk — no restart.
     """
-    from hermes_cli.web_server import WEB_DIST, _DASHBOARD_EMBEDDED_CHAT_ENABLED, app
     from hermes_cli.web_deps import _server
+    from hermes_cli.web_server import _DASHBOARD_EMBEDDED_CHAT_ENABLED, WEB_DIST, app
 
     # `hermes serve` is the headless backend: it must NEVER serve the browser SPA, even if a
     # dist is lying around, so only the JSON-RPC/WS/API surface is reachable.
@@ -170,7 +171,9 @@ def mount_spa(application: FastAPI):
         # falls back to it when neither the URL nor --open-profile names one, so requests carry an
         # explicit scope from the first paint: destructive routes 400 on an unnamed profile as soon
         # as the host serves more than one, and the switcher shows the same profile it writes.
-        from hermes_cli.web_server_profiles import serving_profile_name as _serving_profile_name
+        from hermes_cli.web_server_profiles import (
+            serving_profile_name as _serving_profile_name,
+        )
         serving_profile_js = json.dumps(_serving_profile_name()).replace("</", "<\\/")
         bootstrap_script = (
             f"<script>{token_js}"
@@ -675,9 +678,12 @@ def _merged_plugins_hub(force_refresh: bool = False) -> Dict[str, Any]:
     event loop). Only cached availability is consumed and the payload is memoized briefly to
     collapse the dashboard's bursty duplicate fetches.
     """
-    from hermes_cli.web_server_memory import _discover_memory_provider_statuses, _normalize_memory_provider_name
-    from hermes_cli.web_server import _get_dashboard_plugins
     from hermes_cli.config import get_hermes_home, load_config
+    from hermes_cli.web_server import _get_dashboard_plugins
+    from hermes_cli.web_server_memory import (
+        _discover_memory_provider_statuses,
+        _normalize_memory_provider_name,
+    )
     from hermes_constants import hermes_home_key
 
     cache_key = hermes_home_key(get_hermes_home())
@@ -689,19 +695,21 @@ def _merged_plugins_hub(force_refresh: bool = False) -> Dict[str, Any]:
                 return cached
 
     started_at = time.monotonic()
+    from hermes_cli.plugin_catalog import resolved_removed_entries
     from hermes_cli.plugins_cmd import (
         _category_active_names,
         _discover_all_plugins,
+        _discover_context_engines,
         _get_current_context_engine,
         _get_current_memory_provider,
-        _discover_context_engines,
         _get_disabled_set,
         _get_enabled_set,
         _plugin_status,
+    )
+    from hermes_cli.plugins_cmd import (
         _read_manifest as _read_plugin_manifest_at,
     )
     from hermes_cli.plugins_cmd_catalog import removed_annotation
-    from hermes_cli.plugin_catalog import resolved_removed_entries
 
     dashboard_list = _get_dashboard_plugins()
     dash_by_name = {str(p["name"]): p for p in dashboard_list}
@@ -878,7 +886,7 @@ def _mount_plugin_api_routes():
     """
     from hermes_cli.web_server import _get_dashboard_plugins, app
     try:
-        from hermes_cli.plugins_cmd import _get_enabled_set, _get_disabled_set
+        from hermes_cli.plugins_cmd import _get_disabled_set, _get_enabled_set
         enabled_set = _get_enabled_set()
         disabled_set = _get_disabled_set()
     except Exception:

@@ -22,6 +22,7 @@ import jwt
 import pytest
 from starlette.testclient import TestClient
 
+import plugins.dashboard_auth.nous as nous_plugin
 from hermes_cli import web_server
 from hermes_cli.dashboard_auth import (
     InvalidCodeError,
@@ -31,7 +32,6 @@ from hermes_cli.dashboard_auth import (
     register_provider,
 )
 from hermes_cli.dashboard_auth.cookies import SESSION_AT_COOKIE
-import plugins.dashboard_auth.nous as nous_plugin
 
 OPAQUE_PEER_KEY = "hk_live_opaque_peer_key_0123456789abcdef"
 # Well-formed RS256 JWT header with an unknown kid, bogus payload/signature.

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import logging
 import argparse
 import functools
+import logging
 import sys
 
 from hermes_cli import projects_db as pdb

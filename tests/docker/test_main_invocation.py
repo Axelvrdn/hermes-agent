@@ -12,8 +12,6 @@ from __future__ import annotations
 import subprocess
 
 
-
-
 def test_chat_subcommand_passthrough(built_image: str) -> None:
     """``docker run <image> chat --help`` should exec ``hermes chat --help``.
 

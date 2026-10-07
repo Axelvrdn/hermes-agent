@@ -9,8 +9,9 @@ import subprocess
 
 import pytest
 
-from hermes_cli import update_cmd
 import hermes_cli.update_receipt as ur
+from hermes_cli import update_cmd
+
 
 class TestFleetMatrixVerdict:
     """cli-09: a stale/down fleet must end with an explicit "not complete" verdict, because

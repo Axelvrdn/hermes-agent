@@ -164,6 +164,7 @@ def test_cli_startup_quarantines_corrupt_ledger(homes, tmp_path, corrupt):
 
 def test_status_surfaces_live_warning_without_host_details(homes, tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
+
     from hermes_cli import web_server
 
     monkeypatch.setattr(web_server.app.state, "auth_required", True, raising=False)

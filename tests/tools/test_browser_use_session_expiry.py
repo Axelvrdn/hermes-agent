@@ -4,8 +4,8 @@ from unittest.mock import Mock
 
 import tools.browser_tool as browser_tool
 from plugins.browser.browser_use import provider as browser_use_provider
-from tools import browser_tool_session as bt_session
 from tools import browser_tool_cloud as bt_cloud
+from tools import browser_tool_session as bt_session
 
 
 def _isolate_browser_state(monkeypatch):

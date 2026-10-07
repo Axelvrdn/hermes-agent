@@ -41,7 +41,10 @@ def test_second_host_gateway_is_refused_with_75_naming_the_owner_and_the_migrate
     host_lock_dir, capsys,
 ):
     from gateway import host_rendezvous as hr
-    from gateway.restart import GATEWAY_FATAL_CONFIG_EXIT_CODE, GATEWAY_SERVICE_RESTART_EXIT_CODE
+    from gateway.restart import (
+        GATEWAY_FATAL_CONFIG_EXIT_CODE,
+        GATEWAY_SERVICE_RESTART_EXIT_CODE,
+    )
     from gateway.run import _claim_host_gateway_role
     from hermes_cli.gateway_migrate import MIGRATE_COMMAND
 
@@ -168,7 +171,7 @@ def test_standalone_lock_loss_uses_profile_discovery_when_host_probe_is_empty(
 ):
     """A transiently unavailable owner channel must not erase standalone coexistence."""
     from gateway import host_rendezvous as hr
-    from gateway.host_attach import HostAttachDecision, START
+    from gateway.host_attach import START, HostAttachDecision
     from gateway.run import _claim_host_gateway_role
 
     calls = []

@@ -1,8 +1,9 @@
 """Tests for the IRC platform adapter plugin."""
 
 import asyncio
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from tests.gateway._plugin_adapter_loader import load_plugin_adapter
 

@@ -17,15 +17,13 @@ import json
 import os
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_cli.main_dashboard import _find_stale_dashboard_pids
+from hermes_cli import dashboard_procs, main_dashboard, update_cmd_maint
 from hermes_cli.dashboard_procs import _kill_stale_dashboard_processes
-from hermes_cli import dashboard_procs
-from hermes_cli import main_dashboard
-from hermes_cli import update_cmd_maint
+from hermes_cli.main_dashboard import _find_stale_dashboard_pids
 
 
 @pytest.fixture(autouse=True)

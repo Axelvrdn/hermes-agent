@@ -7,9 +7,9 @@ import pytest
 
 
 def _agent_with_history(tmp_path, monkeypatch, in_place=False):
+    from agent.context_compressor import SUMMARY_PREFIX
     from hermes_state import SessionDB
     from run_agent import AIAgent
-    from agent.context_compressor import SUMMARY_PREFIX
 
     db = SessionDB(db_path=tmp_path / "state.db")
     parent = "manual-fence-parent"

@@ -284,7 +284,10 @@ class TestFreeTierCooldownCutoff:
             monkeypatch.delenv(name, raising=False)
 
     def test_an_attended_desktop_session_ends_the_turn_and_names_the_reset(self):
-        from agent.turn_recovery import free_tier_cooldown_ends_turn, max_retries_exhausted_result
+        from agent.turn_recovery import (
+            free_tier_cooldown_ends_turn,
+            max_retries_exhausted_result,
+        )
         err = _plain_429(90)
         assert free_tier_cooldown_ends_turn(_agent(platform="desktop"), err, WELCOME) is True
         result = max_retries_exhausted_result(
@@ -307,7 +310,10 @@ class TestFreeTierCooldownCutoff:
 
     @pytest.mark.parametrize("platform", ["cron", None])
     def test_an_unattended_run_keeps_waiting_and_is_told_the_reset(self, platform):
-        from agent.turn_recovery import compute_error_backoff, free_tier_cooldown_ends_turn
+        from agent.turn_recovery import (
+            compute_error_backoff,
+            free_tier_cooldown_ends_turn,
+        )
         err = _plain_429(90)
         agent = _backoff_agent(platform=platform)
         assert free_tier_cooldown_ends_turn(agent, err, WELCOME) is False

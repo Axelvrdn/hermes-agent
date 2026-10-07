@@ -199,8 +199,9 @@ class TestLineEndingPreservation:
     """
 
     def test_write_file_preserves_lf_on_overwrite(self, tmp_path):
-        from tools.file_tools import write_file_tool
         import json
+
+        from tools.file_tools import write_file_tool
 
         p = tmp_path / "mod.py"
         p.write_bytes(b"a = 1\nb = 2\n")
@@ -209,8 +210,9 @@ class TestLineEndingPreservation:
         assert b"\r\n" not in p.read_bytes()
 
     def test_patch_preserves_lf_multiline(self, tmp_path):
-        from tools.file_tools import patch_tool
         import json
+
+        from tools.file_tools import patch_tool
 
         p = tmp_path / "mod.py"
         p.write_bytes(b"def f():\n    return 1\n\ndef g():\n    return 2\n")
@@ -224,8 +226,9 @@ class TestLineEndingPreservation:
         assert b"return 100" in data
 
     def test_patch_preserves_crlf_file(self, tmp_path):
-        from tools.file_tools import patch_tool
         import json
+
+        from tools.file_tools import patch_tool
 
         p = tmp_path / "mod.py"
         p.write_bytes(b"def f():\r\n    return 1\r\n")

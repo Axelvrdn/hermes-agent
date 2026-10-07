@@ -9,9 +9,6 @@ import pytest
 from agent.think_scrubber import THINK_TAG_NAMES
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
-
-
-
 # ── _clean_for_display unit tests ────────────────────────────────────────
 
 
@@ -1170,7 +1167,7 @@ class TestUtf16OverflowDetection:
     def _make_telegram_like_adapter(self):
         """Construct a minimal BasePlatformAdapter subclass that overrides
         message_len_fn like Telegram does."""
-        from gateway.platforms.base import utf16_len, BasePlatformAdapter
+        from gateway.platforms.base import BasePlatformAdapter, utf16_len
 
         TelegramLikeAdapter = type(
             "TelegramLikeAdapter",

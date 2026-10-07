@@ -8,7 +8,13 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable, ClassVar, Dict, List, Optional
 
-from tools.connectors.contract import Actor, SettleReason, TargetState, allowed, resolves
+from tools.connectors.contract import (
+    Actor,
+    SettleReason,
+    TargetState,
+    allowed,
+    resolves,
+)
 
 # Not a config key: a user-tunable wait with clamp rails was a foot-gun (PR1 shipped one, unmerged).
 OPERATION_DEADLINE_SECONDS = 300.0

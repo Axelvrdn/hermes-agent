@@ -13,7 +13,6 @@ import pytest
 
 import agent.auxiliary_client as ac
 
-
 NOUS_BASE_URL = "https://inference-api.nousresearch.com/v1"
 
 

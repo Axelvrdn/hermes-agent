@@ -16,15 +16,26 @@ from contextlib import contextmanager
 from typing import Any, Callable, Optional
 
 from agent.redact import redact_sensitive_text
-from hermes_cli.goals import judge_goal
-from tools.registry import no_cache_check_fn, registry, tool_error
 from hermes_cli.config import cfg_get, load_config
+from hermes_cli.goals import judge_goal
 from tools.kanban_tools_schemas import (
     KANBAN_ATTACH_SCHEMA,
-    KANBAN_ATTACH_URL_SCHEMA, KANBAN_ATTACHMENTS_SCHEMA, KANBAN_BLOCK_SCHEMA, KANBAN_COMMENT_SCHEMA,
-    KANBAN_COMPLETE_SCHEMA, KANBAN_CREATE_SCHEMA, KANBAN_HEARTBEAT_SCHEMA, KANBAN_LINK_SCHEMA,
-    KANBAN_LIST_SCHEMA, KANBAN_REQUEST_CHANGES_SCHEMA, KANBAN_REQUEST_REVIEW_SCHEMA,
-    KANBAN_SCHEDULE_SCHEMA, KANBAN_SHOW_SCHEMA, KANBAN_UNBLOCK_SCHEMA)
+    KANBAN_ATTACH_URL_SCHEMA,
+    KANBAN_ATTACHMENTS_SCHEMA,
+    KANBAN_BLOCK_SCHEMA,
+    KANBAN_COMMENT_SCHEMA,
+    KANBAN_COMPLETE_SCHEMA,
+    KANBAN_CREATE_SCHEMA,
+    KANBAN_HEARTBEAT_SCHEMA,
+    KANBAN_LINK_SCHEMA,
+    KANBAN_LIST_SCHEMA,
+    KANBAN_REQUEST_CHANGES_SCHEMA,
+    KANBAN_REQUEST_REVIEW_SCHEMA,
+    KANBAN_SCHEDULE_SCHEMA,
+    KANBAN_SHOW_SCHEMA,
+    KANBAN_UNBLOCK_SCHEMA,
+)
+from tools.registry import no_cache_check_fn, registry, tool_error
 
 logger = logging.getLogger(__name__)
 
@@ -493,7 +504,11 @@ def _goal_gate(tool_name: str, task, tid: str, evidence: str) -> None:
     try:
         # Headless gate runs outside any agent turn: bind the per-task relay-affinity scope
         # (mirrors kanban_specify) so the relay does not reject the judge call (#113669).
-        from agent.portal_tags import get_affinity_scope, reset_affinity_scope, set_affinity_scope
+        from agent.portal_tags import (
+            get_affinity_scope,
+            reset_affinity_scope,
+            set_affinity_scope,
+        )
         affinity_token = None if get_affinity_scope() else set_affinity_scope(f"kanban:{tid}")
         try:
             verdict, reason, _, _, transport_failed = judge_goal(
@@ -1008,7 +1023,9 @@ def _download_url_with_cap(url: str, max_bytes: int) -> tuple[bytes, Optional[st
     for bad scheme, blocked target, too many redirects, or a body over the cap (checked
     while streaming, so nothing oversize is buffered)."""
     from urllib.parse import urljoin, urlparse
+
     import httpx
+
     from tools.url_safety import is_safe_url
     current_url = url
     for _ in range(_MAX_ATTACH_URL_REDIRECTS + 1):
@@ -1078,8 +1095,8 @@ def _persisted_session_id(session_id: Optional[str]) -> Optional[str]:
     if not session_id:
         return None
     try:
-        from hermes_state import SessionDB
         from hermes_constants import get_hermes_home
+        from hermes_state import SessionDB
 
         state = SessionDB(db_path=get_hermes_home() / "state.db", read_only=True)
     except Exception:  # state.db may not exist for a CLI/dashboard invocation
@@ -1164,6 +1181,7 @@ def _live_tui_session_key(session_key: str, profile: Optional[str]) -> str:
     if profile and profile != "default":
         try:
             from pathlib import Path
+
             from hermes_cli.profiles import get_profile_dir, profile_exists
             if profile_exists(profile):
                 db_path = Path(get_profile_dir(profile)) / "state.db"

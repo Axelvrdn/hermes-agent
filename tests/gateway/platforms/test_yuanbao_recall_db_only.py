@@ -8,8 +8,8 @@ JSONL file gone.  When a row has no platform id (e.g. agent-processed
 @bot messages whose adapter didn't carry a msg_id, or pre-column legacy
 rows), recall falls through to content-match.
 """
-from gateway.session import SessionStore
 from gateway.config import GatewayConfig
+from gateway.session import SessionStore
 
 
 def _pin_db(monkeypatch, tmp_path):

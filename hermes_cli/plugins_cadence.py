@@ -237,9 +237,9 @@ def maybe_run_gateway_check(
 
         run_checks_fn = run_checks
     if apply_updates_fn is None:
-        from hermes_cli import plugins_cmd
-
         from functools import partial
+
+        from hermes_cli import plugins_cmd
         apply_updates_fn = partial(plugins_cmd.cmd_update, interactive=False)
     return run_scheduled_check(
         run_checks_fn=run_checks_fn,

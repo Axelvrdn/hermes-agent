@@ -1,15 +1,14 @@
 """Index credentials stay on their exact HTTPS origin, including redirects."""
 from __future__ import annotations
 
-from email.message import Message
 import io
 import urllib.request
 import urllib.response
+from email.message import Message
 
 import pytest
 
-from pm import update
-from pm import packages
+from pm import packages, update
 
 
 class IndexTransport(urllib.request.HTTPHandler, urllib.request.HTTPSHandler):

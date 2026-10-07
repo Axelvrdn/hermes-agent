@@ -24,9 +24,8 @@ from unittest.mock import MagicMock, patch
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import cron.jobs as cron_jobs
-from cron.scheduler import run_job
 import cron.scheduler as sched
-
+from cron.scheduler import run_job
 
 _RUNTIME = {
     "api_key": "test-key",

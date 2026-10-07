@@ -4,6 +4,7 @@ import asyncio
 from unittest.mock import patch
 
 import pytest
+
 import hermes_cli.web_server_mcp as _web_server_mcp
 import hermes_cli.web_server_profiles as _web_server_profiles
 
@@ -11,7 +12,7 @@ import hermes_cli.web_server_profiles as _web_server_profiles
 def _client():
     from starlette.testclient import TestClient
 
-    from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
+    from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
 
     client = TestClient(app)
     client.headers[_SESSION_HEADER_NAME] = _SESSION_TOKEN

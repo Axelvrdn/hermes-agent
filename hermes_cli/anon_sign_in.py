@@ -10,7 +10,6 @@ from typing import Any, Callable, ClassVar, ContextManager, Dict, Iterator, Opti
 
 from hermes_cli.auth_constants import httpx
 
-
 UPGRADE_START = "Sign in with a Nous account to unlock more models and tools."
 UPGRADE_ALREADY_SIGNED_IN = "Already signed in."
 UPGRADE_DO_NOT_SHARE = "Do not share this code."

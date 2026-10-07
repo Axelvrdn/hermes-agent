@@ -26,6 +26,7 @@ def resolve_verify(base_url: str = ""):
 @contextmanager
 def stream(url: str, *, headers=None, params=None, timeout=10.0, verify=None):
     import httpx
+
     from hermes_cli.urllib_security import url_origin
 
     origin = url_origin(url)

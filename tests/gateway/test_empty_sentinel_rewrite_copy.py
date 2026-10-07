@@ -9,6 +9,7 @@ import pytest
 from agent.turn_explainers import EMPTY_RESPONSE_EXPLANATION
 from gateway.run_turn import GatewayTurnMixin
 
+
 class _Runner(GatewayTurnMixin):
     def __init__(self):
         self.async_session_store = SimpleNamespace(clear_resume_pending=self._noop)

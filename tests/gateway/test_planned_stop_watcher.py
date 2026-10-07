@@ -18,9 +18,8 @@ import threading
 import time
 from unittest.mock import MagicMock
 
-
-from gateway.run import _run_planned_stop_watcher
 from gateway import status as status_mod
+from gateway.run import _run_planned_stop_watcher
 
 
 def _write_self_marker(marker, *, stale: bool = False):

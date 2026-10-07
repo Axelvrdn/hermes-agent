@@ -24,10 +24,10 @@ from __future__ import annotations
 import hashlib
 import http.client
 import json
+import logging
 import os
 import re
 import shutil
-import logging
 import ssl
 import threading
 import time

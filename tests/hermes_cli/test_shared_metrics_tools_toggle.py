@@ -6,7 +6,6 @@ setup prompt, AND `hermes tools`. These cover the third surface.
 
 from __future__ import annotations
 
-
 from hermes_cli.tools_config import (
     _configure_shared_metrics_interactive,
     _shared_metrics_menu_label,

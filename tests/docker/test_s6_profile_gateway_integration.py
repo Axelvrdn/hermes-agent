@@ -21,7 +21,6 @@ from __future__ import annotations
 
 from tests.docker.conftest import docker_exec, start_container
 
-
 _REGISTER_SCRIPT = """
 import sys
 sys.path.insert(0, "/opt/hermes")

@@ -4,8 +4,10 @@ MEDIA directives in assistant messages must not leak into compaction
 summaries — if they do, the downstream model re-emits them as active
 directives on the next turn.
 """
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from agent.context_compressor import ContextCompressor
 
 

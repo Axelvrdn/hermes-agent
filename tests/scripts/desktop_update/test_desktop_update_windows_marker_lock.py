@@ -4,26 +4,26 @@ delegate before it runs a single instruction.
 """
 from __future__ import annotations
 
-from pathlib import Path
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import pytest
 
 from tests.installation_launcher_fixture import publish_fixture_launcher
 from tests.scripts.desktop_update.windows_handoff_support import (
+    HOLD_CLI,
     MARKER,
     POWERSHELL,
-    HOLD_CLI,
-    _creation_time,
     _alive,
-    _dead_pid,
-    _script,
-    _finish,
-    _op,
-    _HeldLock,
+    _creation_time,
     _custodian,
+    _dead_pid,
+    _finish,
+    _HeldLock,
+    _op,
+    _script,
 )
 
 

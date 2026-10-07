@@ -85,9 +85,8 @@ def _owns_result(owner: str, parent: str | None) -> bool:
 
 def load_completed_results(prefix: str = "") -> dict:
     """Restore read-only snapshots; no process handles, watchers, or queue events."""
-    from tools.process_registry import ProcessSession
-
     from gateway.session_context import get_session_env
+    from tools.process_registry import ProcessSession
 
     owner = get_session_env("HERMES_SESSION_ID", "")
     if not owner:

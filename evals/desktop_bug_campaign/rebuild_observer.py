@@ -8,9 +8,8 @@ import inspect
 import os
 from pathlib import Path
 
-from tui_gateway import server
 import hermes_state_registry as registry
-
+from tui_gateway import server
 
 original_target = server._config_model_target
 marker = Path(os.environ["HERMES_HOME"]) / "fail-rebuild"

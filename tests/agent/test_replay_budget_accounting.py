@@ -23,7 +23,6 @@ from agent.context_compressor import (
 from agent.model_metadata import estimate_tokens_rough
 from agent.turn_context import substitute_api_content
 
-
 BIG_THINKING = "deliberation " * 400  # ~1.3K tokens of stale thinking text
 BIG_BLOB = [{"type": "reasoning", "encrypted_content": "x" * 4000}]
 

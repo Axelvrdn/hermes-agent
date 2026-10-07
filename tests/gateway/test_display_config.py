@@ -137,7 +137,11 @@ def assert_keeps_platform_display_defaults(cfg):
 
     Shared by every config seeder's regression test: a seeded global ``display.<key>`` beats each
     platform tier, because the gateway loader merges no DEFAULT_CONFIG (#121230)."""
-    from gateway.display_config import _PLATFORM_DEFAULTS, resolve_display_setting, resolve_tool_progress
+    from gateway.display_config import (
+        _PLATFORM_DEFAULTS,
+        resolve_display_setting,
+        resolve_tool_progress,
+    )
 
     tier_keys = {key for tier in _PLATFORM_DEFAULTS.values() for key in tier}
     for platform in _PLATFORM_DEFAULTS:
@@ -218,6 +222,7 @@ class TestConfigMigration:
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))
         # Re-import to pick up the new HERMES_HOME
         import importlib
+
         import hermes_cli.config as cfg_mod
         importlib.reload(cfg_mod)
 

@@ -36,14 +36,14 @@ if "faster_whisper" not in sys.modules:
     faster_whisper_stub.__spec__ = ModuleSpec("faster_whisper", loader=None)
     sys.modules["faster_whisper"] = faster_whisper_stub
 
-from tools.transcription_common import BUILTIN_STT_PROVIDERS, CLOUD_STT_PROVIDERS
 from tools.transcription_audio import (
-    _cloud_trim_settings,
     _CLOUD_TRIM_KEEP_MS_DEFAULT,
     _CLOUD_TRIM_MIN_INPUT_SECONDS,
     _CLOUD_TRIM_THRESHOLD_DB_DEFAULT,
+    _cloud_trim_settings,
     _trim_silence_for_cloud_stt,
 )
+from tools.transcription_common import BUILTIN_STT_PROVIDERS, CLOUD_STT_PROVIDERS
 
 # The E2E fixtures below must be past the short-clip input gate.
 _GATE = _CLOUD_TRIM_MIN_INPUT_SECONDS

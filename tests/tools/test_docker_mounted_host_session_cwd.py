@@ -22,7 +22,6 @@ import tools.terminal_tool as tt
 from tools.environments.base import BaseEnvironment
 from tools.environments.base_session_env import _wrap_command_script
 
-
 MNT = "/mnt/d/projects/app"
 SRV = "/srv/projects/app"
 

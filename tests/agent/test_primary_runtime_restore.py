@@ -12,7 +12,6 @@ Verifies that:
 import time
 from unittest.mock import MagicMock, patch
 
-
 from run_agent import AIAgent
 
 

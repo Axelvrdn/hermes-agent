@@ -25,10 +25,8 @@ import types
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from hermes_state import SessionDB
-
 from agent.turn_context import build_turn_context
-
+from hermes_state import SessionDB
 from tests.agent.test_compression_concurrent_fork import _build_agent_with_db
 
 

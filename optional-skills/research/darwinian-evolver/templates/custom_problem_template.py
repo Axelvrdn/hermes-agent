@@ -20,8 +20,6 @@ import os
 import sys
 from pathlib import Path
 
-from openai import OpenAI
-
 # Upstream types (AGPL — invoked via subprocess in production; importing here
 # is fine for skill-side driver scripts the user owns).
 from darwinian_evolver.cli_common import (
@@ -39,6 +37,7 @@ from darwinian_evolver.problem import (
     Organism,
     Problem,
 )
+from openai import OpenAI
 
 DEFAULT_MODEL = os.environ.get("EVOLVER_MODEL", "openai/gpt-4o-mini")
 

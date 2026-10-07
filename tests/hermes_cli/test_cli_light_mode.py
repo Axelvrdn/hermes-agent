@@ -8,7 +8,6 @@ before the terminal query, which is the path most users hit.
 
 from __future__ import annotations
 
-
 import pytest
 
 
@@ -141,7 +140,9 @@ class TestSkinConfigHook:
         self, cli_mod, monkeypatch, skin_name
     ):
         from hermes_cli.skin_engine import (
-            get_active_skin, get_prompt_toolkit_style_overrides, set_active_skin,
+            get_active_skin,
+            get_prompt_toolkit_style_overrides,
+            set_active_skin,
         )
 
         monkeypatch.setenv("HERMES_LIGHT", "1")
@@ -206,7 +207,9 @@ class TestOsc11DrainGuard:
         """Simulate a terminal that sends the OSC 11 reply 150ms after the
         query.  With the DA1 fence the main loop is still listening, so the
         reply is consumed AND used; nothing remains for prompt_toolkit."""
-        import os, termios, tty as _tty
+        import os
+        import termios
+        import tty as _tty
 
         # Create a pipe pair to fake stdin
         read_fd, write_fd = os.pipe()
@@ -255,7 +258,9 @@ class TestOsc11DrainGuard:
         """Bytes that arrive after the main loop has already finished (DA1
         answered instantly, reply straggles in during teardown) are eaten
         by the post-flush drain window instead of leaking (#40250)."""
-        import os, termios, tty as _tty
+        import os
+        import termios
+        import tty as _tty
 
         read_fd, write_fd = os.pipe()
         fake_attrs = [0, 0, 0, 0, 0, 0, [b'\x00'] * 32]
@@ -305,7 +310,6 @@ class TestOsc11DrainGuard:
 
 import os as _os
 import sys as _sys
-
 
 _CHILD_SRC = r"""
 import sys, os

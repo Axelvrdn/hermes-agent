@@ -19,6 +19,7 @@ import pytest
 import hermes_state_wal
 from hermes_state_wal import apply_wal_with_fallback, is_sqlite_wal_reset_vulnerable
 
+
 @pytest.fixture(autouse=True)
 def _reset_wal_reset_bug_warnings():
     hermes_state_wal._wal_reset_bug_warned_paths.clear()

@@ -6,7 +6,6 @@ wire transcript and database measurements. No production predicates are patched.
 import argparse
 import json
 import os
-from pathlib import Path
 import queue
 import sqlite3
 import subprocess
@@ -14,6 +13,7 @@ import sys
 import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 
 def main():

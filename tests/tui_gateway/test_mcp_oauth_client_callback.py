@@ -22,7 +22,6 @@ from tools.mcp_dashboard_oauth import DashboardOAuthFlow
 from tui_gateway import mcp_oauth_sessions
 from tui_gateway.mcp_oauth_sessions import deliver_callback_flow
 
-
 # ---------------------------------------------------------------------------
 # _validate_client_redirect_uri
 # ---------------------------------------------------------------------------

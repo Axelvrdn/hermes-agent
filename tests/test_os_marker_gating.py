@@ -1,11 +1,10 @@
 """Run the real collection hook; skip-all and unregistered guards must fail."""
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 _INVALID_MARKERS = {
     "stacked": "@pytest.mark.platforms('any')",

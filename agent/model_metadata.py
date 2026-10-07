@@ -16,13 +16,18 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import hermes_yaml as yaml
-
 from agent import model_metadata_http
-
-from utils import atomic_json_write, atomic_yaml_write, base_url_host_matches, base_url_hostname
-
+from agent.message_metadata import (
+    PERSISTENCE_ONLY_MESSAGE_FIELDS,
+    without_persistence_fields,
+)
 from hermes_constants import OPENROUTER_MODELS_URL, openrouter_variant_base
-from agent.message_metadata import PERSISTENCE_ONLY_MESSAGE_FIELDS, without_persistence_fields
+from utils import (
+    atomic_json_write,
+    atomic_yaml_write,
+    base_url_host_matches,
+    base_url_hostname,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -2050,7 +2055,11 @@ def _resolve_bedrock_context_length(model: str, base_url: str) -> Optional[int]:
     or runtime error are reused. The table answers a call, never the cache. Keys use base_url,
     or synthetic bedrock:// when absent, consistently with provider-error writers."""
     try:
-        from agent.bedrock_adapter import get_bedrock_context_length, probe_bedrock_context_length, resolve_bedrock_region
+        from agent.bedrock_adapter import (
+            get_bedrock_context_length,
+            probe_bedrock_context_length,
+            resolve_bedrock_region,
+        )
     except ImportError:
         return None  # boto3 not installed — fall through to generic resolution
     cache_key_url = base_url or "bedrock://"

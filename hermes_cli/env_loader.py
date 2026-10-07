@@ -15,6 +15,7 @@ from pathlib import Path
 # wiped (#57828) so early recovery provably runs before third-party imports (test_early_recovery).
 # The parser internals are imported lazily below because gateway tests stub ``sys.modules["dotenv"]``.
 import dotenv  # noqa: F401
+
 from utils import atomic_replace, load_yaml_file_readonly, mkstemp_beside
 
 logger = logging.getLogger(__name__)

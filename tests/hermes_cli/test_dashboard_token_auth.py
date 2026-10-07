@@ -23,10 +23,9 @@ from hermes_cli.dashboard_auth import (
     list_session_providers,
     list_token_providers,
     register_provider,
+    token_auth,
 )
 from hermes_cli.dashboard_auth.base import ProviderError
-from hermes_cli.dashboard_auth import token_auth
-
 
 # --------------------------------------------------------------------------
 # Test doubles

@@ -54,7 +54,7 @@ def test_compress_session_history_raises_on_lock_skip():
     """When _compression_skipped_due_to_lock is set on the agent,
     _compress_session_history must raise CompressionLockHeld with
     the holder string so callers can surface a clear message."""
-    from tui_gateway.server import _compress_session_history, CompressionLockHeld
+    from tui_gateway.server import CompressionLockHeld, _compress_session_history
 
     history = _make_history()
     agent = _make_lock_skip_agent("pid=99999:tid=1:agent=1:nonce=abc")

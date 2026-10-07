@@ -33,7 +33,12 @@ from typing import Any, Callable, Dict, Optional
 
 from agent.retry_utils import parse_retry_after_seconds
 from hermes_cli.auth_constants import (
-    AuthError, DEFAULT_NOUS_PORTAL_URL, DEFAULT_NOUS_WELCOME_URL, _decode_jwt_claims, httpx)
+    DEFAULT_NOUS_PORTAL_URL,
+    DEFAULT_NOUS_WELCOME_URL,
+    AuthError,
+    _decode_jwt_claims,
+    httpx,
+)
 
 logger = logging.getLogger("hermes_cli.auth")
 
@@ -437,7 +442,7 @@ def _mint_locked(client: httpx.Client, portal: str, auth_store: Dict[str, Any]) 
     """Mint under the caller's locks. The identity is persisted as soon as ``create`` succeeds, BEFORE
     the exchange: a 429 or timeout on the exchange must not lose a credential NAS still honours (the
     next attempt exchanges the stored one instead of minting again)."""
-    from hermes_cli.auth import _store_provider_state, _save_auth_store
+    from hermes_cli.auth import _save_auth_store, _store_provider_state
     from hermes_cli.auth_nous import _write_shared_nous_state
     minted = mint_guest(client, portal)
     state: Dict[str, Any] = {
@@ -562,10 +567,19 @@ def _reconcile_and_provision(*, timeout_seconds: float) -> Optional[Dict[str, An
     3. Nothing anywhere: mint, persisting the credential before exchanging it.
     """
     from hermes_cli.auth import (
-        _auth_store_lock, _load_auth_store, _load_provider_state, _save_auth_store,
-        _store_provider_state, _resolve_verify)
+        _auth_store_lock,
+        _load_auth_store,
+        _load_provider_state,
+        _resolve_verify,
+        _save_auth_store,
+        _store_provider_state,
+    )
     from hermes_cli.auth_nous import (
-        _nous_http_client, _nous_shared_store_lock, _read_shared_nous_state, _write_shared_nous_state)
+        _nous_http_client,
+        _nous_shared_store_lock,
+        _read_shared_nous_state,
+        _write_shared_nous_state,
+    )
     portal = _portal_base_url()
     with _auth_store_lock():
         auth_store = _load_auth_store()
@@ -654,8 +668,17 @@ def clear_dead_guest(reason: str, *, dead_token: Optional[str] = None) -> None:
     *dead_token* is None the profile's current guest is treated as the failed one.
     """
     from hermes_cli.auth import (
-        _auth_store_lock, _load_auth_store, _load_provider_state, _save_auth_store, _store_section)
-    from hermes_cli.auth_nous import _clear_shared_nous_state, _nous_shared_store_lock, _read_shared_nous_state
+        _auth_store_lock,
+        _load_auth_store,
+        _load_provider_state,
+        _save_auth_store,
+        _store_section,
+    )
+    from hermes_cli.auth_nous import (
+        _clear_shared_nous_state,
+        _nous_shared_store_lock,
+        _read_shared_nous_state,
+    )
     with _auth_store_lock():
         auth_store = _load_auth_store()
         state = _load_provider_state(auth_store, "nous")
@@ -896,8 +919,13 @@ def mark_guest_notice_shown() -> bool:
 
     Returns True when a flag was written; False when there is no guest to mark."""
     from hermes_cli.auth import (
-        _auth_file_path, _load_auth_store, _provider_state_transaction, _same_path, _save_auth_store,
-        _store_section)
+        _auth_file_path,
+        _load_auth_store,
+        _provider_state_transaction,
+        _same_path,
+        _save_auth_store,
+        _store_section,
+    )
     with _provider_state_transaction("nous") as (auth_store, state, source_path):
         if not is_guest_state(state) or source_path is None:
             return False
@@ -1017,8 +1045,17 @@ def _account_state_from_token(
     timeout_seconds: float,
 ) -> Dict[str, Any]:
     """The ``providers.nous`` shape for the signed-in account (same fields the device-code login writes)."""
-    from hermes_cli.auth import PROVIDER_REGISTRY, _coerce_ttl_seconds, _optional_base_url, _tls_state_from_verify
-    from hermes_cli.auth_nous import _NOUS_EMPTY_AGENT_KEY_FIELDS, _iso_after, refresh_nous_oauth_from_state
+    from hermes_cli.auth import (
+        PROVIDER_REGISTRY,
+        _coerce_ttl_seconds,
+        _optional_base_url,
+        _tls_state_from_verify,
+    )
+    from hermes_cli.auth_nous import (
+        _NOUS_EMPTY_AGENT_KEY_FIELDS,
+        _iso_after,
+        refresh_nous_oauth_from_state,
+    )
     now = datetime.now(timezone.utc)
     ttl = _coerce_ttl_seconds(token_data.get("expires_in", 0))
     inference_url = (
@@ -1103,48 +1140,124 @@ def persist_nous_credentials(*args, **kwargs):
 
 # Public sign-in imports remain here for existing callers and module-attribute patches.
 # The flow imports this module only inside calls, so either module can be imported first.
+from hermes_cli.anon_sign_in import (
+    _RETIRED_REASONS as _RETIRED_REASONS,
+)
+from hermes_cli.anon_sign_in import (
+    FREE_TIER_RATE_LIMIT_CARD as FREE_TIER_RATE_LIMIT_CARD,
+)
+from hermes_cli.anon_sign_in import (
+    FREE_TIER_RATE_LIMIT_CHAT as FREE_TIER_RATE_LIMIT_CHAT,
+)
+from hermes_cli.anon_sign_in import (
+    LOGIN_BUSY_ELSEWHERE as LOGIN_BUSY_ELSEWHERE,
+)
+from hermes_cli.anon_sign_in import (
+    LOGIN_COMMAND as LOGIN_COMMAND,
+)
+from hermes_cli.anon_sign_in import (
+    LOGIN_DM_ONLY as LOGIN_DM_ONLY,
+)
+from hermes_cli.anon_sign_in import (
+    LOGIN_NOT_ALLOWED as LOGIN_NOT_ALLOWED,
+)
+from hermes_cli.anon_sign_in import (
+    LOGIN_STARTING as LOGIN_STARTING,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_ALREADY_SIGNED_IN as UPGRADE_ALREADY_SIGNED_IN,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_CANCELLED as UPGRADE_CANCELLED,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_DO_NOT_SHARE as UPGRADE_DO_NOT_SHARE,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_NO_DEFAULT_CHAT as UPGRADE_NO_DEFAULT_CHAT,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_NO_DEFAULT_TERMINAL as UPGRADE_NO_DEFAULT_TERMINAL,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_NOT_COMPLETED as UPGRADE_NOT_COMPLETED,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_REASON_COPY as UPGRADE_REASON_COPY,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_START as UPGRADE_START,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_TIMED_OUT as UPGRADE_TIMED_OUT,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_UNAVAILABLE as UPGRADE_UNAVAILABLE,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_UNAVAILABLE_CHAT as UPGRADE_UNAVAILABLE_CHAT,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_WAITING as UPGRADE_WAITING,
+)
+from hermes_cli.anon_sign_in import (
+    UPGRADE_WAITING_UP_TO as UPGRADE_WAITING_UP_TO,
+)
 from hermes_cli.anon_sign_in import (  # noqa: E402
     AlreadySignedIn as AlreadySignedIn,
+)
+from hermes_cli.anon_sign_in import (
     Code as Code,
+)
+from hermes_cli.anon_sign_in import (
     Completed as Completed,
+)
+from hermes_cli.anon_sign_in import (
     Declined as Declined,
-    FREE_TIER_RATE_LIMIT_CARD as FREE_TIER_RATE_LIMIT_CARD,
-    FREE_TIER_RATE_LIMIT_CHAT as FREE_TIER_RATE_LIMIT_CHAT,
+)
+from hermes_cli.anon_sign_in import (
     Failed as Failed,
-    LOGIN_BUSY_ELSEWHERE as LOGIN_BUSY_ELSEWHERE,
-    LOGIN_COMMAND as LOGIN_COMMAND,
-    LOGIN_DM_ONLY as LOGIN_DM_ONLY,
-    LOGIN_NOT_ALLOWED as LOGIN_NOT_ALLOWED,
-    LOGIN_STARTING as LOGIN_STARTING,
+)
+from hermes_cli.anon_sign_in import (
     Retired as Retired,
+)
+from hermes_cli.anon_sign_in import (
     SignInState as SignInState,
+)
+from hermes_cli.anon_sign_in import (
     Superseded as Superseded,
+)
+from hermes_cli.anon_sign_in import (
     TimedOut as TimedOut,
-    UPGRADE_ALREADY_SIGNED_IN as UPGRADE_ALREADY_SIGNED_IN,
-    UPGRADE_CANCELLED as UPGRADE_CANCELLED,
-    UPGRADE_DO_NOT_SHARE as UPGRADE_DO_NOT_SHARE,
-    UPGRADE_NOT_COMPLETED as UPGRADE_NOT_COMPLETED,
-    UPGRADE_NO_DEFAULT_CHAT as UPGRADE_NO_DEFAULT_CHAT,
-    UPGRADE_NO_DEFAULT_TERMINAL as UPGRADE_NO_DEFAULT_TERMINAL,
-    UPGRADE_REASON_COPY as UPGRADE_REASON_COPY,
-    UPGRADE_START as UPGRADE_START,
-    UPGRADE_TIMED_OUT as UPGRADE_TIMED_OUT,
-    UPGRADE_UNAVAILABLE as UPGRADE_UNAVAILABLE,
-    UPGRADE_UNAVAILABLE_CHAT as UPGRADE_UNAVAILABLE_CHAT,
-    UPGRADE_WAITING as UPGRADE_WAITING,
-    UPGRADE_WAITING_UP_TO as UPGRADE_WAITING_UP_TO,
+)
+from hermes_cli.anon_sign_in import (
     Unavailable as Unavailable,
+)
+from hermes_cli.anon_sign_in import (
     Waiting as Waiting,
-    _RETIRED_REASONS as _RETIRED_REASONS,
+)
+from hermes_cli.anon_sign_in import (
     _default_persist_guard as _default_persist_guard,
+)
+from hermes_cli.anon_sign_in import (
     _outcome_state as _outcome_state,
+)
+from hermes_cli.anon_sign_in import (
     format_wait_line as format_wait_line,
+)
+from hermes_cli.anon_sign_in import (
     run_sign_in as run_sign_in,
 )
 from hermes_cli.anon_sign_in_cli import (  # noqa: E402
     drain_sign_in_copy as drain_sign_in_copy,
+)
+from hermes_cli.anon_sign_in_cli import (
     render_sign_in_cli as render_sign_in_cli,
+)
+from hermes_cli.anon_sign_in_cli import (
     render_sign_in_cli_code as render_sign_in_cli_code,
+)
+from hermes_cli.anon_sign_in_cli import (
     upgrade_guest as upgrade_guest,
 )
 

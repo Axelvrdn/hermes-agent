@@ -10,15 +10,30 @@ import threading
 from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional
-from tools.mcp_tool_common import _parse_boolish, _core, _resolve_tool_timeout, mcp_field, mcp_server_enabled
+
 from tools import mcp_tool_config as _config
 from tools import mcp_tool_handlers as _handlers
 from tools import mcp_tool_schema as _schema
+from tools.mcp_tool_common import (
+    _core,
+    _parse_boolish,
+    _resolve_tool_timeout,
+    mcp_field,
+    mcp_server_enabled,
+)
 from tools.mcp_tool_handlers import (
-    _make_check_fn, _make_get_prompt_handler, _make_list_prompts_handler,
-    _make_list_resources_handler, _make_read_resource_handler)
+    _make_check_fn,
+    _make_get_prompt_handler,
+    _make_list_prompts_handler,
+    _make_list_resources_handler,
+    _make_read_resource_handler,
+)
 from tools.mcp_tool_schema import (
-    _UTILITY_CAPABILITY_ATTRS, _build_utility_schemas, _normalize_name_filter, matches_name_filter)
+    _UTILITY_CAPABILITY_ATTRS,
+    _build_utility_schemas,
+    _normalize_name_filter,
+    matches_name_filter,
+)
 from tools.mcp_tool_scope import _key_name, _key_scope, _resolve_server_key, _server_key
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -590,7 +605,11 @@ def _register_from_cache_sync(name: str, config: dict, entry: dict) -> List[str]
     Lazy startup (#56832, design by Vansh5632): tools appear in the registry immediately; the first real
     call routes through ``_get_connected_server_for_call`` → ``_ensure_lazy_server_connected``.
     """
-    from tools.mcp_schema_cache import config_fingerprint, tools_from_cache_entry, utility_tools_from_cache_entry
+    from tools.mcp_schema_cache import (
+        config_fingerprint,
+        tools_from_cache_entry,
+        utility_tools_from_cache_entry,
+    )
     tool_timeout = _resolve_tool_timeout(config)
     cached_tools = _cached_tools(tools_from_cache_entry(entry))
     _record_tool_trust_metadata(name, config, cached_tools)

@@ -77,9 +77,9 @@ def test_begin_record_finalize_roundtrip(homed, outcome, exit_code):
 
 def test_bare_python_can_report_a_failed_bootstrap(tmp_path, monkeypatch):
     import os
-    from pathlib import Path
     import subprocess
     import sys
+    from pathlib import Path
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path / "home"))
     repo = Path(__file__).resolve().parents[2]

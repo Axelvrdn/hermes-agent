@@ -17,6 +17,7 @@ from hermes_cli.cron import (
     cron_list,
 )
 
+
 @pytest.fixture()
 def tmp_cron_dir(tmp_path, monkeypatch):
     monkeypatch.setattr("cron.jobs.CRON_DIR", tmp_path / "cron")

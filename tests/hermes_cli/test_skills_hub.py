@@ -5,7 +5,13 @@ import pytest
 from rich.console import Console
 
 from cli import ChatConsole
-from hermes_cli.skills_hub import do_check, do_install, do_list, do_update, handle_skills_slash
+from hermes_cli.skills_hub import (
+    do_check,
+    do_install,
+    do_list,
+    do_update,
+    handle_skills_slash,
+)
 
 
 class _DummyLockFile:
@@ -81,9 +87,9 @@ def _capture_check(monkeypatch, results, name=None) -> str:
 
 
 def _capture_update(monkeypatch, results) -> tuple[str, list[tuple[str, str, bool]]]:
+    import hermes_cli.skills_hub as cli_hub
     import tools.skills_hub as hub
     import tools.skills_hub_install as hub_install
-    import hermes_cli.skills_hub as cli_hub
 
     sink = StringIO()
     console = Console(file=sink, force_terminal=False, color_system=None)
@@ -289,8 +295,8 @@ def test_inspect_reuses_one_ssrf_safe_client_for_metadata_and_bundle(monkeypatch
     """A preview's (and an install's) sequential resolver calls must share one guarded connection pool."""
     import hermes_cli.skills_hub as cli_hub
     import tools.skills_hub as hub
-    import tools.skills_hub_search as search
     import tools.skills_hub_clawhub as clawhub
+    import tools.skills_hub_search as search
     from tools.skills_hub_models import SkillBundle, SkillMeta
 
     clients = []
@@ -393,10 +399,10 @@ def _make_url_bundle_fetcher(name="", awaiting_name=True, url="https://example.c
 
 def _install_mocks(monkeypatch, tmp_path, source_factory, category_hint=""):
     """Wire the minimum set of monkeypatches for a do_install dry run."""
+    import tools.skills_guard as guard
     import tools.skills_hub as hub
     import tools.skills_hub_install as hub_install
     import tools.skills_hub_search as hub_search
-    import tools.skills_guard as guard
 
     q_path = tmp_path / "skills" / ".hub" / "quarantine" / "pending"
     q_path.mkdir(parents=True)
@@ -611,6 +617,7 @@ def test_do_install_stale_index_names_the_problem(monkeypatch):
 def test_fetch_failure_names_rejected_github_credential():
     """A credential GitHub refused is named, never reported as a stale index entry (#98725)."""
     from types import SimpleNamespace
+
     from hermes_cli.skills_hub import _print_fetch_failure
 
     src = SimpleNamespace(is_rate_limited=False, auth=SimpleNamespace(rejected=["GITHUB_TOKEN/GH_TOKEN"]),
@@ -696,10 +703,8 @@ def test_install_by_name_resolves_to_the_skill_it_names(monkeypatch, tmp_path, i
         assert cli_hub._resolve_short_name(identifier, [], console) == "@emergencescience/blender-bpy-enhanced"
         assert "No exact match" not in sink.getvalue()
         return
-    from tools import skills_sync
-
     import tools.skills_hub as hub
-    from tools import skill_usage
+    from tools import skill_usage, skills_sync
     from tools.skills_hub import HubLockFile
 
     # hub_env's undo leaves its resolved paths as real globals; drop them so the hub follows the profile.

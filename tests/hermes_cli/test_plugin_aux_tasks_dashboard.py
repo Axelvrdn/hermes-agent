@@ -22,12 +22,15 @@ from fastapi import HTTPException
 import hermes_cli.plugins as plugins_mod
 from agent.auxiliary_client import _get_auxiliary_task_config
 from hermes_cli.plugins import PluginManager
+from hermes_cli.web_routers.models import get_auxiliary_models
 from hermes_cli.web_server_config import (
-    _AUX_TASK_SLOTS, _apply_aux_assignment_sync, _apply_model_assignment_sync, _aux_task_slots,
+    _AUX_TASK_SLOTS,
+    _apply_aux_assignment_sync,
+    _apply_model_assignment_sync,
+    _aux_task_slots,
     _stale_aux_pins,
 )
 from hermes_cli.web_server_profiles import _profile_scope
-from hermes_cli.web_routers.models import get_auxiliary_models
 
 
 def _write_plugin(home: Path, name: str, register_call: str) -> None:

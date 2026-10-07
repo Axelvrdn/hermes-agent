@@ -35,7 +35,13 @@ from typing import Callable
 
 import pytest
 
-from tests.e2e.core.parity import _drive_acp, _drive_cli, _drive_cron, _drive_gateway, _drive_rpc
+from tests.e2e.core.parity import (
+    _drive_acp,
+    _drive_cli,
+    _drive_cron,
+    _drive_gateway,
+    _drive_rpc,
+)
 from tests.e2e.core.parity._helpers import (
     FINAL_ANSWER,
     DriveResult,
@@ -49,7 +55,6 @@ from tests.e2e.core.parity._helpers import (
     start_provider,
     wait_no_orphans,
 )
-
 
 # Linux-only (/proc process-tree scans). The live-system guard bypass is needed
 # ONLY for the orphan sweep: orphans reparented to init (the exact failure this suite

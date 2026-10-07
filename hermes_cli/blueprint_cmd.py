@@ -193,7 +193,7 @@ def handle_blueprint_command(
     up from; ``surface`` (``"cli"`` | ``"gateway"``) picks the follow-up hint wording.
     """
     try:
-        from cron.blueprint_catalog import fill_blueprint, BlueprintFillError
+        from cron.blueprint_catalog import BlueprintFillError, fill_blueprint
     except Exception as e:  # pragma: no cover - import guard
         logger.debug("blueprint catalog import failed: %s", e)
         return BlueprintCommandResult("Automation Blueprints are unavailable in this build.")
@@ -228,7 +228,10 @@ def handle_blueprint_command(
         )
 
     try:
-        from cron.scheduler import CronSchedulerRegistrationError, create_job_with_scheduler_registration
+        from cron.scheduler import (
+            CronSchedulerRegistrationError,
+            create_job_with_scheduler_registration,
+        )
         job = create_job_with_scheduler_registration(**spec)
     except CronSchedulerRegistrationError as e:
         return BlueprintCommandResult(e.user_message())

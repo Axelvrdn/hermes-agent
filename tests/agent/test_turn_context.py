@@ -295,6 +295,7 @@ def test_turn_author_reaches_the_agent_through_the_real_facade(monkeypatch):
     """``AIAgent.run_conversation(turn_author=...)`` crosses the facade and the loop entry point, not only
     ``build_turn_context``; a kwarg dropped at either hop raised TypeError on every real turn."""
     from types import SimpleNamespace
+
     from run_agent import AIAgent
 
     class _Completions:

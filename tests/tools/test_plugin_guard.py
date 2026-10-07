@@ -14,13 +14,15 @@ import pytest
 
 from tests.hermes_cli.plugin_worker_support import (
     isolated_python as isolated_python,
+)
+from tests.hermes_cli.plugin_worker_support import (
     plugin_world as plugin_world,
 )
-from tools.skills_guard import format_scan_report
 from tools.plugin_guard import (
     scan_plugin,
     should_allow_plugin_install,
 )
+from tools.skills_guard import format_scan_report
 
 
 def _mk_plugin(tmp_path: Path, files: dict[str, str]) -> Path:
@@ -354,9 +356,9 @@ class TestInstallIntegration:
 
     @staticmethod
     def _make_git_repo(repo_root: Path, files: dict[str, str]):
+        import os
         import shutil as _shutil
         import subprocess as sp
-        import os
 
         if _shutil.which("git") is None:
             pytest.skip("git not available")

@@ -5,19 +5,8 @@ call arguments, _summarize_tool_result() must not crash with TypeError or
 AttributeError. This caused an infinite TUI crash loop in production.
 """
 import json
+
 from agent.context_compressor import _summarize_tool_result
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class TestNormalStringArguments:

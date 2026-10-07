@@ -467,6 +467,7 @@ def atomic_roundtrip_yaml_update(path: Union[str, Path], key_path: str, value: A
     litters the file and diverges from whole-document writers that drop the key).
     """
     from ruamel.yaml.comments import CommentedMap
+
     # Honor escaped dots and prefer existing literal dotted keys (model IDs like ``glm-5.3``) over
     # blind splitting — same navigation as ``hermes config set``'s ``_set_nested``; otherwise
     # /model + TUI persistence wrote ``glm-5: {'3': ...}`` phantom siblings.
@@ -541,6 +542,7 @@ def atomic_roundtrip_yaml_save(path: Union[str, Path], new_state: dict, *,
     users' own comments (#92554).
     """
     from ruamel.yaml.comments import CommentedMap, CommentedSeq
+
     from hermes_cli.config import require_readable_config_before_write
 
     path = Path(path)

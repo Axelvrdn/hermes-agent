@@ -73,6 +73,7 @@ def test_setup_stale_host_record_names_rescan(standalone_home, monkeypatch, caps
 
 def test_dashboard_standalone_refusal_resolves_once_and_preserves_invalid_profile(standalone_home, monkeypatch):
     from fastapi import HTTPException
+
     from hermes_cli import web_server_gateway as web
     from hermes_cli import web_server_profiles
 

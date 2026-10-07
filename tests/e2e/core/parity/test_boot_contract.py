@@ -37,7 +37,12 @@ from tests.e2e.core.parity._drive_rpc import (
     spawn_serve,
     spawn_tui_gateway,
 )
-from tests.e2e.core.parity._helpers import build_parity_home, kill_tagged, start_provider, terminate
+from tests.e2e.core.parity._helpers import (
+    build_parity_home,
+    kill_tagged,
+    start_provider,
+    terminate,
+)
 
 # Linux-only (/proc process-tree scans). The live-system guard bypass is needed
 # ONLY for teardown: orphans reparented to init (the exact failure this suite

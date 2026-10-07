@@ -6,8 +6,8 @@ after accept). Mount as ``@app.websocket("/api/ws") async def ws(ws): await hand
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import concurrent.futures
+import contextlib
 import json
 import logging
 import socket
@@ -15,8 +15,8 @@ import threading
 import time
 from typing import Any
 
-from tui_gateway import server
 from agent.message_sanitization import _sanitize_surrogates
+from tui_gateway import server
 from tui_gateway.event_replay import replay_epoch
 from tui_gateway.transport import serialize_frame
 

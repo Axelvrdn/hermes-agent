@@ -18,7 +18,6 @@ from gateway.platforms.api_server import (
 )
 from tools.browser_extension_router import route_browser_tool
 
-
 API_KEY = "-".join(("fixture", "neutral", "api", "key", "123"))
 CONTROL_PROTOCOL = "hermes-browser-control-v1"
 REAL_BROWSER_CAPABILITIES = {

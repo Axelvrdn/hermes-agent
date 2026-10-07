@@ -22,11 +22,10 @@ from unittest.mock import patch
 
 import pytest
 
-
 from agent.context_compressor import (
+    _MICRO_COMPACT_MAX_CONSECUTIVE_FAILURES,
     COMPRESSED_SUMMARY_METADATA_KEY,
     ContextCompressor,
-    _MICRO_COMPACT_MAX_CONSECUTIVE_FAILURES,
 )
 
 

@@ -1,8 +1,8 @@
 """Post-adoption failure visibility (#128509, #129254), not the unknown crash cause."""
 
 import json
-import sys
 import subprocess
+import sys
 import time
 
 import pytest

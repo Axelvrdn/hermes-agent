@@ -28,11 +28,19 @@ from fastapi.responses import FileResponse, StreamingResponse
 from hermes_cli._subprocess_compat import windows_hide_flags
 from hermes_cli.sqlite_safe_read import LiveConnectionError, offline_file_access
 from hermes_cli.web_deps import late
-from hermes_cli.web_server_files import (
-    _fs_path, _hosted_fs_read_guard, _managed_file_entry, _managed_response_meta, _resolve_managed_path,
-)
 from hermes_cli.web_models import (
-    ChatImageUpload, FsWriteText, ManagedDirectoryCreate, ManagedFileDelete, ManagedFileUpload,
+    ChatImageUpload,
+    FsWriteText,
+    ManagedDirectoryCreate,
+    ManagedFileDelete,
+    ManagedFileUpload,
+)
+from hermes_cli.web_server_files import (
+    _fs_path,
+    _hosted_fs_read_guard,
+    _managed_file_entry,
+    _managed_response_meta,
+    _resolve_managed_path,
 )
 
 router = APIRouter()

@@ -1,8 +1,14 @@
 """Offline production-path wire probe; only loopback HTTP is permitted."""
 
-import os, sys, tempfile, json, socket, threading, copy
+import copy
+import json
+import os
+import socket
+import sys
+import tempfile
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 root = Path(sys.argv[1]).resolve()
 home = tempfile.mkdtemp(prefix="hermes-104359-")
@@ -124,12 +130,14 @@ config = {
 import hermes_yaml as yaml
 
 Path(os.environ["HERMES_HOME"], "config.yaml").write_text(yaml.safe_dump(config), encoding="utf-8")
-from hermes_state import SessionDB
-from agent.moa_loop import MoAClient
-from agent.turn_request_assembly import _prepare_moa_request
-from agent.transports.chat_completions import ChatCompletionsTransport
 from types import SimpleNamespace
+
 from openai import OpenAI
+
+from agent.moa_loop import MoAClient
+from agent.transports.chat_completions import ChatCompletionsTransport
+from agent.turn_request_assembly import _prepare_moa_request
+from hermes_state import SessionDB
 
 db = SessionDB(Path(os.environ["HERMES_HOME"]) / "state.db")
 db.create_session("probe-session", source="cli")

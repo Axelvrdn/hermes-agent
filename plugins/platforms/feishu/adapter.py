@@ -18,7 +18,6 @@ Session keys prefer union_id (user_id_alt) over open_id (user_id) for stability.
 
 from __future__ import annotations
 
-from pm import install_hint
 import asyncio
 import collections
 import concurrent.futures
@@ -43,6 +42,8 @@ from typing import Any, Dict, List, Literal, Optional, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
+from pm import install_hint
 
 # aiohttp/websockets are independent optional deps — import outside lark_oapi
 # so they remain available for tests and webhook mode even if lark_oapi is missing.
@@ -83,23 +84,26 @@ _lark_import_lock = threading.Lock()
 FEISHU_WEBSOCKET_AVAILABLE = websockets is not None
 FEISHU_WEBHOOK_AVAILABLE = aiohttp is not None
 
-from gateway.config import Platform, PlatformConfig
 from agent.i18n import t
+from gateway.config import Platform, PlatformConfig
+from gateway.platforms._shared import apply_yaml_bridge as _apply_yaml_bridge
+from gateway.platforms._shared import extra_or_secret as _shared_extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import send_error
 from gateway.platforms.base import (
-    BasePlatformAdapter, ExecApprovalPrompt, SendResult,
-    SUPPORTED_DOCUMENT_TYPES, cache_document_from_bytes_async, cache_image_from_url,
-    cache_audio_from_bytes_async, cache_image_from_bytes_async,
+    SUPPORTED_DOCUMENT_TYPES,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    cache_audio_from_bytes_async,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+    cache_image_from_url,
 )
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
 from gateway.status import acquire_scoped_lock, release_scoped_lock
 from hermes_constants import get_hermes_home
 from utils import atomic_json_write, env_float, env_int
-
-from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, extra_or_secret as _shared_extra_or_secret,
-    get_scoped_secret as _get_scoped_secret, send_error
-)
-
 
 logger = logging.getLogger(__name__)
 
@@ -2166,7 +2170,9 @@ class FeishuAdapter(BasePlatformAdapter):
 
     def _on_meeting_invited_event(self, data: Any) -> None:
         """vc.bot.meeting_invited_v1 → feishu_meeting_invite.handle_meeting_invited_event."""
-        from plugins.platforms.feishu.feishu_meeting_invite import handle_meeting_invited_event
+        from plugins.platforms.feishu.feishu_meeting_invite import (
+            handle_meeting_invited_event,
+        )
         self._submit_if_ready("meeting invite event", lambda: handle_meeting_invited_event(self, data))
 
     def _on_reaction_event(self, event_type: str, data: Any) -> None:
@@ -2543,7 +2549,10 @@ class FeishuAdapter(BasePlatformAdapter):
             return None
 
         def _build() -> Any:  # lazy SDK import stays inside the guarded call
-            from lark_oapi.api.im.v1 import CreateMessageReactionRequest, CreateMessageReactionRequestBody
+            from lark_oapi.api.im.v1 import (
+                CreateMessageReactionRequest,
+                CreateMessageReactionRequestBody,
+            )
             body = CreateMessageReactionRequestBody.builder().reaction_type({"emoji_type": emoji_type}).build()
             return CreateMessageReactionRequest.builder().message_id(message_id).request_body(body).build()
 
@@ -3426,7 +3435,9 @@ class FeishuAdapter(BasePlatformAdapter):
         """
         if self._warned_empty_allowlist_deny:
             return
-        from plugins.platforms.feishu.feishu_admission_diagnostics import empty_allowlist_drop_warning
+        from plugins.platforms.feishu.feishu_admission_diagnostics import (
+            empty_allowlist_drop_warning,
+        )
         text = empty_allowlist_drop_warning(
             chat_id=chat_id, group_rules=self._group_rules,
             default_group_policy=self._default_group_policy, allowed_group_users=self._allowed_group_users,
@@ -4347,9 +4358,15 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
 
 def interactive_setup() -> None:
     """Interactive setup for Feishu / Lark — scan-to-create or manual creds (CLI helpers lazy-imported)."""
+    from hermes_cli.cli_output import (
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+    )
     from hermes_cli.config import remove_env_value, save_env_value
     from hermes_cli.setup import prompt_choice
-    from hermes_cli.cli_output import prompt, print_header, print_info, print_success, print_warning
     from hermes_cli.setup_platforms import declines_reconfigure
 
     print_header("Feishu / Lark")

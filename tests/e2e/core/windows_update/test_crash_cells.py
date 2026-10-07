@@ -58,9 +58,9 @@ website/docs/developer-guide/source-update-completion.md.
 
 from __future__ import annotations
 
-import logging
 import contextlib
 import json
+import logging
 import os
 import re
 import shlex
@@ -75,7 +75,6 @@ import pytest
 
 from hermes_cli import update_lock
 from tests.e2e.core._pending_fixes import known_failure
-
 from tests.e2e.core.windows._helpers import _decode
 from tests.e2e.core.windows_update._machine import (
     REAL_GIT,

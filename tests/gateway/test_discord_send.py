@@ -158,9 +158,6 @@ async def test_send_retries_without_reference_when_reply_target_is_deleted():
 
 import discord as _discord_mod  # noqa: E402 — imported after _ensure_discord_mock
 
-
-
-
 # ---------------------------------------------------------------------------
 # Forum follow-up chunk failure reporting + media on forum paths
 # ---------------------------------------------------------------------------
@@ -452,7 +449,9 @@ def test_discord_upload_limit_uses_guild_filesize_limit():
 async def test_oversized_upload_rejected_before_send(tmp_path, monkeypatch, method, path_kw, name):
     """Oversized local files never reach channel.send(file(s)=...) (#50846): the caller gets an
     actionable error (name, size, limit), the user a notice, and the base fallback never runs."""
-    from plugins.platforms.discord.adapter_media import _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES
+    from plugins.platforms.discord.adapter_media import (
+        _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES,
+    )
 
     big = tmp_path / name
     big.write_bytes(b"x")
@@ -482,7 +481,9 @@ async def test_oversized_upload_rejected_before_send(tmp_path, monkeypatch, meth
 async def test_send_video_under_guild_boost_limit_uploads(tmp_path, monkeypatch):
     """A boosted guild's higher cap is honored: a file over the default but under the guild
     limit is uploaded, not rejected."""
-    from plugins.platforms.discord.adapter_media import _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES
+    from plugins.platforms.discord.adapter_media import (
+        _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES,
+    )
 
     video = tmp_path / "ok.mp4"
     video.write_bytes(b"fake-video-bytes")
@@ -503,7 +504,9 @@ async def test_send_multiple_images_skips_oversized_local_file(tmp_path, monkeyp
     """Sibling site of #50846: an oversized local image used to 413 the whole chunk and dump
     its siblings into the per-image fallback. It is skipped up front, the rest of the chunk is
     delivered with a notice appended; an all-oversized chunk still sends the notice alone."""
-    from plugins.platforms.discord.adapter_media import _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES
+    from plugins.platforms.discord.adapter_media import (
+        _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES,
+    )
 
     small = tmp_path / "small.png"
     small.write_bytes(b"ok")

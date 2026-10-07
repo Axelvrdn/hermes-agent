@@ -9,8 +9,9 @@ import shutil
 import threading
 import time
 
-from agent.i18n import t
 from rich.markup import escape as _escape
+
+from agent.i18n import t
 
 
 def _fresh_start() -> str:
@@ -91,7 +92,13 @@ class CLILoopsMixin:
         _cprint(f"  {_DIM}{t('cli.display.ui_redrawn')}{_RST}")
 
     def _cmd_clear(self, cmd_original: str):
-        from cli import ChatConsole, _build_compact_banner, _clear_output_history, _cprint, get_tool_definitions
+        from cli import (
+            ChatConsole,
+            _build_compact_banner,
+            _clear_output_history,
+            _cprint,
+            get_tool_definitions,
+        )
         from hermes_cli.banner import build_welcome_banner
         if self._confirm_destructive_slash(
             "clear",
@@ -205,7 +212,9 @@ class CLILoopsMixin:
     def _record_model_friction(self, signal: str, turns: int = 1) -> None:
         # The TUI slash worker's shadow CLI has no metrics surface: tui_gateway counts what it executes.
         if self._slash_metrics_surface:
-            from hermes_cli.observability.shared_metrics_model import record_model_friction
+            from hermes_cli.observability.shared_metrics_model import (
+                record_model_friction,
+            )
             record_model_friction(
                 signal, session_id=getattr(self, "session_id", None), agent=getattr(self, "agent", None),
                 provider=getattr(self, "provider", None), model=getattr(self, "model", None), turns=turns)
@@ -279,7 +288,11 @@ class CLILoopsMixin:
             # installed-but-not-enabled plugins show up; the plugin manager only knows
             # *loaded* plugins and made fresh installs look like "nothing installed".
             from hermes_cli.plugins_cmd import (
-                _discover_all_plugins, _get_disabled_set, _get_enabled_set, _plugin_status)
+                _discover_all_plugins,
+                _get_disabled_set,
+                _get_enabled_set,
+                _plugin_status,
+            )
             entries = _discover_all_plugins()
             enabled = _get_enabled_set()
             disabled = _get_disabled_set()
@@ -348,7 +361,7 @@ class CLILoopsMixin:
         _cprint(f"  {t(key, preview=_preview(payload))}")
 
     def _queue_list(self, rest: str) -> None:
-        from cli import _VoiceInputMessage, _cprint
+        from cli import _cprint, _VoiceInputMessage
         items = self._pending_input_items()
         if not items:
             _cprint(f"  {t('cli.queue.empty')}" + ("" if rest else "  " + _queue_usage()))
@@ -380,7 +393,7 @@ class CLILoopsMixin:
             _cprint(f"  {t('cli.queue.item_not_found', index=idx, size=len(before))}")
 
     def _queue_edit(self, rest: str) -> None:
-        from cli import _VoiceInputMessage, _cprint
+        from cli import _cprint, _VoiceInputMessage
         # Split on any whitespace, like ``_cmd_queue``'s routing check, so
         # ``edit 1<TAB>text`` doesn't leave "1\ttext" as the index token.
         bits = rest.split(None, 1)
@@ -501,8 +514,8 @@ class CLILoopsMixin:
     def _get_goal_manager(self):
         """GoalManager bound to the current session_id (see ``_session_bound_manager``)."""
         def load():
-            from hermes_cli.goals import GoalManager
             from hermes_cli.config import load_config
+            from hermes_cli.goals import GoalManager
 
             def make(sid):
                 try:
@@ -734,7 +747,8 @@ class CLILoopsMixin:
             return
         _active_deleg = 0
         try:
-            from hermes_cli.goals import count_active_delegations, gather_background_processes as _gather_bg
+            from hermes_cli.goals import count_active_delegations
+            from hermes_cli.goals import gather_background_processes as _gather_bg
             # Only THIS session's processes: subagents' pollers must not park the parent's goal.
             _bg_procs = _gather_bg(owner_task_id=getattr(self, "session_id", None) or None)
             _active_deleg = count_active_delegations(getattr(self.agent, "session_id", None))

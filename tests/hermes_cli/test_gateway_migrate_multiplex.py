@@ -701,9 +701,9 @@ def test_opt_out_reads_effective_config_managed_false_wins_and_string_false_is_f
     the CLI does: a managed ``false`` overrides the user's ``true``; a hand-written ``"false"`` string is
     an opt-out, not a truthy value; the declared default keeps absent == opted in."""
     from hermes_cli import config as cfg
+    from hermes_cli import managed_scope
     from hermes_cli.config_defaults import DEFAULT_CONFIG
     from hermes_cli.gateway_migrate_guards import auto_migration_opted_out
-    from hermes_cli import managed_scope
     assert DEFAULT_CONFIG["gateway"]["auto_multiplex_migration"] is True
     assert auto_migration_opted_out(fleet.root) is False  # absent -> DEFAULT_CONFIG value
 
@@ -811,7 +811,10 @@ def test_unknown_default_system_principal_blocks_the_update_hook(fleet, tmp_path
     resolve while both secondaries are known root system units. Folding INTO an unidentifiable
     principal is the same boundary; known-same uid still folds, known-different still refuses."""
     from hermes_cli import gateway as gw
-    from hermes_cli.gateway_migrate_guards import auto_migration_blockers, gateway_identity
+    from hermes_cli.gateway_migrate_guards import (
+        auto_migration_blockers,
+        gateway_identity,
+    )
     unit_dir = tmp_path / "system"; unit_dir.mkdir()
     monkeypatch.setattr(gw, "_SYSTEM_UNIT_DIR", unit_dir)
     with gm._home_env(fleet.root):

@@ -26,8 +26,12 @@ from gateway.status_inline_source import (
     inline_bootstrap_argv,
     inline_source_flag_index,
 )
-from hermes_constants import _get_platform_default_hermes_home, get_hermes_home, get_process_hermes_home
 from hermes_cli._subprocess_compat import pid_exists_stdlib
+from hermes_constants import (
+    _get_platform_default_hermes_home,
+    get_hermes_home,
+    get_process_hermes_home,
+)
 from utils import atomic_json_write
 
 if sys.platform == "win32":
@@ -1355,7 +1359,10 @@ def shared_listener_mirror_platforms(runtime: Optional[dict[str, Any]], profile:
     ``/p/<profile>/v1/...`` answered. Only a live default entry is mirrored; its state is the profile's
     state, plus the ``/p/<profile>`` URL the client must actually call.
     """
-    from gateway.config import SHARED_LISTENER_MIRROR_PATHS, SHARED_LISTENER_MIRROR_PLATFORMS
+    from gateway.config import (
+        SHARED_LISTENER_MIRROR_PATHS,
+        SHARED_LISTENER_MIRROR_PLATFORMS,
+    )
     plats = (runtime or {}).get("platforms")
     if not profile or profile == "default" or not isinstance(plats, dict):
         return {}

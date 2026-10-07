@@ -6,8 +6,8 @@ import sys
 
 
 def test_bootstrap_lease_survives_selection_change(tmp_path, monkeypatch):
-    from pm.environments import install_state_dir, runtime_facts_path, site_packages
     from hermes_cli.runtime_state import collect_generations
+    from pm.environments import install_state_dir, runtime_facts_path, site_packages
 
     repo = tmp_path / "repo"
     repo.mkdir()

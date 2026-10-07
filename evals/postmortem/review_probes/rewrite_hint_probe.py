@@ -4,14 +4,22 @@ Independent-review probe (written by the /review subagent for tracking issue #10
 It reproduced a defect in the first version of the PR; the fixed head must pass it. Paths are taken
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
-import sys, os, pathlib, tempfile, json, time, signal
+import json
+import os
+import pathlib
+import signal
+import sys
+import tempfile
+import time
 from unittest.mock import patch
+
 root=pathlib.Path(tempfile.mkdtemp(prefix='hint-probe-'))
 sys.path.insert(0, sys.argv[1] if len(sys.argv)>1 else os.getcwd())  # repo root under test
 os.environ['HERMES_HOME']=tempfile.mkdtemp(dir=root)
 os.environ['TERMINAL_ENV']='local'
 from tools import file_tools as f
 from tools.file_operations import WriteResult
+
 print('module',f.__file__)
 with tempfile.TemporaryDirectory(dir=root) as d:
  p=pathlib.Path(d)/'file.txt'

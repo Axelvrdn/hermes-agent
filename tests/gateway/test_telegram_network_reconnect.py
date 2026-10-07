@@ -6,16 +6,16 @@ network error, the adapter must self-reschedule the next reconnect attempt
 rather than silently leaving polling dead.
 """
 
-import logging
 import asyncio
+import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from gateway.config import GatewayConfig, Platform, PlatformConfig
+from gateway.run import GatewayRunner  # noqa: E402
 from plugins.platforms.telegram import adapter as tg_adapter  # noqa: E402
 from plugins.platforms.telegram.adapter import TelegramAdapter  # noqa: E402
-from gateway.run import GatewayRunner  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

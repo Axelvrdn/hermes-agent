@@ -3,25 +3,32 @@ from __future__ import annotations
 
 import atexit
 import base64
-from collections.abc import Callable
-from contextlib import contextmanager, suppress
 import hashlib
 import json
 import logging
 import os
-from pathlib import Path
 import shutil
 import time
 import uuid
+from collections.abc import Callable
+from contextlib import contextmanager, suppress
+from pathlib import Path
 
 from pm.environments import dependency_home_root, install_state_dir, runtime_facts_path
+
 # Private aliases: this module calls them through its globals (tests patch ``_atomic_bytes``
 # here) and updaters shipped before PM import them by these names mid-swap
 # (tests/compat/old_updater_surface.json). New code imports the pm.filesystem names.
 from pm.filesystem import (
     durable_write_bytes as _atomic_bytes,
+)
+from pm.filesystem import (
     file_digest as _digest,
+)
+from pm.filesystem import (
     lock_fd as _lock,
+)
+from pm.filesystem import (
     read_bytes_or_none as _bytes,
 )
 

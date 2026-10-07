@@ -4,6 +4,7 @@ from argparse import Namespace
 from unittest.mock import patch
 
 import pytest
+
 from hermes_cli.config import DEFAULT_CONFIG, load_config, save_config
 
 

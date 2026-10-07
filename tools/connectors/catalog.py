@@ -85,7 +85,10 @@ class HostInstaller:
 
     def refuse(self, entry: Any) -> None:
         """Raise with the installer's own text when the catalog would refuse this entry here."""
-        from hermes_cli.plugins_cmd_catalog import _refuse_unsupported_catalog_platform, raise_if_removed
+        from hermes_cli.plugins_cmd_catalog import (
+            _refuse_unsupported_catalog_platform,
+            raise_if_removed,
+        )
 
         raise_if_removed(entry.name, entry.repo)
         _refuse_unsupported_catalog_platform(entry)

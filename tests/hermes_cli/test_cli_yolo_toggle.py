@@ -30,9 +30,8 @@ import pytest
 
 import tools.approval as approval_module
 from tools.approval_yolo import transfer_session_yolo
-from tools import approval_context
 from cli import HermesCLI
-
+from tools import approval_context
 
 SESSION_KEY = "test-cli-yolo-session"
 

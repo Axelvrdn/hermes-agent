@@ -18,7 +18,11 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agent.portal_tags import get_affinity_scope, reset_affinity_scope, set_affinity_scope
+from agent.portal_tags import (
+    get_affinity_scope,
+    reset_affinity_scope,
+    set_affinity_scope,
+)
 from hermes_cli import kanban as kanban_cli
 from tools import kanban_tools
 

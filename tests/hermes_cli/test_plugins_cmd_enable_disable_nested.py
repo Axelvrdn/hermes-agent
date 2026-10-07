@@ -2,18 +2,21 @@
 import shutil
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
+from tests.hermes_cli.plugin_worker_support import (
+    isolated_python as isolated_python,
+)
 from tests.hermes_cli.plugin_worker_support import (
     plugin_world as plugin_world,
-    isolated_python as isolated_python,
 )
 
 
 @pytest.mark.parametrize("query", ["trace-leaf", "trace-manifest", "observability/trace-leaf"])
 def test_nested_enable_disable_and_composite_use_canonical_key(plugin_world, monkeypatch, query):
-    from hermes_cli import plugins_cmd
     from rich.console import Console
+
+    from hermes_cli import plugins_cmd
 
     world = plugin_world
     origin, _ = world.origin(name="trace-manifest")

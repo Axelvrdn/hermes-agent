@@ -231,6 +231,7 @@ def test_root_write_through_is_visible_to_the_next_fallback_read(profile_env):
     """``_save_auth_store(target_path=root)`` must invalidate the mtime memo: a same-tick
     read-after-write (coarse-mtime filesystems) would otherwise keep serving the stale root."""
     import os
+
     from hermes_cli.auth import _save_auth_store, read_credential_pool
 
     root_file = profile_env["global"] / "auth.json"

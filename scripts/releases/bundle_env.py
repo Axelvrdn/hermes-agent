@@ -1,8 +1,8 @@
 """Non-secret environment defaults and explicit clears carried by a desktop bundle."""
 from __future__ import annotations
 
-from collections.abc import Sequence
 import json
+from collections.abc import Sequence
 
 # Keep this list aligned with the Desktop bundle banner and channel decoder.
 _ALLOWED = frozenset({

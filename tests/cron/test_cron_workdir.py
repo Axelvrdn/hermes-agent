@@ -11,6 +11,7 @@ Covers:
 """
 
 from __future__ import annotations
+
 import sys
 
 import pytest
@@ -132,8 +133,9 @@ class TestTickWorkdirPartition:
     """Workdir is per execution, so it must not force a global serial lane."""
 
     def test_workdir_jobs_overlap_on_parallel_pool(self, tmp_path, monkeypatch):
-        import cron.scheduler as sched
         import threading
+
+        import cron.scheduler as sched
 
         workdir_a = tmp_path / "a"
         workdir_b = tmp_path / "b"
@@ -183,6 +185,7 @@ class TestRunJobTerminalCwd:
         """Patch enough of run_job's deps that it executes without real creds."""
         import os
         import sys
+
         import cron.scheduler as sched
         from cron import scheduler_delivery as sched_delivery
 
@@ -248,6 +251,7 @@ class TestRunJobTerminalCwd:
         check it's unchanged by run_job.
         """
         import os
+
         import cron.scheduler as sched
 
         # Pin TERMINAL_CWD to a sentinel via monkeypatch so we control both
@@ -282,6 +286,7 @@ class TestRunJobTerminalCwd:
         self, monkeypatch, tmp_path
     ):
         import os
+
         import cron.scheduler as sched
         from tools.terminal_tool import get_session_cwd
 

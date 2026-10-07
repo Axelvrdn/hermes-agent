@@ -9,8 +9,8 @@ lazily at call time so ``patch("tools.x.y")`` in tests keeps working.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 from dataclasses import dataclass
 from importlib import import_module
 from typing import Any, Callable, Dict, Optional, Tuple
@@ -77,7 +77,7 @@ def apply_transform_tool_result(
     reach it, so the agent paths call the same helper (after the terminal
     ``post_tool_call``) to keep the hook's "every tool" contract. Fail-open."""
     try:
-        from model_tools import _CallIds, _apply_transform_tool_result_hook
+        from model_tools import _apply_transform_tool_result_hook, _CallIds
         return _apply_transform_tool_result_hook(
             function_name, function_args, result, duration_ms,
             _CallIds(**tool_hook_ids(agent, effective_task_id, tool_call_id)),

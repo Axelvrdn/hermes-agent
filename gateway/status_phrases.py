@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 import hermes_yaml as yaml
-
 from hermes_constants import get_hermes_home
 
 # Hermes UI surfaces, not app/vendor buckets.  Long-running-only: regular tool/thinking/interim

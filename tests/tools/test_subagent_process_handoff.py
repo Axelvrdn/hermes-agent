@@ -13,8 +13,11 @@ import weakref
 import pytest
 
 from tools.delegate_tool import _register_subagent, _unregister_subagent
-from tools.process_registry import ProcessRegistry, process_registry, _handle_process
-from tools.process_registry_notifications import _process_accounting_lines, format_process_notification
+from tools.process_registry import ProcessRegistry, _handle_process, process_registry
+from tools.process_registry_notifications import (
+    _process_accounting_lines,
+    format_process_notification,
+)
 
 
 class _Parent:

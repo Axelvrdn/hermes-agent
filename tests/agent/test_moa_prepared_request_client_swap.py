@@ -14,6 +14,7 @@ import types
 from agent.conversation_loop import _moa_client_consumes_prepared_request
 from agent.moa_loop import MoAChatCompletions
 
+
 def _client_with(completions):
     return types.SimpleNamespace(
         chat=types.SimpleNamespace(completions=completions)

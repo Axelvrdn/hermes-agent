@@ -140,7 +140,10 @@ class TestFetchEndpointModelMetadataBlackhole:
 
     def test_connect_timeout_skips_remaining_candidates(self):
         """A timeout condemns the host, not the URL suffix — one stall, not two."""
-        from agent.model_metadata import _endpoint_blackholed, fetch_endpoint_model_metadata
+        from agent.model_metadata import (
+            _endpoint_blackholed,
+            fetch_endpoint_model_metadata,
+        )
 
         with patch("agent.model_metadata.detect_local_server_type", return_value=None), \
              patch(
@@ -153,7 +156,10 @@ class TestFetchEndpointModelMetadataBlackhole:
         assert _endpoint_blackholed(self.URL) is True
 
     def test_refused_tries_every_candidate_and_does_not_blackhole(self):
-        from agent.model_metadata import _endpoint_blackholed, fetch_endpoint_model_metadata
+        from agent.model_metadata import (
+            _endpoint_blackholed,
+            fetch_endpoint_model_metadata,
+        )
 
         with patch("agent.model_metadata.detect_local_server_type", return_value=None), \
              patch(
@@ -167,7 +173,10 @@ class TestFetchEndpointModelMetadataBlackhole:
 
     def test_blackholed_endpoint_issues_no_request(self):
         """force_refresh bypasses the metadata cache, so only the guard can stop it."""
-        from agent.model_metadata import _note_endpoint_blackholed, fetch_endpoint_model_metadata
+        from agent.model_metadata import (
+            _note_endpoint_blackholed,
+            fetch_endpoint_model_metadata,
+        )
 
         _note_endpoint_blackholed(self.URL)
         with patch("agent.model_metadata.detect_local_server_type", return_value=None), \
@@ -180,7 +189,10 @@ class TestQueryOllamaApiShowBlackhole:
     URL = "http://10.0.0.9:30080/v1"
 
     def test_connect_timeout_records_blackhole(self):
-        from agent.model_metadata import _endpoint_blackholed, _query_ollama_api_show_uncached
+        from agent.model_metadata import (
+            _endpoint_blackholed,
+            _query_ollama_api_show_uncached,
+        )
 
         client = _client_mock(httpx.ConnectTimeout("timed out"))
         with patch("httpx.Client", return_value=client):
@@ -190,7 +202,10 @@ class TestQueryOllamaApiShowBlackhole:
         assert _endpoint_blackholed(self.URL) is True
 
     def test_blackholed_endpoint_issues_no_request(self):
-        from agent.model_metadata import _note_endpoint_blackholed, _query_ollama_api_show_uncached
+        from agent.model_metadata import (
+            _note_endpoint_blackholed,
+            _query_ollama_api_show_uncached,
+        )
 
         _note_endpoint_blackholed(self.URL)
         with patch("httpx.Client") as client_cls:
@@ -199,7 +214,10 @@ class TestQueryOllamaApiShowBlackhole:
         client_cls.assert_not_called()
 
     def test_read_timeout_does_not_blackhole(self):
-        from agent.model_metadata import _endpoint_blackholed, _query_ollama_api_show_uncached
+        from agent.model_metadata import (
+            _endpoint_blackholed,
+            _query_ollama_api_show_uncached,
+        )
 
         client = _client_mock(httpx.ReadTimeout("slow"))
         with patch("httpx.Client", return_value=client):

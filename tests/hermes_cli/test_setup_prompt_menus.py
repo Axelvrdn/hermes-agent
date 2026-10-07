@@ -4,6 +4,7 @@ import pytest
 
 from hermes_cli import setup as setup_mod
 
+
 def test_prompt_choice_escape_keeps_default_without_numbered_fallback(monkeypatch):
     monkeypatch.setattr(
         setup_mod,

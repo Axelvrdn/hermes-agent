@@ -9,7 +9,7 @@ cap pathological lengths.
 """
 from __future__ import annotations
 
-from model_tools import _sanitize_tool_error, _TOOL_ERROR_MAX_LEN
+from model_tools import _TOOL_ERROR_MAX_LEN, _sanitize_tool_error
 
 
 class TestRoleTagStripping:
@@ -85,6 +85,7 @@ class TestHandleFunctionCallIntegration:
 
     def test_exception_path_error_is_sanitized(self):
         import json
+
         from model_tools import handle_function_call
         from tools.registry import registry as _registry
 

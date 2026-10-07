@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 def _stream_body(platform_cfg):
     from aiohttp import web
+
     from gateway.config import PlatformConfig
     from gateway.platforms.api_server import APIServerAdapter, ThreadSafeAsyncQueue
 

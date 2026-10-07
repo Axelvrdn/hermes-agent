@@ -12,8 +12,8 @@ and the standalone ``DeadTargetRegistry`` persistence/classification contract.
 import pytest
 
 from gateway.config import GatewayConfig, Platform
-from gateway.delivery import DeliveryRouter, DeliveryTarget
 from gateway.dead_targets import DeadTargetRegistry
+from gateway.delivery import DeliveryRouter, DeliveryTarget
 
 
 class ForbiddenThenOkAdapter:

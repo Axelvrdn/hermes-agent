@@ -30,7 +30,11 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from hermes_cli.memory_provider_migration import (
-    _home_consent, _home_label, _install_command, _interactive, _unattended_consent,
+    _home_consent,
+    _home_label,
+    _install_command,
+    _interactive,
+    _unattended_consent,
 )
 
 logger = logging.getLogger(__name__)
@@ -293,7 +297,10 @@ def _pending(home: Path, *, say: Callable[[str], None], process_env: bool = Fals
 def _install_into(home: Path) -> Callable[[str], dict]:
     def _install(name: str) -> dict:
         from hermes_cli.plugins_cmd import dashboard_install_plugin
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         token = set_hermes_home_override(home)
         try:
             return dashboard_install_plugin("", force=False, enable=True, catalog_name=name,

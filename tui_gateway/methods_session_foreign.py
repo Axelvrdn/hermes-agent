@@ -18,7 +18,10 @@ def _foreign_list(rid, params):
 
 
 def _foreign_history_request(rid, params, importing):
-    from hermes_cli.foreign_sessions_browser import import_browser_session, preview_foreign_session
+    from hermes_cli.foreign_sessions_browser import (
+        import_browser_session,
+        preview_foreign_session,
+    )
     try:
         with _profile_db(params, writer=importing) as db:
             if db is None:

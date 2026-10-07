@@ -46,7 +46,6 @@ from gateway.config import GatewayConfig, Platform
 from gateway.platforms.event import MessageEvent
 from gateway.session import SessionEntry, SessionSource
 
-
 SESSION_KEY = "agent:main:telegram:group:-1001:12345"
 SESSION_ID = "sess-first-turn"
 

@@ -6,9 +6,9 @@ tests cover the crypto (against the official BIP-340 vector) and the WS
 lifecycle as wired into BuzzAdapter.
 """
 
-import logging
 import asyncio
 import json
+import logging
 import time
 
 import pytest
@@ -384,8 +384,8 @@ async def test_websocket_loop_drops_restricted_channel_without_reconnect():
     rejecting a private-channel subscription.
     """
     import sys
-    from unittest.mock import patch, MagicMock
     from contextlib import asynccontextmanager
+    from unittest.mock import MagicMock, patch
 
     adapter = _make_adapter(extra={"channels": [CHANNEL]})
     adapter._channel_state[CHANNEL] = {"chat_type": "group", "last_ts": 0, "seen": {}}
@@ -459,8 +459,8 @@ async def test_websocket_loop_reconnects_on_non_restricted_closed():
     _restricted_channels — it is a transient error and the loop should reconnect.
     """
     import sys
-    from unittest.mock import patch, MagicMock
     from contextlib import asynccontextmanager
+    from unittest.mock import MagicMock, patch
 
     adapter = _make_adapter(extra={"channels": [CHANNEL]})
     adapter._channel_state[CHANNEL] = {"chat_type": "group", "last_ts": 0, "seen": {}}
@@ -622,8 +622,8 @@ async def test_closed_membership_phrases_prune_without_reconnect(detail):
     """Every production-observed membership-rejection phrasing (#76850,
     #97502) prunes the subscription instead of tearing down the socket."""
     import sys
-    from unittest.mock import patch, MagicMock
     from contextlib import asynccontextmanager
+    from unittest.mock import MagicMock, patch
 
     adapter = _make_adapter(extra={"channels": [CHANNEL]})
     adapter._channel_state[CHANNEL] = {"chat_type": "group", "last_ts": 0, "seen": {}}

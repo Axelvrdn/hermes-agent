@@ -16,7 +16,6 @@ from tools import vision_tools  # noqa: F401 - registers vision_analyze
 from tools.delegate_tool_config import _resolve_child_runtime
 from tools.registry import registry
 
-
 _TINY_PNG = base64.b64decode(
     b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 )

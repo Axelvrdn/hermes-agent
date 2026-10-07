@@ -19,13 +19,12 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import kanban_db as kb
-from hermes_cli import kanban_db_connect as kbc
 from agent.image_routing import (
     build_native_content_parts,
     extract_image_refs,
 )
-
+from hermes_cli import kanban_db as kb
+from hermes_cli import kanban_db_connect as kbc
 
 # Tiny 1×1 transparent PNG used to back any path the tests stick into a
 # task body. extract_image_refs validates the path exists on disk, so the

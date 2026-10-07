@@ -10,7 +10,6 @@ an OAuth2 access token has expired.  These tests verify the three fixes:
 
 import pytest
 
-
 # ── _is_auth_error ──────────────────────────────────────────────────────────
 
 def _import_is_auth_error():

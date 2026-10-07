@@ -2,11 +2,11 @@
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import venv
+from pathlib import Path
 
 import pytest
 
@@ -254,6 +254,7 @@ def test_old_process_new_git_tree_completes_in_fresh_python(transition, tmp_path
 def _run_cmd_update(monkeypatch, request, capsys):
     """``hermes update --gateway`` whose impl hands this request to the real post-commit completion."""
     from types import SimpleNamespace
+
     from hermes_cli import main, update_cmd, update_receipt
 
     monkeypatch.setenv("HERMES_HOME", request["home"])
@@ -394,6 +395,7 @@ def test_unwritable_gateway_status_never_fails_a_settled_commit(tmp_path, monkey
 def test_interrupt_after_child_success_demotes_gateway_marker_at_boundary(transition, monkeypatch, cleanup_failure):
     import io
     from types import SimpleNamespace
+
     from hermes_cli import main, update_cmd, update_lock, update_receipt
 
     root, git, old, new, request = transition
@@ -580,6 +582,7 @@ def test_bootstrap_does_not_initialize_old_site_packages(transition, tmp_path, m
 def test_progress_is_forwarded_before_held_stage_is_released(transition, monkeypatch, stage):
     import io
     import threading
+
     from hermes_cli import update_completion
 
     root, git, old, new, request = transition
@@ -639,6 +642,7 @@ def test_interactive_configuration_keeps_terminal_input(transition):
     import select
     import signal
     import time
+
     from hermes_cli import update_completion
 
     root, git, old, new, request = transition
@@ -677,8 +681,10 @@ def test_interactive_configuration_keeps_terminal_input(transition):
 @pytest.mark.live_system_guard_bypass
 def test_interrupt_reaps_completion_descendants_before_return(transition, monkeypatch):
     import io
-    import psutil
     import time
+
+    import psutil
+
     from hermes_cli import update_completion
 
     root, git, old, new, request = transition
@@ -720,6 +726,7 @@ def test_interrupt_reaps_completion_descendants_before_return(transition, monkey
 def test_taskkill_failure_still_reaps_child_and_preserves_interrupt(tmp_path, monkeypatch, failure):
     """Only native Windows exercises taskkill dispatch and retained-handle kill."""
     import io
+
     from hermes_cli import update_completion
 
     package = tmp_path / "hermes_cli"

@@ -10,14 +10,17 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import re
+import weakref
 from functools import partial
 from pathlib import Path
-import weakref
 from typing import Any, Callable, Optional
 
 from agent.i18n import t
-
-from gateway.kanban_watchers_common import _list_boards, _to_thread_process_service, logger
+from gateway.kanban_watchers_common import (
+    _list_boards,
+    _to_thread_process_service,
+    logger,
+)
 from gateway.wake import session_owned_by_profile
 
 

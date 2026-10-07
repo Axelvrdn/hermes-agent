@@ -1,12 +1,10 @@
 """Behavior-contract compatibility tests for native Hermes plugins."""
 
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import hermes_yaml as yaml
-
 from hermes_cli.plugins import PluginManager
-
 
 LEGACY_PLUGIN = Path(__file__).parent / "fixtures" / "plugin_compat_legacy"
 

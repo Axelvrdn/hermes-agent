@@ -18,6 +18,7 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+
 from gateway.config import PlatformConfig  # noqa: E402
 from plugins.platforms.telegram import adapter as tg  # noqa: E402
 from plugins.platforms.telegram.adapter import TelegramAdapter  # noqa: E402

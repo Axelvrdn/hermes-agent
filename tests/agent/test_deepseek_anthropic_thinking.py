@@ -122,6 +122,7 @@ def test_deepseek_model_name_does_not_override_native_signature_contract(url):
 ])
 def test_deepseek_proxy_keeps_unsigned_thinking_in_older_tool_turns_only(model, kept):
     import copy
+
     from agent.anthropic_message_convert import convert_messages_to_anthropic
     history = [
         {"role": "user", "content": "inspect"},

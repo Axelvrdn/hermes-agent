@@ -5,7 +5,11 @@ import struct
 import pytest
 
 from hermes_cli import desktop_update_verify as verify
-from tests.hermes_cli.test_source_build import copy_freshness_scripts, stamp_product, use_host_node_as_pm_node
+from tests.hermes_cli.test_source_build import (
+    copy_freshness_scripts,
+    stamp_product,
+    use_host_node_as_pm_node,
+)
 
 
 @pytest.fixture

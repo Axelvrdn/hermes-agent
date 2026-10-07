@@ -9,7 +9,6 @@ import hermes_cli.plugins as plugins_mod
 import tools.terminal_tool as terminal_tool_module
 from tools.environments.local import LocalEnvironment
 
-
 _UNSET = object()
 
 

@@ -59,9 +59,8 @@ class TestRegisterTTSProvider:
     """End-to-end: a fake plugin registers via the hook, ends up in the registry."""
 
     def test_accepts_valid_provider(self):
-        from hermes_cli.plugins import PluginManager
-
         from agent import tts_registry
+        from hermes_cli.plugins import PluginManager
         tts_registry._reset_for_tests()
 
         hermes_home = Path(os.environ["HERMES_HOME"])
@@ -92,9 +91,8 @@ class TestRegisterTTSProvider:
 
     def test_rejects_non_provider(self, caplog):
         """A plugin that passes a non-TTSProvider gets a warning, no exception."""
-        from hermes_cli.plugins import PluginManager
-
         from agent import tts_registry
+        from hermes_cli.plugins import PluginManager
         tts_registry._reset_for_tests()
 
         hermes_home = Path(os.environ["HERMES_HOME"])
@@ -121,9 +119,8 @@ class TestRegisterTTSProvider:
         rejected by the underlying registry — both with a registry-level warning
         AND with the registry remaining empty (plugin still loads OK).
         """
-        from hermes_cli.plugins import PluginManager
-
         from agent import tts_registry
+        from hermes_cli.plugins import PluginManager
         tts_registry._reset_for_tests()
 
         hermes_home = Path(os.environ["HERMES_HOME"])

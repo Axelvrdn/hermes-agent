@@ -1,6 +1,6 @@
 """Profile-local WhatsApp credentials and non-destructive secondary startup."""
-import socket
 import os
+import socket
 from unittest.mock import AsyncMock
 
 import pytest
@@ -20,9 +20,10 @@ def test_credentials_follow_profile_home(tmp_path):
             assert _platform_has_bot_credential(Platform.WHATSAPP, PlatformConfig()) is expected
             overridden = PlatformConfig(extra={"session_path": str(a / "platforms/whatsapp/session")})
             assert _platform_has_bot_credential(Platform.WHATSAPP, overridden)
+    from unittest.mock import patch
+
     from gateway.status import write_runtime_status
     from hermes_cli import gateway_multiplex_served as served
-    from unittest.mock import patch
     write_runtime_status(platform="work:whatsapp", platform_state="disabled",
                          error_code="whatsapp_unpaired", error_message="pair it: hermes -p work whatsapp")
     with patch.object(served, "live_default_gateway_pid", return_value=os.getpid()):
@@ -94,7 +95,10 @@ def _hold_port():
 def test_allocation_skips_ports_recorded_by_siblings(tmp_path):
     """A sibling whose bridge is down leaves its recorded port unbound; a new profile must not take it,
     or the sibling hits a non-retryable port conflict on its next start. A corrupt record names itself."""
-    from plugins.platforms.whatsapp.bridge_ownership import port_is_free, secondary_bridge_port
+    from plugins.platforms.whatsapp.bridge_ownership import (
+        port_is_free,
+        secondary_bridge_port,
+    )
     profiles = tmp_path / "profiles"
     sibling, fresh = profiles / "a", profiles / "b"
     recorded = next(p for p in range(3001, 4000) if port_is_free(p))
@@ -206,7 +210,10 @@ async def test_launch_startup_and_standalone_send_agree_after_role_change(tmp_pa
     """A profile that recorded a port as a secondary and later launches its own gateway starts its bridge
     on the port `whatsapp send` resolves, instead of 3000 while sends go to the abandoned record."""
     import plugins.platforms.whatsapp.adapter as module
-    from plugins.platforms.whatsapp.bridge_ownership import secondary_bridge_port, standalone_bridge_port
+    from plugins.platforms.whatsapp.bridge_ownership import (
+        secondary_bridge_port,
+        standalone_bridge_port,
+    )
     monkeypatch.setattr(module, "find_node_executable", lambda name: f"/usr/bin/{name}")
     home = tmp_path / "profiles" / "e"
     home.mkdir(parents=True)

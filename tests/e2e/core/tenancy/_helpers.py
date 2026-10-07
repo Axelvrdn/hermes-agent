@@ -13,8 +13,8 @@ Hermes runs for real in child processes with HOME=<tmp>/home and HERMES_HOME=<tm
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import secrets
 import signal
@@ -27,7 +27,6 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 import hermes_yaml as yaml
-
 from tests.fakes.fake_llm_provider import FakeLLMServer, Response, Text, ToolCall
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -473,7 +472,9 @@ class ServeBackend(TuiBackend):
         import re
         import threading
 
-        from websockets.sync.client import connect  # ``websockets`` is a core dependency
+        from websockets.sync.client import (
+            connect,  # ``websockets`` is a core dependency
+        )
 
         self.token = secrets.token_urlsafe(24)
         self._log = open(log_path, "a", encoding="utf-8")  # noqa: SIM115 - closed in close()

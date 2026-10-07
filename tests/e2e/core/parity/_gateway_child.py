@@ -23,10 +23,9 @@ import os
 import sys
 from typing import Any, Dict, Optional
 
+import gateway.run as gateway_run
 from gateway.config import Platform
 from gateway.platforms.base import BasePlatformAdapter, MessageEvent, SendResult
-
-import gateway.run as gateway_run
 
 PARITY_USER_ID = os.environ.get("PARITY_GATEWAY_USER", "424242")
 PARITY_CHAT_ID = PARITY_USER_ID  # Telegram private chats use the user id as chat id

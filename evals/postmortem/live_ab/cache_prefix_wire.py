@@ -2,7 +2,16 @@
 message prefix between call N and N+1. If Hermes strips prior-turn thinking, call N+1's messages[:k]
 will NOT equal call N's messages (prefix divergence) even though the conversation only grew.
 Also reports cache hit per call. Cost: a handful of calls."""
-import os, sys, re, tempfile, time, json, copy, subprocess, logging
+import copy
+import json
+import logging
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+
 # LIVE: makes ~6 real calls to the configured provider (a few cents). Usage:
 #   python cache_prefix_wire.py <repo_root> <A|B> [--hermes-home DIR]   (default HERMES_HOME: the real one, for credentials)
 sys.path.insert(0, sys.argv[1])
@@ -11,6 +20,7 @@ if "--hermes-home" in sys.argv:
     os.environ["HERMES_HOME"] = sys.argv[sys.argv.index("--hermes-home") + 1]
 arm = sys.argv[2] if len(sys.argv) > 2 else "A"
 import agent.anthropic_message_convert as amc
+
 if arm == "B":
     def _keep_all(result, base_url, model):
         for idx, m in amc._assistant_block_lists(result):
@@ -21,6 +31,7 @@ if arm == "B":
 # Capture every outbound Anthropic-format payload
 captured = []
 import agent.anthropic_adapter as ad
+
 _orig_convert = None
 for name in ("convert_messages_to_anthropic", "to_anthropic_messages", "convert_to_anthropic", "build_anthropic_messages"):
     if hasattr(amc, name): _orig_convert = (name, getattr(amc, name)); break
@@ -42,8 +53,9 @@ def _wrapped(*a, **k):
 setattr(amc, name, _wrapped)
 if hasattr(ad, name): setattr(ad, name, _wrapped)
 print("hooked converter:", name)
-from run_agent import AIAgent
 from hermes_cli.runtime_provider import resolve_runtime_provider
+from run_agent import AIAgent
+
 rt = resolve_runtime_provider(requested="nous", target_model="anthropic/claude-fable-5.1")
 sid = f"f0wire_{arm}_{int(time.time())}"
 ag = AIAgent(model="anthropic/claude-fable-5.1", provider="nous", base_url=rt.get("base_url"), api_key=rt.get("api_key"),

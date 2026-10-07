@@ -164,7 +164,7 @@ class TestLiveCatalog:
         provider = _openrouter()
         with patch(_RUNTIME, side_effect=RuntimeError("no creds")):
             models = provider.list_models()
-        from plugins.image_gen.openrouter import DEFAULT_MODEL, _FALLBACK_MODEL
+        from plugins.image_gen.openrouter import _FALLBACK_MODEL, DEFAULT_MODEL
 
         assert [m["id"] for m in models] == [DEFAULT_MODEL, _FALLBACK_MODEL]
 
@@ -228,7 +228,7 @@ class TestLiveCatalog:
         nous = {p.name: p for p in _build_providers()}["nous"]
         with patch(_RUNTIME, side_effect=RuntimeError("no creds")):
             ids = [m["id"] for m in nous.list_models()]
-        from plugins.image_gen.openrouter import DEFAULT_MODEL, _FALLBACK_MODEL
+        from plugins.image_gen.openrouter import _FALLBACK_MODEL, DEFAULT_MODEL
 
         assert ids == [DEFAULT_MODEL, _FALLBACK_MODEL]
 
@@ -464,8 +464,8 @@ class TestImageApiSurface:
         includes DEFAULT_MODEL and _FALLBACK_MODEL. Routing on catalog
         membership would silently move every existing default call."""
         from plugins.image_gen.openrouter import (
-            DEFAULT_MODEL,
             _FALLBACK_MODEL,
+            DEFAULT_MODEL,
             _select_surface,
         )
 

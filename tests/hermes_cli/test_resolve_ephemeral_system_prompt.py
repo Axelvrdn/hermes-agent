@@ -4,6 +4,7 @@ from hermes_cli.config import (
     resolve_ephemeral_system_prompt_from_config,
 )
 
+
 def test_resolve_uses_named_personality_when_set():
     cfg = {
         "display": {"personality": "helpful"},

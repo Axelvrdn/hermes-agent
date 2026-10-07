@@ -1,6 +1,6 @@
 """ZIP and Git-error fallback return the completion owner's exact failure."""
-from types import SimpleNamespace
 import subprocess
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest

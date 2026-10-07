@@ -20,7 +20,6 @@ from hermes_cli.model_switch import (
 )
 from hermes_cli.providers import resolve_provider_full
 
-
 # -- Only KIMI_CN_API_KEY set ------------------------------------------------
 
 

@@ -10,7 +10,9 @@ import logging
 import os
 import sys
 import threading
-from tools import approval_context as _ctx, approval_gateway_wait as _gw
+
+from tools import approval_context as _ctx
+from tools import approval_gateway_wait as _gw
 from tools.approval_human_wait import activity_heartbeat, human_wait_window
 from tools.interrupt import is_interrupted
 
@@ -184,7 +186,8 @@ def _ask_human(command: str, description: str, timeout_seconds: int, allow_perma
 
 def get_plugin_manager():
     """Lazy plugin-manager seam used by tests and early tool-only imports."""
-    from hermes_cli.plugins import discover_plugins, get_plugin_manager as _get_manager
+    from hermes_cli.plugins import discover_plugins
+    from hermes_cli.plugins import get_plugin_manager as _get_manager
     # Approval can be imported before model_tools (which triggers discovery); make an explicitly selected transport
     # available on the first approval instead of treating the undiscovered registry as unavailable.
     discover_plugins()
@@ -220,7 +223,10 @@ def _present_with_selected_transport(*, command: str, description: str, pattern_
 
     try:
         from agent.redact import redact_sensitive_text
-        from hermes_cli.approval_transport import ApprovalRequest, invoke_approval_transport
+        from hermes_cli.approval_transport import (
+            ApprovalRequest,
+            invoke_approval_transport,
+        )
 
         timeout_seconds = _ctx._get_approval_timeout()
         request = ApprovalRequest.create(

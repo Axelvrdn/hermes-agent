@@ -19,11 +19,11 @@ import subprocess
 import sys
 import threading
 import time
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable, Optional
+
 from cron.env_settings import cron_env_setting
 from cron.jobs import _ensure_cron_dir
-from pathlib import Path
-from typing import Any, Callable, Optional, TYPE_CHECKING
-
 from hermes_cli._subprocess_compat import windows_hide_flags
 
 if TYPE_CHECKING:
@@ -180,7 +180,8 @@ def _windows_cron_python_invocation(python_exe: str) -> tuple[str, dict[str, str
             interpreter = sibling
 
     from hermes_cli._launchers import resolve_store_python
-    from pm.environments import committed_venv, site_packages as dependency_site
+    from pm.environments import committed_venv
+    from pm.environments import site_packages as dependency_site
 
     repo = Path(__file__).resolve().parents[1]
     managed_python = resolve_store_python(repo)

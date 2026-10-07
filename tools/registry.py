@@ -170,8 +170,8 @@ def _save_discovery_cache(cache: Dict[str, list]) -> None:
     if path is None:
         return
     try:
-        from utils import atomic_json_write  # stdlib+yaml only; no cycle
         from hermes_constants import mkdir_under_hermes_home
+        from utils import atomic_json_write  # stdlib+yaml only; no cycle
         mkdir_under_hermes_home(path.parent)
         atomic_json_write(path, cache, indent=0)
     except Exception as e:

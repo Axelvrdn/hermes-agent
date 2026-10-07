@@ -29,11 +29,10 @@ from aiohttp.test_utils import TestClient, TestServer
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import SendResult
 from gateway.platforms.webhook import (
-    WebhookAdapter,
     _INSECURE_NO_AUTH,
+    WebhookAdapter,
     _is_usable_secret,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -923,6 +922,7 @@ class TestCrossPlatformDeliveryMirror:
     @pytest.fixture
     def homes(self, tmp_path, monkeypatch):
         from pathlib import Path
+
         import hermes_state
         from hermes_cli.profiles import get_profile_dir
         default_home = tmp_path / ".hermes"

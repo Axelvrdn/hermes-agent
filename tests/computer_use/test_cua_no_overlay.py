@@ -15,8 +15,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
-from tools.computer_use import cua_backend
-from tools.computer_use import cua_backend_driver
+from tools.computer_use import cua_backend, cua_backend_driver
 
 
 class TestNoOverlayFlag:
@@ -161,6 +160,7 @@ class TestMcpInvocationUsesResolvedCommand:
         ``driver_cmd`` parameter.
         """
         from unittest.mock import patch
+
         from tools.computer_use.cua_backend_driver import _resolve_mcp_invocation
 
         manifest = (

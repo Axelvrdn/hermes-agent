@@ -138,10 +138,10 @@ def corpus() -> List[Dict[str, str]]:
 
 
 def _oracles() -> Dict[str, Callable[[str], str]]:
-    from plugins.platforms.telegram.adapter import TelegramAdapter
-    from plugins.platforms.slack.adapter import SlackAdapter
-    from plugins.platforms.discord.adapter import DiscordAdapter
     from gateway.platforms.whatsapp_common import WhatsAppBehaviorMixin
+    from plugins.platforms.discord.adapter import DiscordAdapter
+    from plugins.platforms.slack.adapter import SlackAdapter
+    from plugins.platforms.telegram.adapter import TelegramAdapter
 
     wa = object.__new__(WhatsAppBehaviorMixin)  # format_message needs no __init__
 

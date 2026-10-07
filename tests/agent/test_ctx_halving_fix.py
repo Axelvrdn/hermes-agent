@@ -77,8 +77,10 @@ class TestContextOverflowLimitSelection:
     """
 
     def test_generic_overflow_without_provider_limit_keeps_context_length(self):
-        from agent.model_metadata import get_context_length_from_provider_error
-        from agent.model_metadata import parse_context_limit_from_error
+        from agent.model_metadata import (
+            get_context_length_from_provider_error,
+            parse_context_limit_from_error,
+        )
 
         old_ctx = 1_000_000
         error_msg = (

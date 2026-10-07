@@ -15,7 +15,9 @@ import threading
 import time
 from typing import Any, Dict, Optional
 
-from hermes_cli.sqlite_runtime import is_sqlite_wal_reset_vulnerable as _is_sqlite_wal_reset_vulnerable
+from hermes_cli.sqlite_runtime import (
+    is_sqlite_wal_reset_vulnerable as _is_sqlite_wal_reset_vulnerable,
+)
 from hermes_state_errors import is_sqlite_lock_error
 
 # Log-record parity with the origin module (caplog tests pin "hermes_state").
@@ -469,7 +471,11 @@ def _wal_reset_repair_hint() -> str:
     See #75153.
     """
     try:
-        from hermes_cli.config import detect_install_method, get_project_root, recommended_update_command_for_method
+        from hermes_cli.config import (
+            detect_install_method,
+            get_project_root,
+            recommended_update_command_for_method,
+        )
         method = detect_install_method(get_project_root())
         cmd = recommended_update_command_for_method(method)
         if method in {"git", "unknown"}:
@@ -628,7 +634,10 @@ def apply_database_pragmas(conn: sqlite3.Connection, *, db_label: str = "state.d
     between bundled/distro/Homebrew builds). Best-effort: failures are ignored so DB init never breaks on a
     malformed section. Applied to ALL connection types: writer, read_only, WAL readers."""
     try:
-        from hermes_cli.config import cfg_get, load_config_readonly  # local: avoids a circular import
+        from hermes_cli.config import (  # local: avoids a circular import
+            cfg_get,
+            load_config_readonly,
+        )
         cfg = load_config_readonly()
     except Exception:
         return

@@ -9,13 +9,13 @@ No ownership predicate, lease registry, agent, or lifecycle function is replaced
 import argparse
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import threading
 import time
 import urllib.request
+from pathlib import Path
 
 
 def backend(port):

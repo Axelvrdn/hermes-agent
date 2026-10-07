@@ -17,7 +17,11 @@ _SUBAGENT_TAIL_BYTES = 16384
 
 
 def _owned_subagent_records(session_id, transport, owner):
-    from tools.delegate_tool_registry import _active_subagents, _active_subagents_lock, _subagent_transport_matches
+    from tools.delegate_tool_registry import (
+        _active_subagents,
+        _active_subagents_lock,
+        _subagent_transport_matches,
+    )
 
     with _active_subagents_lock:
         return [dict(r) for r in _active_subagents.values()
@@ -36,7 +40,10 @@ def _visible_subagent_records(session_id, transport, owner):
     so the exact match alone hid every still-running child from the panel for good (#114909).
     Control RPCs (steer / interrupt / tail) keep the exact generation authority."""
     from tools.delegate_tool_registry import (
-        _active_subagents, _active_subagents_lock, _owns_subagent_record, _subagent_transport_matches,
+        _active_subagents,
+        _active_subagents_lock,
+        _owns_subagent_record,
+        _subagent_transport_matches,
     )
 
     with _active_subagents_lock:

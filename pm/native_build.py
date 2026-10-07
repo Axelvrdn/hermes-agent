@@ -8,13 +8,13 @@ install.ps1, `hermes update` and repair failed in openssl-sys.
 """
 from __future__ import annotations
 
-from collections.abc import Mapping
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Mapping
+from pathlib import Path
 
 from pm.progress import run_contained
 

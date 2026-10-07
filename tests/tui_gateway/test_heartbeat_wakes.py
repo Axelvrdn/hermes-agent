@@ -13,8 +13,8 @@ import threading
 from types import SimpleNamespace
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from tui_gateway import server
 
 HEARTBEAT = {"type": "heartbeat", "session_id": "proc_hb", "seq": 2, "elapsed": 130.0, "interval": 60,

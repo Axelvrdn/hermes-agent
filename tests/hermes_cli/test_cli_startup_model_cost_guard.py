@@ -1,6 +1,6 @@
-from argparse import Namespace
 import sys
 import types
+from argparse import Namespace
 
 import pytest
 

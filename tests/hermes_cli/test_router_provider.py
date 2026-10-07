@@ -10,8 +10,8 @@ tests/hermes_cli/test_meta_prompt_cache.py.
 
 import pytest
 
-from hermes_cli.providers import determine_api_mode, host_mandated_api_mode
 from hermes_cli import runtime_provider as rp
+from hermes_cli.providers import determine_api_mode, host_mandated_api_mode
 
 
 class TestHostMandatedRouterResponses:

@@ -6,11 +6,11 @@ fixture setup is excluded from timings. No provider, credential, or app access.
 
 import json
 import os
-from pathlib import Path
 import statistics
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -20,8 +20,9 @@ def main():
         os.environ["HERMES_HOME"] = directory
         from fastapi import FastAPI
         from fastapi.testclient import TestClient
-        from hermes_state import SessionDB
+
         from hermes_cli.web_routers.sessions import manage_router
+        from hermes_state import SessionDB
 
         sid = "generated-tool-heavy"
         prompt_count = 600

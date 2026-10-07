@@ -427,6 +427,7 @@ class TestPerProviderReasoningEcho:
 
 from agent.message_sanitization import normalize_provider_tool_call_ids
 
+
 def test_normalize_provider_parallel_ids_is_deterministic_and_preserves_composite():
     calls = [
         {"id": "chatcmpl-tool-alpha|item-a", "call_id": "chatcmpl-tool-alpha|item-a"},

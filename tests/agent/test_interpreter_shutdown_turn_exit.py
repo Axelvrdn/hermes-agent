@@ -18,6 +18,7 @@ no print, no traceback, no retry.
 
 from types import SimpleNamespace
 
+
 def _text_response(text: str):
     return SimpleNamespace(
         choices=[

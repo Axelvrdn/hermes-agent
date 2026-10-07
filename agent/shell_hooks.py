@@ -22,7 +22,12 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Set, Tuple
 
 # split_command_line, not shlex: shlex eats Windows path backslashes.
-from hermes_cli._subprocess_compat import IS_WINDOWS, kill_process_tree, split_command_line, windows_hide_flags
+from hermes_cli._subprocess_compat import (
+    IS_WINDOWS,
+    kill_process_tree,
+    split_command_line,
+    windows_hide_flags,
+)
 
 try:
     import fcntl  # POSIX only; Windows falls back to best-effort without flock.

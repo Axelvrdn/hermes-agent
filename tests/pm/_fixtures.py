@@ -1,20 +1,20 @@
 """Real artifacts and isolated PM workers shared by lifecycle tests."""
 from __future__ import annotations
 
-from functools import partial
-from contextlib import contextmanager
 import hashlib
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 import importlib
 import io
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tarfile
 import threading
 import zipfile
+from contextlib import contextmanager
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 import pytest
 

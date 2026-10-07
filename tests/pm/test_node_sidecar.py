@@ -2,9 +2,9 @@
 
 import json
 import os
-from pathlib import Path
-import shutil
 import shlex
+import shutil
+from pathlib import Path
 
 import pytest
 

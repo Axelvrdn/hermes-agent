@@ -4,10 +4,10 @@ from __future__ import annotations
 import importlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -16,12 +16,10 @@ from pm.runtime import runtime_environment
 from tests.pm._fixtures import _wheel
 
 
-
-
 @pytest.mark.parametrize("failure", [None, "missing_distribution", "broken_module"])
 def test_startup_validation_checks_real_ruamel_dependency(tmp_path, failure):
-    from importlib.metadata import distribution
     import venv
+    from importlib.metadata import distribution
 
     import ruamel.yaml
 

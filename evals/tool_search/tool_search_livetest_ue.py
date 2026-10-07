@@ -18,8 +18,15 @@ Env: TS_BENCH_REPS (default 2), TS_UE_MODES, TS_UE_SCALE, TS_UE_SUMMARY.
 """
 from __future__ import annotations
 
+import json
 import logging
-import json, os, re, shutil, sys, tempfile, time, traceback
+import os
+import re
+import shutil
+import sys
+import tempfile
+import time
+import traceback
 from pathlib import Path
 from typing import Any, Dict, List
 

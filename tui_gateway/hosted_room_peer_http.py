@@ -18,8 +18,10 @@ from pathlib import Path
 from typing import Any, NoReturn
 
 from gateway.hosted_room_peer import (
-    GatewayRoomCatalog, HostedMemberDispatch, validate_room_link_url)
-
+    GatewayRoomCatalog,
+    HostedMemberDispatch,
+    validate_room_link_url,
+)
 
 logger = logging.getLogger(__name__)
 

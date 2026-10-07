@@ -9,7 +9,11 @@ from datetime import datetime
 from typing import Any, Callable, Optional
 
 from agent.monitoring.events import CronExecutionEvent
-from agent.monitoring.gateway_health import GatewayMetric, _contains_any, _safe_instance_id
+from agent.monitoring.gateway_health import (
+    GatewayMetric,
+    _contains_any,
+    _safe_instance_id,
+)
 from cron.jobs import (
     _compute_grace_seconds,
     get_ticker_heartbeat_age,

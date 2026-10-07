@@ -106,6 +106,7 @@ def _ensure_discord_mock():
 _ensure_discord_mock()
 
 import discord as discord_mod_ref  # noqa: E402
+
 from plugins.platforms.discord.adapter import DiscordAdapter  # noqa: E402
 
 
@@ -223,8 +224,9 @@ class TestScreenshotCleanup:
     def test_cleanup_removes_old_screenshots(self, tmp_path):
         """_cleanup_old_screenshots should remove files older than max_age_hours."""
         import time
-        from tools.browser_tool_lifecycle import _cleanup_old_screenshots
+
         from tools.browser_tool import _last_screenshot_cleanup_by_dir
+        from tools.browser_tool_lifecycle import _cleanup_old_screenshots
 
         _last_screenshot_cleanup_by_dir.clear()
 
@@ -245,8 +247,9 @@ class TestScreenshotCleanup:
 
     def test_cleanup_is_throttled_per_directory(self, tmp_path):
         import time
-        from tools.browser_tool_lifecycle import _cleanup_old_screenshots
+
         from tools.browser_tool import _last_screenshot_cleanup_by_dir
+        from tools.browser_tool_lifecycle import _cleanup_old_screenshots
 
         _last_screenshot_cleanup_by_dir.clear()
 

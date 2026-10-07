@@ -110,7 +110,6 @@ def _connector_params(rid, params, model):
 def _session_connector_gate(rid, session, action):
     import model_tools
     from tools.connectors import connectors_available
-
     from tui_gateway.contracts.connectors import ConnectorErrorReason
 
     agent = session.get("agent")
@@ -127,9 +126,9 @@ def _session_connector_gate(rid, session, action):
 
 def _session_connector_rpc(rid, request, session, action):
     import json
-    import model_tools
     import uuid
 
+    import model_tools
     from tools.connectors import live
     from tui_gateway.connector_payload import connector_ui_payload
     from tui_gateway.contracts.connectors import ConnectorErrorReason
@@ -212,7 +211,11 @@ def _account_connector_connect(rid, request):
 
 
 def _connector_rpc(rid, params, action):
-    from tui_gateway.contracts.connectors import ConnectorErrorReason, ConnectorsConnectParams, ConnectorsListParams
+    from tui_gateway.contracts.connectors import (
+        ConnectorErrorReason,
+        ConnectorsConnectParams,
+        ConnectorsListParams,
+    )
 
     model = ConnectorsListParams if action == "status" else ConnectorsConnectParams
     request, session, error = _connector_params(rid, params, model)

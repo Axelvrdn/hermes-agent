@@ -25,8 +25,9 @@ import time
 import urllib.parse
 import uuid
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field as dc_field
-from datetime import datetime, timezone, timedelta
+from dataclasses import dataclass
+from dataclasses import field as dc_field
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, ClassVar, Dict, Iterator, List, Optional, Tuple
@@ -41,29 +42,56 @@ except ImportError:
     WEBSOCKETS_AVAILABLE = False
     websockets = None  # type: ignore[assignment]
 
-from gateway.config import Platform, PlatformConfig
 from agent.i18n import t
+from gateway.config import Platform, PlatformConfig
+from gateway.platforms import helpers as _mdchunk
+from gateway.platforms._shared import get_scoped_secret as _yb_secret
+from gateway.platforms._shared import profile_scoped as _profile_scoped
+from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
 from gateway.platforms.base import (
-    BasePlatformAdapter, SendResult,
-    cache_document_from_bytes_async, cache_image_from_bytes_async, cache_video_from_bytes_async,
+    BasePlatformAdapter,
+    SendResult,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+    cache_video_from_bytes_async,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms import helpers as _mdchunk
-from gateway.platforms._shared import get_scoped_secret as _yb_secret, profile_scoped as _profile_scoped
 from gateway.platforms.helpers import MessageDeduplicator, cancel_task
-from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
 from gateway.platforms.yuanbao_media import (
-    download_url as media_download_url, get_cos_credentials, upload_to_cos,
-    build_image_msg_body, build_file_msg_body, guess_mime_type, md5_hex,
+    build_file_msg_body,
+    build_image_msg_body,
+    get_cos_credentials,
+    guess_mime_type,
+    md5_hex,
+    upload_to_cos,
+)
+from gateway.platforms.yuanbao_media import (
+    download_url as media_download_url,
 )
 from gateway.platforms.yuanbao_proto import (
-    CMD_TYPE, WS_HEARTBEAT_RUNNING, WS_HEARTBEAT_FINISH, HERMES_INSTANCE_ID,
-    _fields_to_dict, _get_string, _get_varint, _parse_fields,
-    decode_conn_msg, decode_inbound_push, decode_forward_msg_data,
-    decode_query_group_info_rsp, decode_get_group_member_list_rsp,
-    encode_auth_bind, encode_ping, encode_push_ack, encode_send_c2c_message, encode_send_group_message,
-    encode_send_private_heartbeat, encode_send_group_heartbeat, encode_query_group_info,
-    encode_get_group_member_list, next_seq_no,
+    CMD_TYPE,
+    HERMES_INSTANCE_ID,
+    WS_HEARTBEAT_FINISH,
+    WS_HEARTBEAT_RUNNING,
+    _fields_to_dict,
+    _get_string,
+    _get_varint,
+    _parse_fields,
+    decode_conn_msg,
+    decode_forward_msg_data,
+    decode_get_group_member_list_rsp,
+    decode_inbound_push,
+    decode_query_group_info_rsp,
+    encode_auth_bind,
+    encode_get_group_member_list,
+    encode_ping,
+    encode_push_ack,
+    encode_query_group_info,
+    encode_send_c2c_message,
+    encode_send_group_heartbeat,
+    encode_send_group_message,
+    encode_send_private_heartbeat,
+    next_seq_no,
 )
 from gateway.session_transcript import TranscriptReadError
 
@@ -2264,7 +2292,10 @@ class StickerHandler(MediaSendHandler):
 
     def build_msg_body(self, upload_result, **kwargs):
         from gateway.platforms.yuanbao_sticker import (
-            get_sticker_by_name, get_random_sticker, build_face_msg_body, build_sticker_msg_body,
+            build_face_msg_body,
+            build_sticker_msg_body,
+            get_random_sticker,
+            get_sticker_by_name,
         )
         sticker_name = kwargs.get("sticker_name")
         if sticker_name is not None:

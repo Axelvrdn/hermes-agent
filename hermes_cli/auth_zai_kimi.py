@@ -6,10 +6,11 @@ lazily per function so ``hermes_cli.auth.<helper>`` patches still intercept and 
 
 from __future__ import annotations
 
-import logging
 import hashlib
+import logging
 import time
 from typing import Dict, Optional
+
 from hermes_cli.auth_constants import httpx
 
 logger = logging.getLogger("hermes_cli.auth")
@@ -107,7 +108,14 @@ def _resolve_zai_base_url(api_key: str, default_url: str, env_override: str) -> 
     The detected endpoint is cached in provider state (auth.json) keyed on a hash of the API key so
     subsequent starts skip the probe.
     """
-    from hermes_cli.auth import _auth_store_lock, _load_auth_store, _load_provider_state, _save_auth_store, _store_provider_state, detect_zai_endpoint
+    from hermes_cli.auth import (
+        _auth_store_lock,
+        _load_auth_store,
+        _load_provider_state,
+        _save_auth_store,
+        _store_provider_state,
+        detect_zai_endpoint,
+    )
     if env_override:
         return env_override
     # No key -> don't probe (N×M 401s); auxiliary-client auto-detection hits this for everyone.

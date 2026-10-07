@@ -25,13 +25,13 @@ except ImportError:
     httpx = None  # type: ignore[assignment]
 
 from gateway.config import Platform, PlatformConfig
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import seed_extra_from_env as _seed_extra_from_env
+from gateway.platforms._shared import send_error
 from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret, send_error
 from gateway.platforms.helpers import MessageDeduplicator
-from gateway.platforms._shared import (
-    extra_or_secret as _extra_or_secret, seed_extra_from_env as _seed_extra_from_env
-)
 
 logger = logging.getLogger(__name__)
 

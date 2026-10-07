@@ -8,7 +8,6 @@ choice committed under the approval lock — the client was acked ``ok`` for it 
 from tools import approval as mod
 from tools import approval_gateway_wait as wait_mod
 
-
 SESSION_KEY = "approval-late-choice"
 APPROVAL = {"command": "rm -rf build", "description": "d", "pattern_key": "dangerous", "pattern_keys": ["dangerous"]}
 

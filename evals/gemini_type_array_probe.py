@@ -10,13 +10,13 @@ import copy
 import importlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import threading
 import types
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 
 class WireCapture(BaseHTTPRequestHandler):

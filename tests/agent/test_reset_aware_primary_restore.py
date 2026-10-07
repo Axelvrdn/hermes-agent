@@ -17,7 +17,6 @@ later than it does today.
 import time
 from unittest.mock import MagicMock, patch
 
-from run_agent import AIAgent
 from agent.credential_pool import (
     STATUS_DEAD,
     STATUS_EXHAUSTED,
@@ -25,7 +24,7 @@ from agent.credential_pool import (
     CredentialPool,
     PooledCredential,
 )
-
+from run_agent import AIAgent
 
 # =============================================================================
 # Helpers

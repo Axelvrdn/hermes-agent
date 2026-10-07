@@ -4,9 +4,9 @@ manifest loaded through the real discovery path — no loader mocks."""
 
 from __future__ import annotations
 
-import hermes_yaml as yaml
 import pytest
 
+import hermes_yaml as yaml
 from agent import i18n, i18n_layers
 from hermes_cli.plugins import PluginManager
 

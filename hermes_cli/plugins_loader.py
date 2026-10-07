@@ -22,11 +22,20 @@ from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Mapping, Optional, Union
 
-from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
-from registration_lifecycle import replacement_coordinator
 from hermes_cli.plugins_discovery import ENTRY_POINTS_GROUP, _select_entry_point_group
-from hermes_cli.plugins_manifest import PluginManifest, manifest_key, portable_mcp_server_name, validate_config_schema
+from hermes_cli.plugins_manifest import (
+    PluginManifest,
+    manifest_key,
+    portable_mcp_server_name,
+    validate_config_schema,
+)
 from hermes_cli.plugins_state import _plugin_settings_entry
+from hermes_constants import (
+    get_hermes_home,
+    reset_hermes_home_override,
+    set_hermes_home_override,
+)
+from registration_lifecycle import replacement_coordinator
 
 if TYPE_CHECKING:  # pragma: no cover
     from hermes_cli.plugins import LoadedPlugin, PluginContext
@@ -271,7 +280,11 @@ class PluginLoaderMixin:
         retries the import. A failed load disposes its lease (the registry forgets the platform), so without
         this a load that raised or overran its deadline at startup stays down until a forced re-discovery
         (#126356). True when a loader was re-armed."""
-        from hermes_cli.plugins_discovery import _get_disabled_plugins, _get_enabled_plugins, gate_manifest
+        from hermes_cli.plugins_discovery import (
+            _get_disabled_plugins,
+            _get_enabled_plugins,
+            gate_manifest,
+        )
         from hermes_cli.plugins_manifest import requires_hermes_error
         with self._discovery_lock, _plugin_home_scope(self.home_path):
             failed = next((p.manifest for p in self._plugins.values()
@@ -340,7 +353,7 @@ class PluginLoaderMixin:
         the code is imported from; ``provides_tools`` is what asks for it. A platform that does not declare
         the field is untouched and stays fully deferred.
         """
-        from hermes_cli.plugins import PluginContext, _PLUGINS_DEBUG
+        from hermes_cli.plugins import _PLUGINS_DEBUG, PluginContext
         if not manifest.provides_tools:
             return
         lookup_key = manifest_key(manifest)
@@ -457,7 +470,7 @@ class PluginLoaderMixin:
 
     def _load_plugin_scoped(self, manifest: PluginManifest) -> None:
         """Load one plugin with the manager's home bound as current."""
-        from hermes_cli.plugins import LoadedPlugin, PluginContext, _PLUGINS_DEBUG
+        from hermes_cli.plugins import _PLUGINS_DEBUG, LoadedPlugin, PluginContext
         loaded = LoadedPlugin(manifest=manifest)
         plugin_key = manifest_key(manifest)
         logger.debug(

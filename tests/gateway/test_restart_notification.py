@@ -16,7 +16,6 @@ from tests.gateway.restart_test_helpers import (
     make_restart_source,
 )
 
-
 # ── restart marker helpers ───────────────────────────────────────────────
 
 

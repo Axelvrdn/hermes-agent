@@ -12,7 +12,6 @@ import pytest
 
 from hermes_state import SessionDB
 
-
 REASONING_DETAILS = [
     {"type": "reasoning.text", "text": "compare both branches first", "format": "unknown"}
 ]

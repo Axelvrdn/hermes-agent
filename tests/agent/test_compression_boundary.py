@@ -8,7 +8,6 @@ from unittest.mock import patch
 
 from agent.context_compressor import ContextCompressor
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

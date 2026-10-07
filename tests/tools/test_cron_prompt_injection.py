@@ -9,6 +9,7 @@ Fix: allow optional extra words with `(?:\\w+\\s+)*` groups.
 
 from tools.cronjob_tools import _scan_cron_prompt
 
+
 class TestMultiWordInjectionBypass:
     """Multi-word variants that previously bypassed the scanner."""
 

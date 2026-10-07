@@ -8,7 +8,6 @@ creative workflows that iterate on images across many turns.
 
 from __future__ import annotations
 
-
 from agent.context_compressor import _CHARS_PER_TOKEN, _content_length_for_budget
 from agent.image_token_cost import DEFAULT_IMAGE_TOKEN_COST, image_cost_context
 

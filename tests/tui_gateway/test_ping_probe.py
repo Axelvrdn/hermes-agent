@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import tui_gateway.server as srv
 
+
 def _call(method: str, params: dict) -> dict:
     """Invoke a registered RPC method and return its result dict."""
     envelope = srv._methods[method](1, params)

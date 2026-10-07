@@ -9,10 +9,10 @@ settle) is paid once per column, not once per property.
 
 from __future__ import annotations
 
-import logging
 import contextlib
 import datetime as dt
 import json
+import logging
 import os
 import re
 import secrets
@@ -25,6 +25,7 @@ import time
 from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Self
 
 import pytest
 
@@ -32,7 +33,6 @@ from tests.e2e.core._pending_fixes import known_failure, known_gate
 from tests.e2e.core.upgrade import _helpers as H
 from tests.e2e.core.upgrade.handoff import _handoff as X
 from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall
-from typing import Self
 
 CRON_DUE_S = 65  # after the update starts: the checkout holds the new code, the old gateway still ticks
 _TASK_RE = re.compile(r"work kanban task (t_[0-9a-f]+)")

@@ -9,7 +9,6 @@ subscriber runs fail-isolated on the emitter thread; ``event_filter`` keeps othe
 
 from __future__ import annotations
 
-from pm import install_hint
 import importlib
 import logging
 import os
@@ -19,6 +18,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from agent.monitoring.gateway_health import _safe_instance_id
 from agent.monitoring.redaction import redact_bounded
+from pm import install_hint
 
 logger = logging.getLogger(__name__)
 

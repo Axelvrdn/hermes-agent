@@ -48,7 +48,10 @@ import plugins.platforms.slack.adapter as _slack_mod  # noqa: E402
 
 _slack_mod.SLACK_AVAILABLE = True
 
-from plugins.platforms.slack.adapter import SlackAdapter, _apply_yaml_config  # noqa: E402
+from plugins.platforms.slack.adapter import (  # noqa: E402
+    SlackAdapter,
+    _apply_yaml_config,
+)
 
 BOT_USER_ID = "U_BOT"
 CHANNEL_ID = "C_FORCED"

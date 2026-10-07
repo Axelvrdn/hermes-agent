@@ -1,10 +1,10 @@
 """The tool-only build stage imports PM without third-party dependencies."""
 
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 

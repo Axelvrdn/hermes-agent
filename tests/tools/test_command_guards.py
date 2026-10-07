@@ -1,14 +1,18 @@
 """Tests for check_all_command_guards() — the combined floor + dangerous-command guard."""
 
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 import tools.approval as approval_module
 from tools import approval_context
-from tools.approval import approve_session, check_all_command_guards, detect_dangerous_command
-from tools.approval_context import set_current_session_key, reset_current_session_key
+from tools.approval import (
+    approve_session,
+    check_all_command_guards,
+    detect_dangerous_command,
+)
+from tools.approval_context import reset_current_session_key, set_current_session_key
 
 
 @pytest.fixture(autouse=True)

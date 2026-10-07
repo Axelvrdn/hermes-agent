@@ -14,7 +14,6 @@ import re
 from pathlib import Path
 
 import hermes_yaml
-
 from scripts.releases.job_groups import JOB_GROUPS
 
 ROOT = Path(__file__).resolve().parents[2]

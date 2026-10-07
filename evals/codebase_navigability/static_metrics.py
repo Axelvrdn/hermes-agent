@@ -2,8 +2,17 @@
 
 First-party Python only (excludes tests/, node_modules, apps/, website, build, .venv, skills md).
 """
+import ast
+import collections
+import io
+import json
 import logging
-import ast, collections, io, json, os, shutil, subprocess, sys, time, tokenize
+import os
+import shutil
+import subprocess
+import sys
+import time
+import tokenize
 
 TREE, LABEL = sys.argv[1], sys.argv[2]
 SKIP = {".git", "node_modules", "apps", "website", "build", ".venv", "venv", "MagicMock", "__pycache__", ".worktrees", "dist", "evals", "skills", "optional-skills", "docs"}

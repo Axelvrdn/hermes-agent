@@ -8,8 +8,6 @@ from agent.model_metadata import (
 )
 
 
-
-
 def test_message_estimate_counts_korean_content_as_token_dense():
     messages = [{"role": "user", "content": "압축 테스트 " + ("가" * 1000)}]
 

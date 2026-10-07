@@ -23,7 +23,10 @@ import pytest
 import agent.conversation_compression as cc
 from agent.auxiliary_client import AuxiliaryExplicitCancellation
 from agent.context_compressor import SUMMARY_PREFIX, pin_summary_route
-from agent.conversation_compression import CompressionCommitFence, run_compress_context_with_progress_timeout
+from agent.conversation_compression import (
+    CompressionCommitFence,
+    run_compress_context_with_progress_timeout,
+)
 from hermes_state import SessionDB
 
 CHAIN_ENTRY = {
@@ -137,7 +140,9 @@ def test_second_consecutive_stall_commits_the_deterministic_fallback_summary(tmp
 
 def test_deterministic_pin_is_consumed_and_a_real_route_is_left_alone():
     from agent.context_compressor import (
-        DETERMINISTIC_SUMMARY_ROUTE, take_deterministic_summary_pin, take_pinned_summary_route,
+        DETERMINISTIC_SUMMARY_ROUTE,
+        take_deterministic_summary_pin,
+        take_pinned_summary_route,
     )
 
     with pin_summary_route(dict(CHAIN_ENTRY)):

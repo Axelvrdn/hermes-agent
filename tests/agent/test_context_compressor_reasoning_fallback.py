@@ -10,7 +10,7 @@ both fields are empty (#11978).
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from agent.context_compressor import ContextCompressor, SUMMARY_PREFIX
+from agent.context_compressor import SUMMARY_PREFIX, ContextCompressor
 
 
 def _compressor(**overrides):

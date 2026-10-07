@@ -5,8 +5,9 @@ swapping to a fallback model, so per-model overrides are honored even
 during error recovery.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestFallbackReasoningOverride:

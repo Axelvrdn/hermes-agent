@@ -1,9 +1,8 @@
-from unittest.mock import MagicMock, patch
 from types import SimpleNamespace
-from hermes_cli.plugins import PluginManager
+from unittest.mock import MagicMock, patch
+
 from cli import HermesCLI
-
-
+from hermes_cli.plugins import PluginManager
 
 
 # These tests pin CLI ownership of the finalize request. The end-to-end

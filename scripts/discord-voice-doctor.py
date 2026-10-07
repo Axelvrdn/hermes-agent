@@ -11,8 +11,8 @@ Usage:
 
 import logging
 import os
-import sys
 import shutil
+import sys
 from pathlib import Path
 
 # Resolve project root

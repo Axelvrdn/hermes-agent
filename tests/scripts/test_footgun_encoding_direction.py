@@ -1,7 +1,7 @@
 """Encoding-direction diagnostics through the real file scanner, not a cloned loop."""
 import importlib.util
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pytest
 

@@ -20,7 +20,6 @@ from typing import Any
 
 import pytest
 
-
 # Symbols the fallback block binds to a placeholder, paired with the fake the
 # rebind is expected to install. Keep in sync with the `except ImportError`
 # block in plugins/platforms/telegram/adapter.py.
@@ -104,7 +103,6 @@ def fake_telegram_sdk(monkeypatch):
 def test_lazy_install_rebinds_every_placeholder(monkeypatch, fake_telegram_sdk):
     """Every symbol the fallback stubbed must be rebound by the lazy install."""
     import plugins.platforms.telegram.adapter as adapter
-
     import pm
 
     # The package is already in sys.modules; installing it would be a no-op.

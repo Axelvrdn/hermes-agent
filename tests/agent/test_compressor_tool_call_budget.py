@@ -10,12 +10,13 @@ ineffective. The fix routes all three walks through
 ``_estimate_msg_budget_tokens``, which counts the full envelope.
 """
 
-import pytest
 from unittest.mock import patch
 
+import pytest
+
 from agent.context_compressor import (
-    ContextCompressor,
     _CHARS_PER_TOKEN,
+    ContextCompressor,
     _estimate_msg_budget_tokens,
 )
 

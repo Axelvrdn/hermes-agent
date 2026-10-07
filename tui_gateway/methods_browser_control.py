@@ -16,8 +16,8 @@ from __future__ import annotations
 import hashlib
 import logging
 
-from hermes_cli.dashboard_auth.ws_tickets import (
-    INTERNAL_PROVIDER as _INTERNAL_PROVIDER, INTERNAL_USER_ID as _INTERNAL_USER_ID)
+from hermes_cli.dashboard_auth.ws_tickets import INTERNAL_PROVIDER as _INTERNAL_PROVIDER
+from hermes_cli.dashboard_auth.ws_tickets import INTERNAL_USER_ID as _INTERNAL_USER_ID
 
 from .method_ctx import HandlerRegistry, bind_module
 

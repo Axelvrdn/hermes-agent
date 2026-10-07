@@ -3,7 +3,14 @@
 Each probe runs in a FRESH subprocess with an isolated HERMES_HOME so nothing is cached across reps.
 Reports medians + min over reps. Writes <label>.runtime.json.
 """
-import json, os, statistics, subprocess, sys, tempfile, time, shutil
+import json
+import os
+import shutil
+import statistics
+import subprocess
+import sys
+import tempfile
+import time
 
 TREE, LABEL = sys.argv[1], sys.argv[2]
 REPS = int(sys.argv[3]) if len(sys.argv) > 3 else 7

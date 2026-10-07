@@ -1,8 +1,13 @@
 """Named-profile lifecycle inside the host gateway, never a service-manager action."""
 from __future__ import annotations
 
-from hermes_constants import get_hermes_home, get_default_hermes_root
-from hermes_cli.profiles import parked_marker_path, profile_is_parked, profile_is_standalone, profiles_to_serve
+from hermes_cli.profiles import (
+    parked_marker_path,
+    profile_is_parked,
+    profile_is_standalone,
+    profiles_to_serve,
+)
+from hermes_constants import get_default_hermes_root, get_hermes_home
 
 
 def _confirmed(answer, key, name):
@@ -29,8 +34,11 @@ def host_scope_for_all_verb(owner):
 
 def profile_lifecycle(command: str, args) -> bool:
     """True when a named-profile command was handled (including an unconfirmed request)."""
+    from gateway.control_socket import (
+        request_serve_profile_hot,
+        request_unserve_profile,
+    )
     from hermes_cli import gateway as gw
-    from gateway.control_socket import request_unserve_profile, request_serve_profile_hot
 
     name = gw._current_profile_name()
     if not name or name == "default" or getattr(args, "all", False) or getattr(args, "force", False):

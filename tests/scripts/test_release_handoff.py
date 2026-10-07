@@ -158,9 +158,9 @@ def test_commit_identity_and_simultaneous_namespaces(tmp_path, r2_server):
 @pytest.mark.parametrize('tag', ['v1.2.3', None])
 def test_public_handoff_downloads_exact_staged_bytes_without_credentials(tmp_path, monkeypatch, r2_server, tag):
     import os
-    from pathlib import Path
     import subprocess
     import sys
+    from pathlib import Path
 
     commit = 'a' * 40
     identity = ['--tag', tag, '--commit', commit] if tag else ['--commit-build', commit]

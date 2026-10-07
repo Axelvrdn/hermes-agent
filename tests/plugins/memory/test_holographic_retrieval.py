@@ -100,6 +100,7 @@ def test_prefetch_recovers_prose_query(retriever_with_facts):
 
 from plugins.memory.holographic import holographic as hrr
 
+
 def test_encode_functions_are_deterministic():
     """Soundness premise of the hoists: same input -> identical vector."""
     import numpy as np

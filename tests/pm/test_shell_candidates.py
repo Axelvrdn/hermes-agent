@@ -34,6 +34,7 @@ def test_per_user_and_32bit_git_roots_are_candidates():
 
 def test_nonstarting_bash_is_rejected(monkeypatch):
     import subprocess
+
     from pm import shell
 
     monkeypatch.setattr(shell.subprocess, "run", lambda *a, **kw: subprocess.CompletedProcess(a, 1))

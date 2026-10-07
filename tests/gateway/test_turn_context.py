@@ -13,7 +13,6 @@ import queue as queue_mod
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-
 from gateway.config import Platform
 from gateway.session import SessionSource
 from gateway.turn_context import TurnContext

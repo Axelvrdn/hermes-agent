@@ -17,6 +17,7 @@ import pytest
 
 from gateway.session_context import _VAR_MAP, clear_session_vars, set_session_vars
 
+
 @pytest.fixture
 def temp_cron_home(tmp_path, monkeypatch):
     from cron import jobs as cron_jobs
@@ -124,8 +125,8 @@ class TestCronContextUpdatePath:
         """The update action must apply the same resolution as create — a
         cron agent updating deliver='origin' would otherwise recreate the
         dangling literal-origin shape on an origin-less job."""
-        from tools.cronjob_tools import cronjob
         from cron.jobs import get_job
+        from tools.cronjob_tools import cronjob
 
         tokens, extra = _enter_cron_context("telegram", "-100123456", "17")
         try:
@@ -142,8 +143,8 @@ class TestCronContextUpdatePath:
         assert stored == "telegram:-100123456:17"
 
     def test_update_deliver_outside_cron_context_unchanged(self, temp_cron_home):
-        from tools.cronjob_tools import cronjob
         from cron.jobs import get_job
+        from tools.cronjob_tools import cronjob
 
         created = _create(deliver="local")
         result = json.loads(

@@ -8,9 +8,13 @@ import json
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
-from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
+import hermes_yaml as yaml
+from agent.secret_scope import (
+    build_profile_secret_scope,
+    reset_secret_scope,
+    set_secret_scope,
+)
 from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
 
@@ -116,7 +120,9 @@ def test_endpoint_model_catalog_memo_is_keyed_by_credential(two_homes, monkeypat
     """Two profiles, same base_url, different api_key: a per-key gateway's catalog fetched with A's
     key must not be served to B from the in-memory memo (the disk memo already lives per home)."""
     from contextlib import contextmanager
+
     import httpx
+
     import agent.model_metadata as mm
 
     a, b = two_homes

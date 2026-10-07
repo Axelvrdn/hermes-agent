@@ -414,6 +414,7 @@ def build_monitor_application(monitor, **kwargs):
             update_tail()
 
     from prompt_toolkit.styles import Style
+
     from hermes_cli.skin_engine import get_prompt_toolkit_style_overrides
     kwargs.setdefault('style', Style.from_dict(get_prompt_toolkit_style_overrides()))
     app = Application(layout=layout, key_bindings=kb, full_screen=True, mouse_support=False,
@@ -423,6 +424,7 @@ def build_monitor_application(monitor, **kwargs):
 
 def open_monitor(cli):
     import asyncio
+
     from prompt_toolkit.application import in_terminal
     monitor = getattr(cli, '_subagent_monitor', None)
     if monitor is None or monitor.opening:
@@ -452,9 +454,9 @@ def toggle_dock(cli):
 
 def install_dock(cli):
     from prompt_toolkit.application import get_app
+    from prompt_toolkit.filters import Condition
     from prompt_toolkit.layout import ConditionalContainer, Window
     from prompt_toolkit.layout.controls import FormattedTextControl
-    from prompt_toolkit.filters import Condition
     monitor = SubagentMonitor(cli)
     cli._subagent_monitor = monitor
     monitor.refresh()

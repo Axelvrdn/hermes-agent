@@ -341,9 +341,12 @@ class ComputeHost:
         owns_db = False
         try:
             if profile_home:
-                from hermes_constants import set_hermes_home_override
-                from agent.secret_scope import build_profile_secret_scope, set_secret_scope
+                from agent.secret_scope import (
+                    build_profile_secret_scope,
+                    set_secret_scope,
+                )
                 from hermes_cli.env_loader import hydrate_profile_secret_sources
+                from hermes_constants import set_hermes_home_override
                 from hermes_state_registry import acquire
                 home_token = set_hermes_home_override(profile_home)
                 # External sources first (1Password / Bitwarden / secrets.command): this isolated
@@ -376,8 +379,8 @@ class ComputeHost:
                     release_or_close(session_db)
             if home_token is not None:
                 with contextlib.suppress(Exception):
-                    from hermes_constants import reset_hermes_home_override
                     from agent.secret_scope import reset_secret_scope
+                    from hermes_constants import reset_hermes_home_override
                     reset_hermes_home_override(home_token)
                     reset_secret_scope(secret_token)
         try:
@@ -454,9 +457,10 @@ class ComputeHost:
                 # host commits; discard it so it can't fire against a rejected boundary later
                 # (finalize is exactly-once, so a no-op if the mirror already emitted it).
                 with contextlib.suppress(Exception):
-                    from tui_gateway import server as _server
                     from agent.conversation_compression import (
-                        finalize_context_engine_compression_notification as _finalize)
+                        finalize_context_engine_compression_notification as _finalize,
+                    )
+                    from tui_gateway import server as _server
                     _agent = (_server._sessions.get(sid) or {}).get("agent")
                     if _agent is not None:
                         _finalize(_agent, committed=False)

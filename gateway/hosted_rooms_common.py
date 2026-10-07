@@ -15,7 +15,6 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Iterator, Mapping
 
-
 IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 DbPath = Path | str
 

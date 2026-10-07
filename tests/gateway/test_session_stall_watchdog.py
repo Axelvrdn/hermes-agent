@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from agent.session_activity import ActivityProvenance, build_activity_snapshot
-from gateway.run import GatewayRunner, _AGENT_PENDING_SENTINEL
+from gateway.run import _AGENT_PENDING_SENTINEL, GatewayRunner
 from gateway.session_stall import (
     resolve_session_idle_seconds_from_activity,
     should_clear_session_stall_notification,
@@ -158,8 +158,8 @@ def _runner_for_stall(adapter: _FakeAdapter) -> GatewayRunner:
 
 
 def _pending_event(chat_id: str = "chat-1", thread_id: str | None = None):
-    from gateway.session import SessionSource
     from gateway.config import Platform
+    from gateway.session import SessionSource
     source = SessionSource(chat_id=chat_id, thread_id=thread_id, platform=Platform.TELEGRAM)
     return SimpleNamespace(text="follow-up", source=source, timestamp=time.time())
 

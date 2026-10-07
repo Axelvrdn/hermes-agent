@@ -12,7 +12,6 @@ import time
 import urllib.request
 from pathlib import Path
 
-
 _PATCHER = Path("plugins/platforms/photon/sidecar/patch-spectrum-mixed-attachments.mjs")
 
 

@@ -1,12 +1,11 @@
 """The DMG driver must wait for native bootstrap completion, not install.sh's marker."""
 
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
-
 
 DRIVER = Path(__file__).resolve().parents[2] / "install/e2e-assets/drive-dmg-install.sh"
 

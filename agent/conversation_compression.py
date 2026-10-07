@@ -21,19 +21,28 @@ import logging
 import math
 import os
 import tempfile
+import threading
 import time
 import uuid
-import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple
 
 from agent.auxiliary_client import AuxiliaryExplicitCancellation
-from agent.context_engine import automatic_compaction_status_message, sanitize_memory_context
+from agent.context_engine import (
+    automatic_compaction_status_message,
+    sanitize_memory_context,
+)
 from agent.conversation_compression_codex import _codex_compaction_cooldown_remaining
-from agent.conversation_compression_telemetry import _emit_aborted_attempt_telemetry, _emit_compression_attempt_telemetry
+from agent.conversation_compression_telemetry import (
+    _emit_aborted_attempt_telemetry,
+    _emit_compression_attempt_telemetry,
+)
 from agent.memory_provider import PRE_COMPRESS_CHECKPOINT_API_VERSION
-from agent.model_metadata import estimate_messages_tokens_rough, estimate_request_tokens_rough
+from agent.model_metadata import (
+    estimate_messages_tokens_rough,
+    estimate_request_tokens_rough,
+)
 from agent.session_activity import ActivityProvenance, normalize_activity_provenance
 from agent.usage_anchor import set_usage_anchor
 from hermes_state_ids import new_session_id as mint_session_id
@@ -874,7 +883,10 @@ def resolve_compression_fallback_route() -> Optional[dict]:
     pins the route onto one bounded retry instead. Only the first complete entry: if it errors, the aux
     client's own exception path walks the rest. ``None`` when none is usable (skip compression)."""
     try:
-        from agent.auxiliary_client import _fallback_entry_api_key, _get_auxiliary_task_config
+        from agent.auxiliary_client import (
+            _fallback_entry_api_key,
+            _get_auxiliary_task_config,
+        )
         chain = _get_auxiliary_task_config("compression").get("fallback_chain")
     except Exception:
         logger.debug("compression fallback_chain lookup failed", exc_info=True)
@@ -2049,10 +2061,14 @@ def check_compression_model_feasibility(agent: Any) -> None:
         return
     try:
         from agent.auxiliary_client import (
-            _resolve_task_provider_model, _try_configured_fallback_for_unavailable_client,
+            _resolve_task_provider_model,
+            _try_configured_fallback_for_unavailable_client,
             get_text_auxiliary_client,
         )
-        from agent.model_metadata import MINIMUM_CONTEXT_LENGTH, get_model_context_length
+        from agent.model_metadata import (
+            MINIMUM_CONTEXT_LENGTH,
+            get_model_context_length,
+        )
         # Provider may be "auto"; fall back to the client's base_url hostname so the
         # user can tell where the compression model is actually called.
         try:
@@ -2346,7 +2362,10 @@ def _pruned_skill_reload_notice(compressed: list) -> str:
     """Reload notice for skills whose bodies were pruned, or ``""``.
     Scans ``[SKILL_PRUNED: ...]`` markers in the post-compression transcript; first-seen order, deduplicated,
     capped at ``_MAX_PRUNED_SKILL_MARKERS``."""
-    from agent.context_compressor import _MAX_PRUNED_SKILL_MARKERS, _extract_pruned_skill_names
+    from agent.context_compressor import (
+        _MAX_PRUNED_SKILL_MARKERS,
+        _extract_pruned_skill_names,
+    )
     names: list = []
     for message in compressed:
         if not isinstance(message, dict):
@@ -2439,7 +2458,9 @@ def _ensure_compressed_has_user_turn(original_messages: list, compressed: list) 
     # walk treats the whole compacted transcript as unpersisted and re-INSERTs it — the live set doubles on
     # every compaction (~58K → ~512K tokens in production).
     from agent.context_compressor import (
-        ContextCompressor, COMPRESSION_CONTINUATION_USER_CONTENT, _fresh_compaction_message_copy,
+        COMPRESSION_CONTINUATION_USER_CONTENT,
+        ContextCompressor,
+        _fresh_compaction_message_copy,
     )
     if any(ContextCompressor._has_merged_inflight_replay(message) for message in compressed):
         # The in-flight request was restated onto the summary carrier (#100818); an anchor would duplicate it.
@@ -2996,7 +3017,11 @@ def _run_summary_dispatch(
     # Publish progress to the commit fence so hosts extend deadlines while tokens
     # flow. Any active hook (even no-op) selects the streamed path: the timeout is
     # inactivity-based and a byte-trickling provider hits the stream total ceiling.
-    from agent.auxiliary_client import aux_interrupt_protection, aux_progress_hook, aux_stream_deadline
+    from agent.auxiliary_client import (
+        aux_interrupt_protection,
+        aux_progress_hook,
+        aux_stream_deadline,
+    )
     _progress_hook = commit_fence.touch_progress if commit_fence is not None else (lambda: None)
     # Return leg: cancel frees the owner but the provider daemon streams on to its
     # own larger ceiling; share the host deadline so orphan streams stop with it.
@@ -3704,7 +3729,10 @@ def _commit_compaction(
                 return _CommitOutcome(
                     compressed=messages, refused_prompt=_refused_sp, commit_started_at=commit_started_at
                 )
-            from agent.context_compressor import PROACTIVE_PRUNE_REARM_MODEL_CONFIG_KEY, stamp_db_persisted_markers
+            from agent.context_compressor import (
+                PROACTIVE_PRUNE_REARM_MODEL_CONFIG_KEY,
+                stamp_db_persisted_markers,
+            )
             from hermes_cli.partial_compress import rejoin_compressed_head_and_tail
             if in_place:
                 # In-place compaction: same session_id; soft-archive old turns (active=0, still
@@ -3730,7 +3758,10 @@ def _commit_compaction(
                 # tool rows): counted once, the oldest carried original stays compacted=1 beside its live
                 # copy and is recalled twice. Only rows still active: a live list keeps the ids after an
                 # earlier compaction archived them.
-                from agent.conversation_compression_archive import ABSORBED_ROW_IDS, _positive_id
+                from agent.conversation_compression_archive import (
+                    ABSORBED_ROW_IDS,
+                    _positive_id,
+                )
                 tail_count += len({
                     r for m in _tail_held if isinstance(m, dict)
                     for r in map(_positive_id, m.get(ABSORBED_ROW_IDS) or ())
@@ -4005,7 +4036,9 @@ def _begin_compression_attempt(
     trigger = trigger or ("manual" if force else "auto")
     with contextlib.suppress(Exception):
         agent._compression_attempt_id = attempt_id
-        from hermes_cli.observability.shared_metrics_events import begin_compression_attempt
+        from hermes_cli.observability.shared_metrics_events import (
+            begin_compression_attempt,
+        )
 
         begin_compression_attempt(trigger, approx_tokens or getattr(agent.context_compressor, "last_prompt_tokens", None))
         agent.context_compressor._compression_telemetry_seed = {
@@ -4236,7 +4269,9 @@ def compress_context(
         # todo fold rewrites the trailing user row (its follower would no longer
         # match) and both later passes place themselves around the tail, so the
         # reply has to be back in its chronological slot before they look.
-        from agent.conversation_compression_reply_anchor import _ensure_compressed_keeps_last_assistant_reply
+        from agent.conversation_compression_reply_anchor import (
+            _ensure_compressed_keeps_last_assistant_reply,
+        )
 
         # `/compress here N` hands only the HEAD in as `messages` and carries the kept tail
         # separately: the head's last assistant is an OLD reply the user explicitly asked to
@@ -4365,7 +4400,10 @@ def _compress_context_via_codex_app_server(
         _record_codex_compaction_failure(agent, str(getattr(result, "error", None) or "compaction interrupted"))
         return messages, _existing_system_prompt(agent, system_message)
     with _swallow('codex compaction bookkeeping failed', exc_info=True):
-        from agent.codex_runtime import _record_codex_app_server_compaction, _record_codex_app_server_usage
+        from agent.codex_runtime import (
+            _record_codex_app_server_compaction,
+            _record_codex_app_server_usage,
+        )
         _record_codex_app_server_compaction(agent, result, approx_tokens=approx_tokens, force=True)
         # An empty usage report must consume the pending verdict, not leave deferral
         # armed until a later turn; minimal test engines may lack update_from_response.
@@ -4404,7 +4442,8 @@ def _data_url_mime(header: str, default: str = "image/jpeg") -> str:
 def _decode_pixels(data_url: str) -> Optional[tuple]:
     """``(width, height)`` of a base64 data URL; None when Pillow is missing or the payload is corrupt."""
     try:
-        import base64, io
+        import base64
+        import io
         _, _, data_d = data_url.partition(",")
         if not data_d or not data_url.startswith("data:"):
             return None

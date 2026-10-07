@@ -161,6 +161,7 @@ def test_yuanbao_secondary_home_channel_is_live_and_reloadable(homes):
     """Auto-sethome from a secondary lands in ``platforms.yuanbao.home_channel`` of ITS config (read back
     by ``load_gateway_config``) and on the live PlatformConfig; the process env stays untouched."""
     import os
+
     from gateway.platforms.yuanbao import AutoSetHomeMiddleware
     _, secondary = homes
     (secondary / "config.yaml").write_text(

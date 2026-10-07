@@ -5,13 +5,15 @@ module object so tests that monkeypatch that module keep working."""
 import logging
 from datetime import datetime, timezone
 
+from hermes_cli import config
 from hermes_cli.auth import AuthError
 from hermes_cli.nous_account import (
-    format_nous_portal_entitlement_message, get_nous_portal_account_info)
+    format_nous_portal_entitlement_message,
+    get_nous_portal_account_info,
+)
 from hermes_cli.nous_subscription import get_nous_subscription_features
-from tools.tool_backend_helpers import managed_nous_tools_enabled
-from hermes_cli import config
 from hermes_time import safe_strftime
+from tools.tool_backend_helpers import managed_nous_tools_enabled
 
 
 def _format_iso_timestamp(value) -> str:

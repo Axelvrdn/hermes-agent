@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+
 from tests.termux_fixtures import build_deb
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

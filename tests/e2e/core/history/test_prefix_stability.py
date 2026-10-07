@@ -41,7 +41,12 @@ from tests.e2e.core.history._helpers import (
     tools_breaks,
     views,
 )
-from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall, write_hermes_home
+from tests.fakes.fake_llm_provider import (
+    FakeLLMServer,
+    Text,
+    ToolCall,
+    write_hermes_home,
+)
 
 # A hop is (surface, cwd, turns); a turn is its prompt, "TOOLS:<prompt>" (parallel tool batch
 # first) or "/compress" (gateway only). Every hop is a FRESH process.

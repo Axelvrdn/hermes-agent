@@ -1,8 +1,9 @@
 """Tests for the ResponsesApiTransport (Codex)."""
 
 import json
-import pytest
 from types import SimpleNamespace
+
+import pytest
 
 from agent.transports import get_transport
 from agent.transports.types import NormalizedResponse
@@ -1998,6 +1999,7 @@ class TestOpenAIReasoningWireProjection:
         """#75227: a disable the vocabulary cannot carry (Astra has no ``none``) is reported as an unsupported
         configuration — the model's default effort stays on — instead of silently omitted; once per model."""
         import logging
+
         from agent.transports import codex as codex_transport
         codex_transport._UNPROJECTABLE_DISABLE_WARNED.discard("gpt-6-astra")
         with caplog.at_level(logging.WARNING, logger="agent.transports.codex"):

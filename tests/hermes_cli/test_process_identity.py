@@ -342,7 +342,6 @@ def test_reclaim_spares_live_spawner_owner():
 def test_reclaim_spares_unprovable_spawner():
     # Spawner probe itself fails (permission): unprovable means never touch.
     import types
-
     from unittest.mock import MagicMock
 
     def _process(pid):

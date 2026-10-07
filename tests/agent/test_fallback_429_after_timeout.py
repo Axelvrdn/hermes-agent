@@ -28,6 +28,7 @@ from unittest.mock import MagicMock, patch
 
 from run_agent import AIAgent
 
+
 def _make_tool_defs():
     return [
         {

@@ -27,7 +27,9 @@ from hermes_cli import (
     portal_cli,
     status_auth,
 )
-from hermes_cli.auth import _load_auth_store  # noqa: F401  (store import name kept for parity with core tests)
+from hermes_cli.auth import (
+    _load_auth_store,  # noqa: F401  (store import name kept for parity with core tests)
+)
 from hermes_constants import get_hermes_home
 
 WELCOME = "https://welcome-api.nousresearch.com/v1"

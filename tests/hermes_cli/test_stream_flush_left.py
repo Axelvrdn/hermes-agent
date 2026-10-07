@@ -20,8 +20,8 @@ def _strip_ansi(s: str) -> str:
 
 @pytest.fixture
 def cli_stub(monkeypatch):
-    from cli import HermesCLI
     import cli as climod
+    from cli import HermesCLI
 
     cli = HermesCLI.__new__(HermesCLI)
     cli.show_reasoning = False

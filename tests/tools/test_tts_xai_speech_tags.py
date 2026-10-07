@@ -10,6 +10,7 @@ from tools.tts_tool_providers import (
     _apply_xai_auto_speech_tags,
 )
 
+
 def test_apply_xai_auto_speech_tags_adds_light_pause_after_first_sentence():
     text = "Bonjour Monsieur Talbot. Ceci est un test de réponse vocale."
 

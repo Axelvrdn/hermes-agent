@@ -10,11 +10,13 @@ from __future__ import annotations
 import logging
 from unittest.mock import patch
 
-import run_agent
 import agent.background_review as bg_review
+import run_agent
 from agent.background_review import build_cache_parity_fork
-
-from tests.agent.test_background_review_cache_parity import _make_agent_stub, _make_recorder_class
+from tests.agent.test_background_review_cache_parity import (
+    _make_agent_stub,
+    _make_recorder_class,
+)
 
 ROUTED_RUNTIME = {
     "provider": "openrouter", "model": "aux-cheap-model", "api_key": "test-key",

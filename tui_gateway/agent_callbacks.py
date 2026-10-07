@@ -4,13 +4,11 @@ globals at install time (method_ctx.bind_module), so they reference server.py gl
 
 from __future__ import annotations
 
-import json
-
 import contextlib
+import json
 import threading
 
 from .method_ctx import bind_module
-
 
 # Child-session live mirror: a delegated child's activity reaches the gateway only as
 # relayed ``subagent.*`` events on the PARENT sid; translate them into native stream
@@ -222,11 +220,11 @@ def _apply_project_workspace(task_id: str, path: str, _name: str = "") -> None:
 
 
 def _wire_callbacks(sid: str):
+    from gateway.run import _redact_approval_command
+    from tools.project_tools import set_project_workspace_callback
+    from tools.skills_tool import set_secret_capture_callback
     from tools.terminal_tool import set_sudo_password_callback
     from tools.terminal_tool_sudo import get_sudo_prompt_command
-    from gateway.run import _redact_approval_command
-    from tools.skills_tool import set_secret_capture_callback
-    from tools.project_tools import set_project_workspace_callback
 
     def secret_cb(env_var, prompt, metadata=None):
         pl = {"prompt": prompt, "env_var": env_var, **({"metadata": metadata} if metadata else {})}
@@ -259,8 +257,12 @@ def _wire_callbacks(sid: str):
     set_secret_capture_callback(secret_cb)
     # External password-manager unlock: the renderer shows a masked master-password card; the
     # answer is consumed by the manager CLI on stdin and only a session token stays in memory.
-    from agent.vault_backends.unlock import (set_code_prompt_callback, set_current_session_id,
-                                             set_save_login_prompt_callback, set_unlock_prompt_callback)
+    from agent.vault_backends.unlock import (
+        set_code_prompt_callback,
+        set_current_session_id,
+        set_save_login_prompt_callback,
+        set_unlock_prompt_callback,
+    )
     set_current_session_id(sid)  # an unlock made on this turn belongs to this session (released with it)
     set_unlock_prompt_callback(lambda backend, display_name: _ask(
         "vault.unlock_prompt", sid, {"backend": backend, "display_name": display_name}, timeout=120))
@@ -288,7 +290,10 @@ def _available_personalities(cfg: dict | None = None) -> dict:
 def _validate_personality(value: str, cfg: dict | None = None) -> tuple[str, str]:
     """(name, prompt) for a requested personality or ValueError; like resolve_personality but
     via the module-level _available_personalities so tests keep a single patch point."""
-    from hermes_cli.personality import normalize_personality_name, render_personality_prompt
+    from hermes_cli.personality import (
+        normalize_personality_name,
+        render_personality_prompt,
+    )
     if not (name := normalize_personality_name(value)):
         return "", ""
     personalities = _available_personalities(cfg)
@@ -362,7 +367,8 @@ def _load_prefill_messages() -> list:
     """Configured prefill messages, resolved like the CLI (env > ``prefill_messages_file`` > legacy
     ``agent.*``). Desktop/TUI agents never run the CLI bootstrap, so without this the setting was
     ignored there (#60456). Relative paths resolve against the active profile home, per call."""
-    from hermes_cli.cli_config_load import _load_prefill_messages as _load, _resolve_prefill_messages_file
+    from hermes_cli.cli_config_load import _load_prefill_messages as _load
+    from hermes_cli.cli_config_load import _resolve_prefill_messages_file
     from hermes_constants import get_hermes_home
     return _load(_resolve_prefill_messages_file(_load_cfg()), get_hermes_home())
 

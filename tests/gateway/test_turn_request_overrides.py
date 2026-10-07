@@ -14,7 +14,6 @@ import pytest
 
 from gateway.run import GatewayRunner
 
-
 PROVIDER_OVERRIDES = {"extra_body": {"chat_template_kwargs": {"enable_thinking": True}}}
 
 

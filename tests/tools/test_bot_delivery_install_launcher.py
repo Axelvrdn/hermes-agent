@@ -1,6 +1,6 @@
 """Bot deliveries must not pin the caller's obsolete dependency generation."""
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -61,6 +61,7 @@ def test_real_delivery_launcher_imports_new_generation(tmp_path, monkeypatch):
     import json
     import os
     import subprocess
+
     from hermes_cli import _launchers
     from pm.environments import runtime_facts_path, site_packages
 
@@ -131,6 +132,7 @@ def test_real_delivery_launcher_imports_new_generation(tmp_path, monkeypatch):
 @pytest.mark.parametrize("name", ["hermes", "hermes.exe"])
 def test_launcher_shape_preserves_profile_and_lock(tmp_path, monkeypatch, name):
     import contextlib
+
     from tools import bot_mode_dm, bot_mode_probe
 
     home = tmp_path / "home"

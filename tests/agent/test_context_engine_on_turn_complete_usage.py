@@ -24,7 +24,7 @@ from typing import Any, Dict, List
 from agent.context_engine import ContextEngine
 
 # Reuse the minimal agent harness that exercises the real finalize_turn path.
-from tests.agent.test_turn_finalizer_cleanup_guard import _StubAgent, _run
+from tests.agent.test_turn_finalizer_cleanup_guard import _run, _StubAgent
 
 
 class _CapturingEngine(ContextEngine):

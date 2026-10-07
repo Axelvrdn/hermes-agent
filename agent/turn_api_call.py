@@ -8,14 +8,14 @@ redirect ``_model_request_active`` bracket and the response-vs-redirect crossing
 
 from __future__ import annotations
 
-from contextlib import nullcontext
-from dataclasses import dataclass
 import logging
 import time
+from contextlib import nullcontext
+from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-from agent.error_classifier import FailoverReason
 from agent.agent_runtime_helpers_placeholders import hidden_interrupt_placeholder_row
+from agent.error_classifier import FailoverReason
 from agent.message_metadata import append_message
 from agent.repetition_guard import REPETITION_LOOP_INTERRUPTED, is_runaway_repetition
 from agent.turn_failure_copy import site_copy, stamp_failure
@@ -246,9 +246,8 @@ def nous_rate_limit_guard(
         except Exception as _exc:
             logger.debug("Suppressed exception: %s", _exc, exc_info=True)
         try:
-            from agent.nous_rate_guard import (
-                nous_rate_limit_remaining, format_remaining as _fmt_nous_remaining
-            )
+            from agent.nous_rate_guard import format_remaining as _fmt_nous_remaining
+            from agent.nous_rate_guard import nous_rate_limit_remaining
             from hermes_cli import anon_auth
             _anonymous = anon_auth.is_anonymous_agent(agent)
             _nous_remaining = nous_rate_limit_remaining(anonymous=_anonymous)

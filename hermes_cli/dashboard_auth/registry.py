@@ -7,8 +7,11 @@ import logging
 import threading
 from typing import List, Optional
 
+from hermes_cli.dashboard_auth.base import (
+    DashboardAuthProvider,
+    assert_protocol_compliance,
+)
 from hermes_constants import hermes_home_key, normalize_scope
-from hermes_cli.dashboard_auth.base import DashboardAuthProvider, assert_protocol_compliance
 
 _log = logging.getLogger(__name__)
 _lock = threading.Lock()

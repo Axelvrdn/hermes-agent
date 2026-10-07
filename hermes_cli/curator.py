@@ -422,6 +422,7 @@ def _cmd_purge(args) -> int:
     entry, so even a purge is auditable and blob-recoverable."""
     import shutil
     import time
+
     from hermes_cli.config import cfg_get, load_config
     from tools import skill_ledger, skill_usage
     ttl_days = getattr(args, "days", None)
@@ -574,6 +575,7 @@ _USAGE_SORTS = {
 def _cmd_usage(args) -> int:
     """Usage telemetry for ALL skills on disk (bundled + hub included), with provenance."""
     import json as _json
+
     from tools import skill_usage
     rows = skill_usage.usage_report()
     prov_filter = getattr(args, "provenance", None)

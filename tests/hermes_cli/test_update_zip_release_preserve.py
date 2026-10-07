@@ -14,8 +14,6 @@ import shutil
 from pathlib import Path
 
 
-
-
 def test_zip_swap_keeps_every_nested_build_output_and_the_guard_admits_them(tmp_path):
     from hermes_cli.update_cmd_zip import (
         _commit_staged_replacements,

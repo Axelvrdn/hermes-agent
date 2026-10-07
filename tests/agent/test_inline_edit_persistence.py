@@ -1,6 +1,6 @@
 """Real edit -> executor -> SQLite -> history projection, without model calls."""
-import copy
 import contextlib
+import copy
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -19,16 +19,19 @@ from tests.agent.test_tool_call_incremental_persistence import (
 def test_edit_preview_is_durable_before_emission_and_display_only(
     tmp_path, monkeypatch, executor_mode, edit,
 ):
-    from agent.context_compressor import ContextCompressor
+    import model_tools
+    import tools.file_tools as file_tools
+    import tui_gateway.server as progress
     from agent import secret_scope
+    from agent.context_compressor import ContextCompressor
     from agent.turn_context import build_api_messages
     from hermes_state import SessionDB
     from tools.environments.local import LocalEnvironment
     from tools.file_operations import ShellFileOperations
-    from tools.terminal_tool import register_task_env_overrides, clear_task_env_overrides
-    import tools.file_tools as file_tools
-    import model_tools
-    import tui_gateway.server as progress
+    from tools.terminal_tool import (
+        clear_task_env_overrides,
+        register_task_env_overrides,
+    )
 
     assert Path(model_tools.__file__).resolve().parent == Path(__file__).resolve().parents[2]
     monkeypatch.setattr(secret_scope, "_MULTIPLEX_ACTIVE", True)

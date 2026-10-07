@@ -20,12 +20,14 @@ import time
 from collections import OrderedDict
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
+from agent.i18n import t
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import (
-    BasePlatformAdapter, ExecApprovalPrompt, SendResult,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
 )
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
-from agent.i18n import t
 from gateway.relay.descriptor import CapabilityDescriptor
 from gateway.relay.egress import (
     EGRESS_DECLINE_CODE,

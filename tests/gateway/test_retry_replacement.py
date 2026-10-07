@@ -8,9 +8,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from agent.context_compressor import (
+    _SUMMARY_END_MARKER,
     HISTORICAL_TASK_HEADING,
     SUMMARY_PREFIX,
-    _SUMMARY_END_MARKER,
 )
 from gateway.config import GatewayConfig
 from gateway.platforms.event import MessageEvent, MessageType

@@ -15,8 +15,8 @@ from pathlib import Path
 import pytest
 
 from pm.lock import Facts
-from tests.pm.test_pm_core import pm_env as pm_env  # noqa: F401 — fixture
 from tests.pm._fixtures import served as served  # noqa: F401 — fixture
+from tests.pm.test_pm_core import pm_env as pm_env  # noqa: F401 — fixture
 
 
 @pytest.mark.platforms("windows")

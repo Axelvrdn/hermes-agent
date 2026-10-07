@@ -22,7 +22,6 @@ from gateway.platforms.api_server import (
     security_headers_middleware,
 )
 
-
 # ---------------------------------------------------------------------------
 # Pure-function tests for _normalize_multimodal_content
 # ---------------------------------------------------------------------------

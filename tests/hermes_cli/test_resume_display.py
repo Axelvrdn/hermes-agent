@@ -7,9 +7,8 @@ conversation with correct formatting, truncation, and config behavior.
 
 from io import StringIO
 from unittest.mock import MagicMock, patch
+
 from agent.i18n import t
-
-
 
 
 def _make_cli(config_overrides=None, env_overrides=None, **kwargs):

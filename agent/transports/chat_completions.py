@@ -8,14 +8,22 @@ import json
 from typing import Any
 from urllib.parse import urlparse
 
-from agent.reasoning_effort import (
-    KIMI_K3_EFFORTS, KIMI_K3_OVERRIDES, OPENAI_COMPAT_WIRE_EFFORTS, clamp_effort,
-    clamp_reasoning_config, kimi_supported_efforts, requested_effort, tokenhub_effort,
-)
 from agent.message_metadata import MESSAGE_UID
-from agent.message_sanitization import normalize_finish_reason as _normalize_finish_reason
+from agent.message_sanitization import (
+    normalize_finish_reason as _normalize_finish_reason,
+)
 from agent.moonshot_schema import is_moonshot_model, sanitize_moonshot_tools
 from agent.prompt_builder import DEVELOPER_ROLE_MODELS
+from agent.reasoning_effort import (
+    KIMI_K3_EFFORTS,
+    KIMI_K3_OVERRIDES,
+    OPENAI_COMPAT_WIRE_EFFORTS,
+    clamp_effort,
+    clamp_reasoning_config,
+    kimi_supported_efforts,
+    requested_effort,
+    tokenhub_effort,
+)
 from agent.transports.base import ProviderTransport
 from agent.transports.types import NormalizedResponse, ToolCall, Usage
 
@@ -93,7 +101,9 @@ def _add_prompt_cache_key(
     # key in extra_body (not top-level) and GitHub/Copilot Responses opts out of cache-key routing entirely
     # — for those hosts, skip it here.
     from agent.transports.codex import (
-        _bound_prompt_cache_key_field, _cache_scope_from_session_id, _content_cache_key
+        _bound_prompt_cache_key_field,
+        _cache_scope_from_session_id,
+        _content_cache_key,
     )
 
     containers = [c for c in (api_kwargs, api_kwargs.get("extra_body")) if isinstance(c, dict) and "prompt_cache_key" in c]

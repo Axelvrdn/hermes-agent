@@ -1,12 +1,11 @@
 """Completed scheduled attempts survive a jobs.json rollback, not just a process restart."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 _FIRE = """
 import json
@@ -55,6 +54,7 @@ def _fire(home, mode):
 @pytest.mark.parametrize('mode', ['builtin', 'provider', 'worker'])
 def test_completed_occurrence_survives_restart_and_prestamp_rollback(tmp_path, mode):
     from datetime import timedelta
+
     from hermes_time import now
 
     home = tmp_path / mode
@@ -97,6 +97,7 @@ def test_completed_occurrence_survives_restart_and_prestamp_rollback(tmp_path, m
 
 def test_ledger_migration_and_completion_identity(tmp_path, monkeypatch):
     import sqlite3
+
     from cron import executions, jobs
     from cron.occurrences import completed_occurrence
     from cron.scheduler_provider import InProcessCronScheduler
@@ -148,6 +149,7 @@ def test_ledger_migration_and_completion_identity(tmp_path, monkeypatch):
 
         # A runnable legacy wall-clock value cannot establish an exact UTC identity.
         from datetime import timedelta
+
         from hermes_time import now
         naive = jobs.create_job(prompt='legacy', schedule='every 4h')
         rows = jobs.load_jobs()

@@ -18,7 +18,14 @@ from __future__ import annotations
 from pydantic import Field
 
 from .base import JsonValue, Payload, WireEnum
-from .common import MessageReaction, SessionLiveInfo, SubagentStatus, ToolLabel, ToolLabelKind, Usage
+from .common import (
+    MessageReaction,
+    SessionLiveInfo,
+    SubagentStatus,
+    ToolLabel,
+    ToolLabelKind,
+    Usage,
+)
 from .config_free_tier_control import FreeTierChallengePayload, SessionControlSnapshot
 from .registry import event
 

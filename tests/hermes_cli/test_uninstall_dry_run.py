@@ -58,6 +58,7 @@ def test_dry_run_lists_named_profiles_without_desktop_userdata(monkeypatch, tmp_
 
 def test_build_uninstall_parser_accepts_dry_run():
     import argparse
+
     from hermes_cli.subcommands.uninstall import build_uninstall_parser
 
     parser = argparse.ArgumentParser()

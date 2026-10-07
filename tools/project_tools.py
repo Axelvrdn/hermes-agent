@@ -7,8 +7,8 @@ tool call, never a side effect of ``cd``. GUI-only: the `project` toolset stays 
 session create/switch re-anchors only that session; it must not move the profile-global
 Desktop selection shared by concurrent chats."""
 
-import logging
 import json
+import logging
 import os
 from typing import Callable, Optional
 

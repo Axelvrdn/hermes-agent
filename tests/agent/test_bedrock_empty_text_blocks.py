@@ -18,10 +18,10 @@ placeholder (a lone space would be rejected by the same validation).
 import pytest
 
 from agent.bedrock_adapter import (
-    convert_messages_to_converse,
+    _EMPTY_TEXT_PLACEHOLDER,
     _convert_content_to_converse,
     _safe_text,
-    _EMPTY_TEXT_PLACEHOLDER,
+    convert_messages_to_converse,
 )
 
 

@@ -42,7 +42,6 @@ from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.session import SessionSource
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
-
 STREAMED_PREFIX = "Deploy summary: 713 items published (578 as of 08-26"
 MISSING_TAIL = ", another 135 over the past 4 days). All checks green."
 FULL_RESPONSE = STREAMED_PREFIX + MISSING_TAIL

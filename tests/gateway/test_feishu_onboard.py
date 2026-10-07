@@ -1,7 +1,8 @@
 """Tests for plugins.platforms.feishu.adapter — Feishu scan-to-create registration."""
 
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 
@@ -202,8 +203,8 @@ class TestQrRegister:
         self, mock_init, mock_begin, mock_poll, mock_render, capsys
     ):
         """#111695: the install tip goes through PM, never a bare pip that targets the wrong env."""
-        from pm import install_hint
         from plugins.platforms.feishu.adapter import _qr_register_inner
+        from pm import install_hint
 
         mock_begin.return_value = {
             "device_code": "dc_123",

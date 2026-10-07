@@ -34,8 +34,8 @@ class TestGeminiSetupFreeTierBlock:
         """Free-tier probe result -> provider is NOT saved, message is printed."""
         monkeypatch.setenv("GOOGLE_API_KEY", "fake-free-tier-key")
 
-        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
         from hermes_cli.config import load_config
+        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
 
         # Mock the probe to claim this is a free-tier key
         with patch(
@@ -68,8 +68,8 @@ class TestGeminiSetupFreeTierBlock:
         """Paid-tier probe result -> provider IS saved normally."""
         monkeypatch.setenv("GOOGLE_API_KEY", "fake-paid-tier-key")
 
-        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
         from hermes_cli.config import load_config
+        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
 
         with patch(
             "agent.gemini_native_adapter.probe_gemini_tier",
@@ -98,8 +98,8 @@ class TestGeminiSetupFreeTierBlock:
         """Probe must only run for provider_id == 'gemini', not for other providers."""
         monkeypatch.setenv("DEEPSEEK_API_KEY", "fake-key")
 
-        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
         from hermes_cli.config import load_config
+        from hermes_cli.model_setup_flows import _model_flow_api_key_provider
 
         with patch(
             "agent.gemini_native_adapter.probe_gemini_tier",

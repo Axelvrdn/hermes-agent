@@ -1,17 +1,17 @@
 """File previews may not cancel SQLite's live POSIX locks (including WAL sidecars)."""
 import asyncio
 import os
-from pathlib import Path
 import sqlite3
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 from fastapi import HTTPException
 
 from agent.context_references import _expand_path_reference, parse_context_references
-from hermes_state import SessionDB
 from hermes_cli.web_routers.files import fs_download, fs_read_text
+from hermes_state import SessionDB
 from tests.posix_lock_probe import own_posix_locks
 
 

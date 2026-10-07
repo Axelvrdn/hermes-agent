@@ -17,8 +17,8 @@ import json
 from typing import Any, Dict
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from agent import image_gen_registry
 from agent.image_gen_provider import ImageGenProvider
 
@@ -212,8 +212,8 @@ class _LegacyProvider(ImageGenProvider):
 class TestPluginDispatchImageToImage:
     def test_dispatch_forwards_image_url(self, cfg_home, monkeypatch):
         import tools.image_generation_tool as image_tool
-        from hermes_cli import plugins as plugins_module
         from agent import image_gen_registry as reg
+        from hermes_cli import plugins as plugins_module
 
         provider = _EditCapableProvider()
         reg.register_provider(provider)
@@ -235,8 +235,8 @@ class TestPluginDispatchImageToImage:
 
     def test_legacy_provider_edit_request_surfaces_clear_error(self, cfg_home, monkeypatch):
         import tools.image_generation_tool as image_tool
-        from hermes_cli import plugins as plugins_module
         from agent import image_gen_registry as reg
+        from hermes_cli import plugins as plugins_module
 
         provider = _LegacyProvider()
         reg.register_provider(provider)

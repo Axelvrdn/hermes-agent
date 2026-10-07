@@ -21,11 +21,23 @@ import time
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from agent.lsp import eventlog
-from agent.lsp.client import DIAGNOSTICS_DOCUMENT_WAIT, LSPClient, _diagnostic_key as _diag_key
+from agent.lsp.client import DIAGNOSTICS_DOCUMENT_WAIT, LSPClient
+from agent.lsp.client import _diagnostic_key as _diag_key
 from agent.lsp.servers import (
-    SERVERS, UNTRUSTED_SAFE_SERVERS, ServerContext, ServerDef, custom_servers, find_server_for_file, language_id_for,
+    SERVERS,
+    UNTRUSTED_SAFE_SERVERS,
+    ServerContext,
+    ServerDef,
+    custom_servers,
+    find_server_for_file,
+    language_id_for,
 )
-from agent.lsp.workspace import clear_cache, is_trusted_workspace, operator_workspace_roots, resolve_workspace_for_file
+from agent.lsp.workspace import (
+    clear_cache,
+    is_trusted_workspace,
+    operator_workspace_roots,
+    resolve_workspace_for_file,
+)
 
 logger = logging.getLogger("agent.lsp.manager")
 

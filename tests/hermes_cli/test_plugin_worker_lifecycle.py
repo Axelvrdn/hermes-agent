@@ -4,8 +4,10 @@ from __future__ import annotations
 import pytest
 
 from tests.hermes_cli.plugin_worker_support import (
-    plugin_world as plugin_world,
     isolated_python as isolated_python,
+)
+from tests.hermes_cli.plugin_worker_support import (
+    plugin_world as plugin_world,
 )
 
 
@@ -123,6 +125,7 @@ def test_active_reinstall_does_not_overwrite_a_later_disable(plugin_world, monke
 
 def test_malformed_portable_member_cannot_join_a_new_generation(plugin_world, monkeypatch):
     import json
+
     from hermes_cli import plugins_cmd
     from hermes_cli.agent_plugins import PLUGIN_SCHEMA_V1
     from pm import client, paths
@@ -149,6 +152,7 @@ def test_malformed_portable_member_cannot_join_a_new_generation(plugin_world, mo
 
 def test_pack_admits_compatible_members_and_reports_conflict(plugin_world, monkeypatch, capsys):
     import json
+
     import hermes_yaml as yaml
     from hermes_cli import plugins_cmd
     from tests.hermes_cli.plugin_worker_support import git, version
@@ -192,15 +196,16 @@ def test_pack_admits_compatible_members_and_reports_conflict(plugin_world, monke
 
 @pytest.mark.parametrize("sibling_profiles", [False, True], ids=["same-profile", "sibling-profiles"])
 def test_concurrent_commands_keep_acknowledged_enables(plugin_world, sibling_profiles):
-    import queue
-    import threading
     import os
-    from pathlib import Path
+    import queue
     import shutil
     import subprocess
     import sys
+    import threading
+    from pathlib import Path
+
     import hermes_yaml as yaml
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tests.hermes_cli.plugin_worker_support import worker_command
 
     world = plugin_world

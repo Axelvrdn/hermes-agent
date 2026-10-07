@@ -1,11 +1,11 @@
 """Tests for the transport ABC, registry, and AnthropicTransport."""
 
-import pytest
 from types import SimpleNamespace
 
-from agent.transports.types import NormalizedResponse
-from agent.transports import get_transport
+import pytest
 
+from agent.transports import get_transport
+from agent.transports.types import NormalizedResponse
 
 # ── ABC contract tests ──────────────────────────────────────────────────
 

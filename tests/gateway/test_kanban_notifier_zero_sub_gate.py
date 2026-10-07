@@ -17,7 +17,6 @@ win without that risk.)
 """
 
 import asyncio
-
 from unittest.mock import patch
 
 from gateway.config import Platform

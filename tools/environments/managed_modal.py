@@ -10,11 +10,12 @@ from __future__ import annotations
 import json
 import logging
 import os
-import requests
 import shlex
 import time
 import uuid
 from typing import Any, Dict, Optional
+
+import requests
 
 from tools.environments.base import BaseEnvironment
 from tools.interrupt import is_interrupted

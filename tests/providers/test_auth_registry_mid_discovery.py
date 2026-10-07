@@ -19,8 +19,8 @@ from pathlib import Path
 
 import pytest
 
-import providers
 import hermes_cli.auth as auth_mod
+import providers
 from providers.base import ProviderProfile
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

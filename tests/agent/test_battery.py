@@ -14,6 +14,7 @@ from agent.battery import (
     read_battery,
 )
 
+
 @pytest.fixture(autouse=True)
 def _clear_cache():
     battery_mod.clear_cache()

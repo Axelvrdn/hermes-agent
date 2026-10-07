@@ -18,6 +18,7 @@ import pytest
 
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 
+
 def _make_adapter(*, supports_delete: bool = True) -> MagicMock:
     """Build a minimal MagicMock adapter wired for send/edit/delete."""
     adapter = MagicMock()

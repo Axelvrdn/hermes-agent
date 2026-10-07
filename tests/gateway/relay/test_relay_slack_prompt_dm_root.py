@@ -32,7 +32,6 @@ from gateway.platforms.event import MessageEvent, MessageType
 from gateway.relay.adapter import RelayAdapter
 from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
 from gateway.session import SessionSource
-
 from tests.gateway.relay.stub_connector import StubConnector
 
 FULL_OPS = ("send", "edit", "typing", "get_chat_info", "send_media", "prompt", "react")

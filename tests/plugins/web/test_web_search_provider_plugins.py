@@ -22,7 +22,6 @@ import asyncio
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -262,6 +261,7 @@ class TestFirecrawlScrapeTimeout:
         deadline matches the 60 s asyncio.wait_for deadline.  Without this
         the API uses its 30 s default, causing SCRAPE_TIMEOUT."""
         from unittest.mock import MagicMock, patch
+
         from plugins.web.firecrawl import provider as firecrawl_provider
 
         # Direct-credential mode: with no FIRECRAWL_API_KEY extract() routes

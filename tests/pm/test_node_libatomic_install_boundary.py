@@ -6,7 +6,6 @@ import pytest
 
 from pm.packages import Nodejs
 
-
 _LOADER = (
     "node: error while loading shared libraries: libatomic.so.1: "
     "cannot open shared object file: No such file or directory"

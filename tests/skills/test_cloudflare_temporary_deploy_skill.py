@@ -18,7 +18,6 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 import parse_deploy_output as pdo
 
-
 CREATED = """\
 Continuing means you accept Cloudflare's Terms of Service and Privacy Policy.
 

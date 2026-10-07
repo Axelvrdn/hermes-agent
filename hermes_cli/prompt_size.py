@@ -7,8 +7,8 @@ network call: dummy credentials force ``AIAgent.__init__`` down the direct-const
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -51,10 +51,10 @@ def _build_inspection_agent(platform: str) -> Any:
     direct-construction path (no provider auto-detection, no network); toolsets resolve the way
     the gateway does so the breakdown matches a real session.
     """
-    from run_agent import AIAgent
+    from agent.skill_utils import parse_config_string_list
     from hermes_cli.config import load_config
     from hermes_cli.tools_config import _get_platform_tools
-    from agent.skill_utils import parse_config_string_list
+    from run_agent import AIAgent
 
     cfg = load_config()
     model_cfg = cfg.get("model", {}) if isinstance(cfg.get("model"), dict) else {}
@@ -72,7 +72,11 @@ def _skill_md_paths_by_name() -> Dict[str, Path]:
     Local skills win over external dirs (``get_all_skills_dirs`` yields local first), matching
     the index's own precedence.
     """
-    from agent.skill_utils import get_all_skills_dirs, iter_skill_index_files, parse_frontmatter
+    from agent.skill_utils import (
+        get_all_skills_dirs,
+        iter_skill_index_files,
+        parse_frontmatter,
+    )
 
     mapping: Dict[str, Path] = {}
     for skills_dir in get_all_skills_dirs():

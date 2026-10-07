@@ -1,9 +1,9 @@
 """Launch-time dependency selection survives a change after launcher minting."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -13,9 +13,9 @@ from pm.environments import install_state_dir, site_packages
 
 @pytest.mark.platforms("windows")
 def test_minted_launcher_reads_current_selection_and_editable_members(tmp_path, monkeypatch):
-    from pm import environments as runtime_paths
-    from hermes_cli import runtime_state
     import hermes_constants
+    from hermes_cli import runtime_state
+    from pm import environments as runtime_paths
 
     root = tmp_path / "repo"
     package = root / "hermes_cli"

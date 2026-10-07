@@ -1,10 +1,10 @@
 """Real-process deadline regression; the probe owns and reaps its whole subtree."""
 import os
-from pathlib import Path
-import subprocess
 import signal
+import subprocess
 import sys
 import time
+from pathlib import Path
 
 import pytest
 
@@ -24,6 +24,7 @@ def test_cron_timeout_closes_the_descendant_snapshot_fork_window(tmp_path):
 @pytest.mark.parametrize("initially_stopped", [False, True])
 def test_refused_hard_kill_preserves_the_targets_original_run_state(monkeypatch, initially_stopped):
     import psutil
+
     from agent.deadline import kill_process_tree
 
     proc = subprocess.Popen(

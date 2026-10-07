@@ -21,8 +21,8 @@ POSIX-only: Windows has its own grandchild lifecycle (no shared session,
 from __future__ import annotations
 
 import json
-import shutil
 import os
+import shutil
 import subprocess
 import sys
 import textwrap

@@ -2,23 +2,44 @@
 ledger + death-supervisor registration), Streamable HTTP / SSE connect (preflight, identity header, client certs, OAuth),
 protocol negotiation and initial tool discovery. Split from tools/mcp_tool.py."""
 
-import logging
 import asyncio
+import logging
 import os
 import urllib.parse
 import urllib.request
 from contextlib import asynccontextmanager
 from typing import Dict, Optional, Set
-from utils import normalize_proxy_url
-from agent.proxy_bypass import is_loopback_host, should_bypass_proxy
+
 from agent import runtime_cwd as _runtime_cwd
-from tools.mcp_tool_errors import NonMcpEndpointError, _apply_identity_header, _describe_http_failure, _handshake_answered_with_unsupported_version, _handshake_rejected_as_modern, _is_streamable_http_rejection, _make_http_rejection_recorder, _make_mcp_body_cap_transport, _make_redirect_header_stripper, _resolve_client_cert, _unwrap_exception_group
-from tools.mcp_tool_lifecycle import _filter_mcp_children, _leader_start_time, _orphan_stdio_pid_servers, _orphan_stdio_pids, _stdio_pgids, _stdio_pids, _stdio_starttimes
-from tools.mcp_tool_common import _core
-from tools.mcp_tool_node_abi import node_abi_error
+from agent.proxy_bypass import is_loopback_host, should_bypass_proxy
 from tools import mcp_tool_config as _config
 from tools import mcp_tool_lifecycle as _lifecycle
 from tools import mcp_tool_registration as _registration
+from tools.mcp_tool_common import _core
+from tools.mcp_tool_errors import (
+    NonMcpEndpointError,
+    _apply_identity_header,
+    _describe_http_failure,
+    _handshake_answered_with_unsupported_version,
+    _handshake_rejected_as_modern,
+    _is_streamable_http_rejection,
+    _make_http_rejection_recorder,
+    _make_mcp_body_cap_transport,
+    _make_redirect_header_stripper,
+    _resolve_client_cert,
+    _unwrap_exception_group,
+)
+from tools.mcp_tool_lifecycle import (
+    _filter_mcp_children,
+    _leader_start_time,
+    _orphan_stdio_pid_servers,
+    _orphan_stdio_pids,
+    _stdio_pgids,
+    _stdio_pids,
+    _stdio_starttimes,
+)
+from tools.mcp_tool_node_abi import node_abi_error
+from utils import normalize_proxy_url
 
 logger = logging.getLogger("tools.mcp_tool")
 

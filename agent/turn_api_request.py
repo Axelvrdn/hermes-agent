@@ -8,11 +8,14 @@ the ``pre_api_request`` hook and the debug dump. Nothing here imports
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from typing import Any
 
-from agent.message_sanitization import sanitize_outbound_kwargs, strip_images_for_rejecting_model
+from agent.message_sanitization import (
+    sanitize_outbound_kwargs,
+    strip_images_for_rejecting_model,
+)
 from hermes_cli.observability.shared_metrics_efficiency import observe_request_tools
 from utils import env_var_enabled
 
@@ -49,7 +52,8 @@ def _fire_pre_api_request_hook(
     from agent.conversation_loop import _system_prompt_for_hooks
 
     try:
-        from hermes_cli.lifecycle import has_hook, invoke_hook as _invoke_hook
+        from hermes_cli.lifecycle import has_hook
+        from hermes_cli.lifecycle import invoke_hook as _invoke_hook
         if has_hook("pre_api_request"):
             request_messages = api_kwargs.get("messages")
             if not isinstance(request_messages, list):
@@ -99,7 +103,8 @@ def build_api_request(
     """Assemble the attempt's request in the original order (every mutation happens BEFORE
     middleware/hooks/debug dumps observe the payload)."""
     from agent.conversation_loop import (
-        _moa_client_consumes_prepared_request, _redecorate_prompt_cache_for_provider,
+        _moa_client_consumes_prepared_request,
+        _redecorate_prompt_cache_for_provider,
     )
 
     agent._reset_stream_delivery_tracking()

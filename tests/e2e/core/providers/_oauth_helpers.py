@@ -20,8 +20,14 @@ from pathlib import Path
 from typing import Any, Callable
 
 import hermes_yaml as yaml
-
-from tests.fakes.providers.anthropic_messages import ApiError, AnthropicMessagesServer, Reply, Response, Text, ToolUse
+from tests.fakes.providers.anthropic_messages import (
+    AnthropicMessagesServer,
+    ApiError,
+    Reply,
+    Response,
+    Text,
+    ToolUse,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 TAG_VAR = "OAUTH_E2E_TAG"
@@ -210,7 +216,11 @@ def start_anthropic_rig(root: Path, decide: Callable[[dict[str, Any]], Any], *,
                         expires_at_ms: int | None = None) -> AnthropicOAuthRig:
     """``expires_at_ms`` is the seeded row's clock expiry; default: an hour ahead, so only the
     vendor's 401 (early revocation/expiry) can trigger the refresh."""
-    from tests.fakes.providers.oauth_token_server import OAuthTokenServer, TLSInterceptProxy, make_test_ca
+    from tests.fakes.providers.oauth_token_server import (
+        OAuthTokenServer,
+        TLSInterceptProxy,
+        make_test_ca,
+    )
 
     ca = make_test_ca(root / "ca", ANTHROPIC_TOKEN_HOSTS)
     tokens = OAuthTokenServer().start()

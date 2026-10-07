@@ -6,9 +6,9 @@ import os
 import tempfile
 import types
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 
 # Try importing mautrix; skip entire file if not available.
 try:
@@ -19,7 +19,6 @@ except ImportError:
     pytest.skip("mautrix not installed", allow_module_level=True)
 
 from gateway.platforms.event import MessageType
-
 
 # ---------------------------------------------------------------------------
 # Adapter helpers
@@ -36,8 +35,8 @@ def _make_adapter():
     depending on leaked env state from other tests in the same shard. These
     tests exercise voice/audio TYPE detection, not mention gating.
     """
-    from plugins.platforms.matrix.adapter import MatrixAdapter
     from gateway.config import PlatformConfig
+    from plugins.platforms.matrix.adapter import MatrixAdapter
 
     config = PlatformConfig(
         enabled=True,

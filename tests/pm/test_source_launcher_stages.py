@@ -1,9 +1,9 @@
 """Native whole-script publication; POSIX setup/install lives in the fresh E2E."""
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 

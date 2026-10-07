@@ -13,7 +13,6 @@ from gateway.message_timestamps import (
 )
 from hermes_time import safe_strftime
 
-
 BERLIN = ZoneInfo("Europe/Berlin")
 
 

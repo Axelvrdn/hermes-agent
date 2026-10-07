@@ -14,9 +14,9 @@ Drives the real SQL + decode path through SessionDB.
 import pytest
 
 from agent.context_compressor import (
+    _SUMMARY_END_MARKER,
     HISTORICAL_TASK_HEADING,
     SUMMARY_PREFIX,
-    _SUMMARY_END_MARKER,
 )
 from hermes_state import SessionDB
 

@@ -16,8 +16,20 @@ from pathlib import Path
 import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
-from tests.e2e.core.providers._anthropic_helpers import Rig, dump, normalised, start_rig, thinking_of
-from tests.fakes.providers.anthropic_messages import ApiError, DropStream, Reply, Text, Thinking
+from tests.e2e.core.providers._anthropic_helpers import (
+    Rig,
+    dump,
+    normalised,
+    start_rig,
+    thinking_of,
+)
+from tests.fakes.providers.anthropic_messages import (
+    ApiError,
+    DropStream,
+    Reply,
+    Text,
+    Thinking,
+)
 
 pytestmark = [pytest.mark.skipif(not sys.platform.startswith("linux"), reason="process-tree cleanup uses /proc"),
               pytest.mark.live_system_guard_bypass]

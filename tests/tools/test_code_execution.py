@@ -12,13 +12,13 @@ Run with:  python -m pytest tests/test_code_execution.py -v
    or:     python tests/test_code_execution.py
 """
 
-import pytest
 # pytestmark removed — tests run fine (61 pass, ~99s)
-
 import json
 import os
 import socket
 import time
+
+import pytest
 
 os.environ["TERMINAL_ENV"] = "local"
 
@@ -47,17 +47,17 @@ def _fresh_kernel_registry():
 import sys
 import threading
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from tools.code_execution_tool import (
-    SANDBOX_ALLOWED_TOOLS,
-    execute_code,
-    generate_hermes_tools_module,
-    check_sandbox_requirements,
-    build_execute_code_schema,
     _TOOL_DOC_LINES,
+    SANDBOX_ALLOWED_TOOLS,
     _execute_remote,
     _format_interrupted_output,
+    build_execute_code_schema,
+    check_sandbox_requirements,
+    execute_code,
+    generate_hermes_tools_module,
 )
 from tools.registry import registry
 
@@ -487,12 +487,13 @@ class TestStubSchemaDrift(unittest.TestCase):
         """Every user-facing parameter in the real schema must appear in the
         corresponding _TOOL_STUBS entry."""
         import re
+
+        import tools.file_tools  # noqa: F401 - registers read_file, write_file, patch, search_files
+        import tools.web_tools  # noqa: F401 - registers web_search, web_extract
         from tools.code_execution_tool import _TOOL_STUBS
 
         # Import the registry and trigger tool registration
         from tools.registry import registry
-        import tools.file_tools  # noqa: F401 - registers read_file, write_file, patch, search_files
-        import tools.web_tools  # noqa: F401 - registers web_search, web_extract
 
         for tool_name, (sig, doc, args_expr) in _TOOL_STUBS.items():
             entry = registry._tools.get(tool_name)

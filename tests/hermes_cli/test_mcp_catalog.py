@@ -11,8 +11,8 @@ import re
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -214,7 +214,7 @@ class TestManifestParsing:
 
     def test_suggest_empty_block_rejected(self, catalog_dir):
         _write_manifest(catalog_dir, "demo", _basic_manifest(suggest={}))
-        from hermes_cli.mcp_catalog import list_catalog, catalog_diagnostics
+        from hermes_cli.mcp_catalog import catalog_diagnostics, list_catalog
 
         assert list_catalog() == []
         assert any(kind == "invalid" for (_n, kind, _m) in catalog_diagnostics())
@@ -318,8 +318,8 @@ class TestManifestParsing:
 class TestInstall:
     def test_install_simple_stdio_writes_config(self, catalog_dir):
         _write_manifest(catalog_dir, "demo", _basic_manifest())
-        from hermes_cli.mcp_catalog import install_entry
         from hermes_cli.config import load_config
+        from hermes_cli.mcp_catalog import install_entry
 
         install_entry(_entry("demo"), enable=True)
 
@@ -541,8 +541,8 @@ class TestInstall:
 
         monkeypatch.setattr(mcp_catalog, "_prompt_input", lambda *a, **kw: "secret-val")
 
-        from hermes_cli.mcp_catalog import install_entry
         from hermes_cli.config import get_env_value, load_config
+        from hermes_cli.mcp_catalog import install_entry
 
         install_entry(_entry("demo"), enable=True)
 
@@ -563,8 +563,8 @@ class TestInstall:
 
         monkeypatch.setattr(mcp_catalog, "_prompt_input", lambda *a, **kw: "secret-val")
 
-        from hermes_cli.mcp_catalog import install_entry
         from hermes_cli.config import load_config
+        from hermes_cli.mcp_catalog import install_entry
 
         install_entry(_entry("demo"), enable=True)
 
@@ -634,8 +634,8 @@ class TestInstall:
 class TestUninstall:
     def test_uninstall_removes_server_block(self, catalog_dir):
         _write_manifest(catalog_dir, "demo", _basic_manifest())
-        from hermes_cli.mcp_catalog import install_entry, uninstall_entry
         from hermes_cli.config import load_config
+        from hermes_cli.mcp_catalog import install_entry, uninstall_entry
 
         install_entry(_entry("demo"), enable=True)
         assert "demo" in load_config().get("mcp_servers", {})
@@ -675,8 +675,8 @@ class TestPicker:
 
     def test_install_by_name_success(self, catalog_dir):
         _write_manifest(catalog_dir, "demo", _basic_manifest())
-        from hermes_cli.mcp_picker import install_by_name
         from hermes_cli.config import load_config
+        from hermes_cli.mcp_picker import install_by_name
 
         rc = install_by_name("demo")
         assert rc == 0
@@ -710,8 +710,8 @@ class TestToolSelection:
             tools={"default_enabled": ["a", "b", "c"]},
         )
         _write_manifest(catalog_dir, "demo", body)
-        from hermes_cli.mcp_catalog import install_entry
         from hermes_cli.config import load_config
+        from hermes_cli.mcp_catalog import install_entry
 
         install_entry(_entry("demo"), enable=True)
         server = load_config()["mcp_servers"]["demo"]
@@ -734,8 +734,8 @@ class TestToolSelection:
         import sys as _sys
         monkeypatch.setattr(_sys.stdin, "isatty", lambda: False)
 
-        from hermes_cli.mcp_catalog import install_entry
         from hermes_cli.config import load_config, save_config
+        from hermes_cli.mcp_catalog import install_entry
 
         # First install
         install_entry(_entry("demo"), enable=True)
@@ -765,7 +765,7 @@ class TestCatalogDiagnostics:
         # Plus one valid entry
         _write_manifest(catalog_dir, "demo", _basic_manifest())
 
-        from hermes_cli.mcp_catalog import list_catalog, catalog_diagnostics
+        from hermes_cli.mcp_catalog import catalog_diagnostics, list_catalog
 
         entries = list_catalog()
         assert [e.name for e in entries] == ["demo"]
@@ -781,7 +781,7 @@ class TestCatalogDiagnostics:
         body["transport"] = {"type": "unsupported"}
         _write_manifest(catalog_dir, "broken", body)
 
-        from hermes_cli.mcp_catalog import list_catalog, catalog_diagnostics
+        from hermes_cli.mcp_catalog import catalog_diagnostics, list_catalog
 
         entries = list_catalog()
         assert entries == []

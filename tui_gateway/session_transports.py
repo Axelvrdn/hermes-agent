@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import threading
+
 from tui_gateway.method_ctx import bind_module
 
 # Leaf lock: callers may hold sessions/history locks, never acquire them here.

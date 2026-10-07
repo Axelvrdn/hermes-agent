@@ -140,8 +140,8 @@ def cmd_fallback_list(args) -> None:  # noqa: ARG001
 
 def cmd_fallback_add(args) -> None:
     """Launch the same picker as `hermes model`, then append the selection to the chain."""
-    from hermes_cli.main import _require_tty, select_provider_and_model
     from hermes_cli.config import load_config, save_config
+    from hermes_cli.main import _require_tty, select_provider_and_model
     _require_tty("fallback add")
 
     # Snapshot BEFORE the picker runs; both route stores must be restored on every exit path.

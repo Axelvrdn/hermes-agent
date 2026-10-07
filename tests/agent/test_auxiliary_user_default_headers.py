@@ -9,7 +9,7 @@ on BOTH paths — otherwise the main turn succeeds but auxiliary calls to the
 same endpoint still fail with an opaque 4xx/502. (#40033)
 """
 
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 

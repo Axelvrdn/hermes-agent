@@ -14,9 +14,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import hermes_yaml as yaml
-
+from agent.skill_commands import (
+    command_snapshot,
+    diff_command_snapshots,
+    resolve_slash_key,
+)
+from agent.skill_commands import slugify_skill_name as _slugify
 from hermes_constants import get_hermes_home
-from agent.skill_commands import command_snapshot, diff_command_snapshots, resolve_slash_key, slugify_skill_name as _slugify
 
 logger = logging.getLogger(__name__)
 
@@ -142,7 +146,12 @@ def build_bundle_invocation_message(
     if not info:
         return None
     # Late import keeps skill_bundles cheap to import (no tools/* at import time).
-    from agent.skill_commands import _disabled_skill_names, _load_skill_blocks, _load_skill_payload, _scaffold_header
+    from agent.skill_commands import (
+        _disabled_skill_names,
+        _load_skill_blocks,
+        _load_skill_payload,
+        _scaffold_header,
+    )
     bundle_name = info["name"]
     loaded_names, missing, disabled, skill_blocks = _load_skill_blocks(
         [(skill_id or "").strip() for skill_id in info["skills"]],

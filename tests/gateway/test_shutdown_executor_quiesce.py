@@ -24,6 +24,7 @@ import pytest
 
 import gateway.run as gw_mod
 
+
 class _FakeSessionDB:
     """Records when the gateway closed it, on a shared event log."""
 

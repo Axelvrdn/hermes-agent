@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-
 TOOLS_DIR = Path(__file__).resolve().parents[2] / "tools"
 
 

@@ -8,15 +8,20 @@ from typing import Dict, Iterable, Optional, Set
 
 from hermes_cli.config import get_env_value, load_config
 from hermes_cli.nous_account import (
-    NousPortalAccountInfo, format_nous_portal_entitlement_message, get_nous_portal_account_info,
+    NousPortalAccountInfo,
+    format_nous_portal_entitlement_message,
+    get_nous_portal_account_info,
 )
 from tools.managed_tool_gateway import is_managed_tool_gateway_ready
-from utils import is_truthy_value
 from tools.tool_backend_helpers import (
-    fal_key_is_configured, has_direct_modal_credentials, normalize_browser_cloud_provider, normalize_modal_mode,
-    resolve_modal_backend_state, resolve_openai_audio_api_key
+    fal_key_is_configured,
+    has_direct_modal_credentials,
+    normalize_browser_cloud_provider,
+    normalize_modal_mode,
+    resolve_modal_backend_state,
+    resolve_openai_audio_api_key,
 )
-
+from utils import is_truthy_value
 
 _DEFAULT_PLATFORM_TOOLSETS = {"cli": "hermes-cli"}
 

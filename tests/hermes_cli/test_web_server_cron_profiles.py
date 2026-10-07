@@ -1,13 +1,14 @@
 """Regression tests for dashboard cron job profile routing."""
 
-from concurrent.futures import ThreadPoolExecutor
 import json
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 from fastapi import HTTPException
+
 import hermes_cli.web_models as _web_models
 import hermes_cli.web_routers.cron as _rt_cron
 import hermes_cli.web_server_cron as _web_server_cron
@@ -51,7 +52,6 @@ def test_fire_cron_job_scopes_store_and_runtime_home_together(
     """A profile fire must execute and persist under the same profile home."""
     from cron import jobs as cron_jobs
     from cron import scheduler
-
     from hermes_constants import (
         reset_hermes_home_override,
         set_hermes_home_override,
@@ -177,7 +177,6 @@ def test_notify_cron_provider_scopes_store_and_runtime_home_together(
     """Provider reconciliation must observe the mutated profile, not default."""
     from cron import jobs as cron_jobs
     from cron import scheduler
-
     from hermes_constants import (
         reset_hermes_home_override,
         set_hermes_home_override,
@@ -1300,6 +1299,7 @@ class TestCronRunHistoryFallback:
         server's (review of #61403: a fixed-offset snapshot was off by hours
         when HERMES_TIMEZONE differs from the server zone)."""
         from zoneinfo import ZoneInfo
+
         from hermes_time import _tz_cache
 
         job_id = "job-tz"
@@ -1472,6 +1472,7 @@ class TestCronRunHistoryFallback:
         (both profiles configure config.yaml timezones, so a shared env var
         cannot mask the mix-up)."""
         from zoneinfo import ZoneInfo
+
         from hermes_time import _tz_cache
 
         job_id = "job-owner-tz"
@@ -1511,8 +1512,9 @@ class TestCronRunHistoryFallback:
         latest attempt's — and the failed latest attempt must appear as its own
         row carrying its timestamp and error (a 120s filename window cannot
         establish that the newest file belongs to last_run_at)."""
-        from cron import executions as cron_executions
         from zoneinfo import ZoneInfo
+
+        from cron import executions as cron_executions
 
         job_id = "job-missing-newest-doc"
         home = isolated_profiles["default"]

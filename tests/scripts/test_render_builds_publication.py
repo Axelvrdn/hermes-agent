@@ -1,10 +1,10 @@
 """Tag pages and release bodies publish the same independently named objects."""
 import importlib.util
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
+from pathlib import Path
 from urllib.parse import unquote
 from urllib.request import urlopen
 

@@ -3,13 +3,12 @@
 import json
 
 import pytest
+
 from gateway.profile_routing import (
     ProfileRoute,
-    parse_profile_routes,
     match_profile_route,
+    parse_profile_routes,
 )
-
-
 
 
 class TestProfileRouteMatching:

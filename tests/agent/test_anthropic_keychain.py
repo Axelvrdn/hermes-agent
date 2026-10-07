@@ -5,20 +5,19 @@ import platform
 import subprocess
 import threading
 import time
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from agent.anthropic_credentials import (
-    _read_claude_code_credentials_from_keychain,
-    read_claude_code_credentials,
-    _refresh_oauth_token,
     _find_claude_code_keychain_item,
     _keychain_mirror_command,
     _merge_keychain_credential_payload,
     _mirror_claude_code_credentials_to_keychain,
+    _read_claude_code_credentials_from_keychain,
+    _refresh_oauth_token,
+    read_claude_code_credentials,
 )
-
 
 # This module exercises the reader itself with explicit platform and subprocess
 # mocks, so it opts out of the suite-wide guard without touching a real Keychain.

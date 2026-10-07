@@ -13,7 +13,8 @@ import pytest
 
 from agent.interrupt_control import InterruptControlMixin
 from gateway import session_context as sc
-from tools import async_delegation, delegate_tool as dt
+from tools import async_delegation
+from tools import delegate_tool as dt
 from tools.delegate_tool_child_run import _attach_child
 from tools.process_registry import process_registry
 

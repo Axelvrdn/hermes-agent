@@ -12,10 +12,10 @@ from agent.browser_registry import get_provider as _registry_get_browser_provide
 from hermes_constants import get_hermes_home_override, hermes_home_key
 from plugins.browser.browser_use.provider import BrowserUseBrowserProvider
 from plugins.browser.browserbase.provider import BrowserbaseBrowserProvider
+from tools import browser_tool_cdp as _cdp
+from tools.browser_tool_origin import origin_module as _origin
 from tools.tool_backend_helpers import normalize_browser_cloud_provider
 from utils import is_truthy_value
-from tools.browser_tool_origin import origin_module as _origin
-from tools import browser_tool_cdp as _cdp
 
 
 def _memo(_bt, resolved_attr: str, cache_attr: str, compute: Callable[[], object]):

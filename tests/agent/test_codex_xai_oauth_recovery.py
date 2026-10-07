@@ -35,7 +35,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Fix A: prelude error surfacing via wire `error` events
 #
@@ -214,8 +213,8 @@ def test_classify_api_error_stream_event_grok_subscription_is_auth():
     skipped.  The explicit pattern added at step 1 must fire first and
     return auth/non-retryable so _is_entitlement_failure can stop the loop.
     """
+    from agent.error_classifier import FailoverReason, classify_api_error
     from run_agent import _StreamErrorEvent
-    from agent.error_classifier import classify_api_error, FailoverReason
 
     err = _StreamErrorEvent(
         "You have either run out of available resources or do not have an "

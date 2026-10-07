@@ -20,15 +20,14 @@ import contextlib
 import io
 from pathlib import Path
 
-from hermes_constants import get_hermes_home
-from hermes_state import SessionDB
-from run_agent import AIAgent
-
 from agent.agent_init import (
     _codex_gpt55_autoraise_notice_marker,
     _codex_gpt55_autoraise_notice_seen,
     _record_codex_gpt55_autoraise_notice,
 )
+from hermes_constants import get_hermes_home
+from hermes_state import SessionDB
+from run_agent import AIAgent
 
 # The dict agent_init stashes when the Codex gpt-5.5 override fires.
 AUTORAISE = {"model": "gpt-5.5", "from": 0.50, "to": 0.85}

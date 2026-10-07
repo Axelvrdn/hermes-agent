@@ -9,14 +9,14 @@ intercepting.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import time
 import urllib.request
 from typing import Any, Optional
-from hermes_cli.models_reasoning_caps import _seed_reasoning_caps
 
+from hermes_cli.models_reasoning_caps import _seed_reasoning_caps
 
 # Cache: maps model_id → {"prompt": str, "completion": str} per endpoint
 _pricing_cache: dict[str, dict[str, dict[str, str]]] = {}
@@ -519,7 +519,10 @@ def get_cached_nous_inference_base_url() -> str:
     """The profile's persisted Nous endpoint (bare origin, no ``/v1``) without refreshing auth."""
     try:
         from hermes_cli.auth import (
-            _load_auth_store, _load_provider_state, _optional_base_url, _validate_nous_inference_url_from_network,
+            _load_auth_store,
+            _load_provider_state,
+            _optional_base_url,
+            _validate_nous_inference_url_from_network,
         )
 
         state = _load_provider_state(_load_auth_store(), "nous") or {}
@@ -577,7 +580,11 @@ def pricing_cache_scope(
     """The current endpoint identity a provider's pricing cache is keyed on. Resolves local configuration
     only, never fetches: picker prewarm single-flight uses it so an endpoint rotation can start a new
     worker while the previous endpoint is still slow or unreachable."""
-    from hermes_cli.models import _deepinfra_catalog_url, _pricing_profile_key, normalize_provider
+    from hermes_cli.models import (
+        _deepinfra_catalog_url,
+        _pricing_profile_key,
+        normalize_provider,
+    )
     normalized = resolve_pricing_provider(provider, base_url=base_url)
     static = _STATIC_PRICING_SCOPES.get(normalized)
     if static:
@@ -604,7 +611,11 @@ def pricing_cache_scope(
 
 def _cached_only_pricing(normalized: str) -> dict[str, dict[str, str]]:
     """Process-resident pricing for *normalized* without any provider I/O."""
-    from hermes_cli.models import _deepinfra_catalog_cache, _deepinfra_catalog_url, _pricing_profile_key
+    from hermes_cli.models import (
+        _deepinfra_catalog_cache,
+        _deepinfra_catalog_url,
+        _pricing_profile_key,
+    )
     if normalized == "deepinfra":
         cache_key, _url = _deepinfra_catalog_url()
         return _fetch_deepinfra_pricing() if cache_key in _deepinfra_catalog_cache else {}

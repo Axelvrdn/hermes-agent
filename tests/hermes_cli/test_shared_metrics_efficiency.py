@@ -114,8 +114,8 @@ def test_undo_and_retry_count_the_tokens_of_the_turns_they_discard(direct_runtim
 
 
 def test_tool_output_truncation_is_judged_after_the_turn_budget(direct_runtime, tmp_path):
-    from tools.tool_result_storage import enforce_turn_budget, maybe_persist_tool_result
     from tools.budget_config import BudgetConfig
+    from tools.tool_result_storage import enforce_turn_budget, maybe_persist_tool_result
 
     agent = _agent()
     budget = BudgetConfig(default_result_size=5_000, turn_budget=12_000, preview_size=100)

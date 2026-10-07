@@ -7,7 +7,6 @@ advancement through multiple providers.
 
 from unittest.mock import MagicMock, patch
 
-
 from agent.error_classifier import FailoverReason
 from run_agent import AIAgent
 

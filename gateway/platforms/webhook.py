@@ -38,8 +38,14 @@ from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import BasePlatformAdapter, SendResult
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.platforms.tcp_site import start_tcp_site
-from gateway.platforms.webhook_coalesce import WebhookCoalescer, validate_coalesce_config
-from gateway.platforms.webhook_filters import DEFAULT_SCRIPT_TIMEOUT_SECONDS, WebhookRouteProcessor
+from gateway.platforms.webhook_coalesce import (
+    WebhookCoalescer,
+    validate_coalesce_config,
+)
+from gateway.platforms.webhook_filters import (
+    DEFAULT_SCRIPT_TIMEOUT_SECONDS,
+    WebhookRouteProcessor,
+)
 from gateway.response_filters import is_autonomous_silence_response
 
 logger = logging.getLogger(__name__)
@@ -621,7 +627,10 @@ class WebhookAdapter(BasePlatformAdapter):
         """Inject the first matching skill via build_skill_invocation_message() directly — /skill-name slash
         commands would be intercepted by the command parser."""
         try:
-            from agent.skill_commands import build_skill_invocation_message, get_skill_commands
+            from agent.skill_commands import (
+                build_skill_invocation_message,
+                get_skill_commands,
+            )
             skill_cmds = get_skill_commands()
             for skill_name in skills:
                 cmd_key = f"/{skill_name}"

@@ -11,7 +11,6 @@ import subprocess
 import sys
 import threading
 import time
-
 from concurrent.futures.thread import _threads_queues
 
 import tools.daemon_pool as daemon_pool

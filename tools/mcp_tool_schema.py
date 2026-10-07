@@ -2,11 +2,12 @@
 compatibility, mcp__server__tool naming, utility-tool schemas, include/exclude filters and
 description injection scanning."""
 
-import logging
-import hashlib
 import fnmatch
+import hashlib
+import logging
 import re
 from typing import Any, List
+
 from tools.ansi_strip import strip_unicode_tags
 from tools.mcp_tool_common import mcp_field
 

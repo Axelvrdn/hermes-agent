@@ -18,11 +18,11 @@ All network calls live behind small functions that the hermetic tests monkeypatc
 """
 from __future__ import annotations
 
-import logging
 import email as _email
 import email.utils
 import imaplib
 import json
+import logging
 import os
 import re
 import smtplib

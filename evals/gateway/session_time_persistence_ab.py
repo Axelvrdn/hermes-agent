@@ -3,8 +3,9 @@ import json
 import os
 import sys
 import tempfile
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
+
 home = Path(tempfile.mkdtemp(prefix="idle-time-ab-"))
 for key in list(os.environ):
     if key.startswith("HERMES_") or key.endswith(("_API_KEY", "_TOKEN")):
@@ -13,7 +14,8 @@ os.environ["HOME"] = str(home)
 os.environ["HERMES_HOME"] = str(home / ".hermes")
 sys.path.insert(0, sys.argv[1])
 from gateway.config import GatewayConfig, Platform
-from gateway.session import SessionStore, SessionSource
+from gateway.session import SessionSource, SessionStore
+
 results = []
 for mode in ("idle", "daily", "both", "none"):
     cfg = GatewayConfig.from_dict({"default_reset_policy": {"mode": mode, "idle_minutes": 1}})

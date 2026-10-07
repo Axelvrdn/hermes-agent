@@ -1,9 +1,9 @@
 """Multipart transport for release files larger than a single upload part."""
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import http.client
+from concurrent.futures import ThreadPoolExecutor
 from typing import Iterable
 from xml.etree import ElementTree as ET
 

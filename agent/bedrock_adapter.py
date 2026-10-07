@@ -5,7 +5,6 @@ control-plane model discovery. OpenAI-format messages/tools are converted to Con
 and responses normalized back to OpenAI-shaped objects.
 """
 
-from pm import install_hint
 import base64
 import importlib
 import json
@@ -22,6 +21,7 @@ from urllib.parse import urlparse
 import httpx
 
 from agent.errors import EmptyStreamError
+from pm import install_hint
 
 logger = logging.getLogger(__name__)
 

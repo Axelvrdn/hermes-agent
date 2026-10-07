@@ -10,6 +10,7 @@ edit appeared to succeed while having no effect.
 from pathlib import Path
 
 import pytest
+
 import hermes_yaml as yaml
 
 

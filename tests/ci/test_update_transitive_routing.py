@@ -9,7 +9,12 @@ from pathlib import Path
 
 import pytest
 
-from tests.ci.test_update_ci_routing import _REPO, _ci_run, _consumers_reached, _real_classifier
+from tests.ci.test_update_ci_routing import (
+    _REPO,
+    _ci_run,
+    _consumers_reached,
+    _real_classifier,
+)
 
 
 # bounded_probe_run -> spawn_server, kill_process_tree -> deadline; the

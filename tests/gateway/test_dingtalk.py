@@ -7,6 +7,7 @@ import pytest
 
 from gateway.config import PlatformConfig
 
+
 class _FakeDingTalkModel:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -178,6 +179,7 @@ class TestConnect:
     async def test_disconnect_finalizes_open_streaming_cards(self):
         """Streaming cards must be finalized before HTTP client closes."""
         from unittest.mock import AsyncMock
+
         from plugins.platforms.dingtalk.adapter import DingTalkAdapter
         adapter = DingTalkAdapter(PlatformConfig(enabled=True))
         adapter._http_client = AsyncMock()
@@ -345,8 +347,8 @@ class TestExtractMedia:
         VOICE — the ``msg_type_str == "richText"`` re-derivation used to
         reset it to TEXT, dropping the voice note from the STT path
         (#38211, #38219)."""
-        from plugins.platforms.dingtalk.adapter import DingTalkAdapter
         from gateway.platforms.event import MessageType
+        from plugins.platforms.dingtalk.adapter import DingTalkAdapter
 
         msg = self._msg_with_rich_text(
             [{"type": "voice", "downloadCode": "dl_voice_rt"}]
@@ -361,8 +363,8 @@ class TestExtractMedia:
 
     def test_image_no_filename_still_photo(self):
         """msgtype='image' without fileName → still PHOTO (MIME heuristic)."""
-        from plugins.platforms.dingtalk.adapter import DingTalkAdapter
         from gateway.platforms.event import MessageType
+        from plugins.platforms.dingtalk.adapter import DingTalkAdapter
 
         msg = MagicMock()
         msg.text = None
@@ -462,7 +464,7 @@ class TestIncomingHandlerProcess:
     async def test_process_returns_ack_immediately(self):
         """process() must not block on _on_message — it should return
         the ACK tuple before the message is fully processed."""
-        from plugins.platforms.dingtalk.adapter import _IncomingHandler, DingTalkAdapter
+        from plugins.platforms.dingtalk.adapter import DingTalkAdapter, _IncomingHandler
 
         processing_started = asyncio.Event()
         processing_gate = asyncio.Event()

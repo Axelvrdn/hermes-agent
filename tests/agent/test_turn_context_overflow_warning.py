@@ -17,7 +17,6 @@ from agent.context_compressor import ContextCompressor
 from agent.turn_context import build_turn_context
 from tests.agent.test_turn_context import _FakeAgent
 
-
 # ---------------------------------------------------------------------------
 # Unit tests for ContextCompressor.should_compress_info
 # ---------------------------------------------------------------------------

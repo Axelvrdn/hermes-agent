@@ -2,9 +2,9 @@
 """Stamp/watermark every page of a PDF with page 1 of another PDF."""
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 
 

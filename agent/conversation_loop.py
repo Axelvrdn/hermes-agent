@@ -32,7 +32,10 @@ from agent.prompt_caching import (
 from agent.repetition_guard import REPETITION_LOOP_INTERRUPTED, is_runaway_repetition
 from agent.runtime_cwd import resolve_agent_cwd
 from agent.surface_switch import (
-    identity_line_value, note_inert_pinned_tools, runtime_host_value, stage_surface_switch_note,
+    identity_line_value,
+    note_inert_pinned_tools,
+    runtime_host_value,
+    stage_surface_switch_note,
 )
 from agent.turn_context import PreflightCompressionTimedOut, build_turn_context
 from hermes_cli.observability.shared_metrics_efficiency import record_cache_break, record_prompt_rebuild
@@ -40,10 +43,19 @@ from agent.turn_retry_state import TurnRetryState
 from agent.turn_scripted_prelude import Prelude, play_prelude
 # Phase helpers of the turn loop, bound at import so a source-tree swap cannot load a
 # skewed phase mid-turn.
-from agent.turn_api_call import handle_api_interrupt, nous_rate_limit_guard, perform_api_call
+from agent.turn_api_call import (
+    handle_api_interrupt,
+    nous_rate_limit_guard,
+    perform_api_call,
+)
 from agent.turn_api_error import handle_api_error
 from agent.turn_api_request import build_api_request
-from agent.turn_failure_copy import FAILED_TURN_DISPLAY_KIND, failed_turn_notice, site_copy
+from agent.turn_context import PreflightCompressionTimedOut, build_turn_context
+from agent.turn_failure_copy import (
+    FAILED_TURN_DISPLAY_KIND,
+    failed_turn_notice,
+    site_copy,
+)
 from agent.turn_final_response import finish_text_response
 from agent.turn_finalizer import finalize_turn
 from agent.turn_iteration_prep import (
@@ -57,7 +69,12 @@ from agent.turn_preflight_gate import run_preflight_gate
 from agent.turn_request_assembly import assemble_api_request
 from agent.turn_response_check import check_api_response
 from agent.turn_response_intake import normalize_model_response
+from agent.turn_retry_state import TurnRetryState
 from agent.turn_tool_round import run_tool_round
+from hermes_cli.observability.shared_metrics_efficiency import (
+    record_cache_break,
+    record_prompt_rebuild,
+)
 from hermes_logging import set_session_context
 from tools.skill_provenance import set_current_write_origin
 from utils import base_url_host_matches
@@ -94,7 +111,9 @@ def _midturn_request_pressure_tokens(
     needed (#96995).
     """
     try:
-        from agent.codex_responses_adapter import estimate_native_responses_preflight_tokens
+        from agent.codex_responses_adapter import (
+            estimate_native_responses_preflight_tokens,
+        )
         native = estimate_native_responses_preflight_tokens(
             agent, api_messages, system_prompt=effective_system or "",
             tools=getattr(agent, "tools", None) or None,
@@ -696,7 +715,11 @@ def _persist_system_prompt(agent, failure_message: str, *, persist_tools: bool =
 def _restore_pinned_tools(agent, session_row) -> list:
     """Pin ``agent.tools`` to the session's persisted array (tools freeze); returns the names
     this surface built BEFORE the pin merged a previous surface's tools back in."""
-    from tools.mcp_tool_agent import agent_tool_names, persist_agent_tool_names, restore_agent_tool_prefix
+    from tools.mcp_tool_agent import (
+        agent_tool_names,
+        persist_agent_tool_names,
+        restore_agent_tool_prefix,
+    )
     built_for_this_surface = agent_tool_names(agent)
     saved_tools = session_row.get("tool_names") if session_row else None
     try:
@@ -815,7 +838,10 @@ def _restore_or_build_system_prompt(agent, system_message, conversation_history)
         # prefix is not persisted either; rebuild it for the early cache breakpoint or
         # fresh-per-turn gateway agents fall back to the single-breakpoint layout
         # (reconstruct_static_prefix gates on _use_prompt_caching, fails open to legacy).
-        from agent.system_prompt import reconstruct_static_prefix, restore_plugin_prompt_sections
+        from agent.system_prompt import (
+            reconstruct_static_prefix,
+            restore_plugin_prompt_sections,
+        )
         restore_plugin_prompt_sections(agent, stored_prompt)
         reconstruct_static_prefix(agent, system_message=system_message)
         return

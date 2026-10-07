@@ -85,7 +85,10 @@ def _profile_runtime_scope_tokens(profile_home, *, hydrate_secrets: bool = True)
             # plugin runtime bindings and per-home slots fail closed on (#118538).
             # Resolve at call time like the launch state.db handle: a harness that
             # re-homes the process after import must not read the old home's .env.
-            from tui_gateway.launch_profile_policy import launch_secret_scope, launch_terminal_env
+            from tui_gateway.launch_profile_policy import (
+                launch_secret_scope,
+                launch_terminal_env,
+            )
             home = _launch_home()
             secrets = launch_secret_scope(home)
             # No home stamp: this IS the process's own profile, and the stamp exists only to
@@ -191,8 +194,11 @@ def _restart_completed_failed_agent_build(sid: str, session: dict, failed_ready:
 def _switch_request(raw_input: str, parsed_flags, persist_override) -> tuple[str, str, bool, bool, str]:
     """Normalize /model flags → (model_input, explicit_provider, one_turn, persist_global, reasoning_effort)."""
     from hermes_cli.model_switch import (
-        MODEL_SWITCH_ERR_ONCE_WITH_GLOBAL, MODEL_SWITCH_ERROR_TEXT, parse_model_switch_args,
-        resolve_persist_behavior)
+        MODEL_SWITCH_ERR_ONCE_WITH_GLOBAL,
+        MODEL_SWITCH_ERROR_TEXT,
+        parse_model_switch_args,
+        resolve_persist_behavior,
+    )
 
     f = parse_model_switch_args(raw_input) if parsed_flags is None else parsed_flags
     model_input, explicit_provider, is_global_flag, is_session, one_turn = (
@@ -263,7 +269,9 @@ def _expensive_model_confirm(result, current_base_url: str, current_api_key, age
     ``agent``, the switch itself — large cached context), else None."""
     try:
         from hermes_cli.model_selection_guards import (
-            combined_selection_warning, selection_context_for_agent)
+            combined_selection_warning,
+            selection_context_for_agent,
+        )
         warning = combined_selection_warning(
             result.new_model, provider=result.target_provider, base_url=result.base_url or current_base_url,
             api_key=result.api_key or current_api_key, model_info=result.model_info,

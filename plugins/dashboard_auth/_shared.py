@@ -19,8 +19,14 @@ from typing import Any, Callable, Dict, Optional
 import httpx
 
 from hermes_cli.dashboard_auth import (
-    DashboardAuthProvider, InvalidCodeError, LoginStart, ProviderError, RefreshExpiredError, Session,
-    classify_jwks_lookup_error)
+    DashboardAuthProvider,
+    InvalidCodeError,
+    LoginStart,
+    ProviderError,
+    RefreshExpiredError,
+    Session,
+    classify_jwks_lookup_error,
+)
 
 # JWKS Cache-Control max-age (nous contract C7); self-hosted mirrors it.
 JWKS_CACHE_SECONDS = 300

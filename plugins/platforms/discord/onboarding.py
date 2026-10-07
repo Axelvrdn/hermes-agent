@@ -70,7 +70,11 @@ def _owners(app: dict) -> tuple[tuple[str, str], ...]:
 def check_bot_token(token: str) -> DiscordBotCheck:
     """Read the application behind ``token``. Raises :class:`DiscordAPIError` (401 = bad token)
     or ``OSError`` when Discord is unreachable."""
-    from tools.discord_tool import _FLAGS_GUILD_MEMBERS, _FLAGS_MESSAGE_CONTENT, _discord_request
+    from tools.discord_tool import (
+        _FLAGS_GUILD_MEMBERS,
+        _FLAGS_MESSAGE_CONTENT,
+        _discord_request,
+    )
     app = _discord_request("GET", "/applications/@me", token.strip(), timeout=10)
     flags = int(app.get("flags") or 0)
     bot = app.get("bot") or {}
@@ -244,7 +248,13 @@ def _check_saved_token(token: str) -> Optional[DiscordBotCheck]:
 def interactive_setup() -> None:
     """Guide the user through Discord bot setup: token (checked live), intents, invite link,
     allowlist (defaults to the bot's owner) and home channel. CLI imports are lazy."""
-    from hermes_cli.cli_output import print_header, print_info, print_success, prompt, prompt_yes_no
+    from hermes_cli.cli_output import (
+        print_header,
+        print_info,
+        print_success,
+        prompt,
+        prompt_yes_no,
+    )
     from hermes_cli.config import get_env_value, remove_env_value, save_env_value
     from hermes_cli.setup_platforms import declines_reconfigure
 

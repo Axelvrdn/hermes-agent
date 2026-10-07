@@ -18,12 +18,12 @@ import subprocess
 import sys
 import time
 
-import pytest
 import psutil
+import pytest
 
 import tools.browser_use_cli as bu_cli
-from tools import browser_tool_install as bt_install
 from tools import browser_tool_cloud as bt_cloud
+from tools import browser_tool_install as bt_install
 from tools import browser_tool_session as bt_session
 
 

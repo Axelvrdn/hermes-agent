@@ -7,10 +7,10 @@ import-light: callers gate on config before importing so disabled sessions never
 
 from __future__ import annotations
 
-from contextlib import contextmanager, suppress
 import logging
 import os
 import time
+from contextlib import contextmanager, suppress
 from pathlib import Path
 
 from hermes_cli.local_runtime.binaries import runtimes_root

@@ -117,7 +117,9 @@ def _sudo_annotations(command: str, output: str, env_type: str) -> tuple[str, bo
     """Sudo failure handling -> (output, auth_failed, cache_cleared)."""
     import tools.terminal_tool as tt
     from tools.terminal_tool_sudo import (
-        _handle_sudo_failure, _invalidate_cached_sudo_on_auth_failure, _no_sudo_user,
+        _handle_sudo_failure,
+        _invalidate_cached_sudo_on_auth_failure,
+        _no_sudo_user,
         _sudo_wrong_password_failure,
     )
     from utils import env_var_enabled

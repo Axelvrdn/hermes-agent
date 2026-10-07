@@ -11,14 +11,21 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
-from tools.mcp_tool_common import _core, _parse_boolish, mcp_server_enabled
+
 from tools import mcp_tool_config as _config
 from tools import mcp_tool_errors as _errors
 from tools import mcp_tool_lifecycle as _lifecycle
 from tools import mcp_tool_loop as _loop
 from tools import mcp_tool_registration as _registration
+from tools.mcp_tool_common import _core, _parse_boolish, mcp_server_enabled
 from tools.mcp_tool_schema import MCP_TOOL_NAME_PREFIX
-from tools.mcp_tool_scope import _key_name, _key_scope, _key_visible_in_scope, _resolve_server_key, _server_key
+from tools.mcp_tool_scope import (
+    _key_name,
+    _key_scope,
+    _key_visible_in_scope,
+    _resolve_server_key,
+    _server_key,
+)
 
 logger = logging.getLogger("tools.mcp_tool")
 
@@ -464,7 +471,8 @@ def _run_discovery_pass(new_servers: Dict[str, dict]) -> None:
     """Run ``_discover_all`` on the MCP loop with the interrupt flag parked; clean up
     ``_server_connecting`` when the pass dies early."""
     # Executor threads are reused: a prior session's stale interrupt must not cancel this pass.
-    from tools.interrupt import is_interrupted as _is_interrupted, set_interrupt as _set_interrupt
+    from tools.interrupt import is_interrupted as _is_interrupted
+    from tools.interrupt import set_interrupt as _set_interrupt
     _was_interrupted = _is_interrupted()
     if _was_interrupted:
         _set_interrupt(False)

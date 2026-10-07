@@ -209,8 +209,11 @@ def _spawn_remote_kernel(env, env_type: str, owner: str, task_env_id: str,
     """Start a detached kernel runner on the remote. None on failure (dir removed)."""
     from tools.code_execution_rpc import _execute_checked, _private_dirs_cmd
     from tools.code_execution_tool import (
-        MAX_STDOUT_BYTES, _ship_file_to_remote, _env_temp_dir,
-        _ship_env_file_and_launch, generate_hermes_tools_module,
+        MAX_STDOUT_BYTES,
+        _env_temp_dir,
+        _ship_env_file_and_launch,
+        _ship_file_to_remote,
+        generate_hermes_tools_module,
     )
     kernel_dir = f"{_env_temp_dir(env)}/hermes_rkernel_{uuid.uuid4().hex[:12]}"
     q_dir = shlex.quote(kernel_dir)

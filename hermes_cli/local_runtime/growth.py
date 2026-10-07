@@ -6,9 +6,9 @@ other-process supervisors keep their own policies.
 
 from __future__ import annotations
 
-from contextlib import suppress
 import json
 import logging
+from contextlib import suppress
 
 logger = logging.getLogger(__name__)
 
@@ -71,13 +71,20 @@ def maybe_grow_window(model_id: str, *, base_url: str, session_tokens: int,
     window — nothing rewinds.
     """
     from hermes_cli.local_runtime.bootstrap import (
-        _launch_budget, get_supervisor, refresh_local_runtime, staged_models)
+        _launch_budget,
+        get_supervisor,
+        refresh_local_runtime,
+        staged_models,
+    )
     from hermes_cli.local_runtime.context_policy import growth_decision
     from hermes_cli.local_runtime.estimator import as_loaded, profile_from_gguf
     from hermes_cli.local_runtime.gguf import model_id_from_stem, read_gguf_header
     from hermes_cli.local_runtime.hardware import probe_budget
     from hermes_cli.local_runtime.presets import (
-        preset_for_model, read_preset_decisions, resident_footprint)
+        preset_for_model,
+        read_preset_decisions,
+        resident_footprint,
+    )
 
     sup = get_supervisor()
     if sup is None or not is_managed_endpoint(base_url):

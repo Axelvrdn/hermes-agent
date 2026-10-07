@@ -7,12 +7,12 @@ its state file appears.
 
 from __future__ import annotations
 
-from contextlib import suppress
 import json
 import logging
 import threading
 import time
 import urllib.request
+from contextlib import suppress
 
 LLAMACPP_ALIASES = frozenset({"llamacpp", "llama.cpp", "llama-cpp"})
 

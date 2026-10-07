@@ -8,18 +8,36 @@ cache reads) is still read from there at call time.
 
 from __future__ import annotations
 
-import logging
-import httpx
 import json
+import logging
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+import httpx
+
 from tools.skills_hub_clawhub import ClawHubSource
-from tools.skills_hub_github import GitHubAuth, GitHubSource, _filter_results_by_provider, _provider_filter_of
-from tools.skills_hub_models import SkillMeta, SkillSource, TRUST_RANK, _dedupe_by_trust, hub
+from tools.skills_hub_github import (
+    GitHubAuth,
+    GitHubSource,
+    _filter_results_by_provider,
+    _provider_filter_of,
+)
+from tools.skills_hub_models import (
+    TRUST_RANK,
+    SkillMeta,
+    SkillSource,
+    _dedupe_by_trust,
+    hub,
+)
 from tools.skills_hub_official import HermesIndexSource, OptionalSkillSource
 from tools.skills_hub_skillssh import SkillsShSource
-from tools.skills_hub_sources import BrowseShSource, LobeHubSource, UrlSource, WellKnownSkillSource
+from tools.skills_hub_sources import (
+    BrowseShSource,
+    LobeHubSource,
+    UrlSource,
+    WellKnownSkillSource,
+)
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("tools.skills_hub")
@@ -180,6 +198,7 @@ def _fan_out(
 ) -> None:
     """Query ``active`` in parallel until ``deadline`` (monotonic), merging into the accumulators."""
     from concurrent.futures import as_completed
+
     from tools.daemon_pool import DaemonThreadPoolExecutor
 
     remaining = deadline - time.monotonic()

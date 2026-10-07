@@ -16,12 +16,19 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 
 from agent.interrupt_scope import InterruptScope, bind_interrupt_scope
-from hermes_cli.active_sessions import ActiveSessionRegistryError, active_session_registry_snapshot
+from hermes_cli.active_sessions import (
+    ActiveSessionRegistryError,
+    active_session_registry_snapshot,
+)
 from hermes_cli.pty_session import RegistryFull
 from hermes_cli.web_deps import LateState, late
 from hermes_cli.web_routers.chat_ws_errors import chat_start_failure_message
 from hermes_cli.web_server_chat import (
-    _build_sidecar_url, _close_stalled_pty_input, _get_console_executor, _legacy_pump, _ws_auth_ok,
+    _build_sidecar_url,
+    _close_stalled_pty_input,
+    _get_console_executor,
+    _legacy_pump,
+    _ws_auth_ok,
     _ws_request_is_allowed,
 )
 
@@ -77,8 +84,8 @@ def _discard_active_session_file(app: "FastAPI", channel: Optional[str], path: O
 
 def _ws_auth_mode() -> str:
     """Short label for the active WS auth mode — logged on every connection."""
-    from hermes_cli.web_server_chat import _LOOPBACK_HOSTS
     from hermes_cli.web_server import app
+    from hermes_cli.web_server_chat import _LOOPBACK_HOSTS
     if getattr(app.state, "auth_required", False):
         return "gated"
     bound_host = (getattr(app.state, "bound_host", "") or "").strip().lower()
@@ -537,7 +544,13 @@ async def _pty_channel_marker_state(
 
 @router.websocket("/api/pty")
 async def pty_ws(ws: WebSocket) -> None:
-    from hermes_cli.web_server_chat import PTY_REGISTRY, PtyBridge, PtyUnavailableError, _PTY_BRIDGE_AVAILABLE, _RESIZE_RE
+    from hermes_cli.web_server_chat import (
+        _PTY_BRIDGE_AVAILABLE,
+        _RESIZE_RE,
+        PTY_REGISTRY,
+        PtyBridge,
+        PtyUnavailableError,
+    )
     from pm.package import InstallError
     gate = await _ws_gate(ws, "pty")
     if gate is None:

@@ -8,10 +8,8 @@ crash-turn recovery is skipped and orphan turn markers are discarded.
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
-
 from gateway.config import GatewayConfig, Platform
 from gateway.session import SessionSource, SessionStore
-
 
 # ---------------------------------------------------------------------------
 # Helpers

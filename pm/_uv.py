@@ -16,7 +16,11 @@ def _toolchain(*, realize: bool = True, explicit: bool = False) -> tuple[Path, P
     interpreter: a venv's redirectors then name a path inside the package, so
     nothing may run them (``pm.environments.venv_command`` enters such a venv).
     """
-    from pm.install import _installed_location, _lockfile, ensure
+    from pm.install import (
+        _installed_location,
+        _lockfile,
+        ensure,
+    )
 
     if realize:
         ensure("uv", explicit=explicit)

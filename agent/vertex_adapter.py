@@ -13,7 +13,8 @@ import os
 import time
 from typing import Any, Optional, Tuple
 
-from agent.secret_scope import get_secret as _get_secret, is_multiplex_active
+from agent.secret_scope import get_secret as _get_secret
+from agent.secret_scope import is_multiplex_active
 
 try:
     import google.auth

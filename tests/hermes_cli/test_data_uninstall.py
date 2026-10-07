@@ -41,6 +41,7 @@ def layout(tmp_path, monkeypatch):
 @pytest.mark.parametrize("mode", ["confirmed", "cancel", "dry-run"])
 def test_data_only_preserves_runtime_and_sibling_homes(layout, monkeypatch, mode):
     import json
+
     from pm.environments import install_state_dir, runtime_facts_path, selected_venv
 
     monkeypatch.delattr(Path, "is_junction", raising=False)
@@ -119,6 +120,7 @@ def test_directory_replaced_with_a_link_does_not_expand_removal(layout, tmp_path
 
 def test_data_only_preserves_the_containing_bundled_application(layout, monkeypatch):
     import json
+
     from hermes_cli.bundled_app import PAYLOAD_DIR_NAME
 
     home, _, data = layout

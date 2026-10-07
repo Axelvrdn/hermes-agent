@@ -10,7 +10,12 @@ from tools.connectors.catalog_tool import MANAGE_CATALOG_SCHEMA, manage_catalog
 from tools.connectors.gateway import config as gateway_config
 from tools.connectors.managed import run_managed_action
 from tools.connectors.mcp import run_mcp_operation
-from tools.connectors.targets import ALL_ACTIONS, MCP_ACTIONS, normalize_targets, validate_action
+from tools.connectors.targets import (
+    ALL_ACTIONS,
+    MCP_ACTIONS,
+    normalize_targets,
+    validate_action,
+)
 from tools.registry import registry, tool_error
 
 

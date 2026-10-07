@@ -7,9 +7,8 @@ import warnings
 from concurrent.futures import Future
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 import acp
+import pytest
 from acp.schema import AgentPlanUpdate
 
 from acp_adapter.events import (

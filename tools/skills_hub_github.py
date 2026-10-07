@@ -10,13 +10,22 @@ from urllib.parse import quote
 
 import httpx
 
-from hermes_cli._subprocess_compat import windows_hide_flags
 from agent.retry_utils import parse_retry_after_seconds
+from hermes_cli._subprocess_compat import windows_hide_flags
 from tools.skills_guard import TRUSTED_REPOS
 from tools.skills_hub_models import (
-    SkillBundle, SkillMeta, SkillSource, _cache_metas, _cached_metas, _dedupe_by_trust,
-    _hermes_tags, _matches_query, _parse_frontmatter, _referenced_support_paths, hub,
+    SkillBundle,
+    SkillMeta,
+    SkillSource,
+    _cache_metas,
+    _cached_metas,
+    _dedupe_by_trust,
+    _hermes_tags,
+    _matches_query,
+    _parse_frontmatter,
+    _referenced_support_paths,
     _validate_bundle_rel_path,
+    hub,
 )
 
 logger = logging.getLogger("tools.skills_hub")

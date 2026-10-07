@@ -257,7 +257,10 @@ def aux_task_metric_name(raw: object) -> str:
 def provider_metric_name(raw: object) -> str:
     """A shipped provider id; user-named providers (``custom:<name>``, unknown ids) and the local
     server aliases of ``custom`` read ``custom``."""
-    from .shared_metrics_contract import PROVIDER_IDENTIFIER_MAX_LENGTH, _metric_identifier
+    from .shared_metrics_contract import (
+        PROVIDER_IDENTIFIER_MAX_LENGTH,
+        _metric_identifier,
+    )
 
     name = _metric_identifier(raw, max_length=PROVIDER_IDENTIFIER_MAX_LENGTH)
     if name == "unknown":

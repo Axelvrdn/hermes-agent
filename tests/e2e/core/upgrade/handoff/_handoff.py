@@ -20,11 +20,11 @@ import contextlib
 import functools
 import json
 import os
+import re
 import shutil
 import socket
 import sqlite3
 import subprocess
-import re
 import threading
 import time
 import tomllib
@@ -32,13 +32,12 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Self
 
 import hermes_yaml as yaml
-
 from tests.e2e.core.upgrade import _helpers as H
 from tests.e2e.core.upgrade import _install_helpers as I
 from tests.e2e.core.upgrade.handoff._nshost import NamespaceHost
-from typing import Self
 
 TRACEBACK = I.TRACEBACK
 UPDATE_TIMEOUT = 1500

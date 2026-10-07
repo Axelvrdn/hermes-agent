@@ -13,7 +13,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -185,8 +184,8 @@ def test_multiplex_dotenv_load_hydrates_sources_without_global_env(
     tmp_path, monkeypatch
 ):
     """The safe multiplex path must still refresh profile secret sources."""
-    from agent import secret_scope
     import agent.secret_sources.bitwarden as bw_module
+    from agent import secret_scope
     from agent.secret_sources import registry as reg_module
     from hermes_constants import (
         reset_hermes_home_override,
@@ -304,9 +303,9 @@ def test_cold_profile_hydration_dotenv_wins_over_op_env(tmp_path, monkeypatch):
 
 def test_cold_profile_hydration_retries_failed_source(tmp_path, monkeypatch):
     """A failed routed-profile fetch must not make its empty snapshot process-lifetime state."""
+    from agent.secret_sources import registry as reg_module
     from agent.secret_sources.base import ErrorKind, FetchResult
     from agent.secret_sources.registry import AppliedVar, ApplyReport, SourceReport
-    from agent.secret_sources import registry as reg_module
 
     (tmp_path / "config.yaml").write_text(
         "secrets:\n  command:\n    enabled: true\n", encoding="utf-8"
@@ -359,9 +358,9 @@ def test_cold_profile_hydration_clears_partial_snapshot_when_sources_are_removed
 ):
     """Removing secret sources during a retry must revoke values from a partial snapshot."""
     from agent.secret_scope import build_profile_secret_scope
+    from agent.secret_sources import registry as reg_module
     from agent.secret_sources.base import ErrorKind, FetchResult
     from agent.secret_sources.registry import AppliedVar, ApplyReport, SourceReport
-    from agent.secret_sources import registry as reg_module
 
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
@@ -522,13 +521,13 @@ def test_apply_external_secret_sources_status_line_suppresses_secret_names(
 def test_external_secret_values_are_isolated_between_homes(tmp_path, monkeypatch):
     """A later apply for the same key must not mutate an earlier home snapshot."""
     from agent.secret_scope import build_profile_secret_scope
+    from agent.secret_sources import registry as reg_module
     from agent.secret_sources.base import FetchResult
     from agent.secret_sources.registry import (
         AppliedVar,
         ApplyReport,
         SourceReport,
     )
-    from agent.secret_sources import registry as reg_module
 
     home_a = tmp_path / "profile-a"
     home_b = tmp_path / "profile-b"

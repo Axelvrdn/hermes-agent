@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import time
 
+
 def _write_auth_store(tmp_path, payload: dict) -> None:
     hermes_home = tmp_path / "hermes"
     hermes_home.mkdir(parents=True, exist_ok=True)

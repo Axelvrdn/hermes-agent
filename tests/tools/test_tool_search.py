@@ -10,10 +10,9 @@ from __future__ import annotations
 import json
 import os
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pytest
-
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if _REPO_ROOT not in sys.path:
@@ -46,7 +45,7 @@ class TestConfigParsing:
         recognizes the key); a user list replaces it wholesale, [] keeps every tool eager, and a
         scalar is warned about (naming the expected shape) before falling back to the default."""
         from hermes_cli.config_defaults import DEFAULT_CONFIG
-        from tools.tool_search import ToolSearchConfig, _DEFAULT_DEFERRED_TOOLS
+        from tools.tool_search import _DEFAULT_DEFERRED_TOOLS, ToolSearchConfig
 
         configured = frozenset(DEFAULT_CONFIG["tools"]["tool_search"]["defer"])
         assert isinstance(DEFAULT_CONFIG["tools"]["tool_search"]["defer"], list) and configured
@@ -92,7 +91,7 @@ class TestClassification:
             )
 
     def test_bridge_tools_never_defer(self):
-        from tools.tool_search import is_deferrable_tool_name, BRIDGE_TOOL_NAMES
+        from tools.tool_search import BRIDGE_TOOL_NAMES, is_deferrable_tool_name
         for name in BRIDGE_TOOL_NAMES:
             assert not is_deferrable_tool_name(name)
 
@@ -215,7 +214,7 @@ class TestRetrieval:
     def _fake_catalog(self):
         """Build a catalog directly without touching the registry."""
         from tools.tool_search import CatalogEntry
-        from tools.tool_search_catalog import _tokenize, _entry_search_text
+        from tools.tool_search_catalog import _entry_search_text, _tokenize
         defs = [
             _td("github_create_issue", "Open a new issue in a GitHub repository",
                 {"title": {"type": "string"}, "body": {"type": "string"}}),
@@ -316,7 +315,7 @@ class TestRelevanceFloor:
 class TestAssembly:
     def test_no_deferrable_returns_unchanged(self):
         """Pure-core toolset: pass-through, no bridge tools added."""
-        from tools.tool_search import assemble_tool_defs, ToolSearchConfig
+        from tools.tool_search import ToolSearchConfig, assemble_tool_defs
         defs = [_td("terminal", "Run shell"), _td("read_file", "Read a file")]
         result = assemble_tool_defs(
             defs,
@@ -327,7 +326,7 @@ class TestAssembly:
         assert {t["function"]["name"] for t in result.tool_defs} == {"terminal", "read_file"}
 
     def test_idempotent_when_bridge_already_present(self):
-        from tools.tool_search import assemble_tool_defs, ToolSearchConfig
+        from tools.tool_search import ToolSearchConfig, assemble_tool_defs
         defs = [_td("terminal", "Run shell"), _td("tool_search", "old")]
         result = assemble_tool_defs(
             defs,
@@ -406,7 +405,7 @@ class TestBridgeDispatch:
 
     def test_resolve_underlying_call_rejects_recursion(self):
         """tool_call cannot invoke tool_call itself."""
-        from tools.tool_search import resolve_underlying_call, TOOL_CALL_NAME
+        from tools.tool_search import TOOL_CALL_NAME, resolve_underlying_call
         name, args, err = resolve_underlying_call({
             "name": TOOL_CALL_NAME,
             "arguments": {},
@@ -628,7 +627,7 @@ class TestCatalogListing:
 
 
     def test_assembly_listing_off_keeps_legacy_description(self):
-        from tools.tool_search import assemble_tool_defs, ToolSearchConfig
+        from tools.tool_search import ToolSearchConfig, assemble_tool_defs
         for i in range(30):
             self._register(f"mcp_x_{i}")
         defs = [_td(f"mcp_x_{i}", "Deferred.") for i in range(30)]

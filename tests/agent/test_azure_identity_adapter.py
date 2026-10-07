@@ -24,6 +24,7 @@ from types import SimpleNamespace
 
 import pytest
 
+
 # Ensure we always import a fresh adapter module — credential caches in
 # the adapter persist across tests otherwise, polluting assertions
 # about cache invalidation.
@@ -63,6 +64,7 @@ class TestBuildBearerHttpClient:
 
     def test_hook_overrides_authorization_header(self):
         import httpx
+
         from agent.azure_identity_adapter import build_bearer_http_client
 
         minted_tokens = []
@@ -114,7 +116,9 @@ class TestBuildBearerHttpClient:
              sentinel string into upstream access logs.
         """
         import logging
+
         import httpx
+
         from agent.azure_identity_adapter import build_bearer_http_client
 
         def bad_provider():
@@ -271,8 +275,15 @@ class TestScopedCredential:
         the process env), A again is unaffected; the probe thread runs under the caller's scope so the
         doctor path surfaces the same refusal. Control: a standalone run keeps the ambient chain."""
         from agent import secret_scope
-        from agent.azure_identity_adapter import EntraIdentityConfig, _probe_token, build_credential
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from agent.azure_identity_adapter import (
+            EntraIdentityConfig,
+            _probe_token,
+            build_credential,
+        )
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         home_a, home_b = tmp_path / "home-A", tmp_path / "home-B"
         for home in (home_a, home_b):
@@ -422,6 +433,7 @@ class TestHasAzureIdentityCredentials:
     def test_returns_false_on_timeout(self, monkeypatch):
         """Slow IMDS / network must time out, not hang the caller."""
         import threading
+
         from agent import azure_identity_adapter as _adapter
 
         slow_release = threading.Event()

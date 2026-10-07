@@ -1,9 +1,9 @@
 """Read plugin build declarations without importing CLI configuration or plugin code."""
 from __future__ import annotations
 
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
-import tomllib
 
 
 def native_manifest_file(plugin_dir: Path) -> Path | None:
@@ -33,7 +33,10 @@ def read_native_manifest(path: Path) -> dict:
 
 
 def manifest_version_error(manifest: dict, name: str) -> str | None:
-    from hermes_cli.plugins_manifest import SUPPORTED_MANIFEST_VERSION, requires_hermes_error
+    from hermes_cli.plugins_manifest import (
+        SUPPORTED_MANIFEST_VERSION,
+        requires_hermes_error,
+    )
 
     reason = requires_hermes_error(manifest)
     if reason:

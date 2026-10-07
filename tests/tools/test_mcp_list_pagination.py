@@ -7,10 +7,10 @@ past page 1. Port of the invariant behind anomalyco/opencode#35439/#35500.
 """
 
 import asyncio
-
-import pytest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from tools.mcp_tool import _MCP_LIST_MAX_PAGES, _paginate_full_list
 

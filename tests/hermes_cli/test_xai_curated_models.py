@@ -8,10 +8,6 @@ from hermes_cli.models import (
 )
 
 
-
-
-
-
 def test_xai_oauth_picker_merges_models_dev_at_call_time():
     """xai-oauth must not return the import-frozen list; merge at picker time."""
     top = _PROVIDER_MODELS["xai-oauth"][0]

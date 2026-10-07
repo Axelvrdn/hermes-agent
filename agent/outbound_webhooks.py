@@ -26,10 +26,12 @@ from urllib import request as urlrequest
 
 from agent.shell_hooks import (
     _TOOL_EVENTS as _TOOL_SCOPED_EVENTS,
-    _ToolMatcherMixin,
+)
+from agent.shell_hooks import (
     _forget_home_registrations,
     _home_key,
     _payload_fields,
+    _ToolMatcherMixin,
     _utc_now_iso,
 )
 

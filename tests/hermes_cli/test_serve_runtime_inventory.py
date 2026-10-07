@@ -13,8 +13,9 @@ from dataclasses import asdict
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import hermes_cli.update_inventory as update_inventory
 import hermes_cli.main_dashboard as main_dashboard
+import hermes_cli.update_inventory as update_inventory
+
 
 def _ledger_entry(**over):
     entry = {

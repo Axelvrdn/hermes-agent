@@ -62,13 +62,11 @@ import plugins.platforms.slack.adapter as _slack_mod  # noqa: E402
 
 _slack_mod.SLACK_AVAILABLE = True
 
+from gateway.config import Platform, PlatformConfig  # noqa: E402
 from plugins.platforms.slack.adapter import (  # noqa: E402
     SlackAdapter,
     _ThreadContextCache,
 )
-
-from gateway.config import Platform, PlatformConfig  # noqa: E402
-
 
 BOT_USER_ID = "U_BOT_OWN"
 CHANNEL_ID = "C_incident"

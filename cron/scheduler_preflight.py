@@ -347,8 +347,8 @@ def _empty_requested_mcp_toolsets(job: dict, cfg: dict) -> Optional[str]:
     if not requested:
         return None
     from hermes_cli.tools_config import enabled_mcp_server_names
-    from toolsets import resolve_toolset
     from tools.mcp_tool_discovery import mcp_server_reconnecting
+    from toolsets import resolve_toolset
     missing = [name for name in requested
                if name in enabled_mcp_server_names(cfg) and not resolve_toolset(name)]
     # A server that worked in this process and is parked/self-probing after a network blip

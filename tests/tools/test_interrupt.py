@@ -6,8 +6,8 @@ Run with: python -m pytest tests/test_interrupt.py -v
 import logging
 import threading
 import time
-import pytest
 
+import pytest
 
 # ---------------------------------------------------------------------------
 # Unit tests: shared interrupt module
@@ -17,7 +17,7 @@ class TestInterruptModule:
     """Tests for tools/interrupt.py"""
 
     def test_set_and_check(self):
-        from tools.interrupt import set_interrupt, is_interrupted
+        from tools.interrupt import is_interrupted, set_interrupt
         set_interrupt(False)
         assert not is_interrupted()
 
@@ -29,7 +29,11 @@ class TestInterruptModule:
 
     def test_is_thread_interrupted_checks_target_tid_not_caller(self):
         from tools.interrupt import (
-            set_interrupt, is_interrupted, is_thread_interrupted, _interrupted_threads, _lock,
+            _interrupted_threads,
+            _lock,
+            is_interrupted,
+            is_thread_interrupted,
+            set_interrupt,
         )
         with _lock:
             _interrupted_threads.clear()
@@ -45,8 +49,11 @@ class TestInterruptModule:
     def test_clear_current_thread_interrupt_leaves_other_threads(self):
         """clear_current_thread_interrupt only touches the calling thread."""
         from tools.interrupt import (
-            set_interrupt, is_interrupted, clear_current_thread_interrupt,
-            _interrupted_threads, _lock,
+            _interrupted_threads,
+            _lock,
+            clear_current_thread_interrupt,
+            is_interrupted,
+            set_interrupt,
         )
         with _lock:
             _interrupted_threads.clear()
@@ -207,6 +214,7 @@ class TestPreToolCheck:
 
         # Import and call the method
         import types
+
         from run_agent import AIAgent
         # Bind the real methods to our mock so dispatch works correctly
         agent._execute_tool_calls_sequential = types.MethodType(AIAgent._execute_tool_calls_sequential, agent)
@@ -243,8 +251,8 @@ class TestSIGKILLEscalation:
     @pytest.mark.platforms("posix")
     def test_sigterm_trap_killed_within_2s(self, tmp_path):
         """A process that traps SIGTERM should be SIGKILL'd after 1s grace."""
-        from tools.interrupt import set_interrupt
         from tools.environments.local import LocalEnvironment
+        from tools.interrupt import set_interrupt
 
         set_interrupt(False)
         env = LocalEnvironment(cwd=str(tmp_path), timeout=30)
@@ -287,9 +295,10 @@ class TestRunToolCleanupOnBaseException:
     """
 
     def test_cleanup_on_base_exception(self):
-        from unittest.mock import MagicMock
         import types
-        from tools.interrupt import set_interrupt, _interrupted_threads, _lock
+        from unittest.mock import MagicMock
+
+        from tools.interrupt import _interrupted_threads, _lock, set_interrupt
 
         # Clear global state
         with _lock:

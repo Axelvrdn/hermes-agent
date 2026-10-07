@@ -24,14 +24,17 @@ import time
 import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
-from tools.thread_context import propagate_context_to_thread
-from tools.registry import registry, tool_error
-
 from hermes_time import get_timezone_name
 from tools.code_execution_env import _resolve_child_cwd, _resolve_child_python
 from tools.code_execution_rpc import (
-    _execute_checked, _private_dirs_cmd, _remote_write, _rpc_poll_loop, tool_errors_since,
+    _execute_checked,
+    _private_dirs_cmd,
+    _remote_write,
+    _rpc_poll_loop,
+    tool_errors_since,
 )
+from tools.registry import registry, tool_error
+from tools.thread_context import propagate_context_to_thread
 from tools.tool_output_truncate import head_tail_split, truncation_notice
 
 logger = logging.getLogger(__name__)
@@ -86,6 +89,7 @@ def _spill_full_stdout(stdout_text: str) -> Optional[str]:
     reruns coalesce; the dir rides the cache/web remote bind-mount list (credential_files)."""
     try:
         import hashlib
+
         from hermes_constants import get_hermes_dir
         from tools.spill_safety import write_text_exclusive
         if len(stdout_text) > MAX_SPILLED_STDOUT_BYTES:
@@ -405,11 +409,24 @@ def _call(tool_name, args):
 def _get_or_create_env(task_id: str):
     """``(env, env_type)`` — the environment the terminal/file tools share for *task_id*, created on
     first use (same double-checked per-task lock pattern as file_tools._get_file_ops)."""
-    from tools.terminal_tool_backends import _container_config_from_config, _create_environment, _ssh_config_from_config
     from tools.terminal_tool import (
-        _active_environments, _env_lock, _get_env_config, _last_activity,
-        _start_cleanup_thread, _creation_locks, _creation_locks_lock, _task_env_overrides,
-        _resolve_container_task_id, _resolve_task_host_cwd, _is_container_backend, _select_image,
+        _active_environments,
+        _creation_locks,
+        _creation_locks_lock,
+        _env_lock,
+        _get_env_config,
+        _is_container_backend,
+        _last_activity,
+        _resolve_container_task_id,
+        _resolve_task_host_cwd,
+        _select_image,
+        _start_cleanup_thread,
+        _task_env_overrides,
+    )
+    from tools.terminal_tool_backends import (
+        _container_config_from_config,
+        _create_environment,
+        _ssh_config_from_config,
     )
     effective_task_id = _resolve_container_task_id(task_id)
     def _cached():
@@ -514,8 +531,8 @@ def _format_interrupted_output(stdout_text: str) -> str:
 def _clean_output(stdout_text: str) -> Tuple[str, Dict[str, Any]]:
     """Shared output pipeline: byte-cap (with spill), ANSI strip, secret redaction. code_file=True:
     output often echoes source/config — skip ENV/JSON/f-string false positives, still mask credentials."""
-    from tools.ansi_strip import strip_ansi
     from agent.redact import redact_sensitive_text
+    from tools.ansi_strip import strip_ansi
     stdout_text, metadata = _truncate_stdout_text(stdout_text)
     return redact_sensitive_text(strip_ansi(stdout_text), code_file=True), metadata
 
@@ -762,7 +779,7 @@ def execute_code(
                 "it could complete (SIGTERM propagates to child processes). "
                 "Run the lifecycle command from a shell outside the gateway."
             )
-    from tools.terminal_tool import _get_env_config, _docker_has_host_access
+    from tools.terminal_tool import _docker_has_host_access, _get_env_config
     _env_config = _get_env_config()
     env_type = _env_config["env_type"]
     # Arbitrary Python never passes through terminal()/DANGEROUS_PATTERNS, so guard the whole
@@ -782,10 +799,10 @@ def execute_code(
     from hermes_cli.observability.shared_metrics_loop import record_execution_backend
     if env_type != "local":
         return record_execution_backend("code", "remote", _execute_remote(code, task_id, enabled_tools, reset=bool(reset)))
-    from tools.interrupt import is_interrupted as _is_interrupted
     # Session kernels are always on locally (one interpreter per conversation); the guards above
     # already ran for this cell, and the kernel path shares env builder, RPC server and redaction.
     from tools.code_kernel import execute_in_session_kernel
+    from tools.interrupt import is_interrupted as _is_interrupted
     _cfg = _load_config()
     _mode = _get_execution_mode()
     return record_execution_backend("code", "local", execute_in_session_kernel(

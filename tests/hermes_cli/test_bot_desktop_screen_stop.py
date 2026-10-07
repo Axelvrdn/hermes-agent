@@ -2,8 +2,9 @@
 
 import argparse
 
-from hermes_cli.subcommands.computer_use_screen import build_screen_parser
 import pytest
+
+from hermes_cli.subcommands.computer_use_screen import build_screen_parser
 
 
 @pytest.mark.platforms("linux")

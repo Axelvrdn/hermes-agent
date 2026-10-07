@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from argparse import Namespace
-from contextlib import nullcontext
 import sys
 import threading
 import time
 import types
+from argparse import Namespace
+from contextlib import nullcontext
 
 import pytest
 
@@ -239,7 +239,11 @@ def test_background_mcp_discovery_suppresses_interactive_oauth(monkeypatch):
 
 def test_background_mcp_discovery_propagates_profile_secret_scope(monkeypatch):
     """A dashboard-profile discovery thread must retain that profile's secrets."""
-    from agent.secret_scope import current_secret_scope, reset_secret_scope, set_secret_scope
+    from agent.secret_scope import (
+        current_secret_scope,
+        reset_secret_scope,
+        set_secret_scope,
+    )
 
     seen = []
     monkeypatch.setitem(

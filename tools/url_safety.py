@@ -10,15 +10,23 @@ re-apply the policy at TCP connect and dial the validated IP while preserving Ho
 bypass is mitigated by response hooks re-validating each target (``redirect_target_from_response``).
 """
 
+import asyncio
 import ipaddress
 import logging
 import os
-import socket
-import asyncio
 import re
+import socket
 from contextlib import contextmanager
 from typing import Any, Optional
-from urllib.parse import parse_qsl, quote, unquote, urljoin, urlparse, urlsplit, urlunsplit
+from urllib.parse import (
+    parse_qsl,
+    quote,
+    unquote,
+    urljoin,
+    urlparse,
+    urlsplit,
+    urlunsplit,
+)
 
 from hermes_constants import get_hermes_home_override
 from utils import is_truthy_value

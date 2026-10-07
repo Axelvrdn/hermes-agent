@@ -17,6 +17,7 @@ from pathlib import Path
 
 import pytest
 
+
 @pytest.fixture
 def fake_hermes(tmp_path, monkeypatch):
     """Build a two-profile Hermes layout and point HERMES_HOME at
@@ -130,6 +131,7 @@ class TestSkillManageCrossProfileErrorUX:
         # Re-import the module so SKILLS_DIR picks up HERMES_HOME (set in
         # the fixture). Skill_manager_tool computes SKILLS_DIR at import.
         import importlib
+
         import tools.skill_manager_tool
         importlib.reload(tools.skill_manager_tool)
         from tools.skill_manager_tool import _skill_not_found_error
@@ -143,6 +145,7 @@ class TestSkillManageCrossProfileErrorUX:
     ):
         """When no profile has the skill, error falls back to skills_list hint."""
         import importlib
+
         import tools.skill_manager_tool
         importlib.reload(tools.skill_manager_tool)
         from tools.skill_manager_tool import _skill_not_found_error

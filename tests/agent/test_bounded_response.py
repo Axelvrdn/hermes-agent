@@ -11,9 +11,9 @@ body) or hang forever (body opens then stalls).
 
 from __future__ import annotations
 
-import logging
 import http.server
 import json
+import logging
 import socketserver
 import threading
 import time

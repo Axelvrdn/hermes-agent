@@ -26,7 +26,6 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 import hermes_yaml as yaml
-
 from tests.fakes.fake_llm_provider import FakeLLMServer, write_hermes_home
 
 REPO_ROOT = Path(__file__).resolve().parents[4]

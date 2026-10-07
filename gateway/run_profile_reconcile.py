@@ -225,8 +225,9 @@ class GatewayProfileReconcileMixin:
 
     async def _after_profiles_added(self, profile_homes) -> None:
         """Per-profile startup side effects for hot-added profiles: log routing + scoped MCP discovery."""
-        from gateway.run import _enable_multiplex_log_routing, _profile_runtime_scope
         from contextvars import copy_context
+
+        from gateway.run import _enable_multiplex_log_routing, _profile_runtime_scope
         with _log_suppressed(logging.DEBUG, "log routing refresh failed", exc_info=True):
             _enable_multiplex_log_routing(self.config)
         from tools.mcp_oauth import suppress_interactive_oauth
@@ -312,7 +313,7 @@ def _profile_lifecycle_verb(runner, *, serve: bool):
     loop = asyncio.get_running_loop()
 
     async def apply(name):
-        from hermes_cli.profiles import profiles_to_serve, profile_is_parked
+        from hermes_cli.profiles import profile_is_parked, profiles_to_serve
         if not runner._multiplex_on() or not runner._running or runner._served_profile_homes is None:
             return {"error": "host multiplexer is not ready"}
         async with runner._reconcile_lock():

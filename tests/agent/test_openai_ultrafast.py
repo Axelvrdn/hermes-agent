@@ -18,9 +18,9 @@ ASTRA_SPELLINGS = ("gpt-6-astra", "openai/gpt-6-astra", "gpt-6-astra-900k")
 
 
 def test_every_config_loader_parses_tiers_through_the_same_table(monkeypatch):
+    import tui_gateway.server as tui
     from gateway.run import GatewayRunner
     from hermes_cli.cli_config_load import _parse_service_tier_config
-    import tui_gateway.server as tui
 
     for word, tier in {**SERVICE_TIER_WORDS, "normal": None, "off": None, "bogus": None}.items():
         monkeypatch.setattr(GatewayRunner, "_cfg_str", classmethod(lambda cls, *_k, _w=word: _w))
@@ -86,8 +86,9 @@ def test_cli_and_gateway_turn_routes_send_the_static_tier(provider):
 
 
 def test_cli_refuses_ultrafast_on_a_model_without_it(monkeypatch):
-    import cli as cli_mod
     from unittest.mock import MagicMock
+
+    import cli as cli_mod
 
     stub = SimpleNamespace(service_tier="priority", model="gpt-6-sol", agent=MagicMock(model="gpt-6-sol"),
                            _fast_command_available=lambda: True)

@@ -30,8 +30,8 @@ class TestChatVerboseArg:
 
 
     def test_cmd_chat_forwards_none_when_verbose_is_absent(self, monkeypatch):
-        import types
         import sys
+        import types
 
         import hermes_cli.main as main_mod
         from hermes_cli._parser import build_top_level_parser

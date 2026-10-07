@@ -59,8 +59,8 @@ from pathlib import Path
 from typing import NamedTuple
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from tests.e2e.core._pending_fixes import known_failure
 from tests.e2e.core.upgrade import _helpers as H
 from tests.fakes.fake_llm_provider import FakeLLMServer

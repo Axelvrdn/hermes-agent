@@ -17,7 +17,6 @@ import pytest
 
 from hermes_cli import update_cmd
 
-
 GIT = ["git"]
 
 

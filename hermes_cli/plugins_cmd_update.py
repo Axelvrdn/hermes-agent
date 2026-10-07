@@ -70,6 +70,7 @@ def _reclone_plugin_update(target: Path, source: str, previous_revision: object)
 def cmd_update(name: str, *, interactive: bool = True) -> None:
     """Update an installed plugin by pulling latest from its git remote."""
     from rich.markup import escape
+
     from hermes_cli import plugins_cmd_catalog as catalog
     console = _pc()._console()
     target = _pc()._require_installed_plugin(name, _pc()._plugins_dir(), console)
@@ -100,7 +101,10 @@ def cmd_update(name: str, *, interactive: bool = True) -> None:
     plugin_id = updated_manifest.get("name") or target.name
     declared_caps = _pc()._declared_capabilities_from_manifest(updated_manifest, plugin_id)
     if declared_caps:
-        from hermes_cli.plugin_capabilities import declared_set_changed, pending_capabilities
+        from hermes_cli.plugin_capabilities import (
+            declared_set_changed,
+            pending_capabilities,
+        )
         if pending_capabilities(plugin_id, declared_caps) or declared_set_changed(plugin_id, declared_caps):
             if interactive:
                 _pc()._run_capability_consent(console, plugin_id, declared_caps, context="update")

@@ -7,13 +7,16 @@ lazily.
 
 from __future__ import annotations
 
+import logging
 from contextlib import suppress
 from dataclasses import dataclass
-import logging
 from typing import Any, Dict, Optional, Tuple
 
 from agent.message_metadata import append_message
-from agent.message_sanitization import coalesce_tool_call_id, normalize_provider_tool_call_ids
+from agent.message_sanitization import (
+    coalesce_tool_call_id,
+    normalize_provider_tool_call_ids,
+)
 from agent.turn_preflight import compress_after_tool_results
 from agent.turn_tool_validation import validate_tool_calls
 

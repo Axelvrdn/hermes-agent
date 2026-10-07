@@ -9,9 +9,9 @@ not a generic "[error]".
 import json
 
 from agent.display import (
+    _ERROR_SUFFIX_MAX_LEN,
     _detect_tool_failure,
     _trim_error,
-    _ERROR_SUFFIX_MAX_LEN,
     get_cute_tool_message,
 )
 

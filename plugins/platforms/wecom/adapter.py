@@ -6,7 +6,6 @@ Config (``platforms.wecom.extra``): ``bot_id``/``secret`` (or WECOM_BOT_ID / WEC
 
 from __future__ import annotations
 
-from pm import install_hint
 import asyncio
 import json
 import logging
@@ -15,6 +14,8 @@ import time
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
+
+from pm import install_hint
 
 try:
     import aiohttp
@@ -28,21 +29,26 @@ AIOHTTP_AVAILABLE = aiohttp is not None
 HTTPX_AVAILABLE = httpx is not None
 
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms.helpers import MessageDeduplicator, bounded_put, send_chunks
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import send_error
 from gateway.platforms.access_policy_mixin import OwnAccessPolicyMixin
-from gateway.platforms.base import gateway_trust_env, BasePlatformAdapter, SendResult
+from gateway.platforms.base import BasePlatformAdapter, SendResult, gateway_trust_env
 from gateway.platforms.event import MessageEvent, MessageType
-from utils import env_float
-
-from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret, send_error
+from gateway.platforms.helpers import MessageDeduplicator, bounded_put, send_chunks
+from plugins.platforms.wecom.media import APP_CMD_SEND, WeComMediaMixin
 from plugins.platforms.wecom.send_queue import ChatSendQueueMixin
-from plugins.platforms.wecom.media import WeComMediaMixin, APP_CMD_SEND
 from plugins.platforms.wecom.streaming import (
-    WeComStreamMixin, ReplyQueue, StreamTurn, APP_CMD_RESPONSE,
-    STREAM_NOT_SUBSCRIBED_ERRCODE, MAX_STREAM_CONTENT_LENGTH,
-    STREAM_SAFE_DURATION_SECONDS, STREAM_KEEPALIVE_INTERVAL_SECONDS, STREAM_KEEPALIVE_ENABLED_DEFAULT,
+    APP_CMD_RESPONSE,
+    MAX_STREAM_CONTENT_LENGTH,
+    STREAM_KEEPALIVE_ENABLED_DEFAULT,
+    STREAM_KEEPALIVE_INTERVAL_SECONDS,
+    STREAM_NOT_SUBSCRIBED_ERRCODE,
+    STREAM_SAFE_DURATION_SECONDS,
+    ReplyQueue,
+    StreamTurn,
+    WeComStreamMixin,
 )
-
+from utils import env_float
 
 logger = logging.getLogger(__name__)
 
@@ -647,8 +653,8 @@ _QR_POLL_INTERVAL, _QR_POLL_TIMEOUT = 3, 300  # seconds (poll every 3s, give up 
 def qr_scan_for_bot_info(*, timeout_seconds: int = _QR_POLL_TIMEOUT) -> Optional[Dict[str, str]]:
     """Fetch a WeCom QR code, render it, poll until scanned or timeout; ``{"bot_id", "secret"}`` or None.
     The ``ai/qc/*`` endpoints back the admin console, not the public API, and may change."""
-    import urllib.request
     import urllib.parse
+    import urllib.request
 
     def _get_json(url: str, timeout: int) -> Dict[str, Any]:
         req = urllib.request.Request(url, headers={"User-Agent": "HermesAgent/1.0"})
@@ -761,9 +767,15 @@ _ACCESS_CHOICES = (
 
 
 def interactive_setup() -> None:
+    from hermes_cli.cli_output import (
+        print_header,
+        print_info,
+        print_success,
+        print_warning,
+        prompt,
+    )
     from hermes_cli.config import remove_env_value, save_env_value
     from hermes_cli.setup import prompt_choice
-    from hermes_cli.cli_output import prompt, print_header, print_info, print_success, print_warning
     from hermes_cli.setup_platforms import declines_reconfigure
     print_header("WeCom (Enterprise WeChat)")
     if declines_reconfigure("WeCom", "Reconfigure WeCom?", "WECOM_BOT_ID"):
@@ -842,7 +854,10 @@ def register(ctx) -> None:
         setup_fn=interactive_setup, allowed_users_env="WECOM_ALLOWED_USERS", allow_all_env="WECOM_ALLOW_ALL_USERS",
         cron_deliver_env_var="WECOM_HOME_CHANNEL", standalone_sender_fn=_standalone_send, max_message_length=4000, **common,
     )
-    from plugins.platforms.wecom.callback_adapter import check_wecom_callback_requirements, ensure_wecom_callback_requirements
+    from plugins.platforms.wecom.callback_adapter import (
+        check_wecom_callback_requirements,
+        ensure_wecom_callback_requirements,
+    )
     ctx.register_platform(
         name="wecom_callback", label="WeCom Callback (self-built apps)", adapter_factory=_build_callback_adapter,
         check_fn=check_wecom_callback_requirements, ensure_deps_fn=ensure_wecom_callback_requirements,

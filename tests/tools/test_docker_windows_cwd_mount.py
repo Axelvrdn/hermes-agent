@@ -12,7 +12,6 @@ import os
 import tools.terminal_tool as tt
 from tools.environments.docker import DockerEnvironment
 
-
 WIN_WS = r"D:\Work\proj"
 WIN_FILE = r"D:\Work\proj\Downloads\clip.jpg"
 

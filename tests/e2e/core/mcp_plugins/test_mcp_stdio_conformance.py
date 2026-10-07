@@ -29,6 +29,7 @@ from typing import Any
 
 import pytest
 
+from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core.mcp_plugins._helpers import (
     FINAL,
     KnownSymptom,
@@ -45,7 +46,6 @@ from tests.e2e.core.mcp_plugins._helpers import (
     tool_results,
 )
 from tests.e2e.core.mcp_plugins._plugin_helpers import reap_tagged
-from tests.e2e.core._pending_fixes import known_gate
 
 pytestmark = [
     pytest.mark.skipif(not sys.platform.startswith("linux"), reason="orphan sweep uses /proc"),

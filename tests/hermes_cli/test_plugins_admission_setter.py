@@ -5,9 +5,13 @@ import sys
 import pytest
 
 from tests.hermes_cli.plugin_worker_support import (
-    plugin_world as plugin_world,
-    worker_command,
     isolated_python as isolated_python,
+)
+from tests.hermes_cli.plugin_worker_support import (
+    plugin_world as plugin_world,
+)
+from tests.hermes_cli.plugin_worker_support import (
+    worker_command,
 )
 
 

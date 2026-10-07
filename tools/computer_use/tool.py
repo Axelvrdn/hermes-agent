@@ -21,7 +21,13 @@ from functools import partial
 from types import SimpleNamespace
 from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple
 
-from tools.computer_use.backend import ActionResult, CaptureResult, ComputerUseBackend, UIElement, image_dimensions_from_bytes
+from tools.computer_use.backend import (
+    ActionResult,
+    CaptureResult,
+    ComputerUseBackend,
+    UIElement,
+    image_dimensions_from_bytes,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -210,7 +216,10 @@ def _get_backend(session_id: str = "") -> ComputerUseBackend:
                 backend = _new_backend(permission_mode)
                 backend.start()  # under the cache lock: one backend per session; a concurrent toggle releases it
                 return _install_backend(sid, backend, permission_mode)
-            from tools.computer_use.cua_backend import backend_display_stale, desktop_identity
+            from tools.computer_use.cua_backend import (
+                backend_display_stale,
+                desktop_identity,
+            )
             if (_backend_permission_modes.get(sid, "standard") == permission_mode
                     and not backend_display_stale(_backend_displays.get(sid, ""), desktop_identity())):
                 return cached
@@ -823,7 +832,9 @@ def _cache_file(subdir: str, legacy: str, name: str, pattern: str = "", cap: int
     """Path for a new file under ``$HERMES_HOME/<subdir>`` (dir created owner-only, per #77579).
     With ``pattern``/``cap``, first unlinks the oldest matching files so at most ``cap - 1`` remain
     (best-effort)."""
-    from hermes_constants import get_hermes_dir  # lazy so tests can patch get_hermes_dir
+    from hermes_constants import (
+        get_hermes_dir,  # lazy so tests can patch get_hermes_dir
+    )
     cache_dir = get_hermes_dir(subdir, legacy)
     _secure_dir_policy(cache_dir)
     with contextlib.suppress(Exception):
@@ -870,6 +881,7 @@ def _shrink_capture_for_vision(raw: bytes, ext: str, max_dim: int = _MAX_VISION_
     coordinates map back to the real screen instead of being silently wrong."""
     try:
         from io import BytesIO
+
         from PIL import Image
         img = Image.open(BytesIO(raw))
         if max(img.size) <= max_dim:

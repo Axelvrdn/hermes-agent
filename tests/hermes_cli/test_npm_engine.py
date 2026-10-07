@@ -5,6 +5,8 @@ import pytest
 from hermes_cli.npm_engine import maybe_repair_npm_engine
 from tests.compat.old_updater_support import (
     fresh_child as fresh_child,
+)
+from tests.compat.old_updater_support import (
     no_external_work as no_external_work,
 )
 

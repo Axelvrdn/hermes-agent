@@ -91,8 +91,8 @@ class TestPreUpdateBackupIntegrityGuard:
 
     @pytest.fixture()
     def hermes_home(self, tmp_path, monkeypatch):
-        from pathlib import Path
         import sys
+        from pathlib import Path
 
         root = tmp_path / ".hermes"
         root.mkdir()

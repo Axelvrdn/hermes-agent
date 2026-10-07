@@ -421,7 +421,10 @@ def test_a_select_context_selection_is_stripped_before_the_provider():
 
 def test_the_inflight_task_restated_onto_the_carrier_records_its_uid():
     from agent.context_compressor import (
-        COMPRESSED_SUMMARY_METADATA_KEY, SUMMARY_PREFIX, _INFLIGHT_TASK_REPLAY_HEADER, _SUMMARY_END_MARKER,
+        _INFLIGHT_TASK_REPLAY_HEADER,
+        _SUMMARY_END_MARKER,
+        COMPRESSED_SUMMARY_METADATA_KEY,
+        SUMMARY_PREFIX,
         ContextCompressor,
     )
 
@@ -440,7 +443,10 @@ def test_the_inflight_task_restated_onto_the_carrier_records_its_uid():
 
 def test_the_real_user_anchor_folded_into_scaffolding_keeps_the_anchors_uid():
     """The anchor's text leads the composite, so its uid is the composite's; the scaffolding row's is absorbed."""
-    from agent.conversation_compression import _insert_real_user_anchor, _merge_anchor_into_user_message
+    from agent.conversation_compression import (
+        _insert_real_user_anchor,
+        _merge_anchor_into_user_message,
+    )
 
     target = {"role": "user", "content": "[todo snapshot]", "message_uid": "t" * UID_LEN}
     anchor = {"role": "user", "content": "the real ask", "message_uid": "a" * UID_LEN,

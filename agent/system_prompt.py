@@ -17,15 +17,27 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from agent import prompt_builder as _pb
 from agent.delegation_context import owned_kanban_task
 from agent.prompt_builder import (
-    ASYNC_HANDOFF_GUIDANCE, DEFAULT_AGENT_IDENTITY, EXECUTION_GUIDANCE_MODELS, GOOGLE_MODEL_OPERATIONAL_GUIDANCE,
-    HERMES_AGENT_HELP_GUIDANCE, HERMES_AGENT_HELP_GUIDANCE_NO_SKILLS, KANBAN_GUIDANCE,
-    PARALLEL_TOOL_CALL_GUIDANCE, PLATFORM_HINTS, SESSION_SEARCH_GUIDANCE,
-    SKILLS_GUIDANCE, STEER_CHANNEL_NOTE, TASK_COMPLETION_GUIDANCE, TELEGRAM_RICH_MESSAGES_HINT,
-    TOOL_USE_ENFORCEMENT_GUIDANCE, TOOL_USE_ENFORCEMENT_MODELS, drain_truncation_warnings,
+    ASYNC_HANDOFF_GUIDANCE,
+    DEFAULT_AGENT_IDENTITY,
+    EXECUTION_GUIDANCE_MODELS,
+    GOOGLE_MODEL_OPERATIONAL_GUIDANCE,
+    HERMES_AGENT_HELP_GUIDANCE,
+    HERMES_AGENT_HELP_GUIDANCE_NO_SKILLS,
+    KANBAN_GUIDANCE,
+    PARALLEL_TOOL_CALL_GUIDANCE,
+    PLATFORM_HINTS,
+    SESSION_SEARCH_GUIDANCE,
+    SKILLS_GUIDANCE,
+    STEER_CHANNEL_NOTE,
+    TASK_COMPLETION_GUIDANCE,
+    TELEGRAM_RICH_MESSAGES_HINT,
+    TOOL_USE_ENFORCEMENT_GUIDANCE,
+    TOOL_USE_ENFORCEMENT_MODELS,
+    drain_truncation_warnings,
 )
-from agent import prompt_builder as _pb
 from agent.runtime_cwd import resolve_agent_cwd, resolve_context_cwd
 from hermes_constants import get_default_hermes_root, get_hermes_home
 from utils import is_truthy_value
@@ -140,8 +152,11 @@ def _restore_plugin_prompt_sections(prompt: str) -> tuple:
     exact canonical container emitted by core is accepted — user/project text
     may resemble a frame."""
     from hermes_cli.plugins import (
-        MAX_SYSTEM_PROMPT_SECTION_CHARS, PLUGIN_SECTIONS_END, PLUGIN_SECTIONS_START,
-        RenderedPluginSystemPromptSection, format_system_prompt_sections,
+        MAX_SYSTEM_PROMPT_SECTION_CHARS,
+        PLUGIN_SECTIONS_END,
+        PLUGIN_SECTIONS_START,
+        RenderedPluginSystemPromptSection,
+        format_system_prompt_sections,
     )
     start = prompt.rfind(PLUGIN_SECTIONS_START)
     end = prompt.find(PLUGIN_SECTIONS_END, start + len(PLUGIN_SECTIONS_START)) if start >= 0 else -1
@@ -347,7 +362,11 @@ def _bot_mode_parts(agent: Any) -> List[str]:
     date pinned in a months-long session is misinformation."""
     parts: List[str] = []
     try:
-        from tools.bot_mode_probe import BOT_CHAT_TITLE, epoch_line, get_bot_mode_protocol_section
+        from tools.bot_mode_probe import (
+            BOT_CHAT_TITLE,
+            epoch_line,
+            get_bot_mode_protocol_section,
+        )
         _title = str(getattr(agent, "_session_title_hint", "") or "").strip()
         if not _title:
             _sdb = getattr(agent, "_session_db", None)
@@ -490,7 +509,9 @@ def _timestamp_line(agent: Any) -> str:
     """Date-only so the prompt is byte-stable for the day; zone + offset so
     tools needn't guess EST vs EDT. Long-lived sessions get an "as of" line on
     rebuild days (the cache prefix is already invalidated at that boundary)."""
-    from hermes_time import get_timezone as _hermes_tz, now as _hermes_now, safe_strftime
+    from hermes_time import get_timezone as _hermes_tz
+    from hermes_time import now as _hermes_now
+    from hermes_time import safe_strftime
     now = _hermes_now()
     _bits = _zone_bits(now, _hermes_tz())
     _zone_suffix = f" ({', '.join(_bits)})" if _bits else ""
@@ -528,7 +549,9 @@ def _memory_parts(agent: Any) -> List[str]:
     # configuration has already gated off (#81014).
     if agent._memory_manager:
         try:
-            from agent.memory_manager import memory_provider_tools_exposed as _mem_exposed
+            from agent.memory_manager import (
+                memory_provider_tools_exposed as _mem_exposed,
+            )
         except Exception:
             _mem_exposed = None
         if _mem_exposed is None or _mem_exposed(agent):

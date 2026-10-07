@@ -5,9 +5,9 @@ import os
 import shutil
 import sys
 import time as _time
-
 from pathlib import Path
 from typing import NoReturn
+
 from hermes_cli import _early_recovery as _early_recovery_mod
 
 # Log-record parity with the origin module.
@@ -192,7 +192,9 @@ def _recover_update_debts_on_startup() -> None:
     # still owed by a previous update without restarting services here.
     if "update" not in sys.argv[1:]:
         try:
-            from hermes_cli.update_cmd_fleet import _warn_pending_fleet_restart_on_startup
+            from hermes_cli.update_cmd_fleet import (
+                _warn_pending_fleet_restart_on_startup,
+            )
 
             _warn_pending_fleet_restart_on_startup()
         except Exception:  # a startup warning never blocks the launch it warns about
@@ -270,6 +272,7 @@ def _configured_features_missing_deps() -> list[tuple[str, str, str]]:
         logger.debug("configured-platform dependency check skipped: %s", exc)
     try:
         import importlib.util
+
         from hermes_cli.config import load_config_readonly
 
         if (load_config_readonly().get("mcp_servers") or {}) and importlib.util.find_spec("mcp") is None:

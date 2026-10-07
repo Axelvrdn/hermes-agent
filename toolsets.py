@@ -1,8 +1,7 @@
 """Toolset helpers: get/resolve/validate named tool groups (static TOOLSETS + registry-registered)."""
 
 import logging
-from typing import Dict, List, Any, Set, Optional, Tuple
-
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # Shared tool list for CLI and all messaging platform toolsets (edit once, all
 # platforms follow). Desktop GUI affordances are deliberately NOT here: they live

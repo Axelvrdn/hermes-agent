@@ -172,8 +172,8 @@ class TestKanbanGatesRespectContext:
     def test_kanban_env_verdict_is_not_memoized(self, worker_env):
         """`kanban` must bypass _ENV_DETECT_CACHE: caching it process-wide would
         freeze whichever context asked first and leak it to the others."""
-        from agent.delegation_context import non_dispatcher_owned_context
         import agent.skill_utils as su
+        from agent.delegation_context import non_dispatcher_owned_context
 
         su._ENV_DETECT_CACHE.pop("kanban", None)
         assert su._detect_environment("kanban") is True
@@ -184,8 +184,8 @@ class TestKanbanGatesRespectContext:
         assert su._detect_environment("kanban") is True
 
     def test_toolset_force_add_suppressed(self, worker_env):
-        from agent.delegation_context import non_dispatcher_owned_context
         import model_tools
+        from agent.delegation_context import non_dispatcher_owned_context
 
         assert model_tools._is_dispatcher_owned_worker() is True
         with non_dispatcher_owned_context():
@@ -202,8 +202,8 @@ class TestRunJobKanbanIsolation:
         import sys
 
         import cron.scheduler as sched
-        from cron import scheduler_delivery as sched_delivery
         from agent.delegation_context import is_dispatcher_owned_worker_context
+        from cron import scheduler_delivery as sched_delivery
 
         class FakeAgent:
             def __init__(self, **kwargs):
@@ -355,8 +355,9 @@ class TestRunJobKanbanIsolation:
 @pytest.mark.platforms("linux")
 def test_dispatcher_grants_only_the_assigned_worker_scope(tmp_path, monkeypatch):
     import json
-    from pathlib import Path
     import sys
+    from pathlib import Path
+
     from hermes_cli import kanban_db as kb
     from hermes_cli.kanban_db_connect import connect
     from hermes_cli.kanban_db_dispatch import _default_spawn

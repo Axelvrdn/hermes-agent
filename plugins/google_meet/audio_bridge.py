@@ -12,7 +12,6 @@ import platform
 import subprocess
 from typing import Optional
 
-
 _BLACKHOLE_DEVICE = "BlackHole 2ch"
 
 

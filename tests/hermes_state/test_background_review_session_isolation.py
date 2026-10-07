@@ -76,6 +76,7 @@ class TestGetMessagesAsConversationStripsHarness:
     def test_polluted_session_resumes_without_harness(self):
         import tempfile
         from pathlib import Path
+
         from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -116,6 +117,7 @@ class TestPersistDisabledHardStop:
         import tempfile
         from pathlib import Path
         from unittest.mock import patch
+
         from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp:

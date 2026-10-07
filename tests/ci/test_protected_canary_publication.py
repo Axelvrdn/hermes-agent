@@ -8,16 +8,16 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from pathlib import Path
 import plistlib
 import shlex
 import subprocess
 import sys
 import zipfile
+from pathlib import Path
 
-import hermes_yaml
 import pytest
 
+import hermes_yaml
 from hermes_cli.release_channels import ChannelReader
 from scripts.releases import channel_releases, handoff
 from tests.ci.desktop_release_roles import canary_publisher, native_builds, stage_step
@@ -250,9 +250,9 @@ def test_published_canary_workflow_advances_only_after_every_gate(canary, r2_ser
     assert len(resolved.manifest["packages"]) == 4
     # Bootstrap reads actual receipt-bound artifacts and the promoted native feeds,
     # rather than asking canary for a stable-only candidate manifest.
+    from hermes_cli.release_channels import canonical_json
     from scripts.bundles.release_artifacts import write_appinstaller
     from scripts.releases import stable
-    from hermes_cli.release_channels import canonical_json
     mac = resolved.manifest["packages"][0]
     mac_feed = json.loads(r2_server.store[mac["feed"]["key"]][0])
     for entry in mac_feed["files"]:

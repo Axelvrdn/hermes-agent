@@ -21,7 +21,6 @@ from pathlib import Path
 from typing import Any, Callable, Iterator, Mapping
 
 import hermes_yaml as yaml
-
 from tests.e2e.core._pending_fixes import known_gate
 
 REPO_ROOT = Path(__file__).resolve().parents[4]

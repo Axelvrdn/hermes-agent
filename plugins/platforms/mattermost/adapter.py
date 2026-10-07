@@ -16,19 +16,18 @@ import mimetypes
 import os
 import re
 from pathlib import Path
-from urllib.parse import unquote as _unquote
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import unquote as _unquote
 
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms.helpers import MessageDeduplicator
-from gateway.platforms.helpers import cancel_task
-from gateway.platforms.base import gateway_trust_env, BasePlatformAdapter, SendResult
+from gateway.platforms._shared import apply_yaml_bridge as _apply_yaml_bridge
+from gateway.platforms._shared import env_is_connected as _env_is_connected
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import send_error
+from gateway.platforms.base import BasePlatformAdapter, SendResult, gateway_trust_env
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms._shared import (
-    apply_yaml_bridge as _apply_yaml_bridge, env_is_connected as _env_is_connected,
-    extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret,
-    send_error
-)
+from gateway.platforms.helpers import MessageDeduplicator, cancel_task
 
 logger = logging.getLogger(__name__)
 
@@ -436,8 +435,9 @@ class MattermostAdapter(BasePlatformAdapter):
 
     async def _ws_loop(self) -> None:
         """Connect to the WebSocket and listen for events, reconnecting on failure."""
-        import aiohttp
         import random
+
+        import aiohttp
         delay = _RECONNECT_BASE_DELAY
         while not self._closing:
             try:
@@ -517,6 +517,7 @@ class MattermostAdapter(BasePlatformAdapter):
     async def _download_attachments(self, file_ids: List[str]) -> Tuple[List[str], List[str]]:
         """Download attachments now (URLs need auth headers downstream tools lack) → (paths, mime types)."""
         import aiohttp
+
         from gateway.platforms.base import (
             cache_audio_from_bytes_async,
             cache_document_from_bytes_async,
@@ -612,7 +613,7 @@ async def _standalone_send(pconfig, chat_id: str, message: str, *, thread_id: Op
     headers = {**upload_headers, "Content-Type": "application/json"}
     try:
         # One ClientSession (with proxy) covers the optional uploads + final post.
-        from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+        from gateway.platforms.base import proxy_kwargs_for_aiohttp, resolve_proxy_url
         _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(resolve_proxy_url(platform_env_var="MATTERMOST_PROXY"))
         async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60), **_sess_kw) as session:
             file_ids: List[str] = []
@@ -652,8 +653,8 @@ async def _standalone_send(pconfig, chat_id: str, message: str, *, thread_id: Op
 
 def interactive_setup() -> None:
     """Guide the user through Mattermost bot setup (URL + token, allowlist, home channel)."""
+    from hermes_cli.cli_output import print_header, print_info, print_success, prompt
     from hermes_cli.config import remove_env_value, save_env_value
-    from hermes_cli.cli_output import prompt, print_header, print_info, print_success
     from hermes_cli.setup_platforms import declines_reconfigure
 
     def info(*lines: str) -> None:

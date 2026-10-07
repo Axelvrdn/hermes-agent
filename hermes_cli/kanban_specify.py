@@ -21,7 +21,6 @@ from typing import Optional
 
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
-
 from utils import env_int
 
 HERMES_KANBAN_SPECIFY_MAX_TOKENS = max(1500, env_int("HERMES_KANBAN_SPECIFY_MAX_TOKENS", 6000))
@@ -161,7 +160,11 @@ def _call_aux(verb: str, task_id: str, *, aux_task: str, system: str, user: str,
     # OpenRouter/Portal sticky key) are omitted — the OpenCode Go relay rejects that with 400
     # MissingSessionID (#112043). Declare a per-task scope, but only when none is already bound so an
     # in-turn caller keeps its conversation's key.
-    from agent.portal_tags import get_affinity_scope, reset_affinity_scope, set_affinity_scope
+    from agent.portal_tags import (
+        get_affinity_scope,
+        reset_affinity_scope,
+        set_affinity_scope,
+    )
     affinity_token = None if get_affinity_scope() else set_affinity_scope(f"kanban:{task_id}")
     try:
         # Route through call_llm so auxiliary.triage_specifier.* config (provider/model/base_url,

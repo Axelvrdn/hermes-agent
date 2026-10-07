@@ -34,7 +34,13 @@ from dataclasses import dataclass, field
 
 import pytest
 
-from tests.e2e.core.terminal._gateway_client import Backend, RpcError, WSClient, etype, poll_until
+from tests.e2e.core.terminal._gateway_client import (
+    Backend,
+    RpcError,
+    WSClient,
+    etype,
+    poll_until,
+)
 from tests.fakes.fake_llm_provider import Text
 
 # Not marked ``integration`` (that marker means external services and is deselected by addopts): the backend is

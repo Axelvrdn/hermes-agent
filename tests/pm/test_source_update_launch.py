@@ -10,17 +10,22 @@ from __future__ import annotations
 import importlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 import pm
 from hermes_cli import venv_sync
-from pm.environments import install_state_dir, runtime_facts_path, selected_venv, site_packages
 from pm import paths
+from pm.environments import (
+    install_state_dir,
+    runtime_facts_path,
+    selected_venv,
+    site_packages,
+)
 from pm.lock import Facts
 from pm.package import InstallError
 from tests.pm._fixtures import isolated_python  # noqa: F401
@@ -156,6 +161,7 @@ def test_source_python_pin_update_survives_real_gc(source_launch, tmp_path, monk
         assert venv_sync.sync(root) == {"state": "synced", "ok": True}
     else:
         from types import SimpleNamespace
+
         from pm import cli
         from pm.update import Resolved
 
@@ -273,6 +279,7 @@ def test_process_spawned_by_the_update_commits_dependencies_but_not_the_tail(sou
     """A process an update spawns before its dependencies are current (its restarted gateway)
     must not boot on a tree built for another interpreter; it syncs, but leaves the tail alone."""
     import time
+
     from hermes_cli.update_lock import update_marker_path
     from pm.environments import committed_venv
 
@@ -570,7 +577,11 @@ def test_capped_completion_attempts_leave_marker_for_explicit_update(source_laun
 def test_failed_tail_attempt_is_counted_and_success_clears_it(source_launch, tmp_path, monkeypatch, capsys):
     """A failing completion tail records the attempt; the successful retry clears the record."""
     root, store_python, _ = source_launch
-    from hermes_cli.venv_sync import _completion_attempts_path, arm_completion, completion_pending_path
+    from hermes_cli.venv_sync import (
+        _completion_attempts_path,
+        arm_completion,
+        completion_pending_path,
+    )
 
     pm.sync_venv(["all"], explicit=True, project_root=root)
     arm_completion(root)

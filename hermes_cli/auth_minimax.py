@@ -6,17 +6,23 @@ Split out of ``hermes_cli/auth.py``; origin helpers are imported lazily per func
 
 from __future__ import annotations
 
-import logging
 import base64
 import hashlib
 import json
+import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+
 from hermes_cli.auth_constants import (
-    AuthError, MINIMAX_OAUTH_GRANT_TYPE, MINIMAX_OAUTH_REFRESH_SKEW_SECONDS, MINIMAX_OAUTH_SCOPE,
-    _FORM_JSON_HEADERS, _minimax_err, httpx,
+    _FORM_JSON_HEADERS,
+    MINIMAX_OAUTH_GRANT_TYPE,
+    MINIMAX_OAUTH_REFRESH_SKEW_SECONDS,
+    MINIMAX_OAUTH_SCOPE,
+    AuthError,
+    _minimax_err,
+    httpx,
 )
 
 if TYPE_CHECKING:  # annotation-only; the runtime import would be a cycle
@@ -166,7 +172,12 @@ def _minimax_save_auth_state(auth_state: Dict[str, Any], *, set_active: bool = T
     rewrites credentials, not the user's choice of provider); only
     ``_minimax_oauth_login`` — the user just chose the provider — sets active.
     """
-    from hermes_cli.auth import _auth_store_lock, _load_auth_store, _save_auth_store, _store_provider_state
+    from hermes_cli.auth import (
+        _auth_store_lock,
+        _load_auth_store,
+        _save_auth_store,
+        _store_provider_state,
+    )
     with _auth_store_lock():
         auth_store = _load_auth_store()
         _store_provider_state(auth_store, "minimax-oauth", auth_state, set_active=set_active)
@@ -175,7 +186,15 @@ def _minimax_save_auth_state(auth_state: Dict[str, Any], *, set_active: bool = T
 
 def _minimax_oauth_login(*, region: str = "global", open_browser: bool = True, timeout_seconds: float = 15.0) -> Dict[str, Any]:
     """Run MiniMax OAuth flow, persist tokens, return auth state dict."""
-    from hermes_cli.auth import PROVIDER_REGISTRY, _can_open_graphical_browser, _is_remote_session, _minimax_pkce_pair, _minimax_request_user_code, _minimax_save_auth_state, _print_device_code_instructions
+    from hermes_cli.auth import (
+        PROVIDER_REGISTRY,
+        _can_open_graphical_browser,
+        _is_remote_session,
+        _minimax_pkce_pair,
+        _minimax_request_user_code,
+        _minimax_save_auth_state,
+        _print_device_code_instructions,
+    )
     pconfig = PROVIDER_REGISTRY["minimax-oauth"]
     if region == "cn":
         portal_base_url = pconfig.extra["cn_portal_base_url"]
@@ -302,7 +321,9 @@ def _minimax_fresh_state() -> Dict[str, Any]:
     a waiter adopts the rotated pair instead of timing out (codex pattern).
     """
     from hermes_cli.auth import (
-        AUTH_LOCK_TIMEOUT_SECONDS, _auth_store_lock, _refresh_minimax_oauth_state,
+        AUTH_LOCK_TIMEOUT_SECONDS,
+        _auth_store_lock,
+        _refresh_minimax_oauth_state,
         get_provider_auth_state,
     )
     with _auth_store_lock(timeout_seconds=max(AUTH_LOCK_TIMEOUT_SECONDS, 15.0 + 5.0)):

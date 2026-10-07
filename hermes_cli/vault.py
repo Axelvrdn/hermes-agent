@@ -84,7 +84,11 @@ def _cmd_add(args) -> None:
                 kind="login", label=label, secret=secret, origin=origin
             )
         else:
-            from agent.vault_store import ADDRESS_FIELDS, PAYMENT_FIELDS, REQUIRED_FIELDS
+            from agent.vault_store import (
+                ADDRESS_FIELDS,
+                PAYMENT_FIELDS,
+                REQUIRED_FIELDS,
+            )
 
             fields = PAYMENT_FIELDS if kind == "payment" else ADDRESS_FIELDS
             origin = ""

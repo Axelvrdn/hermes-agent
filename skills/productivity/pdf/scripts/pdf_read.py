@@ -2,10 +2,10 @@
 """Read a PDF: per-page text, tables, metadata, or form fields. JSON to stdout."""
 from __future__ import annotations
 
-import logging
 import argparse
 import csv
 import json
+import logging
 import os
 import sys
 

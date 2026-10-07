@@ -14,7 +14,6 @@ import json
 import uuid
 from typing import Any, Dict, Tuple
 
-
 VALID_REQUEST_TYPES = frozenset({"start_bot", "stop", "status", "transcript", "say", "ping"})
 
 

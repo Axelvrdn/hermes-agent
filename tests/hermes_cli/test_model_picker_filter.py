@@ -8,7 +8,6 @@ index-preserving contract of ``_filter_model_picker_entries``.
 
 from cli import HermesCLI
 
-
 MODELS = [
     "anthropic/claude-opus-4.8",
     "anthropic/claude-sonnet-4.6",

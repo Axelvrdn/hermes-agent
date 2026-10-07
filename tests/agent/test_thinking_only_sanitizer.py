@@ -13,7 +13,6 @@ backstory on why the alternative — fabricating "." stub text — was rejected.
 
 from run_agent import AIAgent
 
-
 # ---------------------------------------------------------------------------
 # _is_thinking_only_assistant — detection
 # ---------------------------------------------------------------------------

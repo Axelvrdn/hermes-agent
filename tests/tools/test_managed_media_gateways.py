@@ -7,7 +7,6 @@ import pytest
 
 from hermes_cli.nous_account import NousPortalAccountInfo
 
-
 TOOLS_DIR = Path(__file__).resolve().parents[2] / "tools"
 
 

@@ -1,8 +1,8 @@
 """Concurrency admission tests for expensive filename walks."""
 
-from concurrent.futures import ThreadPoolExecutor
 import threading
 import types
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 

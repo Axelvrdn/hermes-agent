@@ -1,9 +1,9 @@
 """Feature inventory reads the selected dependency tree, not the builder."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import packaging
 import pytest

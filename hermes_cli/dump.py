@@ -1,17 +1,22 @@
 """Dump command for hermes CLI."""
 
-import logging
 import json
+import logging
 import os
 import platform
 import subprocess
 import sys
 from pathlib import Path
 
-from hermes_cli.config import get_hermes_home, get_env_path, get_project_root, load_config
+from agent.skill_utils import is_excluded_skill_path
+from hermes_cli.config import (
+    get_env_path,
+    get_hermes_home,
+    get_project_root,
+    load_config,
+)
 from hermes_cli.env_loader import load_hermes_dotenv
 from hermes_constants import display_hermes_home
-from agent.skill_utils import is_excluded_skill_path
 
 
 def _dotenv_key_names() -> set[str]:
@@ -66,7 +71,9 @@ def _get_git_commit(project_root: Path) -> str:
     if project_root.resolve() != get_project_root():
         return "(unknown)"
     try:
-        from hermes_cli.version_info import get_code_identity  # deferred: keeps dump cheap on non-dump paths
+        from hermes_cli.version_info import (
+            get_code_identity,  # deferred: keeps dump cheap on non-dump paths
+        )
         return get_code_identity().get("short_sha") or "(unknown)"
     except Exception:
         return "(unknown)"
@@ -86,7 +93,9 @@ def _get_git_commit_date(project_root: Path) -> str:
     try:
         from datetime import datetime, timezone
 
-        from hermes_cli.version_info import get_version_info  # deferred: keeps dump cheap on non-dump paths
+        from hermes_cli.version_info import (
+            get_version_info,  # deferred: keeps dump cheap on non-dump paths
+        )
         commit_date = get_version_info().commit_date
         return datetime.fromtimestamp(commit_date, tz=timezone.utc).strftime("%Y-%m-%d") if commit_date else ""
     except Exception:

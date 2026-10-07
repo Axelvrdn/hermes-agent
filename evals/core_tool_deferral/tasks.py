@@ -16,7 +16,6 @@ import json
 import os
 import re
 
-
 # Planted ground truths
 FOCUSED_APP = "Obsidian — Shadow Care Notes"
 MED_FACT = "12.5"

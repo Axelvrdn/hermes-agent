@@ -16,9 +16,19 @@ from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple
 from tools.computer_use.backend import ActionResult, CaptureResult, UIElement
 from tools.computer_use.cua_backend_input import _BTF_UNSUPPORTED_MSG
 from tools.computer_use.cua_backend_parse import (
-    _apps_from_windows, _image_dimensions_from_bytes, _image_from_tool_result, _ingest_windows, _is_placeholder_id,
-    _is_real_app_window, _parse_elements_from_structured, _parse_elements_from_tree, _parse_xprop_net_active_window,
-    _positive_int, _split_tree_text, _windows_from_tool_result, _z_index_uninformative,
+    _apps_from_windows,
+    _image_dimensions_from_bytes,
+    _image_from_tool_result,
+    _ingest_windows,
+    _is_placeholder_id,
+    _is_real_app_window,
+    _parse_elements_from_structured,
+    _parse_elements_from_tree,
+    _parse_xprop_net_active_window,
+    _positive_int,
+    _split_tree_text,
+    _windows_from_tool_result,
+    _z_index_uninformative,
 )
 
 logger = logging.getLogger("tools.computer_use.cua_backend")
@@ -252,7 +262,9 @@ class _CaptureMixin:
         """
         args: Dict[str, Any] = {"pid": self._active_pid, "window_id": self._active_window_id,
                                 "session": self._session_id}
-        from tools.computer_use import cua_backend as _cb  # lazy: cua_backend imports this module at import time
+        from tools.computer_use import (
+            cua_backend as _cb,  # lazy: cua_backend imports this module at import time
+        )
         if capped := _cb._cua_configured_ax_max_elements():
             args["max_elements"] = capped
         return args

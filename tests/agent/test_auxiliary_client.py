@@ -5,38 +5,38 @@ import json
 import logging
 import time
 from types import SimpleNamespace
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from agent.auxiliary_client import (
     _NOUS_MODEL,
-    CodexAuxiliaryClient,
-    get_text_auxiliary_client,
-    get_available_vision_backends,
-    resolve_vision_provider_client,
-    resolve_provider_client,
-    auxiliary_max_tokens_param,
-    call_llm,
-    async_call_llm,
-    _build_call_kwargs,
-    _resolve_codex_credential_and_base,
-    _is_payment_error,
-    _is_rate_limit_error,
-    _is_model_not_found_error,
-    _is_model_incompatible_error,
-    _is_statusless_structured_provider_error,
-    _refresh_nous_recommended_model,
-    _normalize_aux_provider,
-    _try_payment_fallback,
-    _try_openrouter,
     _OPENROUTER_MODEL,
     OPENROUTER_BASE_URL,
+    CodexAuxiliaryClient,
+    _build_call_kwargs,
+    _CodexCompletionsAdapter,
+    _is_model_incompatible_error,
+    _is_model_not_found_error,
+    _is_payment_error,
+    _is_rate_limit_error,
+    _is_statusless_structured_provider_error,
+    _normalize_aux_provider,
+    _pool_runtime_base_url,
+    _refresh_nous_recommended_model,
+    _resolve_codex_credential_and_base,
     _resolve_task_provider_model,
     _resolve_xai_oauth_for_aux,
-    _CodexCompletionsAdapter,
-    _pool_runtime_base_url,
+    _try_openrouter,
+    _try_payment_fallback,
     _unwrap_data_envelope,
+    async_call_llm,
+    auxiliary_max_tokens_param,
+    call_llm,
+    get_available_vision_backends,
+    get_text_auxiliary_client,
+    resolve_provider_client,
+    resolve_vision_provider_client,
 )
 
 
@@ -639,7 +639,7 @@ class TestAnthropicOAuthFlag:
         monkeypatch.setenv("ANTHROPIC_TOKEN", "sk-ant-oat01-test-token")
         with patch("agent.anthropic_adapter.build_anthropic_client") as mock_build:
             mock_build.return_value = MagicMock()
-            from agent.auxiliary_client import _try_anthropic, AnthropicAuxiliaryClient
+            from agent.auxiliary_client import AnthropicAuxiliaryClient, _try_anthropic
             client, model = _try_anthropic()
             assert client is not None
             assert isinstance(client, AnthropicAuxiliaryClient)
@@ -653,7 +653,7 @@ class TestAnthropicOAuthFlag:
              patch("agent.anthropic_adapter.build_anthropic_client") as mock_build, \
              patch("agent.auxiliary_client._select_pool_entry", return_value=(False, None)):
             mock_build.return_value = MagicMock()
-            from agent.auxiliary_client import _try_anthropic, AnthropicAuxiliaryClient
+            from agent.auxiliary_client import AnthropicAuxiliaryClient, _try_anthropic
             client, model = _try_anthropic()
             assert client is not None
             assert isinstance(client, AnthropicAuxiliaryClient)
@@ -1086,6 +1086,7 @@ class TestOpenRouterPaidLaneGuard:
         only engage via an explicit auxiliary.openrouter_model choice.)
         """
         import logging
+
         from agent.auxiliary_client import _paid_lane_warned
         _paid_model = "google/gemini-3.6-flash"
         _paid_cfg = {"auxiliary": {"openrouter_model": _paid_model}}
@@ -1528,7 +1529,10 @@ class TestTryPaymentFallback:
         Without this cleanup the fallback chain skips providers we've patched
         to return valid clients — the patched function is never called.
         """
-        from agent.auxiliary_client import _aux_unhealthy_until, _aux_unhealthy_logged_at
+        from agent.auxiliary_client import (
+            _aux_unhealthy_logged_at,
+            _aux_unhealthy_until,
+        )
         _aux_unhealthy_until.clear()
         _aux_unhealthy_logged_at.clear()
         yield
@@ -2098,6 +2102,7 @@ class TestTryMainAgentModelFallback:
 def test_resolve_api_key_provider_skips_unconfigured_anthropic(monkeypatch):
     """_resolve_api_key_provider must not try anthropic when user never configured it."""
     from collections import OrderedDict
+
     from hermes_cli.auth import ProviderConfig
 
     # Build a minimal registry with only "anthropic" so the loop is guaranteed
@@ -2135,6 +2140,7 @@ def test_resolve_api_key_provider_skips_unconfigured_anthropic(monkeypatch):
 def test_resolve_api_key_provider_skips_unconfigured_copilot(monkeypatch):
     """_resolve_api_key_provider must skip copilot when user never configured it (#114740)."""
     from collections import OrderedDict
+
     from hermes_cli.auth import ProviderConfig
 
     fake_registry = OrderedDict({
@@ -2632,7 +2638,7 @@ class TestAuxiliaryTaskExtraBody:
     @pytest.mark.parametrize("task", ["session_search", "moa_reference", "moa_aggregator"])
     def test_generic_reasoning_fallback_clamps_ultra_for_auxiliary_and_moa_calls(self, task, monkeypatch):
         """The OpenAI-compatible fallback must never put Hermes-only ``ultra`` on the wire."""
-        from agent.auxiliary_client import _ProfileProjection, _build_call_kwargs
+        from agent.auxiliary_client import _build_call_kwargs, _ProfileProjection
 
         monkeypatch.setattr(
             "agent.auxiliary_client._project_provider_profile",
@@ -2847,8 +2853,8 @@ class TestAuxiliaryTaskExtraBody:
     def test_bare_custom_auth_error_does_not_fall_back_to_env_base_url(self, monkeypatch):
         """Bare 'custom' with nothing configured: the main resolver raises AuthError; aux must
         return no endpoint rather than route to a stale env OPENAI_BASE_URL with a placeholder key."""
-        from hermes_cli.auth import AuthError
         from agent.auxiliary_client import _resolve_custom_runtime
+        from hermes_cli.auth import AuthError
         monkeypatch.setenv("OPENAI_BASE_URL", "https://old-proxy.example/v1")
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         with patch("hermes_cli.runtime_provider.resolve_runtime_provider",
@@ -3187,7 +3193,10 @@ class TestAnthropicAuxiliaryReasoningTranslation:
         # profile's declared wire, or the ``_reasoning_config`` kwarg above would reach a plain
         # OpenAI client and TypeError.
         import model_tools  # noqa: F401
-        from agent.auxiliary_client import AnthropicAuxiliaryClient, resolve_provider_client
+        from agent.auxiliary_client import (
+            AnthropicAuxiliaryClient,
+            resolve_provider_client,
+        )
 
         monkeypatch.setenv("COMMANDCODE_API_KEY", "sk-test-" + "x" * 20)
         client, _ = resolve_provider_client("commandcode-anthropic", model="claude-haiku-4-5-20251001")
@@ -3265,8 +3274,9 @@ class TestCodexAdapterReasoningTranslation:
     @staticmethod
     def _build_adapter():
         """Build a _CodexCompletionsAdapter with a mocked responses.create()."""
-        from agent.auxiliary_client import _CodexCompletionsAdapter
         from types import SimpleNamespace
+
+        from agent.auxiliary_client import _CodexCompletionsAdapter
 
         # The event-driven path consumes ``responses.create(stream=True)`` as a
         # raw iterable of SSE events.  Emit a minimal stream containing one
@@ -3373,8 +3383,9 @@ class TestCodexAdapterPromptCacheKey:
 
     @staticmethod
     def _build_adapter(base_url="https://chatgpt.com/backend-api/codex", model="gpt-5.5"):
-        from agent.auxiliary_client import _CodexCompletionsAdapter
         from types import SimpleNamespace
+
+        from agent.auxiliary_client import _CodexCompletionsAdapter
 
         message_item = SimpleNamespace(
             type="message", role="assistant", status="completed",
@@ -3535,8 +3546,9 @@ class TestCodexAdapterGithubResponsesMessageIdDrop:
 
     @staticmethod
     def _build_adapter(base_url):
-        from agent.auxiliary_client import _CodexCompletionsAdapter
         from types import SimpleNamespace
+
+        from agent.auxiliary_client import _CodexCompletionsAdapter
 
         message_item = SimpleNamespace(
             type="message", role="assistant", status="completed",
@@ -4154,8 +4166,11 @@ class TestAuxiliaryClientPoisonedCacheEviction:
         sync wrapper's _real_client walk but missed the async wrappers.
         """
         from agent.auxiliary_client import (
-            _client_cache, _client_cache_lock, _evict_cached_client_instance,
-            CodexAuxiliaryClient, AsyncCodexAuxiliaryClient,
+            AsyncCodexAuxiliaryClient,
+            CodexAuxiliaryClient,
+            _client_cache,
+            _client_cache_lock,
+            _evict_cached_client_instance,
         )
 
         real = SimpleNamespace(api_key="k", base_url="https://chatgpt.com/backend-api/codex",
@@ -4410,9 +4425,9 @@ class TestAuxUnhealthyCache:
 
     def test_ttl_expiry_evicts(self):
         from agent.auxiliary_client import (
-            _mark_provider_unhealthy,
-            _is_provider_unhealthy,
             _aux_unhealthy_until,
+            _is_provider_unhealthy,
+            _mark_provider_unhealthy,
         )
         _mark_provider_unhealthy("openrouter", ttl=0.01)
         assert _is_provider_unhealthy("openrouter") is True
@@ -4430,8 +4445,8 @@ class TestAuxUnhealthyCache:
         on OpenRouter doesn't cause a second OR call within the same chain
         iteration if it gets re-entered."""
         from agent.auxiliary_client import (
-            _try_payment_fallback,
             _mark_provider_unhealthy,
+            _try_payment_fallback,
         )
         nous_client = MagicMock()
         # Mark BOTH the failed provider (openrouter) and a sibling (custom)
@@ -4450,7 +4465,10 @@ class TestAuxUnhealthyCache:
         custom_try.assert_not_called()
 
     def test_custom_health_url_identity_preserves_path_and_query_case(self):
-        from agent.auxiliary_client import _is_provider_unhealthy, _mark_provider_unhealthy
+        from agent.auxiliary_client import (
+            _is_provider_unhealthy,
+            _mark_provider_unhealthy,
+        )
 
         _mark_provider_unhealthy("custom", base_url="https://Example.test/API/v1/")
 
@@ -4467,8 +4485,8 @@ class TestAuxUnhealthyCache:
         so the next call skips it instead of re-trying the same depleted
         endpoint."""
         from agent.auxiliary_client import (
-            call_llm,
             _is_provider_unhealthy,
+            call_llm,
         )
         monkeypatch.setenv("OPENROUTER_API_KEY", "or-key")
 
@@ -4503,7 +4521,7 @@ class TestAuxUnhealthyCache:
 
     def test_custom_billing_failure_keeps_distinct_endpoint_eligible(self):
         """A hosted custom endpoint's billing state must not quarantine a local custom endpoint."""
-        from agent.auxiliary_client import call_llm, _is_provider_unhealthy
+        from agent.auxiliary_client import _is_provider_unhealthy, call_llm
 
         hosted_url = "https://hosted.example/v1"
         local_url = "http://127.0.0.1:8080/v1"

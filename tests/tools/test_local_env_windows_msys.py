@@ -34,8 +34,8 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.environments.base import BaseEnvironment
 from tools.environments import local as local_mod
+from tools.environments.base import BaseEnvironment
 from tools.environments.local import (
     LocalEnvironment,
     _bash_safe_path,
@@ -49,7 +49,6 @@ from tools.environments.local import (
     _windows_to_msys_path,
     hermes_subprocess_env,
 )
-
 
 # ---------------------------------------------------------------------------
 # _msys_to_windows_path — pure-function unit tests

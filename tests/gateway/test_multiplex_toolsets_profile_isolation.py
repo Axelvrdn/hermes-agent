@@ -170,7 +170,7 @@ class TestWebhookMultiplexOffPrefixFailsClosed:
     """Same bug class in the webhook adapter's prefix resolver."""
 
     def _adapter(self, multiplex: bool):
-        from gateway.platforms.webhook import WebhookAdapter, _PROFILE_REJECTED
+        from gateway.platforms.webhook import _PROFILE_REJECTED, WebhookAdapter
 
         class _Runner:
             config = GatewayConfig(multiplex_profiles=multiplex)

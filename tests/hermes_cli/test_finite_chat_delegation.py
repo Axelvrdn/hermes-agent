@@ -3,10 +3,10 @@
 import http.server
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import threading
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock

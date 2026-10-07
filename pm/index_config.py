@@ -13,11 +13,11 @@ dependency exists.
 """
 from __future__ import annotations
 
-from collections.abc import Mapping
 import configparser
 import os
-from pathlib import Path
 import sys
+from collections.abc import Mapping
+from pathlib import Path
 
 # Explicit uv index / transport settings that survive into uv. UV_INDEX_<NAME>_
 # {USERNAME,PASSWORD} credentials match by prefix in is_forwarded().

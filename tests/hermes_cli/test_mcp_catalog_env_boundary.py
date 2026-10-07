@@ -6,11 +6,10 @@ import os
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 from fastapi.testclient import TestClient
 
+import hermes_yaml as yaml
 from hermes_cli.web_server import _SESSION_TOKEN, app
-
 
 HEADERS = {"X-Hermes-Session-Token": _SESSION_TOKEN}
 
@@ -18,8 +17,8 @@ HEADERS = {"X-Hermes-Session-Token": _SESSION_TOKEN}
 @pytest.fixture
 def catalog_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, _isolate_hermes_home):
     """Install one synthetic API-key catalog entry in the isolated test home."""
-    from hermes_constants import get_hermes_home
     from hermes_cli.config import invalidate_env_cache
+    from hermes_constants import get_hermes_home
 
     catalog = tmp_path / "optional-mcps"
     entry_dir = catalog / "demo"

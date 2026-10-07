@@ -3,10 +3,11 @@
 from unittest.mock import MagicMock, patch
 
 from agent.oneshot import (
+    _truncate,
     render_template,
     run_oneshot,
-    _truncate,
 )
+
 
 class TestRenderTemplate:
 

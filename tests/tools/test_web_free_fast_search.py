@@ -83,8 +83,8 @@ def _write_home(home, monkeypatch, *, nous_state=None, config=None):
 
 
 def _search():
-    from tools import web_tools
     from tests.tools.conftest import register_all_web_providers
+    from tools import web_tools
 
     register_all_web_providers()
     return json.loads(web_tools.web_search_tool("free fast search", limit=3))
@@ -155,9 +155,9 @@ def test_direct_perplexity_key_beats_free_fast_search(monkeypatch, tmp_path, gat
 
 def test_free_fast_search_eligibility_follows_the_served_profile(monkeypatch, tmp_path, gateway_server):
     """Multiplex A→B→A: profile A holds a zero-credit Portal identity, B none; each answers from its own store."""
-    from hermes_cli.nous_account import reset_nous_portal_account_info_cache
     from agent.secret_scope import set_multiplex_active
     from gateway.run import _profile_runtime_scope
+    from hermes_cli.nous_account import reset_nous_portal_account_info_cache
     from tools import web_tools
 
     root = tmp_path / ".hermes"

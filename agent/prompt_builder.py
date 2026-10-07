@@ -15,17 +15,30 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from hermes_constants import (
-    get_hermes_home, get_scratch_dir, get_skills_dir, is_wsl, reset_hermes_home_override, set_hermes_home_override,
-)
-
 from agent.model_metadata import CHARS_PER_TOKEN
 from agent.runtime_cwd import resolve_agent_cwd
 from agent.skill_utils import (
-    EXCLUDED_SKILL_DIRS, SKILL_SUPPORT_DIRS,
-    TIER_LOCAL, extract_skill_conditions, extract_skill_description, get_disabled_skill_names, get_skill_search_roots,
-    iter_skill_index_files, parse_frontmatter, skill_matches_apps, skill_matches_environment,
-    skill_matches_platform, skill_matches_platform_list,
+    EXCLUDED_SKILL_DIRS,
+    SKILL_SUPPORT_DIRS,
+    TIER_LOCAL,
+    extract_skill_conditions,
+    extract_skill_description,
+    get_disabled_skill_names,
+    get_skill_search_roots,
+    iter_skill_index_files,
+    parse_frontmatter,
+    skill_matches_apps,
+    skill_matches_environment,
+    skill_matches_platform,
+    skill_matches_platform_list,
+)
+from hermes_constants import (
+    get_hermes_home,
+    get_scratch_dir,
+    get_skills_dir,
+    is_wsl,
+    reset_hermes_home_override,
+    set_hermes_home_override,
 )
 from tools.threat_patterns import scan_for_threats as _scan_for_threats
 from utils import atomic_json_write, file_signature
@@ -965,7 +978,11 @@ _BACKEND_PROBE_CMD = (
 
 def _run_backend_probe(env_type: str, terminal_tool) -> str:
     """Execute the probe command inside a freshly built backend; "" when it yields nothing."""
-    from tools.terminal_tool_backends import _container_config_from_config, _create_environment, _ssh_config_from_config
+    from tools.terminal_tool_backends import (
+        _container_config_from_config,
+        _create_environment,
+        _ssh_config_from_config,
+    )
     from tools.terminal_tool_lifecycle import _cleanup_env
 
     config = terminal_tool._get_env_config()
@@ -1093,7 +1110,8 @@ def _bot_screen_hint() -> str:
     bot_desktop module or an unreadable lease must not break prompt construction. ``""`` when
     no screen is running, so the block simply drops out of the environment hints."""
     try:
-        from tools.bot_desktop import lease as _bd_lease, runtime as _bd_runtime
+        from tools.bot_desktop import lease as _bd_lease
+        from tools.bot_desktop import runtime as _bd_runtime
         return bot_screen_note(True, _bd_runtime.published_env().get("DISPLAY"), _bd_lease.get().holder)
     except Exception:
         return ""
@@ -1466,7 +1484,10 @@ def _render_skills_index(
             if name not in seen:
                 seen.add(name)
                 index_lines.append(f"    - {name}: {desc}" if desc else f"    - {name}")
-    from agent.oneshot_footprint import ONESHOT_SKILLS_LOAD_GUIDANCE, is_single_query_session
+    from agent.oneshot_footprint import (
+        ONESHOT_SKILLS_LOAD_GUIDANCE,
+        is_single_query_session,
+    )
     if is_single_query_session():
         return (
             ONESHOT_SKILLS_LOAD_GUIDANCE
@@ -1550,7 +1571,12 @@ def _build_skills_system_prompt_inner(
     # Every tier is resolved together, exactly as skill_view resolves names (agent.skill_utils precedence:
     # project > local > create_dir > external_dirs; same-tier duplicates listed by exact path). Hidden and
     # incompatible copies still take part — skill_view sees them too.
-    from agent.skill_utils import TIER_PROJECT, is_disabled_entry, iter_project_skill_files, resolve_skill_catalog
+    from agent.skill_utils import (
+        TIER_PROJECT,
+        is_disabled_entry,
+        iter_project_skill_files,
+        resolve_skill_catalog,
+    )
     project_roots = [d for t, d in extra_roots if t == TIER_PROJECT and d.exists()]
     rows: list[tuple[dict, bool]] = []
     for root in project_roots:

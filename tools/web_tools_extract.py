@@ -89,8 +89,9 @@ def _validate_extract_urls(urls: List[Any]):
     """Normalize model-supplied items and block URLs carrying secrets (percent-encoded forms are unquoted
     and checked too). Returns ``(normalized_urls, normalized_indices, invalid_urls, blocked_json)``;
     ``blocked_json`` is a whole-call refusal (exfiltration prevention) or None."""
-    from agent.redact import _PREFIX_RE
     from urllib.parse import unquote
+
+    from agent.redact import _PREFIX_RE
 
     normalized_urls, normalized_indices, invalid_urls = [], [], {}
     for index, item in enumerate(urls):
@@ -115,7 +116,8 @@ def _resolve_extract_provider(backend: str):
     A registered search-only backend is a typed error (never a silent switch). An unregistered name with
     a stored web selection is a strict-selection error; with no selection, fall through to the walk.
     """
-    from agent.web_search_registry import get_active_extract_provider, get_provider as _wsp_get_provider
+    from agent.web_search_registry import get_active_extract_provider
+    from agent.web_search_registry import get_provider as _wsp_get_provider
     provider = _wsp_get_provider(backend) if backend else None
     if provider is not None and provider.supports_extract():
         return provider, None
@@ -153,6 +155,7 @@ async def _dispatch_extract(provider, fetch_urls: List[str], format: Optional[st
     failed (backend outage, not per-page problems). Rescued batches are never cached.
     """
     import inspect
+
     from tools.web_result_cache import extract_cache_put
     timeout = _extract_timeout_seconds()
     try:

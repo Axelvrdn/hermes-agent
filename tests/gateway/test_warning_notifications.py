@@ -13,8 +13,6 @@ from gateway.run import GatewayRunner, _load_gateway_config
 from gateway.run_turn_runner import TurnRunner
 from gateway.session import SessionSource
 from gateway.turn_context import TurnContext
-
-
 from tests.gateway.test_session_hygiene import HygieneCaptureAdapter
 
 

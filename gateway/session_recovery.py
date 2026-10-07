@@ -4,14 +4,15 @@ peer). Mixin split out of ``gateway/session.py``; bound onto ``SessionStore`` vi
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import math
 import threading
 from dataclasses import replace
 from datetime import datetime
-from gateway.config import Platform
 from typing import TYPE_CHECKING, Any, Dict, Optional
+
+from gateway.config import Platform
 
 if TYPE_CHECKING:
     from gateway.session import SessionEntry, SessionSource

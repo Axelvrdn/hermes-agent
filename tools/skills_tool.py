@@ -12,21 +12,39 @@ from contextlib import suppress
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Dict, List, Optional, Tuple
 
+from agent.skill_utils import EXCLUDED_SKILL_DIRS as _EXCLUDED_SKILL_DIRS
+from agent.skill_utils import is_skill_support_path as _is_skill_support_path
+from hermes_cli.config import cfg_get
 from hermes_constants import get_hermes_home
 from tools.registry import registry, tool_error
-from hermes_cli.config import cfg_get
-from agent.skill_utils import (
-    EXCLUDED_SKILL_DIRS as _EXCLUDED_SKILL_DIRS, is_skill_support_path as _is_skill_support_path)
-from tools.skills_tool_setup import (  # noqa: F401
-    SkillReadinessStatus, _build_setup_note, _capture_required_environment_variables,
-    _get_required_environment_variables, _is_env_var_persisted, _is_remote_env_backend)
-from tools.skills_tool_plugin import (  # noqa: F401
-    MAX_DESCRIPTION_LENGTH, MAX_NAME_LENGTH, _INJECTION_PATTERNS, _fail, _json,
-    _mark_background_review_read, _preprocess_skill, _read_skill_text, _safe_frontmatter,
-    _serve_plugin_skill, _serve_skill_file, _truncate_description)
-from tools.skills_tool_dedup import (  # noqa: F401
-    _check_skill_view_dedup, _record_skill_view, reset_skill_view_dedup)
 from tools.skill_provenance import is_background_review
+from tools.skills_tool_dedup import (  # noqa: F401
+    _check_skill_view_dedup,
+    _record_skill_view,
+    reset_skill_view_dedup,
+)
+from tools.skills_tool_plugin import (  # noqa: F401
+    _INJECTION_PATTERNS,
+    MAX_DESCRIPTION_LENGTH,
+    MAX_NAME_LENGTH,
+    _fail,
+    _json,
+    _mark_background_review_read,
+    _preprocess_skill,
+    _read_skill_text,
+    _safe_frontmatter,
+    _serve_plugin_skill,
+    _serve_skill_file,
+    _truncate_description,
+)
+from tools.skills_tool_setup import (  # noqa: F401
+    SkillReadinessStatus,
+    _build_setup_note,
+    _capture_required_environment_variables,
+    _get_required_environment_variables,
+    _is_env_var_persisted,
+    _is_remote_env_backend,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -190,7 +208,12 @@ def _skill_catalog(*, skip_disabled: bool = False, include_hidden: bool = False)
     Resolution runs over ALL files first — skill_view ignores platform/disabled gates when
     collecting candidates, so it asks for hidden rows too."""
     from agent.skill_utils import (
-        TIER_PROJECT, is_disabled_entry, iter_project_skill_files, iter_skill_index_files, resolve_skill_catalog)
+        TIER_PROJECT,
+        is_disabled_entry,
+        iter_project_skill_files,
+        iter_skill_index_files,
+        resolve_skill_catalog,
+    )
     cache_key = ("with_disabled" if skip_disabled else "filtered", include_hidden)
     disabled = set() if skip_disabled else _get_disabled_skill_names()
     roots, _ = _skill_search_dirs()
@@ -288,7 +311,10 @@ def _resolve_plugin_skill(name, file_path, task_id, preprocess):
     pm = get_plugin_manager()
     active_memory_provider = None
     try:
-        from plugins.memory import _get_active_memory_provider, _prune_inactive_memory_provider_skills
+        from plugins.memory import (
+            _get_active_memory_provider,
+            _prune_inactive_memory_provider_skills,
+        )
         active_memory_provider = _get_active_memory_provider()
         _prune_inactive_memory_provider_skills(active_memory_provider)
     except Exception as exc:
@@ -473,7 +499,12 @@ def _locate_skill(name: str, local_category_name: Optional[str], roots):
     (project > local > create_dir > external, shadowed copies logged), same-tier collision refusal,
     same-root identical-copy ranking, quarantine gate, not-found listing. ``(error_json, skill_dir,
     skill_md)``; skill_md set iff no error."""
-    from agent.skill_utils import AMBIGUOUS_SKILL_PREFIX, TIER_PROJECT, pick_skill_candidate, skill_candidate_rank
+    from agent.skill_utils import (
+        AMBIGUOUS_SKILL_PREFIX,
+        TIER_PROJECT,
+        pick_skill_candidate,
+        skill_candidate_rank,
+    )
     all_dirs = [d for _t, d in roots]
     if not all_dirs:
         return _fail(

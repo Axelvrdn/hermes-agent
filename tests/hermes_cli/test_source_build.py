@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -255,8 +255,8 @@ def test_preparation_reuses_only_the_exact_completed_workspace_union(source_chec
 @pytest.mark.platforms("linux")
 @pytest.mark.parametrize("desktop", [False, True])
 def test_update_builds_selected_products_after_one_union_preparation(source_products, desktop):
-    from hermes_cli.source_build import build_update_products
     from hermes_cli.main_web_build import _web_ui_build_needed
+    from hermes_cli.source_build import build_update_products
 
     root, acquired = source_products
     app = root / "apps/desktop/release/linux-unpacked/hermes"

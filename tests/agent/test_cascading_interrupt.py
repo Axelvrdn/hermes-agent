@@ -32,8 +32,6 @@ import pytest
 from agent import chat_completion_helpers as cch
 
 
-
-
 def _make_agent():
     """A MagicMock agent wired with just enough surface for the helpers."""
     agent = MagicMock()

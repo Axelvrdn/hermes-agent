@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 import shlex
+import sys
 from pathlib import Path
 
-from hermes_constants import get_hermes_home
 from hermes_cli.secret_prompt import masked_secret_prompt
+from hermes_constants import get_hermes_home
 
 _CANCELLED = -1
 
@@ -55,10 +55,10 @@ def _prompt(label: str, default: str | None = None, secret: bool = False) -> str
 def memory_provider_dependency_inputs(provider_name: str) -> tuple[dict, dict]:
     """Read one candidate declaration for preparation and passive readiness."""
     from hermes_cli.plugins_cmd import PluginOperationError, _read_manifest_for_install
+    from plugins.memory import find_provider_dir
     from pm.package import InstallError
     from pm.plugin_inputs import Candidates
     from pm.workspace import _is_member_candidate
-    from plugins.memory import find_provider_dir
 
     plugin_dir = find_provider_dir(provider_name)
     if not plugin_dir:
@@ -158,8 +158,8 @@ def _find_provider(providers: list, provider_name: str):
 
 def _catalog_install_hint(provider_name: str):
     """The install command for a catalog memory provider that resolves nowhere, else None."""
-    from plugins.memory import find_provider_dir
     from hermes_cli.memory_provider_migration import catalog_install_hint
+    from plugins.memory import find_provider_dir
     if not provider_name or find_provider_dir(provider_name) is not None:
         return None
     return catalog_install_hint(provider_name, category="memory")

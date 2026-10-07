@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import logging
 import contextlib
+import logging
 import os
 import shutil
 import subprocess
@@ -11,8 +11,9 @@ import sys
 import time
 from typing import Optional
 
-from hermes_cli.cli_output import (
-    print_info as _print_info, print_success as _print_success, print_warning as _print_warning)
+from hermes_cli.cli_output import print_info as _print_info
+from hermes_cli.cli_output import print_success as _print_success
+from hermes_cli.cli_output import print_warning as _print_warning
 
 
 def _run_text(cmd: list, *, timeout, capture_output: bool = True,
@@ -142,7 +143,9 @@ def install_cua_driver(upgrade: bool = False, show_installer_progress: bool = Tr
         return _fail("    cua-driver is compatible, but Windows autostart setup failed.")
     if sys.platform == "darwin":
         from tools.computer_use.cua_backend_daemon import (
-            _resolve_cua_driver_app_path, _validate_cua_driver_app_signature)
+            _resolve_cua_driver_app_path,
+            _validate_cua_driver_app_signature,
+        )
 
         app = _resolve_cua_driver_app_path(binary)
         if not app:

@@ -1,10 +1,10 @@
 """Build identity and process environment from an admitted preparation."""
 from __future__ import annotations
 
-from collections.abc import Mapping
-from contextlib import contextmanager
 import json
 import re
+from collections.abc import Mapping
+from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 

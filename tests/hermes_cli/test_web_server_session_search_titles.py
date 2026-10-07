@@ -14,14 +14,14 @@ DB) so the title lane is exercised end to end, including the SQLite
 read-only connection the endpoint opens.
 """
 
-import logging
 import asyncio
+import logging
 import threading
 
 import pytest
 
-import hermes_cli.web_server_sessions as _web_server_sessions
 import hermes_cli.web_routers.sessions as _rt_sessions
+import hermes_cli.web_server_sessions as _web_server_sessions
 from hermes_state import SessionDB
 
 

@@ -3,8 +3,9 @@ import asyncio
 import sys
 import time
 import types
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
 
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.event import MessageType
@@ -720,8 +721,9 @@ class TestMatrixRequirements:
         a confusing ``No module named 'asyncpg'`` deep in
         ``MatrixAdapter.connect()``.
         """
-        from plugins.platforms.matrix.adapter import _check_e2ee_deps
         import builtins
+
+        from plugins.platforms.matrix.adapter import _check_e2ee_deps
         real_import = builtins.__import__
 
         def _blocking_import(name, *args, **kwargs):
@@ -738,8 +740,9 @@ class TestMatrixRequirements:
         Mautrix's ``Database.create("sqlite:///...")`` driver lookup imports
         aiosqlite lazily — without it, connect fails at ``crypto_db.start()``.
         """
-        from plugins.platforms.matrix.adapter import _check_e2ee_deps
         import builtins
+
+        from plugins.platforms.matrix.adapter import _check_e2ee_deps
         real_import = builtins.__import__
 
         def _blocking_import(name, *args, **kwargs):
@@ -1965,6 +1968,7 @@ class TestMatrixImageOnlyMediaNormalization:
     async def test_external_media_download_follows_safe_redirect(self, monkeypatch):
         """A redirect to another allowed URL is followed and its body returned."""
         import aiohttp
+
         import tools.url_safety as url_safety
 
         class _Content:
@@ -2032,8 +2036,8 @@ class TestMatrixImageOnlyMediaNormalization:
 
     @pytest.mark.asyncio
     async def test_send_image_failure_log_redacts_signed_url(self, caplog, monkeypatch):
-        from gateway.platforms.base import SendResult
         import tools.url_safety as url_safety
+        from gateway.platforms.base import SendResult
 
         signed_url = "https://example.com/image.png?signature=secret-token#frag"
         self.adapter._download_external_media_with_cap = AsyncMock(
@@ -2051,8 +2055,8 @@ class TestMatrixImageOnlyMediaNormalization:
 
     @pytest.mark.asyncio
     async def test_send_image_failure_response_preserves_caption(self, monkeypatch):
-        from gateway.platforms.base import SendResult
         import tools.url_safety as url_safety
+        from gateway.platforms.base import SendResult
 
         signed_url = "https://example.com/image.png?signature=secret-token#fragment"
         self.adapter._download_external_media_with_cap = AsyncMock(
@@ -2904,6 +2908,7 @@ class TestCryptoStoreResetOnDeviceChange:
         must win, and the store must be reset.
         """
         import logging
+
         from plugins.platforms.matrix.adapter import MatrixAdapter
 
         config = PlatformConfig(

@@ -8,7 +8,6 @@ import argparse
 import http.server
 import json
 import os
-from pathlib import Path
 import pty
 import re
 import select
@@ -18,6 +17,7 @@ import sys
 import tempfile
 import threading
 import time
+from pathlib import Path
 
 CATALOG = ["live-configured", "live-discovered-b", "live-discovered-c"]
 TOKEN = "local-eval-token-not-a-secret"
@@ -26,7 +26,9 @@ TOKEN = "local-eval-token-not-a-secret"
 def rows_worker():
     from hermes_cli.config import load_config
     from hermes_cli.model_switch_providers import (
-        _PickerBuild, _lap_custom_provider_rows, _lap_user_provider_rows,
+        _lap_custom_provider_rows,
+        _lap_user_provider_rows,
+        _PickerBuild,
     )
     cfg = load_config()
     b = _PickerBuild(current_provider="", current_base_url="", current_model="",

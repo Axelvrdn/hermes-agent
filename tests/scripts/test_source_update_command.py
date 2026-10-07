@@ -1,12 +1,11 @@
 """Source E2E updates must follow the staged git branch when supported."""
 
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
-
 
 HELPER = Path(__file__).resolve().parents[1] / "install/e2e-assets/source-update-command.sh"
 SOURCE_BUILD_ENV = HELPER.with_name("source-build-env.sh")

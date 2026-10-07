@@ -2,9 +2,9 @@
 
 from pathlib import Path
 
-import hermes_yaml as yaml
-
 import pytest
+
+import hermes_yaml as yaml
 
 
 class TestSaveConfigValueAtomic:

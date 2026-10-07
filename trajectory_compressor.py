@@ -11,28 +11,37 @@ Usage:
     python trajectory_compressor.py --input=data/trajectories.jsonl --output=out.jsonl --target_max_tokens=16000
 """
 
+import asyncio
 import json
+import logging
 import os
 import random
 import shutil
 import tempfile
 import time
-import hermes_yaml as yaml
-import logging
-import asyncio
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from utils import base_url_host_matches, base_url_hostname
 import fire
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.console import Console
-from hermes_constants import OPENROUTER_BASE_URL, get_hermes_home
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
+
+import hermes_yaml as yaml
 from agent.compression_marker import elide_middle
 from agent.retry_utils import jittered_backoff
 from hermes_cli.env_loader import load_hermes_dotenv
+from hermes_constants import OPENROUTER_BASE_URL, get_hermes_home
+from utils import base_url_host_matches, base_url_hostname
 
 # Load .env from HERMES_HOME first, then project root as a dev fallback.
 load_hermes_dotenv(hermes_home=get_hermes_home(), project_env=Path(__file__).parent / ".env")
@@ -61,7 +70,10 @@ def _effective_temperature_for_model(model: str, requested_temperature: Optional
     Shared with ``mini_swe_runner`` (which passes ``requested_temperature=None``).
     """
     try:
-        from agent.auxiliary_client import _fixed_temperature_for_model, OMIT_TEMPERATURE
+        from agent.auxiliary_client import (
+            OMIT_TEMPERATURE,
+            _fixed_temperature_for_model,
+        )
     except Exception:
         return requested_temperature
     fixed_temperature = _fixed_temperature_for_model(model, base_url)
@@ -320,6 +332,7 @@ class TrajectoryCompressor:
             if not api_key:
                 raise RuntimeError(f"Missing API key. Set {self.config.api_key_env} environment variable.")
             from openai import OpenAI
+
             from agent.auxiliary_client import _to_openai_base_url
             self.client = OpenAI(api_key=api_key, base_url=_to_openai_base_url(self.config.base_url))
             # AsyncOpenAI is created lazily in _get_async_client() so it binds to the current event
@@ -333,6 +346,7 @@ class TrajectoryCompressor:
     def _get_async_client(self):
         """Return a fresh AsyncOpenAI client bound to the running event loop."""
         from openai import AsyncOpenAI
+
         from agent.auxiliary_client import _to_openai_base_url
         self.async_client = AsyncOpenAI(api_key=self._async_client_api_key, base_url=_to_openai_base_url(self.config.base_url))
         return self.async_client

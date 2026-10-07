@@ -11,8 +11,8 @@ Subcommands:
 
 No external dependencies — stdlib only.
 """
-import sys
 import math
+import sys
 
 
 def bmi(weight_kg, height_cm):

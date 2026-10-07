@@ -12,6 +12,7 @@ import sys
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+
 def _ensure_discord_mock():
     if "discord" in sys.modules and hasattr(sys.modules["discord"], "__file__"):
         return
@@ -50,6 +51,7 @@ from plugins.platforms.discord.adapter import (  # noqa: E402
     _DISCORD_PROMPT_TIMEOUT_MIN,
     _read_discord_prompt_timeout,
 )
+
 
 def _patch_config(monkeypatch, cfg):
     """Stub ``hermes_cli.config.read_raw_config`` to return ``cfg``."""

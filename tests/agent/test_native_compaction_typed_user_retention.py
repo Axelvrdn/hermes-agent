@@ -11,7 +11,6 @@ from agent.native_compaction import (
     prune_pre_checkpoint_items,
 )
 
-
 _CHECKPOINT = {"type": "compaction", "encrypted_content": "synthetic_checkpoint"}
 
 

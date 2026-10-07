@@ -18,7 +18,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -61,6 +60,7 @@ class TestRunAsyncLoopLifecycle:
 
 def test_concurrent_workers_reuse_distinct_loops():
     from concurrent.futures import ThreadPoolExecutor
+
     from model_tools import _run_async
 
     main = _run_async(_get_current_loop())
@@ -108,6 +108,7 @@ class TestRunAsyncWithRunningLoop:
         caller returns).
         """
         import concurrent.futures
+
         from model_tools import _run_async
 
         events = {
@@ -183,12 +184,12 @@ class TestRunAsyncWithRunningLoop:
         future is a no-op, so the worker thread kept running the coroutine
         to completion (leaking one thread per tool-timeout).
         """
-        from model_tools import _run_async
-
         # Shrink the 300s internal timeout by patching future.result.
         # We do this surgically: let everything else run for real so the
         # worker loop actually exists and can observe cancellation.
         import concurrent.futures as _cf
+
+        from model_tools import _run_async
 
         real_pool_cls = _cf.ThreadPoolExecutor
 
@@ -251,7 +252,9 @@ class TestVisionDispatchLoopSafety:
     def test_consecutive_image_dispatches_keep_the_loop_alive(self):
         import base64
         import io
+
         from PIL import Image
+
         from model_tools import _get_tool_loop
         from tools.registry import registry
 

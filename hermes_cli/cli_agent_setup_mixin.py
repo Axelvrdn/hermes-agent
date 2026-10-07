@@ -67,6 +67,7 @@ def _credential_pool_notice(provider: str) -> tuple:
     startup notice. *cooling* is True when the first line is a live cooldown with its remaining
     time; a dead (quarantined) sign-in adds a line naming the re-login."""
     import time
+
     from agent.credential_pool import STATUS_DEAD, STATUS_EXHAUSTED, load_pool
     try:
         pool = load_pool(provider)
@@ -234,7 +235,10 @@ class CLIAgentSetupMixin:
         """Re-resolve provider credentials before agent use so key rotation / token
         refresh are picked up without restarting the CLI. False on auth failure."""
         from cli import ChatConsole, logger
-        from hermes_cli.runtime_provider import resolve_runtime_provider, format_runtime_provider_error
+        from hermes_cli.runtime_provider import (
+            format_runtime_provider_error,
+            resolve_runtime_provider,
+        )
         _primary_exc = None
         runtime = None
         _model_at_entry = self.model
@@ -486,7 +490,9 @@ class CLIAgentSetupMixin:
             return False
         try:
             from hermes_cli.main import select_provider_and_model
-            from hermes_cli.observability.shared_metrics_setup import provider_setup_surface
+            from hermes_cli.observability.shared_metrics_setup import (
+                provider_setup_surface,
+            )
             with provider_setup_surface("cli_setup"):
                 select_provider_and_model()
         except (KeyboardInterrupt, EOFError, SystemExit):
@@ -569,7 +575,7 @@ class CLIAgentSetupMixin:
         """Late resume path: validate the session and load its history from the DB when
         _preload_resumed_session() (called from run()) did not already populate it.
         False when the resume must abort (missing session / over the safe-resume limit)."""
-        from cli import ChatConsole, _DIM, _RST, _accent_hex, _cprint
+        from cli import _DIM, _RST, ChatConsole, _accent_hex, _cprint
         session_meta = self._session_db.get_session(self.session_id)
         # Quiet mode (tool_progress_mode == "off") routes resume status lines to
         # stderr so stdout stays machine-readable for `$(hermes chat -Q --resume ...)`.
@@ -827,7 +833,12 @@ class CLIAgentSetupMixin:
     def _display_resumed_history(self):
         """Render a dim Rich-panel recap of the previous conversation, capped at the last
         ``resume_exchanges`` user/assistant exchanges with a hidden-count indicator."""
-        from cli import CLI_CONFIG, _record_output_history_entry, _strip_reasoning_tags, _suspend_output_history
+        from cli import (
+            CLI_CONFIG,
+            _record_output_history_entry,
+            _strip_reasoning_tags,
+            _suspend_output_history,
+        )
         from tools.ansi_strip import sanitize_display_text as _sanitize_display_text
         display_history = getattr(self, "_resume_display_history", self.conversation_history)
         if not display_history or self.resume_display == "minimal":

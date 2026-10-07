@@ -7,18 +7,18 @@ set. Run through scripts/run_tests.sh with uv/uvx available on PATH.
 """
 from __future__ import annotations
 
-from functools import partial
 import hashlib
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tarfile
 import threading
 import tomllib
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 import pytest
 

@@ -14,8 +14,11 @@ from unittest.mock import MagicMock
 import pytest
 
 import plugins.dashboard_auth.drain as drain_plugin
-from hermes_cli.dashboard_auth import TokenPrincipal, assert_protocol_compliance
-from hermes_cli.dashboard_auth import token_auth
+from hermes_cli.dashboard_auth import (
+    TokenPrincipal,
+    assert_protocol_compliance,
+    token_auth,
+)
 
 
 @pytest.fixture(scope="module")

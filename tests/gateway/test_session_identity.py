@@ -18,7 +18,11 @@ from gateway.platforms.base import BasePlatformAdapter
 from gateway.profile_routing import parse_profile_routes
 from gateway.session import SessionSource, build_session_key
 from gateway.session_identity import (
-    IdentityUnresolved, RoutingIdentity, identity_of, replace_source, resolve_identity,
+    IdentityUnresolved,
+    RoutingIdentity,
+    identity_of,
+    replace_source,
+    resolve_identity,
 )
 
 

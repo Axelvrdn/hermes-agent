@@ -18,16 +18,15 @@ from unittest.mock import patch
 import pytest
 
 
-
 def test_standalone_fallback_pool_keeps_profile_scope(tmp_path, monkeypatch):
+    import cron.scheduler as sched
+    import tools.send_message_tool as smt
     from agent.secret_scope import (
         get_secret,
         set_multiplex_active,
         set_secret_scope,
     )
     from hermes_constants import get_hermes_home, set_hermes_home_override
-    import cron.scheduler as sched
-    import tools.send_message_tool as smt
 
     default_home = tmp_path / "default"
     sec_home = tmp_path / "profiles" / "ops"

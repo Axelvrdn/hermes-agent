@@ -1,6 +1,11 @@
-import os, sys, tempfile, json, socket, threading
-from pathlib import Path
+import json
+import os
+import socket
+import sys
+import tempfile
+import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 os.environ.clear()
 home = tempfile.mkdtemp(prefix="hermes-104360-")
@@ -99,15 +104,16 @@ config = {
 Path(os.environ["HERMES_HOME"] + "/config.yaml").write_text(
     yaml.safe_dump(config), encoding="utf-8"
 )
-from hermes_cli.runtime_provider import resolve_runtime_provider
 from agent.auxiliary_client import resolve_provider_client
+from hermes_cli.runtime_provider import resolve_runtime_provider
 
 try:
     from agent.client_lifecycle import _swap_fallback_clients
 except ImportError:
     from agent.chat_completion_helpers import _swap_fallback_clients
-from openai import OpenAI
 from types import SimpleNamespace
+
+from openai import OpenAI
 
 runtime = resolve_runtime_provider(requested="fixture-provider", target_model="model-a")
 out = {"runtime_key_callable": callable(runtime["api_key"]), "cases": []}

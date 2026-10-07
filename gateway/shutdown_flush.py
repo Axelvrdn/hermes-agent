@@ -450,7 +450,11 @@ def recover_gateway_pending(runner) -> int:
     holds back are marked on the session store, so their next live row drains the spool first.
     """
     from gateway.run import _multiplex_profile_homes
-    from hermes_constants import get_hermes_home, reset_hermes_home_override, set_hermes_home_override
+    from hermes_constants import (
+        get_hermes_home,
+        reset_hermes_home_override,
+        set_hermes_home_override,
+    )
 
     store = runner.session_store
     recovered, held_back = recover_pending_spool(session_resolver=store.resolve_session_id_for_key)

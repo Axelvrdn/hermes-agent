@@ -13,7 +13,9 @@ Covers the bugs discovered while setting up TBLite evaluation:
 import os
 import sys
 from pathlib import Path
+
 import pytest
+
 from tools import approval_context
 
 # Ensure repo root is importable
@@ -284,8 +286,8 @@ class TestDockerHostBindApproval:
     def test_raising_registry_lookup_keeps_container_guards_on(self, monkeypatch):
         """A registry that raises during the provider lookup must fail soft to guards-on,
         not propagate out of the approval predicate."""
-        from agent import terminal_env_registry as R
         import tools.approval as A
+        from agent import terminal_env_registry as R
 
         def boom(*_a, **_k):
             raise RuntimeError("registry down")
@@ -295,9 +297,9 @@ class TestDockerHostBindApproval:
 
     def test_registered_disposable_plugin_skips_container_guards(self):
         """Plugin classification uses its registered provider, not built-in names only."""
+        import tools.approval as A
         from agent import terminal_env_registry
         from agent.terminal_env_provider import TerminalEnvironmentProvider
-        import tools.approval as A
 
         class DisposablePlugin(TerminalEnvironmentProvider):
             name = "approval_disposable_plugin"

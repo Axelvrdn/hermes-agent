@@ -8,7 +8,9 @@ inside the Python body failed closed as an oversized "script".
 
 import pytest
 
-from cron.lifecycle_guard import contains_gateway_lifecycle_command_or_referenced_script as guard
+from cron.lifecycle_guard import (
+    contains_gateway_lifecycle_command_or_referenced_script as guard,
+)
 
 
 def _big_file(tmp_path):

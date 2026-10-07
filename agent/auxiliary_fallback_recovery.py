@@ -11,7 +11,7 @@ from typing import Any, Awaitable, Callable, Dict, Optional
 
 def _parameter_ladder(first_err: Exception, client: Any, kwargs: Dict[str, Any], *,
                       task: Optional[str], tag: str):
-    from agent.auxiliary_client import _LadderRoute, _ladder_parameter_rungs
+    from agent.auxiliary_client import _ladder_parameter_rungs, _LadderRoute
     # Keyword construction: the route tuple grows with every new ladder rung (a positional 13-tuple
     # broke the moment a sibling PR added ``timeout``); fields this ladder never reads stay None.
     route = _LadderRoute(**{**dict.fromkeys(_LadderRoute._fields), "client": client, "task": task,

@@ -37,12 +37,12 @@ sync never displaces the outer update's entry.
 from __future__ import annotations
 
 import contextvars
-from contextlib import contextmanager
 import copy
 import json
 import os
 import time
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional

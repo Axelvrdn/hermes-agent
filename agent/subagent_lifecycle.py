@@ -3,21 +3,21 @@ objects. Plugins obtain it via ``PluginContext.subagent_lifecycle``."""
 
 from __future__ import annotations
 
-import logging
+import contextlib
 import contextvars
 import dataclasses
 import enum
 import hashlib
 import hmac
 import json
+import logging
 import math
 import secrets
 import threading
 import time
-import contextlib
 import weakref
-from contextlib import contextmanager
 from concurrent.futures import Future, TimeoutError
+from contextlib import contextmanager
 from typing import Any, Callable, Mapping, Optional
 
 from agent.interrupt_compat import request_hard_interrupt
@@ -156,7 +156,10 @@ class _Registry:
 
 
 _REGISTRY = _Registry()
-from tools.daemon_pool import DaemonThreadPoolExecutor as _DaemonExecutor  # daemon: a wedged child never blocks exit
+from tools.daemon_pool import (
+    DaemonThreadPoolExecutor as _DaemonExecutor,  # daemon: a wedged child never blocks exit
+)
+
 _EXECUTOR = _DaemonExecutor(max_workers=8, thread_name_prefix="hermes-lifecycle")
 _SECRET = secrets.token_bytes(32)
 _ACTIVE_PARENT_AGENT: contextvars.ContextVar[Any] = contextvars.ContextVar("hermes_subagent_lifecycle_parent", default=None)
@@ -257,7 +260,10 @@ class SubagentLifecycleService:
             if request.correlation_id and correlation_key in _REGISTRY.correlations:
                 raise SubagentLifecycleError("Duplicate correlation_id for this parent session.")
         # Lazy: delegate construction stays internal, plugins never import private delegation helpers.
-        from tools.delegate_tool import _build_child_preserving_parent_tools, DEFAULT_MAX_ITERATIONS
+        from tools.delegate_tool import (
+            DEFAULT_MAX_ITERATIONS,
+            _build_child_preserving_parent_tools,
+        )
         child = _build_child_preserving_parent_tools(
             task_index=0, goal=request.goal, context=request.context,
             toolsets=list(request.allowed_toolsets) if request.allowed_toolsets else None,

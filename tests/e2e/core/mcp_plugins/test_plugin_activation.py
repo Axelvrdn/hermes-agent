@@ -32,13 +32,13 @@ from typing import Any
 
 import pytest
 
+from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core._pm_dependencies import select_test_dependencies
 from tests.e2e.core.mcp_plugins._helpers import (
     FINAL,
     REPO_ROOT,
     E2EHome,
     KnownSymptom,
-    build_home as _build_home,
     calls_received,
     inbound,
     provider,
@@ -50,9 +50,16 @@ from tests.e2e.core.mcp_plugins._helpers import (
     tool_names,
     tool_results,
 )
-from tests.e2e.core.mcp_plugins._plugin_helpers import portable_stdio, reap_tagged, tui_host, write_portable_plugin
+from tests.e2e.core.mcp_plugins._helpers import (
+    build_home as _build_home,
+)
+from tests.e2e.core.mcp_plugins._plugin_helpers import (
+    portable_stdio,
+    reap_tagged,
+    tui_host,
+    write_portable_plugin,
+)
 from tests.e2e.core.parity._helpers import hermes_argv
-from tests.e2e.core._pending_fixes import known_gate
 
 pytestmark = [
     pytest.mark.skipif(not sys.platform.startswith("linux"), reason="process-tree cleanup uses /proc"),

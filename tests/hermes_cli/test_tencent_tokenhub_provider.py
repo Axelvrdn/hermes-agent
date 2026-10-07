@@ -4,9 +4,9 @@ import pytest
 
 from hermes_cli.auth import (
     PROVIDER_REGISTRY,
-    resolve_provider,
     get_api_key_provider_status,
     resolve_api_key_provider_credentials,
+    resolve_provider,
 )
 
 # Other provider env vars to clear during auto-detection tests

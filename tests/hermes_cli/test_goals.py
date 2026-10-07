@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import json
 import time
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
-
 
 # ──────────────────────────────────────────────────────────────────────
 # Fixtures
@@ -237,7 +236,12 @@ class TestMigrateGoalToSession:
     goal silently dies when compression rotates session_id."""
 
     def test_migrates_active_goal_to_child(self, hermes_home):
-        from hermes_cli.goals import save_goal, load_goal, migrate_goal_to_session, GoalState
+        from hermes_cli.goals import (
+            GoalState,
+            load_goal,
+            migrate_goal_to_session,
+            save_goal,
+        )
         save_goal("parent-sid", GoalState(goal="ship the feature"))
         assert migrate_goal_to_session("parent-sid", "child-sid", reason="compression") is True
         child = load_goal("child-sid")
@@ -248,7 +252,12 @@ class TestMigrateGoalToSession:
 
 
     def test_does_not_clobber_existing_child_goal(self, hermes_home):
-        from hermes_cli.goals import save_goal, load_goal, migrate_goal_to_session, GoalState
+        from hermes_cli.goals import (
+            GoalState,
+            load_goal,
+            migrate_goal_to_session,
+            save_goal,
+        )
         save_goal("p3", GoalState(goal="parent goal"))
         save_goal("c3", GoalState(goal="child already has one"))
         assert migrate_goal_to_session("p3", "c3") is False
@@ -265,8 +274,11 @@ class TestSessionDbCacheAfterProfileDelete:
 
         import hermes_state
         import hermes_state_registry as registry
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
         from hermes_cli.goals import GoalState, _get_session_db, load_goal, save_goal
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         # conftest re-points DEFAULT_DB_PATH at one fixed file; the registry must resolve the
         # scoped profile home here, as production does.
@@ -303,6 +315,7 @@ class TestGoalManagerSubgoals:
 
     def test_remove_subgoal_out_of_range(self, hermes_home):
         import pytest
+
         from hermes_cli.goals import GoalManager
         mgr = GoalManager(session_id="sub-oob")
         mgr.set("g")
@@ -321,6 +334,7 @@ class TestJudgeGoalWithSubgoals:
         capture the prompt that would be sent.
         """
         from unittest.mock import patch
+
         from hermes_cli import goals
 
         captured = {}
@@ -352,6 +366,7 @@ class TestJudgeGoalWithSubgoals:
 
     def test_judge_uses_original_template_when_no_subgoals(self, hermes_home):
         from unittest.mock import patch
+
         from hermes_cli import goals
 
         captured = {}
@@ -510,7 +525,8 @@ class TestJudgeDrivenWait:
 
     @staticmethod
     def _spawn_sleeper():
-        import subprocess, sys
+        import subprocess
+        import sys
         return subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
 
     def test_judge_wait_on_dead_pid_continues_instead_of_parking(self, hermes_home):
@@ -636,7 +652,8 @@ class TestSessionTriggerBarrier:
     @staticmethod
     def _inject(sid, *, watch_patterns=None, exited=False):
         import time as _t
-        from tools.process_registry import process_registry, ProcessSession
+
+        from tools.process_registry import ProcessSession, process_registry
         s = ProcessSession(id=sid, command="watcher.sh", task_id="t",
                            session_key="", cwd="/tmp", started_at=_t.time())
         if watch_patterns:
@@ -713,7 +730,7 @@ class TestParseContract:
 
 class TestGoalContractSerialization:
     def test_roundtrip_with_contract(self):
-        from hermes_cli.goals import GoalState, GoalContract
+        from hermes_cli.goals import GoalContract, GoalState
 
         state = GoalState(
             goal="ship it",
@@ -753,7 +770,7 @@ class TestGoalManagerContract:
 
 
     def test_set_contract_after_the_fact(self, hermes_home):
-        from hermes_cli.goals import GoalManager, GoalContract
+        from hermes_cli.goals import GoalContract, GoalManager
 
         mgr = GoalManager(session_id="c-after")
         mgr.set("ship it")
@@ -765,7 +782,7 @@ class TestGoalManagerContract:
         assert GM2(session_id="c-after").has_contract()
 
     def test_persistence_roundtrip(self, hermes_home):
-        from hermes_cli.goals import GoalManager, GoalContract
+        from hermes_cli.goals import GoalContract, GoalManager
 
         GoalManager(session_id="c-persist").set(
             "ship it", contract=GoalContract(outcome="O", verification="V")
@@ -793,6 +810,7 @@ class TestJudgeWithContract:
 
     def test_judge_uses_contract_template(self, hermes_home):
         from unittest.mock import patch
+
         from hermes_cli import goals
         from hermes_cli.goals import GoalContract
 
@@ -813,6 +831,7 @@ class TestJudgeWithContract:
 class TestDraftContract:
     def test_draft_parses_json(self, hermes_home):
         from unittest.mock import patch
+
         from hermes_cli import goals
 
         class _FakeMsg:
@@ -836,6 +855,7 @@ class TestDraftContract:
 
     def test_draft_returns_none_when_no_client(self, hermes_home):
         from unittest.mock import patch
+
         from hermes_cli import goals
 
         with patch("agent.auxiliary_client.call_llm",
@@ -870,6 +890,7 @@ class TestContractAndBackgroundCompose:
 
     def test_judge_prompt_carries_contract_and_background(self, hermes_home):
         from unittest.mock import patch
+
         from hermes_cli import goals
         from hermes_cli.goals import GoalContract
 
@@ -914,6 +935,7 @@ class TestBlockedVerdict:
 
     def test_blocked_verdict_pauses_goal_instead_of_done(self, hermes_home):
         from unittest.mock import patch
+
         from hermes_cli.goals import GoalManager
 
         mgr = GoalManager(session_id="blocked-sid")
@@ -939,8 +961,8 @@ def test_goal_session_db_is_the_registry_shared_handle(hermes_home):
     """GoalManager must borrow the process-wide registry handle for ``state.db`` rather than
     minting a bare ``SessionDB()``: a second writer per profile carries its own token-writer
     thread and close-time checkpoint beside the gateway's handle (the #90837 corruption shape)."""
-    from hermes_cli import goals
     import hermes_state_registry as registry
+    from hermes_cli import goals
 
     db = goals._get_session_db()
     assert db is not None

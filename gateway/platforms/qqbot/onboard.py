@@ -3,15 +3,22 @@
 
 from __future__ import annotations
 
-from pm import install_hint
 import logging
 import time
 from enum import IntEnum
 from typing import Optional, Tuple
 from urllib.parse import quote
 
+from pm import install_hint
+
 from .constants import (
-    ONBOARD_API_TIMEOUT, ONBOARD_CREATE_PATH, ONBOARD_POLL_INTERVAL, ONBOARD_POLL_PATH, PORTAL_HOST, QR_URL_TEMPLATE)
+    ONBOARD_API_TIMEOUT,
+    ONBOARD_CREATE_PATH,
+    ONBOARD_POLL_INTERVAL,
+    ONBOARD_POLL_PATH,
+    PORTAL_HOST,
+    QR_URL_TEMPLATE,
+)
 from .crypto import decrypt_secret, generate_bind_key
 from .utils import get_api_headers
 

@@ -12,10 +12,17 @@ from types import SimpleNamespace
 import pytest
 
 from agent.error_classifier import classify_api_error
-from agent.error_surface import LAYER_GATEWAY, LAYER_PROVIDER, build_error_surface_from_result
-from agent.turn_loop_errors import handle_outer_loop_error
-from agent.turn_recovery import max_retries_exhausted_result, nonretryable_client_error_result
+from agent.error_surface import (
+    LAYER_GATEWAY,
+    LAYER_PROVIDER,
+    build_error_surface_from_result,
+)
 from agent.turn_failure_copy import SITE_FAILURE_CODES
+from agent.turn_loop_errors import handle_outer_loop_error
+from agent.turn_recovery import (
+    max_retries_exhausted_result,
+    nonretryable_client_error_result,
+)
 from agent.turn_response_check import retry_invalid_response
 
 
@@ -120,6 +127,7 @@ def test_exhausted_plan_quota_429_names_the_reset_window_not_wait_a_minute():
     usage limit has been reached``, so the reset must travel through the classifier, not the text (#89401)."""
     import httpx
     import openai
+
     from agent.api_error_summary import ApiErrorSummaryMixin
 
     body = {"error": {"type": "usage_limit_reached", "message": "The usage limit has been reached",

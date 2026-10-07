@@ -17,7 +17,6 @@ from agent.tool_dispatch_helpers import (
     make_tool_result_message,
 )
 
-
 # =========================================================================
 # Tool classification
 # =========================================================================
@@ -280,7 +279,10 @@ class TestElisionNoticeWiring:
     def test_notice_inside_untrusted_wrapper(self):
         """Order: detect on raw -> append notice -> wrap. The notice must sit
         INSIDE the untrusted block, and the message is built once (cache-safe)."""
-        from agent.tool_dispatch_helpers import _UPSTREAM_ELISION_NOTICE, make_tool_result_message
+        from agent.tool_dispatch_helpers import (
+            _UPSTREAM_ELISION_NOTICE,
+            make_tool_result_message,
+        )
         msg = make_tool_result_message("mcp_composio_search", self._elided(), "call_1")
         content = msg["content"]
         notice = _UPSTREAM_ELISION_NOTICE.strip()
@@ -293,7 +295,10 @@ class TestElisionNoticeWiring:
     def test_notice_reaches_an_image_bearing_mcp_result(self):
         """An MCP result that also carries a screenshot is a part list; its elided text still gets the notice,
         inside the wrapped text part, and the image part is untouched."""
-        from agent.tool_dispatch_helpers import _UPSTREAM_ELISION_NOTICE, make_tool_result_message
+        from agent.tool_dispatch_helpers import (
+            _UPSTREAM_ELISION_NOTICE,
+            make_tool_result_message,
+        )
         img = {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,AAAA"}}
         msg = make_tool_result_message(
             "mcp_srv_snap", [{"type": "text", "text": self._elided()}, {"type": "text", "text": "notes"}, img], "call_2")

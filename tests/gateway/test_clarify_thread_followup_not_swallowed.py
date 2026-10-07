@@ -31,7 +31,6 @@ from gateway.platforms.base import (
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.session import SessionSource
 
-
 SESSION_KEY = "agent:main:slack:dm:D123:1111.2222"
 
 

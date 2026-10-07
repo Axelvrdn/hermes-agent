@@ -21,7 +21,6 @@ from gateway.platforms.base import AudioFormat, StreamingTTSHandle
 from gateway.streaming_tts_consumer import StreamingTTSConsumer
 from tools.tts_streaming import SentenceChunker
 
-
 # ---------------------------------------------------------------------------
 # Fakes
 # ---------------------------------------------------------------------------

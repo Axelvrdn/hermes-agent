@@ -9,7 +9,11 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from agent.gemini_native_adapter import GeminiAPIError, GeminiNativeClient, gemini_http_error
+from agent.gemini_native_adapter import (
+    GeminiAPIError,
+    GeminiNativeClient,
+    gemini_http_error,
+)
 
 INFERENCE_BASE_URL = "https://generativelanguage.googleapis.com/v1alpha"
 

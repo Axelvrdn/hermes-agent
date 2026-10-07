@@ -16,12 +16,11 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from telegram.error import BadRequest, NetworkError, TimedOut
 
 from gateway.config import PlatformConfig
 from gateway.stream_consumer import GatewayStreamConsumer, StreamConsumerConfig
 from plugins.platforms.telegram.adapter import TelegramAdapter
-from telegram.error import BadRequest, NetworkError, TimedOut
-
 
 # Content exercising rich-only constructs: a heading, a real Markdown table,
 # and a task list. Pipes / brackets must survive untouched into the payload.
@@ -808,8 +807,8 @@ def _reply_message_with_rich_blocks(
 async def test_rich_reply_records_and_recovers_text(monkeypatch, tmp_path):
     """A reply to a rich-sent message resolves the original text via the index."""
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-    from gateway.platforms.event import MessageType
     from gateway import rich_sent_store
+    from gateway.platforms.event import MessageType
 
     adapter = _make_adapter()
 

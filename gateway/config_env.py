@@ -15,13 +15,13 @@ from functools import partial
 from typing import Any, Callable, Dict, Optional
 
 from gateway.config import (
+    SHARED_LISTENER_MIRROR_PLATFORMS,
     GatewayConfig,
     HomeChannel,
     Platform,
     PlatformConfig,
     _getenv_str,
     _has_usable_api_server_key,
-    SHARED_LISTENER_MIRROR_PLATFORMS,
 )
 from utils import is_truthy_value
 

@@ -2,8 +2,8 @@
 
 from types import SimpleNamespace
 
-from agent.transports import get_transport
 from agent.anthropic_message_convert import convert_messages_to_anthropic
+from agent.transports import get_transport
 
 SIG = "sig-k3"
 

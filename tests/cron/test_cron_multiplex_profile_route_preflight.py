@@ -15,14 +15,13 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from cron.scheduler_preflight import (
     _delivery_platform_routed_from_primary_gateway,
     _preflight_check_delivery,
 )
 from hermes_constants import reset_hermes_home_override, set_hermes_home_override
-
 
 PRIMARY_YAML = {
     "gateway": {

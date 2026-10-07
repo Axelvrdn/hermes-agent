@@ -14,6 +14,7 @@ from tools.computer_use.tool import (
     _input_target_mismatch,
 )
 
+
 def _backend(last_app):
     return SimpleNamespace(_last_app=last_app)
 

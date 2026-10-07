@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -14,8 +14,14 @@ from pm.plugin_inputs import Members
 from tests.pm._fixtures import (
     _run,
     _wheel,
+)
+from tests.pm._fixtures import (
     build_worker as build_worker,
+)
+from tests.pm._fixtures import (
     client as client,
+)
+from tests.pm._fixtures import (
     isolated_python as isolated_python,
 )
 
@@ -125,9 +131,9 @@ build_editable = build_wheel
 
 @pytest.mark.parametrize("sealed", [False, True])
 def test_public_build_installs_all_extras_at_explicit_destination(installable_project, tmp_path, monkeypatch, sealed):
-    from pm import build_environment
     import pm.paths
     import pm.workspace
+    from pm import build_environment
 
     source, uv, env = installable_project
     monkeypatch.setattr(pm.paths, "repo_root", lambda: tmp_path / "unrelated-project")
@@ -212,8 +218,8 @@ def test_all_extras_build_leaves_out_opt_in_extras(installable_project, tmp_path
 @pytest.mark.parametrize("lazy", [False, True])
 def test_first_bundle_extension_preserves_shipped_extras(locked_project, build_worker, tmp_path, monkeypatch, lazy):
     import pm
-    from pm.environments import selected_venv, runtime_facts_path
     from pm import paths
+    from pm.environments import runtime_facts_path, selected_venv
     from pm.features import write_features
     from pm.lock import Facts
 
@@ -267,9 +273,9 @@ def test_first_bundle_extension_preserves_shipped_extras(locked_project, build_w
 
 def test_worker_sync_reuses_unions_and_reports_real_lock_drift(locked_project, build_worker, tmp_path, monkeypatch):
     import pm
-    from pm.environments import selected_venv, runtime_facts_path
-    from pm.lock import Facts, Lockfile
     from pm import paths
+    from pm.environments import runtime_facts_path, selected_venv
+    from pm.lock import Facts, Lockfile
 
     source, _, env = locked_project
     manifest = source / "pyproject.toml"
@@ -317,6 +323,7 @@ def test_worker_sync_reuses_unions_and_reports_real_lock_drift(locked_project, b
 @pytest.mark.parametrize("operation", ["sync", "requirements", "application"])
 def test_build_backend_output_is_streamed_before_build_finishes(installable_project, tmp_path, monkeypatch, operation):
     import io
+
     from pm.environment import PythonEnvironment
 
     monkeypatch.setenv("HERMES_VERBOSE", "1")  # live backend output is the streamed (CI) view's contract
@@ -380,6 +387,7 @@ build_editable = build_wheel
 @pytest.mark.parametrize("diagnostic", ["No solution found", "Connection timed out", "Failed to build wheel"])
 def test_streaming_bounds_memory_without_losing_failure_class(tmp_path, diagnostic):
     import tracemalloc
+
     from pm.environment import PythonEnvironment
     from pm.workspace import classify_uv_failure
 
@@ -410,6 +418,7 @@ def test_streaming_bounds_memory_without_losing_failure_class(tmp_path, diagnost
 
 def test_child_output_is_live_and_keeps_explicit_index_credentials(tmp_path, monkeypatch):
     import io
+
     from pm.environment import PythonEnvironment
 
     monkeypatch.setenv("HERMES_VERBOSE", "1")  # CI's streamed log, not the contained view
@@ -457,6 +466,7 @@ def test_child_output_is_live_and_keeps_explicit_index_credentials(tmp_path, mon
 def streaming_runner(request, tmp_path, monkeypatch):
     import contextlib
     import io
+
     from pm.cli import _run_live
     from pm.environment import PythonEnvironment
 
@@ -581,8 +591,9 @@ def test_failed_build_removes_only_its_candidate(installable_project, tmp_path, 
 
 
 def test_lock_upgrade_and_group_selection_use_the_same_environment(locked_project, tmp_path):
-    from pm.environment import PythonEnvironment
     import tomllib
+
+    from pm.environment import PythonEnvironment
 
     source, uv, env = locked_project
     manifest = source / "pyproject.toml"
@@ -606,9 +617,9 @@ def test_lock_upgrade_and_group_selection_use_the_same_environment(locked_projec
 
 
 def test_explicit_environment_installs_locked_members_without_live_selection(locked_project, tmp_path, monkeypatch):
-    from pm.environment import PythonEnvironment
     import pm.paths
     import pm.workspace
+    from pm.environment import PythonEnvironment
 
     source, uv, env = locked_project
     before_lock = (source / "uv.lock").read_bytes()
@@ -639,8 +650,8 @@ def test_explicit_environment_installs_locked_members_without_live_selection(loc
 
 
 def test_explicit_workspace_preserves_seed_and_replays_copied_members(locked_project, tmp_path, monkeypatch):
-    from pm.environment import PythonEnvironment
     import pm.workspace as workspace
+    from pm.environment import PythonEnvironment
 
     source, uv, env = locked_project
     project = source / "pyproject.toml"
@@ -709,10 +720,11 @@ def test_explicit_workspace_preserves_seed_and_replays_copied_members(locked_pro
 @pytest.mark.parametrize("failure", ["facts", "missing-cfg", "restart"])
 def test_real_sync_retains_selection_until_commit(locked_project, tmp_path, monkeypatch, failure):
     import importlib
+
     import pm.extras as extras
     from pm import paths
-    from pm.lock import Facts
     from pm.environments import selected_venv
+    from pm.lock import Facts
 
     source, uv, env = locked_project
     monkeypatch.setattr(paths, "repo_root", lambda: source)
@@ -752,10 +764,10 @@ def test_real_sync_retains_selection_until_commit(locked_project, tmp_path, monk
 
 
 def test_live_apply_keeps_selection_on_failed_union(locked_project, tmp_path, monkeypatch):
+    import pm.paths
     from pm.environments import runtime_facts_path, selected_venv
     from pm.lock import Facts
     from pm.packages import Venv
-    import pm.paths
     from pm.workspace import ResolutionConflict
 
     source, uv, env = locked_project
@@ -799,6 +811,7 @@ def test_no_config_drops_bridged_index_settings_from_child_env(tmp_path):
     The default path keeps the whole bridge — mirrored networks need it to
     resolve their application dependencies at all."""
     import io
+
     from pm.environment import PythonEnvironment
 
     ambient = dict(os.environ, UV_INDEX_URL="https://fixture-mirror.invalid/simple",

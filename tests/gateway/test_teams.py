@@ -11,7 +11,6 @@ from gateway.config import PlatformConfig
 from plugins.teams_pipeline.models import TeamsMeetingRef, TeamsMeetingSummaryPayload
 from tests.gateway._plugin_adapter_loader import load_plugin_adapter
 
-
 # ---------------------------------------------------------------------------
 # SDK Mock — install in sys.modules before importing the adapter
 # ---------------------------------------------------------------------------
@@ -184,12 +183,14 @@ _teams_mod.TEAMS_SDK_AVAILABLE = True
 # Ensure SDK symbols that were None (import failed on Python <3.12) are
 # replaced with the mocked versions so runtime calls don't silently no-op.
 import sys as _sys
+
 _mt = _sys.modules.get("microsoft_teams.api.activities.typing")
 if _mt and _teams_mod.TypingActivityInput is None:
     _teams_mod.TypingActivityInput = _mt.TypingActivityInput
 
 TeamsAdapter = _teams_mod.TeamsAdapter
 from plugins.platforms.teams.summary_writer import TeamsSummaryWriter  # noqa: E402
+
 check_requirements = _teams_mod.check_requirements
 check_teams_requirements = _teams_mod.check_teams_requirements
 validate_config = _teams_mod.validate_config

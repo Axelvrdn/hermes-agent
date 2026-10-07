@@ -52,7 +52,7 @@ def test_picker_command_auth_is_lazy_and_credential_scoped(monkeypatch, route, s
         assert rows([entry], probe=probe)[0]["models"] == first
     assert mints == ["tenant-a"] and probes == ["token-tenant-a"]
 
-    from hermes_cli.config import save_config, load_config
+    from hermes_cli.config import load_config, save_config
     other = {**entry, "key_cmd": "tenant-b", "discover_models": False}
     save_config({"custom_providers": [entry, other]})
     if route == "custom_providers":
@@ -81,8 +81,9 @@ def test_picker_command_auth_is_lazy_and_credential_scoped(monkeypatch, route, s
 @pytest.mark.parametrize("static", [{}, {"api_key": "stale"}, {"key_env": "TEST_GATEWAY_KEY"}])
 def test_setup_probe_credentials_never_become_saved_credentials(monkeypatch, route, discover, static):
     from agent import command_token_source
-    from hermes_cli import config as config_module, models
+    from hermes_cli import config as config_module
     from hermes_cli import model_setup_flows_custom as setup
+    from hermes_cli import models
 
     monkeypatch.setenv("TEST_GATEWAY_KEY", "stale")
     mints, probes, choices = [], [], []

@@ -12,7 +12,6 @@ import json
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Gating
 # ---------------------------------------------------------------------------
@@ -364,6 +363,7 @@ def test_complete_goal_mode_rejected_by_judge(monkeypatch, tmp_path):
     """Goal-mode tasks must pass the auxiliary judge before completion.
     Regression for #38367: workers bypassing the judge via early kanban_complete."""
     from pathlib import Path as _Path
+
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
     from tools import kanban_tools as kt
@@ -485,6 +485,7 @@ def _make_goal_mode_worker_env(monkeypatch, tmp_path):
     """Set up an isolated HERMES_HOME with one claimed goal_mode task,
     matching the pattern used by the kanban_complete judge gate tests."""
     from pathlib import Path as _Path
+
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
 
@@ -516,9 +517,9 @@ def test_block_goal_mode_rejects_missing_kind(monkeypatch, tmp_path):
     """A goal_mode worker calling kanban_block with no kind must not be able
     to use it as an unguarded escape from the goal loop (Issue #38696,
     sibling of the kanban_complete judge gate / Issue #38367)."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
 
     tid = _make_goal_mode_worker_env(monkeypatch, tmp_path)
     out = kt._handle_block({"reason": "giving up"})
@@ -536,9 +537,9 @@ def test_block_goal_mode_rejects_missing_kind(monkeypatch, tmp_path):
 def test_block_goal_mode_rejects_disallowed_kind(monkeypatch, tmp_path):
     """`capability` / `transient` are valid kinds in general but must not
     let a goal_mode worker exit the loop without going through the judge."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
 
     tid = _make_goal_mode_worker_env(monkeypatch, tmp_path)
     for kind in ("capability", "transient"):
@@ -556,9 +557,9 @@ def test_block_goal_mode_rejects_disallowed_kind(monkeypatch, tmp_path):
 def test_schedule_goal_mode_refused(monkeypatch, tmp_path):
     """``scheduled`` ends the goal loop like ``blocked``, so a goal_mode worker
     must not use kanban_schedule to exit without the completion judge."""
-    from tools import kanban_tools as kt
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
+    from tools import kanban_tools as kt
 
     tid = _make_goal_mode_worker_env(monkeypatch, tmp_path)
     d = json.loads(kt._handle_schedule({"reason": "waiting for CI"}))
@@ -600,6 +601,7 @@ def test_heartbeat_extends_claim_expires(worker_env):
     static while last_heartbeat_at advanced.
     """
     import time as _time
+
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
     from tools import kanban_tools as kt
@@ -655,6 +657,7 @@ def test_worker_the_dispatcher_never_recorded_keeps_its_claim_or_never_starts(mo
     pid. The worker registers itself, so the expired claim is extended, not handed to a second worker;
     a worker that starts only after its run was reclaimed is told not to work the card."""
     import os as _os
+
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
     from tools import kanban_tools as kt
@@ -682,6 +685,7 @@ def test_worker_the_dispatcher_never_recorded_keeps_its_claim_or_never_starts(mo
 def test_reclaim_loses_to_a_worker_registering_mid_sweep(monkeypatch, worker_env):
     """The worker registers between the stale-claim SELECT and its UPDATE: the claim stays its own."""
     import os as _os
+
     from hermes_cli import kanban_db as kb
     from hermes_cli import kanban_db_connect as kbc
     from tools import kanban_tools as kt

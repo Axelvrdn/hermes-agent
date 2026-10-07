@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Aggregate A/B results. Usage: report.py [model_short ...]"""
-import json
 import glob
+import json
 import os
 import statistics
 import sys

@@ -7,10 +7,10 @@ import os
 import pytest
 
 from agent.context_compressor import (
-    HISTORICAL_TASK_HEADING,
-    SUMMARY_PREFIX,
     _MERGED_SUMMARY_DELIMITER,
     _SUMMARY_END_MARKER,
+    HISTORICAL_TASK_HEADING,
+    SUMMARY_PREFIX,
 )
 from hermes_state import SessionCompressionInProgressError, SessionDB
 from hermes_state_errors import CompressionSessionClosedError, SessionTurnLeaseLostError

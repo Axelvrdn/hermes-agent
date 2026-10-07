@@ -213,7 +213,8 @@ def _format_live_context_output(sid: str, session: dict, arg: str) -> str:
                 from agent.context_breakdown import (
                     compute_context_details,
                     compute_session_context_breakdown,
-                    render_context_breakdown_lines)
+                    render_context_breakdown_lines,
+                )
                 payload = compute_session_context_breakdown(agent, live_messages)
                 details = None
                 if (arg or "").strip().lower() in {"all", "full", "details"}:
@@ -247,7 +248,10 @@ def _format_live_context_output(sid: str, session: dict, arg: str) -> str:
     if usage.get("compressions"):
         lines.append(f"Compressions: {int(usage.get('compressions') or 0):,}")
     if (agent := session.get("agent")) is not None:
-        from agent.context_file_sources import context_file_sources_for_agent, render_context_file_lines
+        from agent.context_file_sources import (
+            context_file_sources_for_agent,
+            render_context_file_lines,
+        )
         # RPC thread: bind the session cwd or the discovery walk keys on the backend's cwd, not the workspace.
         tokens = _set_session_context(session["session_key"], cwd=_session_cwd(session))
         try:
@@ -354,10 +358,19 @@ def _compress_live_with_feedback(sid: str, session: dict, agent, arg: str, *, sn
     ``_compress_session_history``; the raw arg goes through unparsed (the choke point parses
     ``here [N]`` / ``--keep N``). CompressionLockHeld is a clean no-op (skip note returned);
     other errors propagate to the caller, which finalizes the context-engine notification."""
-    from agent.conversation_compression import finalize_context_engine_compression_notification
+    from agent.conversation_compression import (
+        finalize_context_engine_compression_notification,
+    )
     from agent.conversation_compression_manual import (
-        AGGRESSIVE_UNSUPPORTED, compress_now, parse_compress_args, render_compress_result)
-    from agent.manual_compression_feedback import describe_compression_lock_skip, summarize_manual_compression
+        AGGRESSIVE_UNSUPPORTED,
+        compress_now,
+        parse_compress_args,
+        render_compress_result,
+    )
+    from agent.manual_compression_feedback import (
+        describe_compression_lock_skip,
+        summarize_manual_compression,
+    )
     from agent.model_metadata import estimate_request_tokens_rough
     request = parse_compress_args(arg)
     if request.aggressive:
@@ -409,7 +422,9 @@ def _mirror_approvals(sid, session, agent, arg) -> None:
 def _mirror_personality(sid, session, agent, arg) -> None:
     if arg and agent:
         pname, new_prompt = _validate_personality(arg, _load_cfg())
-        from hermes_cli.personality import persist_personality  # single owner: no surface drift
+        from hermes_cli.personality import (
+            persist_personality,  # single owner: no surface drift
+        )
         persist_personality(pname)
         _apply_personality_to_session(sid, session, new_prompt, pname)
 
@@ -498,7 +513,9 @@ def _mirror_slash_side_effects(sid: str, session: dict, command: str) -> str:
         return str(e)
     except Exception as e:
         if name == "compress" and agent:
-            from agent.conversation_compression import finalize_context_engine_compression_notification
+            from agent.conversation_compression import (
+                finalize_context_engine_compression_notification,
+            )
             finalize_context_engine_compression_notification(agent, committed=False)
         return f"live session sync failed: {e}"
 

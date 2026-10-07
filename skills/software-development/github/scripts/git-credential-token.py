@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Print the first unambiguous GitHub token in a git credential-store file."""
 
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 from urllib.parse import unquote, urlsplit
-
 
 _TOKEN_PREFIXES = ("ghp_", "github_pat_", "gho_", "ghu_", "ghs_", "ghr_")
 _INVALID_ESCAPE = re.compile(r"%(?![0-9A-Fa-f]{2})")

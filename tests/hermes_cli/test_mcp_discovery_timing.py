@@ -26,6 +26,7 @@ import pytest
 from hermes_cli import mcp_startup
 from hermes_constants import hermes_home_key
 
+
 @pytest.fixture(autouse=True)
 def _reset_mcp_startup_state():
     saved_started = mcp_startup._mcp_discovery_started

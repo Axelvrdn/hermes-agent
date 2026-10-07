@@ -23,7 +23,8 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Callable, Iterable, Iterator, List, Optional
 
 from tools.tts_text_normalize import _strip_markdown_for_tts
-from tools.tts_tool_delivery import _origin, _remove_quietly as _unlink_quietly
+from tools.tts_tool_delivery import _origin
+from tools.tts_tool_delivery import _remove_quietly as _unlink_quietly
 
 logger = logging.getLogger("tools.tts_tool")
 

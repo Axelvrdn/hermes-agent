@@ -1,15 +1,15 @@
 """Detached work must retain process admission, including scoped side-agent cleanup."""
 
 import contextvars
-from pathlib import Path
 import queue
 import threading
+from pathlib import Path
 
 
 def test_side_workers_hold_admission_through_cleanup_and_preserve_profile_scope(tmp_path, monkeypatch):
+    from agent.secret_scope import get_secret, set_multiplex_active
     from hermes_cli import backend_retirement
     from hermes_constants import get_hermes_home
-    from agent.secret_scope import get_secret, set_multiplex_active
     from tui_gateway import server
 
     fence = backend_retirement.RetirementFence()

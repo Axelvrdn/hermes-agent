@@ -1,8 +1,8 @@
 """The canonical shell must run tests and propagate a failing test's status."""
-from pathlib import Path
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 

@@ -13,6 +13,7 @@ import pytest
 
 from agent.transports import get_transport
 
+
 @pytest.fixture
 def transport():
     import agent.transports.chat_completions  # noqa: F401

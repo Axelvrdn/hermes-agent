@@ -3,9 +3,9 @@ surface and nothing bundled; both answer for the requested profile's home."""
 
 from __future__ import annotations
 
-import hermes_yaml as yaml
 import pytest
 
+import hermes_yaml as yaml
 from agent import i18n, i18n_layers
 
 

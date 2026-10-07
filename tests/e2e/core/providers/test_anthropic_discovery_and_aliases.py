@@ -21,7 +21,12 @@ import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
 from tests.e2e.core.providers._anthropic_helpers import Rig, blocks, start_rig
-from tests.fakes.providers.anthropic_messages import AnthropicMessagesServer, Reply, Text, ToolUse
+from tests.fakes.providers.anthropic_messages import (
+    AnthropicMessagesServer,
+    Reply,
+    Text,
+    ToolUse,
+)
 
 pytestmark = [pytest.mark.skipif(not sys.platform.startswith("linux"), reason="process-tree cleanup uses /proc"),
               pytest.mark.live_system_guard_bypass]

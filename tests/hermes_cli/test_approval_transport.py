@@ -8,8 +8,8 @@ import threading
 import time
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
 from tools import approval_context, approval_prompt
 
@@ -293,8 +293,8 @@ def test_cli_selected_transport_replaces_builtin_prompt(monkeypatch):
 
 
 def test_gateway_selected_transport_does_not_require_gateway_notifier(monkeypatch):
-    from tools import approval
     import tools.approval_context as tools_approval_context
+    from tools import approval
 
     manager = PluginManager()
     seen = []
@@ -315,8 +315,8 @@ def test_gateway_selected_transport_does_not_require_gateway_notifier(monkeypatc
 
 
 def test_execute_code_gateway_uses_selected_transport(monkeypatch):
-    from tools import approval
     import tools.approval_context as tools_approval_context
+    from tools import approval
 
     manager = PluginManager()
     seen = []
@@ -544,8 +544,8 @@ def register(ctx):
 
 
 def test_hardline_blocks_before_selected_transport(monkeypatch):
-    from tools import approval
     import tools.approval_detection as approval_detection
+    from tools import approval
 
     manager = PluginManager()
     calls = []

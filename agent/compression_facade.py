@@ -129,7 +129,9 @@ def _run_under_progress_timeout(
     rewrite it. It deep-snapshots on the worker and publishes only via an ADMITTED commit; a no-op/abort
     returns the snapshot unchanged, so the ORIGINAL list is handed back to keep identity semantics."""
     from agent.conversation_compression import (
-        CompressionCommitFence, request_exceeds_model_window, run_compress_context_with_progress_timeout,
+        CompressionCommitFence,
+        request_exceeds_model_window,
+        run_compress_context_with_progress_timeout,
     )
 
     def _snapshot_worker(fence=None, *, same_turn_fallback_recovery=False):
@@ -239,13 +241,19 @@ class CompressionFacadeMixin:
         # thread-local state guarded by a per-agent lock so overlapping automatic/manual entrypoints cannot
         # clobber each other's outcome (#98741).
         from agent.conversation_compression import (
-            CompressionCommitFence, compress_context, reset_context_compression_timeout_outcome,
+            CompressionCommitFence,
+            compress_context,
+            reset_context_compression_timeout_outcome,
             resolve_context_compression_timeouts,
         )
         reset_context_compression_timeout_outcome(self)
         from agent.portal_tags import (
-            get_affinity_scope, get_conversation_context, reset_affinity_scope, reset_conversation_context,
-            set_affinity_scope, set_conversation_context,
+            get_affinity_scope,
+            get_conversation_context,
+            reset_affinity_scope,
+            reset_conversation_context,
+            set_affinity_scope,
+            set_conversation_context,
         )
         from agent.prompt_cache_scope import declared_conversation_scope_safe
         # Out-of-turn compaction (/compact, gateway /compress, partial head compression) runs outside

@@ -29,8 +29,8 @@ import pytest
 
 @pytest.fixture()
 def server():
-    from unittest.mock import patch
     import importlib
+    from unittest.mock import patch
 
     with patch.dict(
         "sys.modules",

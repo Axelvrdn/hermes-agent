@@ -12,19 +12,17 @@ from hermes_cli.nous_subscription import NousSubscriptionFeatures
 from hermes_cli.tools_config import (
     _DEFAULT_OFF_TOOLSETS,
     _RECENTLY_SHIPPED_TOOLSETS,
+    CONFIGURABLE_TOOLSETS,
+    TOOL_CATEGORIES,
     _apply_toolset_change,
     _checklist_toolset_keys,
     _get_platform_tools,
     _run_post_setup,
     _save_platform_tools,
     _toolset_has_keys,
-    CONFIGURABLE_TOOLSETS,
-    TOOL_CATEGORIES,
     _visible_providers,
     tools_command,
 )
-
-
 
 
 def test_all_invalid_platform_toolsets_logs_runtime_warning(caplog):
@@ -346,8 +344,8 @@ class TestPlatformToolsetConsistency:
 
     def test_skills_config_covers_tools_config_platforms(self):
         """skills_config.PLATFORMS should have entries for all gateway platforms."""
-        from hermes_cli.tools_config import PLATFORMS as TOOLS_PLATFORMS
         from hermes_cli.skills_config import PLATFORMS as SKILLS_PLATFORMS
+        from hermes_cli.tools_config import PLATFORMS as TOOLS_PLATFORMS
 
         non_messaging = {"api_server"}
         for platform in TOOLS_PLATFORMS:
@@ -501,8 +499,8 @@ class TestImagegenModelPicker:
         """GPT-Image quality is pinned to medium in the tool's defaults —
         no follow-up prompt, no config write for quality_setting."""
         from hermes_cli.tools_config import (
-            _configure_imagegen_model,
             IMAGEGEN_BACKENDS,
+            _configure_imagegen_model,
         )
         catalog, default_model = IMAGEGEN_BACKENDS["fal"]["catalog_fn"]({})
         model_ids = list(catalog.keys())
@@ -724,7 +722,10 @@ def test_exactly_one_image_row_is_active_for_a_managed_selection(monkeypatch):
 
 def test_gui_model_catalog_for_the_managed_row_spans_every_managed_gateway(monkeypatch):
     import hermes_cli.tools_config as tools_config
-    from hermes_cli.web_routers.tools import _resolve_toolset_model_plugin, _toolset_model_catalog
+    from hermes_cli.web_routers.tools import (
+        _resolve_toolset_model_plugin,
+        _toolset_model_catalog,
+    )
     from plugins.image_gen.krea import KREA_MODEL_IDS
     from tools.image_generation_catalog import FAL_MODELS
 

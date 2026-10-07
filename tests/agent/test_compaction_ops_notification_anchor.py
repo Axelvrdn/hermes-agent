@@ -15,6 +15,7 @@ and assert the operational rows are invisible to the anchor/focus logic.
 
 from agent.context_compressor import ContextCompressor
 
+
 def _compressor() -> ContextCompressor:
     cc = ContextCompressor(
         model="test-model",

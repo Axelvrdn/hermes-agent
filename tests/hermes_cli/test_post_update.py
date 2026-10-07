@@ -18,7 +18,6 @@ from hermes_cli.post_update import (
     step_state_db_guard,
 )
 
-
 # ── registry invariants ──────────────────────────────────────────────
 
 
@@ -160,8 +159,9 @@ def test_provisioning_is_the_machine_scope_driver_path():
 
 
 def test_provisioning_does_not_use_human_diagnostics(tmp_path, monkeypatch):
-    import json
     import importlib
+    import json
+
     import pm
     from pm import paths
 

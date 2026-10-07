@@ -8,12 +8,11 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 from typing import Any, NoReturn
-
 
 _result: int | None = None
 

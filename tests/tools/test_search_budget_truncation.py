@@ -8,7 +8,6 @@ from tools.environments.local import LocalEnvironment
 from tools.file_operations import ExecuteResult, ShellFileOperations
 from tools.file_operations_search import _search_stdout_and_limit
 
-
 TIMEOUT = "[Command timed out after 60s]"
 
 

@@ -7,8 +7,8 @@ EXPERIMENTAL: the relay auth scheme may change without a deprecation cycle.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import socket
 import sys
@@ -215,8 +215,8 @@ def _warn_if_secondary_multiplex_profile() -> bool:
     """Warn when relay routing stamps landed in a secondary profile's .env that a multiplexed gateway
     will never read. Returns True when the warning fired (caller suppresses the restart text)."""
     try:
-        from hermes_constants import get_default_hermes_root
         from hermes_cli.config import get_hermes_home
+        from hermes_constants import get_default_hermes_root
 
         default_root = Path(get_default_hermes_root()).resolve()
         home = Path(get_hermes_home()).resolve()

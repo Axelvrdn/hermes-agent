@@ -24,9 +24,11 @@ except ImportError:
     # would reset the already-imported ``web`` to None (500 on POST /v1/runs).
     RequestKey = None  # type: ignore[assignment,misc]
 
-from gateway.platforms.api_server_room_grants import _json_error, _room_grant_error_response
+from gateway.platforms.api_server_room_grants import (
+    _json_error,
+    _room_grant_error_response,
+)
 from gateway.platforms.api_server_run_idempotency import TERMINAL_STATUSES
-
 
 logger = logging.getLogger("gateway.platforms.api_server")
 
@@ -384,7 +386,11 @@ def _check_run_auth(self, request: "web.Request", *, permission: str, _api_serve
 def _owner_alive(owner_pid: int, owner_started: int) -> bool:
     """True when the recorded owner pid still exists and is the same process incarnation."""
     try:
-        from gateway.status import _pid_exists, get_process_start_time, start_time_fingerprints_match
+        from gateway.status import (
+            _pid_exists,
+            get_process_start_time,
+            start_time_fingerprints_match,
+        )
         return owner_pid > 0 and bool(_pid_exists(owner_pid)) and (
             not owner_started
             or start_time_fingerprints_match(owner_started, get_process_start_time(owner_pid) or 0))
@@ -780,9 +786,13 @@ def _served_runtime(agent) -> Dict[str, str]:
 
 def _run_agent_sync(self, run: _RunLaunch, agent, approval_notify, *, _api_server):
     """Executor-thread body of one run; returns ``(result, usage, served_runtime)``."""
-    from gateway.session_context import clear_session_vars
     from gateway.hosted_room_execution_policy import (
-        RoomExecutionPolicy, bind_room_execution_policy, reset_room_execution_policy)
+        RoomExecutionPolicy,
+        bind_room_execution_policy,
+        reset_room_execution_policy,
+    )
+    from gateway.session_context import clear_session_vars
+
     # No eager slash-worker pre-warm: slash.exec spawns one on demand (its error path already relies on that
     # respawn to recover from a dead worker). Each worker child runs its own MCP discovery (#61891), so
     # pre-warming one per session forks the full stdio MCP fleet — ~20 OS processes per retained session on
@@ -790,7 +800,10 @@ def _run_agent_sync(self, run: _RunLaunch, agent, approval_notify, *, _api_serve
     # held by a live transport are never reaped, so with the desktop app open for days those fleets
     # accumulate until the OS refuses new process spawns.
     from tools.approval import register_gateway_notify, unregister_gateway_notify
-    from tools.approval_context import reset_current_session_key, set_current_session_key
+    from tools.approval_context import (
+        reset_current_session_key,
+        set_current_session_key,
+    )
     session_id = run.session_id
     effective_task_id = session_id or run.run_id
     # (token, reset) pairs unwound in the finally block; bound only once each step succeeds.

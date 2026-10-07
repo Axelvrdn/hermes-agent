@@ -10,6 +10,7 @@ import time
 
 import pytest
 
+
 @pytest.fixture(scope="module")
 def rsa_keys():
     """An RS256 keypair: (private_pem, public_pem)."""
@@ -91,6 +92,7 @@ def test_tampered_signature_rejected(rsa_keys):
     """A token signed by a DIFFERENT key must fail signature verification."""
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import rsa
+
     from plugins.cron_providers.chronos.verify import verify_nas_fire_token
 
     _, pub = rsa_keys

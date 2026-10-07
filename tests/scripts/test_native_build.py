@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
+
 from tests.pm._fixtures import stage_host_python
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,8 +29,7 @@ def test_payload_transport_does_not_require_or_export_desktop_inputs(tmp_path):
 
 
 def test_native_worker_passes_shared_toolchain_to_native_owner(tmp_path, monkeypatch):
-    from scripts.bundles import native_build
-    from scripts.bundles import desktop_toolchain, native
+    from scripts.bundles import desktop_toolchain, native, native_build
 
     request = {name: str(tmp_path / name) for name in ("source", "work", "cache", "out")}
     request["ref"] = "a" * 40
@@ -53,9 +53,9 @@ def test_native_worker_passes_shared_toolchain_to_native_owner(tmp_path, monkeyp
 
 @pytest.mark.platforms("posix")
 def test_native_cli_consumes_real_minimal_preparation_without_bootstrap(tmp_path):
-    from scripts.build.inputs import AgentInputs, RESOURCE_ENV
-    from scripts.bundles.native_prepared import publish_prepared
     from pm.store import current_target
+    from scripts.build.inputs import RESOURCE_ENV, AgentInputs
+    from scripts.bundles.native_prepared import publish_prepared
 
     out = tmp_path / "payload"
     code = out / "hermes-agent"

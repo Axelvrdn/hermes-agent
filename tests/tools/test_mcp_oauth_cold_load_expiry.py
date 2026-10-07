@@ -285,7 +285,11 @@ async def test_initialize_marks_zero_ttl_cold_loaded_token_invalid(
     or authorization-code path.
     """
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
-    from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
+    from mcp.shared.auth import (
+        OAuthClientInformationFull,
+        OAuthClientMetadata,
+        OAuthToken,
+    )
     from pydantic import AnyUrl
 
     from tools.mcp_oauth import HermesTokenStorage, _get_token_dir

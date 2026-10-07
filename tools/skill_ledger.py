@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import contextvars
 import hashlib
-from contextlib import suppress
 import json
 import logging
 import os
@@ -20,6 +19,7 @@ import re
 import tarfile
 import time as _time
 import uuid
+from contextlib import suppress
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -103,7 +103,10 @@ def _skills_cfg(key: str, default):
     """``skills.<key>`` from the read-only merged config (no deepcopy), or *default* when the
     read fails. Lazy import keeps this module importable without the CLI."""
     try:
-        from hermes_cli.config import cfg_get, load_config_readonly  # read-only hot path: no deepcopy
+        from hermes_cli.config import (  # read-only hot path: no deepcopy
+            cfg_get,
+            load_config_readonly,
+        )
         return cfg_get(load_config_readonly(), "skills", key, default=default)
     except Exception as e:  # pragma: no cover — best-effort config read
         logger.debug("skill_ledger: config read failed (%s); skills.%s defaults to %r", e, key, default)

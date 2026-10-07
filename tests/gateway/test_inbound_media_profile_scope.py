@@ -10,15 +10,18 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from agent import secret_scope as ss
 from gateway.platforms.base import cache_media_bytes
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.run import _profile_runtime_scope
 from gateway.run_inbound import GatewayInboundMixin
 from gateway.run_inbound_media import rehome_inbound_media
-from tools.credential_files import from_agent_visible_cache_path, get_cache_directory_mounts
+from tools.credential_files import (
+    from_agent_visible_cache_path,
+    get_cache_directory_mounts,
+)
 
 
 @pytest.fixture

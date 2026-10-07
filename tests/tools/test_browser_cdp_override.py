@@ -1,8 +1,8 @@
 from unittest.mock import Mock, patch
-from tools import browser_tool_cloud as bt_cloud
-from tools import browser_tool_cdp as bt_cdp
-from tools import browser_tool_session as bt_session
 
+from tools import browser_tool_cdp as bt_cdp
+from tools import browser_tool_cloud as bt_cloud
+from tools import browser_tool_session as bt_session
 
 HOST = "example-host"
 PORT = 9223
@@ -207,6 +207,7 @@ class TestCDPSupervisorTimeoutRedaction:
     def _make_timed_out_supervisor(self, cdp_url: str):
         """Return a CDPSupervisor whose start() will time out immediately."""
         import threading
+
         from tools.browser_supervisor import CDPSupervisor
 
         sup = CDPSupervisor.__new__(CDPSupervisor)
@@ -273,6 +274,7 @@ class TestCDPSupervisorStartErrorRedaction:
         exactly as the real supervisor loop does on a first-connect failure.
         """
         import threading
+
         from tools.browser_supervisor import CDPSupervisor
 
         sup = CDPSupervisor.__new__(CDPSupervisor)

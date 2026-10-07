@@ -15,16 +15,16 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from agent.auxiliary_client import (
-    _AnthropicCompletionsAdapter,
-    _ChatStreamAccumulator,
-    _CodexCompletionsAdapter,
     _acreate_with_progress,
     _acreate_with_stream,
     _aggregate_chat_stream,
     _aggregate_chat_stream_async,
     _anthropic_event_has_content,
+    _AnthropicCompletionsAdapter,
     _aux_dispatch,
     _aux_thread_local_hook,
+    _ChatStreamAccumulator,
+    _CodexCompletionsAdapter,
     _create_with_progress,
     _create_with_progress_once,
     _notify_aux_progress,
@@ -33,7 +33,6 @@ from agent.auxiliary_client import (
 )
 from agent.codex_runtime import _codex_event_has_content
 from agent.conversation_compression import CompressionCommitFence
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -333,7 +332,10 @@ class TestAggregateChatStream:
         client = openai.OpenAI(api_key="k", base_url=f"http://127.0.0.1:{server.server_port}/v1", max_retries=0)
 
         def call(model, task, *, via_relay_seam=False, provider=None):
-            from agent.auxiliary_client import _relay_aux_call_scope, _relay_sync_completion
+            from agent.auxiliary_client import (
+                _relay_aux_call_scope,
+                _relay_sync_completion,
+            )
 
             request = {"model": model, "messages": [], "timeout": 20.0}
             with aux_progress_hook(lambda: None):

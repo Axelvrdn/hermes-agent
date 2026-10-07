@@ -1,24 +1,24 @@
 """Native metadata and artifact publication use the same verified bytes."""
-import hashlib
 import copy
+import hashlib
 import json
 import os
 import shlex
 import shutil
 import subprocess
 import sys
-import zipfile
 import xml.etree.ElementTree as ET
+import zipfile
 from pathlib import Path
 
-import hermes_yaml
 import pytest
 
+import hermes_yaml
+from scripts.bundles import release_artifacts as artifacts
 from scripts.bundles.release_artifacts import materialize, record, stamp_matches
+from tests.scripts.test_release_darwin import _inputs
 from tests.scripts.test_release_r2 import r2_server  # noqa: F401
 from tests.scripts.test_stable_release import https_origin  # noqa: F401
-from tests.scripts.test_release_darwin import _inputs
-from scripts.bundles import release_artifacts as artifacts
 
 ROOT = Path(__file__).resolve().parents[2]
 SMOKE_RESULTS = {name: {'result': 'success'} for name in (

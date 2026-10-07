@@ -27,6 +27,7 @@ sys.modules.setdefault("fal_client", types.SimpleNamespace())
 
 from agent.context_compressor import ContextCompressor
 
+
 def _make_compressor():
     """Build a ContextCompressor with enough state to pass compress() guards."""
     c = ContextCompressor.__new__(ContextCompressor)

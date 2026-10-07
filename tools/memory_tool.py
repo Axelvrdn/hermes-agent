@@ -9,11 +9,11 @@ import json
 import logging
 from contextvars import ContextVar
 from pathlib import Path
-from hermes_constants import get_hermes_home
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from utils import is_truthy_value
+from hermes_constants import get_hermes_home
 from tools.registry import no_cache_check_fn
+from utils import is_truthy_value
 
 # fcntl is Unix-only; Windows uses msvcrt. MemoryStore reads both lazily from
 # this module (tests patch ``memory_tool.fcntl``).
@@ -41,7 +41,12 @@ def get_memory_dir() -> Path:
 
 
 from tools.memory_tool_store import (  # noqa: E402,F401  (re-exports)
-    ENTRY_DELIMITER, FAILURE_CLASS, MEMORY_BLOCK_HEADERS, MemoryStore, _scan_memory_content)
+    ENTRY_DELIMITER,
+    FAILURE_CLASS,
+    MEMORY_BLOCK_HEADERS,
+    MemoryStore,
+    _scan_memory_content,
+)
 
 
 def load_on_disk_store() -> "MemoryStore":
@@ -443,7 +448,10 @@ def _build_memory_schema_overrides() -> Dict[str, Any]:
     return {"description": description, "parameters": parameters}
 
 
-from tools.registry import registry, tool_error  # noqa: E402  (registration at import time)
+from tools.registry import (  # noqa: E402  (registration at import time)
+    registry,
+    tool_error,
+)
 
 registry.register(
     name="memory",

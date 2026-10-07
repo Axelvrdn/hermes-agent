@@ -29,8 +29,11 @@ def _fmt_elapsed(seconds: object) -> str:
 def _cron_job_name(job_id: str, home: Optional[Path]) -> Optional[str]:
     """``name`` from the profile's ``jobs.json`` (None when unreadable — the id alone still identifies it)."""
     try:
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
         from cron.jobs import load_jobs
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
 
         token = set_hermes_home_override(home) if home else None
         try:

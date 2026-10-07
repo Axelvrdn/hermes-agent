@@ -21,11 +21,11 @@ Usage example:
   python3 evidence-store.py --store evidence.json export > evidence-table.md
 """
 
-import json
 import argparse
-import os
 import datetime
 import hashlib
+import json
+import os
 import sys
 
 EVIDENCE_TYPES = [

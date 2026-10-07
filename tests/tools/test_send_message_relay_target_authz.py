@@ -63,10 +63,9 @@ def relay_env(tmp_path, monkeypatch):
 
 def _send(target: str, sent):
     """Invoke the real tool, recording any egress it attempts."""
+    import asyncio
     from types import SimpleNamespace
     from unittest.mock import patch
-
-    import asyncio
 
     discord_cfg = SimpleNamespace(enabled=True, token="t", extra={})
     config = SimpleNamespace(

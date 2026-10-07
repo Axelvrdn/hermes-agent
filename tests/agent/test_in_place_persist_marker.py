@@ -17,8 +17,8 @@ stamps after its ``archive_and_compact`` call; both now share
 """
 
 import os
-from contextlib import closing
 import tempfile
+from contextlib import closing
 from pathlib import Path
 from unittest.mock import patch
 
@@ -80,9 +80,9 @@ def _row_counts(db, sid):
 class TestInPlaceCommitPersistMarker:
     def test_post_commit_persist_does_not_reinsert_compacted_rows(self):
         """In-place commit → persist walk: row counts stay stable (#98450)."""
-        from hermes_state import SessionDB
-        from agent.conversation_compression import compress_context
         from agent.context_compressor import _DB_PERSISTED_MARKER
+        from agent.conversation_compression import compress_context
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp, closing(SessionDB(db_path=Path(tmp) / "t.db")) as db:
             sid = "20260830_120000_marker"
@@ -144,11 +144,11 @@ class TestInPlaceCommitPersistMarker:
         via the shared helper (class-of-bug guard, not a change detector:
         asserts the behavioral outcome — dicts stamped after a successful
         archive_and_compact — for the sibling call path)."""
-        from hermes_state import SessionDB
         from agent.context_compressor import (
-            ContextCompressor,
             _DB_PERSISTED_MARKER,
+            ContextCompressor,
         )
+        from hermes_state import SessionDB
 
         with tempfile.TemporaryDirectory() as tmp, closing(SessionDB(db_path=Path(tmp) / "m.db")) as db:
             sid = "20260830_120001_micro0"

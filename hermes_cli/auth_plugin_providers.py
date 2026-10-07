@@ -214,6 +214,7 @@ def plugin_missing_auth_handler_error(provider: str, action: str) -> Optional[Sy
 def _pool_entry_expired(entry: Any) -> bool:
     """A pooled OAuth row is expired when its ``expires_at_ms`` / ISO ``expires_at`` is in the past."""
     import time
+
     from hermes_cli.auth import _parse_iso_timestamp
 
     if entry.expires_at_ms is not None:

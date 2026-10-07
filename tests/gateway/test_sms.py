@@ -14,7 +14,6 @@ import pytest
 
 from gateway.config import Platform, PlatformConfig
 
-
 # ── Config loading ──────────────────────────────────────────────────
 
 class TestSmsConfigLoading:

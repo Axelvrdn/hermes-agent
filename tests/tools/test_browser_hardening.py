@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 import pytest
+
 from tools import browser_tool_install as bt_install
 
 # ---------------------------------------------------------------------------
@@ -67,9 +68,10 @@ class TestUrlDecodedSecretCheck:
 
     def test_encoded_key_blocked_in_navigate(self):
         """browser_navigate should block URLs with percent-encoded API keys."""
-        import urllib.parse
-        from tools.browser_tool import browser_navigate
         import json
+        import urllib.parse
+
+        from tools.browser_tool import browser_navigate
 
         # URL-encode a fake secret prefix that matches _PREFIX_RE
         encoded = urllib.parse.quote("sk-ant-fake123")
@@ -112,6 +114,7 @@ class TestTruncateSnapshot:
     def test_stored_snapshot_is_secret_redacted(self):
         """Page-rendered secrets must not land unmasked on disk."""
         from pathlib import Path
+
         from tools.browser_tool_snapshot import _store_full_snapshot
 
         fake_key = "sk-" + "STOREDSNAPSHOTSECRET1234567890"
@@ -135,6 +138,7 @@ class TestTruncateSnapshot:
         """
         import hashlib
         from pathlib import Path
+
         from tools.browser_tool_snapshot import _store_full_snapshot
 
         monkeypatch.setenv("HERMES_HOME", str(tmp_path))

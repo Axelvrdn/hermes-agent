@@ -37,8 +37,8 @@ import time
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
 from typing import Self
+from urllib.parse import urlsplit
 
 _CHUNK = 64 * 1024
 _FRAME = 8192  # sideband-1 payload per pkt-line that an unhurried upload-pack emits

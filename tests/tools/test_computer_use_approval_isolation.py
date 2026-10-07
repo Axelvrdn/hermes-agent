@@ -84,7 +84,10 @@ def test_always_grant_lands_in_the_shared_store(monkeypatch):
     """One grant store: an "always" answered through computer_use is what ``tools.approval.is_approved`` reports
     for the same session and ``cua:<action>:<mode>`` key, and the next call is served from that store."""
     from tools import approval
-    from tools.approval_context import reset_current_session_key, set_current_session_key
+    from tools.approval_context import (
+        reset_current_session_key,
+        set_current_session_key,
+    )
     from tools.computer_use import tool as cu_tool
 
     monkeypatch.setenv("HERMES_INTERACTIVE", "1")

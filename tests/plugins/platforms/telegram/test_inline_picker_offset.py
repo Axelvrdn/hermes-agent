@@ -95,6 +95,7 @@ class _FakeInlineQuery:
 def _adapter(monkeypatch, authorized=True):
     """A TelegramAdapter with just the pieces _handle_inline_query touches."""
     import types as _types
+
     from gateway.config import Platform
     from plugins.platforms.telegram.adapter import TelegramAdapter
 

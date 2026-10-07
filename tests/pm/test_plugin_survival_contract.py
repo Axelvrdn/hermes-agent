@@ -33,8 +33,8 @@ import sys
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 import pm.workspace as ws
 from pm.plugin_inputs import Members
 
@@ -430,11 +430,10 @@ def test_plugin_our_version_rejects_sits_out_without_being_disabled(admission_en
     """requires_hermes is judged against our version identity, which can lag (an untagged
     source checkout reads as an older release). Such a plugin sits out: config untouched,
     boot's currency check neither raises nor loops, and it rejoins once the verdict flips."""
+    import hermes_cli.plugins_manifest as plugins_manifest
     from pm.environments import runtime_facts_path
     from pm.install import sync_venv, venv_is_current
     from pm.lock import Facts
-
-    import hermes_cli.plugins_manifest as plugins_manifest
 
     tmp_path, home = admission_env
     core = tmp_path / "core"

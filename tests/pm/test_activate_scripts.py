@@ -13,8 +13,19 @@ from pathlib import Path
 import pytest
 
 from tests.pm.activation_support import (
-    ACTIVATE, ACTIVATE_PS1, CANARY, SETUP_HERMES_PS1, SETUP_HERMES_SH, bash, bash_env,
-    child_env, fake_store, isolated_checkout, posix, powershell, spawnable_python,
+    ACTIVATE,
+    ACTIVATE_PS1,
+    CANARY,
+    SETUP_HERMES_PS1,
+    SETUP_HERMES_SH,
+    bash,
+    bash_env,
+    child_env,
+    fake_store,
+    isolated_checkout,
+    posix,
+    powershell,
+    spawnable_python,
 )
 
 

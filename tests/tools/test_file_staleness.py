@@ -14,12 +14,11 @@ import os
 import tempfile
 import time
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from tools import file_state
-from tools.file_tools import read_file_tool, write_file_tool, patch_tool
+from tools.file_tools import patch_tool, read_file_tool, write_file_tool
 from tools.file_tools_read_tracking import _read_tracker, reset_file_dedup
-
 
 # ---------------------------------------------------------------------------
 # Helpers

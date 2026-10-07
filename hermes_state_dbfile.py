@@ -24,10 +24,9 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+from hermes_state_common import FTS_REBUILD_DEFERRAL_KEY
+from hermes_state_common import stat_db_file_identity as _stat_db_file_identity
 from hermes_state_holders import canonical_sqlite_path, read_only_db_uri
-from hermes_state_common import (
-    FTS_REBUILD_DEFERRAL_KEY, stat_db_file_identity as _stat_db_file_identity
-)
 
 # Log-record parity with the origin module (caplog tests pin "hermes_state").
 logger = logging.getLogger("hermes_state")
@@ -625,7 +624,10 @@ def _preopen_header(path: Path, probe_bytes: int, force: bool) -> Optional[bytes
         if not path.is_file():
             return None
         path.stat()
-        from hermes_cli.sqlite_safe_read import has_live_connection, read_header_bytes_preopen
+        from hermes_cli.sqlite_safe_read import (
+            has_live_connection,
+            read_header_bytes_preopen,
+        )
         if not force and has_live_connection(path):
             return None
         return read_header_bytes_preopen(path, length=max(16, probe_bytes), force=force)

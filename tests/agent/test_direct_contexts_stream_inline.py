@@ -13,8 +13,8 @@ path, issue ``stream=True`` on the calling thread (no worker), and keep the
 stale detector + cross-thread interrupt abort working from the monitor thread.
 """
 
-import logging
 import json
+import logging
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -28,7 +28,6 @@ from agent.chat_completion_helpers import (
     interruptible_streaming_api_call,
     should_use_direct_api_call,
 )
-
 
 # ---------------------------------------------------------------------------
 # Real OpenAI-wire SSE server: records the wire ``stream`` flag per request.

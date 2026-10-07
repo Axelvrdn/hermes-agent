@@ -17,7 +17,6 @@ from typing import Any, Optional
 
 from hermes_constants import get_hermes_home
 
-
 _DB_LOCK = threading.Lock()
 _MAX_OUTPUT_SUMMARY_CHARS = 2000
 _MAX_EVIDENCE_AGE_DAYS = 30

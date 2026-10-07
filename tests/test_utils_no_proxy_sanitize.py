@@ -12,9 +12,8 @@ and the repo's own ``agent.proxy_bypass`` matcher all understand.
 
 from __future__ import annotations
 
-import pytest
-
 import httpx
+import pytest
 
 from utils import normalize_proxy_env_vars, sanitize_no_proxy_entries
 

@@ -23,7 +23,6 @@ import pytest
 import tools.file_tools_paths as ft
 import tools.terminal_tool as terminal_tool
 
-
 # ---------------------------------------------------------------------------
 # _expand_tilde() unit tests
 # ---------------------------------------------------------------------------

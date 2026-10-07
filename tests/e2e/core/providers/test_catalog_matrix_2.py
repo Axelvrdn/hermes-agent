@@ -14,7 +14,13 @@ from __future__ import annotations
 
 import pytest
 
-from tests.e2e.core.providers._catalog_helpers import Row, TurnResult, check_row, drive_shard, shard_params
+from tests.e2e.core.providers._catalog_helpers import (
+    Row,
+    TurnResult,
+    check_row,
+    drive_shard,
+    shard_params,
+)
 
 SHARD = 2
 

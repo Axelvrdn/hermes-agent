@@ -322,6 +322,7 @@ def test_line_range_bounds_reads_on_single_line_file(tmp_path: Path, monkeypatch
 
 def test_run_quiet_caps_child_output(tmp_path: Path):
     import sys
+
     from agent.context_references import _MAX_QUIET_OUTPUT_BYTES, _run_quiet
 
     huge = _run_quiet(
@@ -350,7 +351,10 @@ def test_run_quiet_caps_child_output(tmp_path: Path):
 
 
 def test_reference_count_is_capped(tmp_path: Path):
-    from agent.context_references import _MAX_EXPANDED_REFERENCES, preprocess_context_references
+    from agent.context_references import (
+        _MAX_EXPANDED_REFERENCES,
+        preprocess_context_references,
+    )
 
     for i in range(_MAX_EXPANDED_REFERENCES + 4):
         (tmp_path / f"f{i}.txt").write_text("data", encoding="utf-8")
@@ -481,7 +485,10 @@ def _stage_outside_workspace(tmp_path: Path, monkeypatch, name: str, subdir: str
 
 def test_ssh_backend_staged_text_attachment_still_expands(tmp_path: Path, monkeypatch):
     """The gateway owns the bytes, so the ref must inline them, not refuse the path."""
-    from agent.context_references import format_reference_value, preprocess_context_references
+    from agent.context_references import (
+        format_reference_value,
+        preprocess_context_references,
+    )
 
     payload = _stage_outside_workspace(
         tmp_path, monkeypatch, "Pasted content (3-5.4 KB).txt", subdir="composer-pastes")
@@ -699,8 +706,8 @@ async def test_side_thread_expansion_guards_the_served_profile_home(tmp_path: Pa
     """Inside a running loop (the gateway / TUI turn) the sync wrapper hops to a side thread; that
     thread must inherit the caller's profile scope so the credential guard checks the SERVED
     profile's home, not the launch profile's (a served profile's skill-hub cache was attachable)."""
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from agent.context_references import preprocess_context_references
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     launch_home = tmp_path / "launch"
     served_home = launch_home / "profiles" / "b"

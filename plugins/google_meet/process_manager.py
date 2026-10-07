@@ -8,9 +8,9 @@ across turns can find the bot. The bot is a detached subprocess reached via file
 
 from __future__ import annotations
 
-import logging
 import contextlib
 import json
+import logging
 import os
 import signal
 import subprocess
@@ -21,7 +21,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from hermes_constants import get_hermes_home
-
 from utils import atomic_json_write
 
 

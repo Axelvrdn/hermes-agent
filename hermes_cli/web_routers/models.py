@@ -10,16 +10,24 @@ import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-
-from hermes_cli.web_deps import LateState, late
-from hermes_cli.web_server_config import (
-    _AUX_TASK_SLOTS, _UNSET, _apply_model_assignment_sync, _dashboard_code_skew_guard,
-    _plugin_aux_tasks, _prepare_main_assignment,
-)
-from agent.model_metadata import is_local_endpoint
 from starlette.concurrency import run_in_threadpool
-from hermes_cli.web_models import ModelAssignment, MoaConfigPayload, MoaModelSlot
-from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK, config_write_scope, http_failure
+
+from agent.model_metadata import is_local_endpoint
+from hermes_cli.web_deps import LateState, late
+from hermes_cli.web_models import MoaConfigPayload, MoaModelSlot, ModelAssignment
+from hermes_cli.web_routers._common import (
+    _CONFIG_MUTATION_LOCK,
+    config_write_scope,
+    http_failure,
+)
+from hermes_cli.web_server_config import (
+    _AUX_TASK_SLOTS,
+    _UNSET,
+    _apply_model_assignment_sync,
+    _dashboard_code_skew_guard,
+    _plugin_aux_tasks,
+    _prepare_main_assignment,
+)
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -153,7 +161,10 @@ async def get_model_options(
             _log.warning("GET /api/model/options refused: %s", skew_msg)
             raise HTTPException(status_code=503, detail=f"Restart required: {skew_msg}")
 
-        from hermes_cli.inventory import build_model_options_payload, load_picker_context
+        from hermes_cli.inventory import (
+            build_model_options_payload,
+            load_picker_context,
+        )
 
         def _build_payload_scoped() -> dict:
             # Full sync picker build off the event loop under the requested profile.

@@ -198,7 +198,11 @@ class LintMixin:
 
         from hermes_cli._subprocess_compat import windows_hide_flags
         from hermes_constants import with_hermes_node_path
-        from tools.environments.local import _IS_WINDOWS, _msys_to_windows_path, hermes_subprocess_env
+        from tools.environments.local import (
+            _IS_WINDOWS,
+            _msys_to_windows_path,
+            hermes_subprocess_env,
+        )
 
         tool, *args = _MANAGED_NODE_LINTERS[ext]
         executable = shutil.which(tool, path=with_hermes_node_path({"PATH": ""})["PATH"])

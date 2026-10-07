@@ -6,17 +6,18 @@ Images resolve through :mod:`tools.image_source`, are normalized to a provider-s
 model (multimodal tool-result envelope) or are described by the auxiliary vision LLM router.
 """
 
-import base64
 import asyncio
+import base64
 import json
-from concurrent.futures import ThreadPoolExecutor
-from io import BytesIO
 import logging
 import os
 import uuid
+from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, NamedTuple, Optional
 from urllib.parse import urlparse
+
 import httpx
 
 # ``agent.auxiliary_client`` costs ~50 ms cold; only the handlers need it. Both names stay
@@ -35,14 +36,23 @@ def _load_auxiliary_client() -> None:
 
 from hermes_constants import get_hermes_dir
 from tools.debug_helpers import DebugSession
-from tools.website_policy import check_website_access
 from tools.vision_tools_history_budget import (
     native_turn_duplicate as _native_turn_duplicate,
+)
+from tools.vision_tools_history_budget import (
     record_embed as _record_embed,
+)
+from tools.vision_tools_history_budget import (
     release_embed as _release_embed,
+)
+from tools.vision_tools_history_budget import (
     repeat_refusal as _repeat_refusal,
-    resolve_repeat_cap as _resolve_repeat_cap,
+)
+from tools.vision_tools_history_budget import (
     resolve_embed_target_bytes as _resolve_embed_target_bytes,
+)
+from tools.vision_tools_history_budget import (
+    resolve_repeat_cap as _resolve_repeat_cap,
 )
 from tools.vision_tools_image_prep import (
     _VISION_MAX_VALIDATED_AGGREGATE_PIXELS,
@@ -51,7 +61,9 @@ from tools.vision_tools_image_prep import (
     _determine_mime_type,
     _image_exceeds_dimension,
     _normalize_to_supported_image,
-    _validate_raster_image_decodable)
+    _validate_raster_image_decodable,
+)
+from tools.website_policy import check_website_access
 
 logger = logging.getLogger(__name__)
 
@@ -260,8 +272,8 @@ async def _download_media(
     media_label: str, accept: str, max_bytes: int, timeout: float, retry_all: bool) -> Path:
     """SSRF-safe streaming download with exponential backoff (2s/4s/8s). ``retry_all=False`` (images)
     retries only :func:`_is_retryable_download_error` errors — a 404/403 never succeeds on retry."""
-    from utils import atomic_replace
     from tools.url_safety import create_ssrf_safe_async_client
+    from utils import atomic_replace
     destination.parent.mkdir(parents=True, exist_ok=True)
     last_error = None
     for attempt in range(max_retries):
@@ -582,7 +594,7 @@ def _native_tool_result_images(provider: str, model: str, cfg: Optional[Dict[str
 def _should_use_native_vision_fast_path() -> bool:
     """:func:`_native_tool_result_images` for the active main model; any failure → False."""
     try:
-        from agent.auxiliary_client import _read_main_provider, _read_main_model
+        from agent.auxiliary_client import _read_main_model, _read_main_provider
         from hermes_cli.config import load_config
         return _native_tool_result_images(_read_main_provider(), _read_main_model(), load_config())
     except Exception as exc:
@@ -641,7 +653,11 @@ async def _prepare_image(
     Unsupported formats (SVG, BMP) become PNG BEFORE encoding — an unsupported media_type baked
     into immutable history would 400 on every resume. The crop runs BEFORE any downscale so the
     region keeps the full resolution budget. On error no temp file is left."""
-    from tools.image_source import ImageResolutionError, ResolveContext, resolve_image_source
+    from tools.image_source import (
+        ImageResolutionError,
+        ResolveContext,
+        resolve_image_source,
+    )
     try:
         resolved = await resolve_image_source(image_url, ResolveContext(task_id=task_id))
     except ImageResolutionError as exc:
@@ -1072,7 +1088,10 @@ async def _materialize_video(video_url: str, task_id: Optional[str], temp_paths:
     shared media resolver with ``permitted=("video",)`` — the exact pipeline vision_analyze uses
     (media-cache host reads, bounded in-sandbox exec-read, credential-read guard, 50MB cap)."""
     from tools.image_source import (
-        ImageResolutionError, ResolveContext, _is_local_terminal_backend, resolve_image_source,
+        ImageResolutionError,
+        ResolveContext,
+        _is_local_terminal_backend,
+        resolve_image_source,
     )
     source = video_url.removeprefix("file://")
     local_path = Path(os.path.expanduser(source))

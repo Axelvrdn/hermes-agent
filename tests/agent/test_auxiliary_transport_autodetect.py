@@ -14,7 +14,6 @@ web_extract all failed on Kimi Coding Plan users.
 
 from __future__ import annotations
 
-
 import pytest
 
 
@@ -88,8 +87,8 @@ def test_resolve_provider_client_kimi_coding_wraps_anthropic(monkeypatch, tmp_pa
     for every user" aux design shipped.
     """
     from agent.auxiliary_client import (
-        resolve_provider_client,
         AnthropicAuxiliaryClient,
+        resolve_provider_client,
     )
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))

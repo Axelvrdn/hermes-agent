@@ -6,10 +6,11 @@ the helpers/handlers via ``from cli import ...`` — cli.py imports this module 
 
 from __future__ import annotations
 
-import logging, argparse
+import argparse
 import atexit
 import io
 import json
+import logging
 import os
 import shlex
 import subprocess
@@ -18,27 +19,48 @@ import threading
 import time
 import uuid
 from contextlib import redirect_stdout, suppress
-from io import StringIO
 from datetime import datetime
+from io import StringIO
 from urllib.parse import urlparse
 
 from rich import box as rich_box
 from rich.markup import escape as _escape
 from rich.panel import Panel
 
-from hermes_constants import display_hermes_home
-from hermes_state_ids import new_session_id as mint_session_id
 from agent.i18n import t
 from agent.message_metadata import message_identity
 from agent.turn_context import extract_api_content_sidecar
+from hermes_cli.browser_connect import (
+    DEFAULT_BROWSER_CDP_URL,
+    discover_local_cdp_url,
+    find_free_debug_port,
+    is_browser_debug_ready,
+    launch_chrome_debug,
+    local_port_in_use,
+    manual_chrome_debug_command,
+)
 from hermes_cli.cli_agent_setup_mixin import _retire_agent
 from hermes_cli.cli_commands_session_tools import (  # noqa: F401  moved there (ratchet); re-imported so existing `from cli_commands_mixin import _t` consumers keep working
-    CLICommandsSessionToolsMixin, _TTYBuf, _accent, _accent_line, _command_arg, _cp, _dim,
-    _dim_line, _gt, _lines, _pr, _probe, _save, _say_block, _shlex_args, _t, _tn)
-from hermes_cli.browser_connect import (
-    DEFAULT_BROWSER_CDP_URL, discover_local_cdp_url, find_free_debug_port, is_browser_debug_ready,
-    launch_chrome_debug, local_port_in_use, manual_chrome_debug_command)
-
+    CLICommandsSessionToolsMixin,
+    _accent,
+    _accent_line,
+    _command_arg,
+    _cp,
+    _dim,
+    _dim_line,
+    _gt,
+    _lines,
+    _pr,
+    _probe,
+    _save,
+    _say_block,
+    _shlex_args,
+    _t,
+    _tn,
+    _TTYBuf,
+)
+from hermes_constants import display_hermes_home
+from hermes_state_ids import new_session_id as mint_session_id
 
 # Output helpers. Slash-command text is user-visible: every literal below is load-bearing.
 
@@ -286,7 +308,12 @@ def _print_side_result_panel(cli, *, header_lines, body, title_suffix, empty_not
     """Print a worker-thread result (/bg, /btw, /login) into the scrollback: accent rules around
     ``header_lines``, then ``body`` in a skinned Rich panel (or ``empty_note``).
     Forces a TUI refresh first so the spinner/status bar don't overlap the output."""
-    from cli import ChatConsole, _accent_hex, _maybe_remap_for_light_mode, _render_final_assistant_content
+    from cli import (
+        ChatConsole,
+        _accent_hex,
+        _maybe_remap_for_light_mode,
+        _render_final_assistant_content,
+    )
     _refresh_tui_before_print(cli)
     rich_console = console or ChatConsole()
     rich_console.print(f"[{_accent_hex()}]{'─' * 40}[/]")
@@ -335,7 +362,10 @@ def _print_lightpanda_engine_status() -> None:
         return print(f"   {_t('browser.engine_not_in_use', reason=reason)}")
     print(f"   {_t('browser.engine_lightpanda', reason=reason)}")
     try:
-        from tools.browser_lightpanda import LIGHTPANDA_INSTALL_HINT, find_lightpanda_binary
+        from tools.browser_lightpanda import (
+            LIGHTPANDA_INSTALL_HINT,
+            find_lightpanda_binary,
+        )
         lightpanda_bin = find_lightpanda_binary()
     except Exception:
         return
@@ -456,8 +486,8 @@ def _browser_disconnect(cli) -> None:
         return _say_block(_t("browser.already_default"))
     os.environ.pop("BROWSER_CDP_URL", None)
     with suppress(Exception):
-        from tools.browser_tool_lifecycle import cleanup_all_browsers
         from tools.browser_tool_cdp import _stop_cdp_supervisor
+        from tools.browser_tool_lifecycle import cleanup_all_browsers
         _stop_cdp_supervisor("default")
         cleanup_all_browsers()
     _say_block(_t("browser.disconnected"), f"   {_t('browser.reverted')}")
@@ -785,7 +815,11 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
     # ---- /export, /import -----------------------------------------------------------------
     def _handle_export_command(self, command: str):
         """Handle /export [profile] [-o path] — export a profile to a shareable .tar.gz archive."""
-        from hermes_cli.profiles import export_profile, get_active_profile_name, get_profile_export_path
+        from hermes_cli.profiles import (
+            export_profile,
+            get_active_profile_name,
+            get_profile_export_path,
+        )
         parts, output, ok = _take_flag(command.split()[1:], "-o")
         if not ok:
             return print(f"  {_t('export.usage')}")
@@ -799,7 +833,11 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
     def _handle_import_command(self, command: str):
         """Handle /import <archive.tar.gz> [--name <name>] — import a shared profile archive as a
         new profile."""
-        from hermes_cli.profiles import check_alias_collision, create_wrapper_script, import_profile
+        from hermes_cli.profiles import (
+            check_alias_collision,
+            create_wrapper_script,
+            import_profile,
+        )
         parts, name, ok = _take_flag(command.split()[1:], "--name")
         if not ok or not parts:
             return print(f"  {_t('import.usage')}")
@@ -854,7 +892,7 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         """Resolve the destination home channel via the live gateway config; None (after printing
         the reason) when the platform is unknown, disabled, or has no home channel."""
         try:
-            from gateway.config import load_gateway_config, Platform
+            from gateway.config import Platform, load_gateway_config
         except Exception as exc:  # pragma: no cover — gateway pkg always shipped
             return _cp(f"  {_t('handoff.config_load_failed', error=exc)}")
         try:
@@ -1237,8 +1275,12 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         """Handle /personality [name] — list or set a predefined personality. All resolution and
         persistence goes through hermes_cli.personality, the single owner of personality state."""
         from hermes_cli.personality import (
-            describe_personality, normalize_personality_name, persist_personality, prompt_text,
-            resolve_personality)
+            describe_personality,
+            normalize_personality_name,
+            persist_personality,
+            prompt_text,
+            resolve_personality,
+        )
         personality_name = _command_arg(cmd)
         if not personality_name:
             try:
@@ -1284,7 +1326,12 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         from agent.pet import store
         from agent.pet.manifest import ManifestError
         from hermes_cli.pets import (
-            _set_active, _set_enabled, print_pet_gallery, set_pet_scale, toggle_pet_display)
+            _set_active,
+            _set_enabled,
+            print_pet_gallery,
+            set_pet_scale,
+            toggle_pet_display,
+        )
         arg = _command_arg(cmd)
         low = arg.lower()
         if not arg or low == "toggle":
@@ -1643,7 +1690,11 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
     def _handle_background_command(self, cmd: str):
         """Handle /bg <prompt> — run a prompt in a separate background session (its own AIAgent
         on a thread); the result prints here without touching the active history."""
-        from cli import set_approval_callback, set_secret_capture_callback, set_sudo_password_callback
+        from cli import (
+            set_approval_callback,
+            set_secret_capture_callback,
+            set_sudo_password_callback,
+        )
         from run_agent import AIAgent
         prompt = _command_arg(cmd)
         if not prompt:
@@ -1660,7 +1711,11 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         runtime = turn_route["runtime"]
 
         def produce():
-            from agent.vault_backends.unlock import set_code_prompt_callback, set_save_login_prompt_callback, set_unlock_prompt_callback
+            from agent.vault_backends.unlock import (
+                set_code_prompt_callback,
+                set_save_login_prompt_callback,
+                set_unlock_prompt_callback,
+            )
             set_sudo_password_callback(self._sudo_password_callback)
             set_approval_callback(self._approval_callback)
             set_unlock_prompt_callback(self._vault_unlock_callback)
@@ -1839,7 +1894,7 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
     def _handle_bundles_command(self, cmd: str) -> None:
         """In-session ``/bundles`` — show installed skill bundles (``hermes bundles list`` rendered
         inside the running CLI). Bundles are loaded via ``/<bundle-name>``."""
-        from cli import ChatConsole, _BOLD, _RST, _accent_hex
+        from cli import _BOLD, _RST, ChatConsole, _accent_hex
         from hermes_cli.slash_exec import CommandContext, execute_command
         reply = execute_command("bundles", CommandContext(surface="cli"))
         if "error" in reply.data:
@@ -1913,7 +1968,7 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
 
     def _heartbeat_set(self, mgr, arg: str) -> None:
         """Set: ``/heartbeat every 10m <prompt>`` (also accepts ``10m <prompt>``)."""
-        from hermes_cli.heartbeat import parse_interval, format_interval
+        from hermes_cli.heartbeat import format_interval, parse_interval
         tokens = arg.split(None, 2)
         interval = None
         prompt = ""
@@ -2062,7 +2117,11 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         """Handle /skin [name] — show or change the display skin."""
         from cli import _ACCENT
         try:
-            from hermes_cli.skin_engine import list_skins, set_active_skin, get_active_skin_name
+            from hermes_cli.skin_engine import (
+                get_active_skin_name,
+                list_skins,
+                set_active_skin,
+            )
         except ImportError:
             return print(_t("skin.unavailable"))
         new_skin = _command_arg(cmd).lower()
@@ -2138,8 +2197,13 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         history, system prompt, or request payloads."""
         from hermes_cli.colors import Colors as _Colors
         from hermes_cli.focus_view import (
-            FOCUS_CONFIG_KEY, FOCUS_TOOL_PROGRESS_MODE, format_focus_status,
-            format_focus_toggle_message, normalize_tool_progress_mode, resolve_focus_arg)
+            FOCUS_CONFIG_KEY,
+            FOCUS_TOOL_PROGRESS_MODE,
+            format_focus_status,
+            format_focus_toggle_message,
+            normalize_tool_progress_mode,
+            resolve_focus_arg,
+        )
         current = bool(getattr(self, "_focus_view_enabled", False))
         action, target = resolve_focus_arg(_command_arg(cmd_original), current)
         if action == "usage":
@@ -2267,8 +2331,8 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
     def _handle_reasoning_command(self, cmd: str):
         """Handle /reasoning [<level> [--global]|show|hide|full|clamp] — effort level (session
         scope unless --global) and thinking display toggles (always saved)."""
-        from cli import CLI_CONFIG, _parse_reasoning_config
         from agent.reasoning_effort import effort_display_label
+        from cli import CLI_CONFIG, _parse_reasoning_config
         raw = _command_arg(cmd)
         from hermes_cli.codex_runtime_switch import get_current_runtime
         # The live agent's api_mode, else the configured runtime: ``ultra`` is verbatim on the Codex app-server.
@@ -2376,8 +2440,9 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         """Handle /debug [nous|local] — upload debug report + logs and print share URLs.
         Default: public paste service; ``nous``: Nous-internal (staff-only); ``local``: render to
         stdout, no upload. ``local`` wins if both are given (never touches the network)."""
-        from hermes_cli.debug import run_debug_share
         from types import SimpleNamespace
+
+        from hermes_cli.debug import run_debug_share
         words = {w.lower() for w in cmd_original.split()[1:]}
         local = "local" in words
         # Typing /debug is the upload consent (yes=True); input() would hang in prompt_toolkit anyway.
@@ -2388,7 +2453,7 @@ class CLICommandsMixin(CLICommandsSessionToolsMixin):
         """Handle /update — exit the session and relaunch as ``hermes update``. Returns True when
         confirmed (the caller exits the app; the relaunch runs on the main thread after
         prompt_toolkit restores terminal modes), False when cancelled."""
-        from hermes_cli.config import is_managed, format_managed_message
+        from hermes_cli.config import format_managed_message, is_managed
         if is_managed():
             print(f"  ✗ {format_managed_message(_t('update.managed_action'))}")
             return False

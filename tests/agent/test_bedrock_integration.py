@@ -13,7 +13,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 _BOTO_PREFIXES = ("botocore", "boto3")
 
 
@@ -109,8 +108,8 @@ class TestRuntimeProvider:
     def test_bedrock_runtime_no_credentials_raises_on_auto_detect(self, monkeypatch):
         """When bedrock is auto-detected (not explicitly requested) and no
         credentials are found, runtime resolution should raise AuthError."""
-        from hermes_cli.runtime_provider import resolve_runtime_provider
         from hermes_cli.auth import AuthError
+        from hermes_cli.runtime_provider import resolve_runtime_provider
 
         # Clear all AWS env vars
         for var in ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_PROFILE",
@@ -413,7 +412,10 @@ class TestAuxiliaryClientBedrockResolution:
         mock_anthropic_bedrock = MagicMock()
         with patch("agent.anthropic_adapter.build_anthropic_bedrock_client",
                    return_value=mock_anthropic_bedrock):
-            from agent.auxiliary_client import resolve_provider_client, AnthropicAuxiliaryClient
+            from agent.auxiliary_client import (
+                AnthropicAuxiliaryClient,
+                resolve_provider_client,
+            )
             client, model = resolve_provider_client("bedrock", None)
 
         assert client is not None, (
@@ -521,7 +523,10 @@ class TestAuxiliaryClientBedrockResolution:
 
         with patch("agent.auxiliary_client.OpenAI", return_value=MagicMock()) as mock_openai, \
              patch("agent.bedrock_adapter.build_bedrock_openai_http_client", return_value=MagicMock()):
-            from agent.auxiliary_client import resolve_provider_client, CodexAuxiliaryClient
+            from agent.auxiliary_client import (
+                CodexAuxiliaryClient,
+                resolve_provider_client,
+            )
             client, model = resolve_provider_client("bedrock", "openai.gpt-5.5")
 
         assert model == "openai.gpt-5.5"
@@ -541,7 +546,10 @@ class TestAuxiliaryClientBedrockResolution:
         monkeypatch.setenv("AWS_REGION", "us-east-2")
 
         with patch("agent.auxiliary_client.OpenAI") as mock_openai:
-            from agent.auxiliary_client import resolve_provider_client, BedrockAuxiliaryClient
+            from agent.auxiliary_client import (
+                BedrockAuxiliaryClient,
+                resolve_provider_client,
+            )
             client, model = resolve_provider_client("bedrock", profile_id)
 
         assert model == profile_id

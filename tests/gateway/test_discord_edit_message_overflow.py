@@ -48,7 +48,6 @@ _ensure_discord_mock()
 
 from plugins.platforms.discord.adapter import DiscordAdapter  # noqa: E402
 
-
 MAX = DiscordAdapter.MAX_MESSAGE_LENGTH  # 2000
 
 

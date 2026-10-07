@@ -8,8 +8,8 @@ import sys
 import threading
 import time
 import types
-from unittest.mock import MagicMock, patch
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -146,8 +146,7 @@ def test_session_interrupt_uses_explicit_stop_compatibility(server, monkeypatch,
 
 def test_live_session_payload_replays_pending_approval(server, monkeypatch):
     """A reattached client receives the approval that was emitted while detached."""
-    from tools import approval
-    from tools import approval_gateway_wait
+    from tools import approval, approval_gateway_wait
 
     session = {
         "agent": types.SimpleNamespace(),

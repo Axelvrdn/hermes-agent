@@ -12,7 +12,6 @@ import pytest
 
 from hermes_cli.models import normalize_copilot_model_id
 
-
 # ``owner/sub/model`` — the shape an enterprise BYOK custom model has (tenant name sanitized).
 CUSTOM_MODEL_IDS = [
     "acme-github-copilot/QDeepseekV4/deepseek-flash",

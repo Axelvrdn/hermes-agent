@@ -4,7 +4,8 @@ import json
 
 import pytest
 
-from tools import desktop_ui, focus_pane_tool as fp
+from tools import desktop_ui
+from tools import focus_pane_tool as fp
 
 
 @pytest.fixture(autouse=True)

@@ -2,14 +2,13 @@
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import psutil
 import pytest
-
 
 _SCRIPT = r'''
 import json, os, subprocess, sys, time
@@ -145,6 +144,7 @@ def test_owner_exit_kills_router_tree_not_external(tmp_path, stop_mode, nested):
 def test_failed_setup_never_runs_child_and_releases_handles(tmp_path, monkeypatch, failure):
     import ctypes
     from ctypes import wintypes
+
     from hermes_cli.local_runtime import processes
 
     marker = tmp_path / 'child executed'

@@ -11,8 +11,8 @@ import itertools
 import logging
 import time
 from types import SimpleNamespace
-from unittest.mock import patch
 from typing import Any, Optional
+from unittest.mock import patch
 
 import pytest
 
@@ -20,9 +20,9 @@ import agent.transports.codex_app_server_session as session_mod
 from agent.transports.codex_app_server import CodexAppServerTransportError
 from agent.transports.codex_app_server_session import (
     CodexAppServerSession,
-    _ServerRequestRouting,
     _approval_choice_to_codex_decision,
     _build_turn_input,
+    _ServerRequestRouting,
 )
 
 

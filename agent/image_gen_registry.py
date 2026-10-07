@@ -13,7 +13,11 @@ import logging
 from typing import Optional
 
 from agent.image_gen_provider import ImageGenProvider
-from agent.provider_registry import ProviderRegistry, configured_provider_name, is_available_safe
+from agent.provider_registry import (
+    ProviderRegistry,
+    configured_provider_name,
+    is_available_safe,
+)
 
 logger = logging.getLogger(__name__)
 

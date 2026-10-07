@@ -6,28 +6,27 @@ context compression.
 
 Run with:  python -m pytest tests/tools/test_file_read_guards.py -v
 """
-import pytest
-
 import json
 import os
 import tempfile
 import time
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from tools.file_tools import (
+    _DEFAULT_MAX_READ_CHARS,
+    _is_blocked_device,
     read_file_tool,
     write_file_tool,
-    _is_blocked_device,
-    _DEFAULT_MAX_READ_CHARS,
 )
-from tools.file_tools_write_guards import _READ_DEDUP_STATUS_MESSAGE
-from tools.file_tools_read_tracking import _read_tracker
 from tools.file_tools_read_tracking import (
+    _read_tracker,
     notify_other_tool_call,
     reset_file_dedup,
 )
-
+from tools.file_tools_write_guards import _READ_DEDUP_STATUS_MESSAGE
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -400,8 +399,15 @@ class TestFileDedup(unittest.TestCase):
         """The review fork shares the parent's task_id; a dedup stub there would skip the
         read-mark its read-before-write guard requires (#95976)."""
         from pathlib import Path
-        from tools.skill_manager_guards import _background_review_has_read, _reset_background_review_read_marks
-        from tools.skill_provenance import reset_current_write_origin, set_current_write_origin
+
+        from tools.skill_manager_guards import (
+            _background_review_has_read,
+            _reset_background_review_read_marks,
+        )
+        from tools.skill_provenance import (
+            reset_current_write_origin,
+            set_current_write_origin,
+        )
 
         mock_ops.return_value = _make_fake_ops(content="line one\nline two\n", file_size=20)
         read_file_tool(self._tmpfile, task_id="dup")  # parent's read arms the dedup

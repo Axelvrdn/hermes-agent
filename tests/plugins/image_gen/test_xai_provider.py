@@ -8,7 +8,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -235,6 +234,7 @@ class TestGenerate:
         than an opaque "image generation failed" tool result.
         """
         import requests as req_lib
+
         from plugins.image_gen.xai import XAIImageGenProvider
 
         mock_resp = MagicMock()
@@ -259,6 +259,7 @@ class TestGenerate:
 
     def test_api_error(self):
         import requests as req_lib
+
         from plugins.image_gen.xai import XAIImageGenProvider
 
         mock_resp = MagicMock()

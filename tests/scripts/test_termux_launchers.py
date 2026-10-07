@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -77,6 +77,7 @@ def test_postinst_refuses_foreign_path_and_prerm_preserves_it(tmp_path):
 @pytest.mark.platforms("posix")
 def test_verifier_stops_detached_descendants_before_cleanup(tmp_path):
     import psutil
+
     from scripts.termux.validate_installed import stop_child_tree
 
     code = (

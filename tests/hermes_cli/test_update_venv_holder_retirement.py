@@ -9,7 +9,8 @@ from unittest.mock import Mock
 import pytest
 
 from hermes_cli import main, update_cmd, update_cmd_windows
-from tests.compat.old_updater_support import fresh_child as fresh_child, no_external_work as no_external_work  # noqa: F401
+from tests.compat.old_updater_support import fresh_child as fresh_child  # noqa: F401
+from tests.compat.old_updater_support import no_external_work as no_external_work
 
 
 @pytest.mark.real_concurrent_gate
@@ -31,9 +32,10 @@ def test_historical_holder_hooks_hand_off_without_inspecting_or_killing(
 ):
     """A historical main's holder gates hand the update to the fresh child and exit with its
     status; the old parent never classifies, inspects or kills processes itself."""
+    import psutil
+
     import hermes_cli.gateway as gateway
     from hermes_cli import process_identity
-    import psutil
 
     forbidden = Mock(side_effect=AssertionError("retired holder gate performed work"))
     monkeypatch.setattr(gateway, "_is_pid_ancestor_of_current_process", forbidden)
@@ -62,8 +64,9 @@ def test_relaunch_stopped_serves_is_separate_work_not_an_update(monkeypatch, fre
 @pytest.mark.parametrize("gateway_mode", [False, True])
 def test_gateway_ancestor_refusal_never_kills_unknown_ancestry(monkeypatch, gateway_mode):
     """The live guard only refuses a tree-kill when a nominated gateway is positively an ancestor."""
-    import hermes_cli.gateway as gateway
     import psutil
+
+    import hermes_cli.gateway as gateway
 
     forbidden = Mock(side_effect=AssertionError("refusal probe performed work"))
     monkeypatch.setattr(gateway, "_is_pid_ancestor_of_current_process", lambda pid: False)

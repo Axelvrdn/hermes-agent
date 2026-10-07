@@ -19,21 +19,37 @@ from typing import Optional
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
 from hermes_cli import kanban_db_dispatch as kbd
-from hermes_cli import kanban_db_workspace as kbw
 from hermes_cli import kanban_db_notify as kbn
+from hermes_cli import kanban_db_workspace as kbw
 from hermes_cli import kanban_swarm as ks
 from hermes_cli import kanban_workflow
-from hermes_cli.kanban_output import (
-    _ATTACHMENT_FIELDS, _RUNS_RUN_FIELDS, _SHOW_RUN_FIELDS, _bulk_apply, _err,
-    _fmt_counts, _fmt_task_line, _fmt_ts, _json_out, _obj_dict, _print_json,
-    _task_to_dict,
-)
 from hermes_cli.kanban_boards import _dispatch_boards
 from hermes_cli.kanban_ops import (
-    _cmd_daemon, _kanban_config, _cmd_dispatch, _cmd_gc, _cmd_repair, _cmd_tail, _cmd_watch,
+    _cmd_daemon,
+    _cmd_dispatch,
+    _cmd_gc,
+    _cmd_repair,
+    _cmd_tail,
+    _cmd_watch,
+    _kanban_config,
 )
-from hermes_cli.kanban_parser import build_parser  # noqa: F401  (re-exported: hermes_cli.main, run_slash)
-
+from hermes_cli.kanban_output import (
+    _ATTACHMENT_FIELDS,
+    _RUNS_RUN_FIELDS,
+    _SHOW_RUN_FIELDS,
+    _bulk_apply,
+    _err,
+    _fmt_counts,
+    _fmt_task_line,
+    _fmt_ts,
+    _json_out,
+    _obj_dict,
+    _print_json,
+    _task_to_dict,
+)
+from hermes_cli.kanban_parser import (
+    build_parser,  # noqa: F401  (re-exported: hermes_cli.main, run_slash)
+)
 
 # --- Flag parsing helpers ---
 
@@ -629,6 +645,7 @@ def _rows_by_task(conn, table: str, ids: list[str]) -> dict[str, list]:
 def _cmd_diagnostics(args: argparse.Namespace) -> int:
     """List active diagnostics on the board via the same rule engine the dashboard uses."""
     from hermes_cli import kanban_diagnostics as kd
+
     # Honour kanban.default_assignee as the fallback for unassigned ready tasks (#27145),
     # kanban.max_in_progress as the global concurrency cap (#33488), kanban.max_in_progress_per_profile as
     # the per-profile cap (#21582), and kanban.max_spawn as the per-tick spawn limit (#28805). Same
@@ -854,7 +871,11 @@ def _goal_mode_handoff_rejection(task: Optional[kb.Task], evidence: str):
     try:
         # Headless handoff checks run outside any agent turn: bind the per-task relay-affinity
         # scope (mirrors kanban_specify) so the relay does not reject the judge call (#113669).
-        from agent.portal_tags import get_affinity_scope, reset_affinity_scope, set_affinity_scope
+        from agent.portal_tags import (
+            get_affinity_scope,
+            reset_affinity_scope,
+            set_affinity_scope,
+        )
         affinity_token = None if get_affinity_scope() else set_affinity_scope(f"kanban:{task.id}")
         try:
             verdict, reason, _, _, transport_failed = judge_goal(

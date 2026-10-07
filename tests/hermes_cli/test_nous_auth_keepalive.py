@@ -129,7 +129,10 @@ def test_keepalive_falls_back_to_singleton_state(monkeypatch):
 def test_keepalive_binds_launch_scope_for_multiplexed_singleton_refresh(tmp_path, monkeypatch, caplog):
     """The daemon tick must not lose the launch profile's routing secrets."""
     from agent.secret_scope import is_multiplex_active, set_multiplex_active
-    from hermes_cli.auth_nous import _nous_inference_env_override, _nous_portal_env_override
+    from hermes_cli.auth_nous import (
+        _nous_inference_env_override,
+        _nous_portal_env_override,
+    )
 
     launch_home = tmp_path / ".hermes"
     launch_home.mkdir()
@@ -166,7 +169,11 @@ def test_keepalive_binds_launch_scope_for_multiplexed_singleton_refresh(tmp_path
 
 def test_keepalive_binds_launch_scope_for_multiplexed_pool_refresh(tmp_path, monkeypatch):
     """Pool refreshes run under the same launch scope as singleton refreshes."""
-    from agent.secret_scope import current_secret_scope, is_multiplex_active, set_multiplex_active
+    from agent.secret_scope import (
+        current_secret_scope,
+        is_multiplex_active,
+        set_multiplex_active,
+    )
 
     launch_home = tmp_path / ".hermes"
     launch_home.mkdir()

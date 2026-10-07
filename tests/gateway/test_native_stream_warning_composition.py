@@ -5,12 +5,13 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
+
 from agent.status_output import StatusOutputMixin
-from gateway.run_turn_runner import TurnRunner
-from gateway.turn_context import TurnContext
-from gateway.session import SessionSource
 from gateway.config import Platform
-from tests.gateway.test_slack_native_streaming import _make_adapter, _open_streams, META
+from gateway.run_turn_runner import TurnRunner
+from gateway.session import SessionSource
+from gateway.turn_context import TurnContext
+from tests.gateway.test_slack_native_streaming import META, _make_adapter, _open_streams
 
 
 @pytest.mark.asyncio

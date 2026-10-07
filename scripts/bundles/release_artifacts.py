@@ -14,7 +14,11 @@ import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path, PureWindowsPath
 
-from scripts.releases.stable import read_admitted_candidate, accepted_smoke_results, validate_candidates
+from scripts.releases.stable import (
+    accepted_smoke_results,
+    read_admitted_candidate,
+    validate_candidates,
+)
 
 
 def sha256_file(file: Path) -> str:
@@ -281,8 +285,8 @@ def write_appinstaller(out: Path, *, identity: str, publisher: str, version: str
 def publish_canary_appinstaller(root: Path, *, tag: str, variant: str, bundle: Path,
                                identity: str, publisher: str, version: str, public_base: str) -> None:
     """Native SDK work is complete; verify its identity before writing a feed."""
-    from scripts.releases.r2 import put
     from hermes_cli.update_channel import is_canary_tag
+    from scripts.releases.r2 import put
 
     if not is_canary_tag(tag):
         raise ValueError("Only canary feeds publish directly; stable requires accepted candidates")
@@ -307,7 +311,7 @@ def publish_canary_appinstaller(root: Path, *, tag: str, variant: str, bundle: P
 
 
 def promote(manifest: dict, root: Path, public_base: str) -> None:
-    from scripts.releases.r2 import put, finalize
+    from scripts.releases.r2 import finalize, put
 
     materialize(manifest, root, public_base=public_base)
     windows = next(r for r in manifest["packages"] if r["platform"] == "windows")

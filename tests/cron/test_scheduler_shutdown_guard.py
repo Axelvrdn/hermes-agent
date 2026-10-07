@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock, patch
 
+
 class TestInterpreterShuttingDownHelper:
 
     def test_matches_shutdown_error_text_as_fallback(self):

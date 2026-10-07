@@ -6,7 +6,12 @@ import time
 
 import pytest
 
-from agent.redact import mask_secret, redact_cdp_url, redact_sensitive_text, RedactingFormatter
+from agent.redact import (
+    RedactingFormatter,
+    mask_secret,
+    redact_cdp_url,
+    redact_sensitive_text,
+)
 
 
 @pytest.fixture(autouse=True)

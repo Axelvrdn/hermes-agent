@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+
 class _DummyCLI:
     def __init__(self, **kwargs):
         self.kwargs = kwargs

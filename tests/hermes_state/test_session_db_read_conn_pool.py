@@ -35,13 +35,13 @@ holds POSIX locks on that inode, so raw descriptor counts lag the real
 connection count and make such assertions flaky.
 """
 
-import hermes_state_readpool
 import queue
 import sqlite3
 import threading
 
 import pytest
 
+import hermes_state_readpool
 from hermes_state import SessionDB
 
 
@@ -380,7 +380,7 @@ def test_close_returns_every_permit(db):
 @pytest.mark.requires_wal
 def test_peak_is_bounded_across_two_SessionDBs_on_one_path(db):
     """Two handles on one file must share one read-connection ceiling."""
-    from hermes_state import SessionDB, _READ_POOL_MAX
+    from hermes_state import _READ_POOL_MAX, SessionDB
 
     second = SessionDB(db_path=db.db_path)
     try:
@@ -437,7 +437,7 @@ def test_idle_permits_are_reclaimed_from_a_peer_instance(db):
     SessionDB, a second profile's store -- to the locked writer connection for
     the life of the process. Trading one bug for a quieter one.
     """
-    from hermes_state import SessionDB, _READ_POOL_MAX
+    from hermes_state import _READ_POOL_MAX, SessionDB
 
     # Warm every permit into db's IDLE pool.
     held = [db._checkout_read_conn() for _ in range(_READ_POOL_MAX)]
@@ -477,7 +477,7 @@ def test_idle_permits_are_reclaimed_from_a_peer_instance(db):
 @pytest.mark.requires_wal
 def test_peak_is_bounded_across_many_database_files(tmp_path):
     """Read connections must be capped for the PROCESS, not just per file."""
-    from hermes_state import SessionDB, _READ_POOL_MAX
+    from hermes_state import _READ_POOL_MAX, SessionDB
     from hermes_state_readpool import _READ_POOL_PROCESS_MAX
 
     n_files = (_READ_POOL_PROCESS_MAX // _READ_POOL_MAX) + 2
@@ -527,7 +527,7 @@ def test_peak_is_bounded_across_many_database_files(tmp_path):
 @pytest.mark.requires_wal
 def test_idle_connections_are_reclaimed_across_database_files(tmp_path):
     """A quiet profile's idle connections must not starve the busy one."""
-    from hermes_state import SessionDB, _READ_POOL_MAX
+    from hermes_state import _READ_POOL_MAX, SessionDB
     from hermes_state_readpool import _READ_POOL_PROCESS_MAX
 
     quiet = []

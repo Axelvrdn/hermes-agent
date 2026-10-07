@@ -131,7 +131,6 @@ def ensure_windows_bin_launchers(
         exe_is_venv_bound,
         stage_launcher,
     )
-
     from hermes_constants import project_venv_dir
 
     venv_dir = project_venv_dir(root)

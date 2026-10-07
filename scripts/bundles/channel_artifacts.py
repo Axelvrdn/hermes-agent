@@ -5,9 +5,17 @@ import base64
 import hashlib
 from pathlib import Path
 
-
-from hermes_cli.release_channels import ChannelError, build_prefix, canonical_json, validate_manifest
-from scripts.bundles.release_artifacts import single, validate_windows_bundle, write_appinstaller
+from hermes_cli.release_channels import (
+    ChannelError,
+    build_prefix,
+    canonical_json,
+    validate_manifest,
+)
+from scripts.bundles.release_artifacts import (
+    single,
+    validate_windows_bundle,
+    write_appinstaller,
+)
 
 
 def assemble(request: dict, native: dict, root: Path, *, artifact_prefix: str) -> tuple[dict, list[Path]]:

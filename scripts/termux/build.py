@@ -7,9 +7,9 @@ sequence owns only the shared frontend build and the native .deb handoff.
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))

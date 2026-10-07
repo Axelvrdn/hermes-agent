@@ -65,7 +65,11 @@ class AnthropicTransport(ProviderTransport):
     def normalize_response(self, response: Any, **kwargs) -> NormalizedResponse:
         """Parse content blocks (text/thinking/tool_use), map stop_reason, collect reasoning_details."""
         import json
-        from agent.anthropic_message_convert import _sanitize_replay_block, _to_plain_data
+
+        from agent.anthropic_message_convert import (
+            _sanitize_replay_block,
+            _to_plain_data,
+        )
         strip_tool_prefix = kwargs.get("strip_tool_prefix", False)
         text_parts, reasoning_parts, reasoning_details, tool_calls = [], [], [], []
         # Anthropic signs each thinking block against the blocks PRECEDING it; when thinking

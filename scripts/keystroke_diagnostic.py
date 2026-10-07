@@ -39,7 +39,6 @@ from prompt_toolkit.layout import Layout
 from prompt_toolkit.layout.containers import Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 
-
 _HISTORY: list[str] = []
 
 

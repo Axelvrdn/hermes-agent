@@ -17,7 +17,14 @@ from pathlib import Path
 import pytest
 
 from tests.e2e.core.providers._catalog_helpers import (
-    SHARDS, Row, TurnResult, check_row, discover_catalog, drive_shard, shard_of, shard_params,
+    SHARDS,
+    Row,
+    TurnResult,
+    check_row,
+    discover_catalog,
+    drive_shard,
+    shard_of,
+    shard_params,
 )
 
 SHARD = 0

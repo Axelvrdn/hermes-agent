@@ -128,8 +128,8 @@ def check_auth_live():
     if not check_auth(quiet=True):
         return False
     try:
-        from googleapiclient.discovery import build
         from google.oauth2.credentials import Credentials
+        from googleapiclient.discovery import build
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH))
         service = build("calendar", "v3", credentials=creds)
         service.calendarList().list(maxResults=1).execute()
@@ -154,8 +154,8 @@ def check_auth(quiet: bool = False):
         return False
 
     _ensure_deps()
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
 
     try:
         # Don't pass scopes — user may have authorized only a subset.
@@ -329,8 +329,9 @@ def exchange_auth_code(code: str):
         sys.exit(1)
 
     _ensure_deps()
-    from google_auth_oauthlib.flow import Flow
     from urllib.parse import parse_qs, urlparse
+
+    from google_auth_oauthlib.flow import Flow
 
     # Extract granted scopes from the callback URL if the user pasted the full redirect URL.
     granted_scopes = list(SCOPES)
@@ -388,8 +389,8 @@ def revoke():
         return
 
     _ensure_deps()
-    from google.oauth2.credentials import Credentials
     from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
 
     try:
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)

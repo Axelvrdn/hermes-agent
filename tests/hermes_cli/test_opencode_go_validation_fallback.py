@@ -16,7 +16,6 @@ from unittest.mock import patch
 
 from hermes_cli.models_validate import validate_requested_model
 
-
 _UNREACHABLE_PROBE = {
     "models": None,
     "probed_url": "https://opencode.ai/zen/go/v1/models",

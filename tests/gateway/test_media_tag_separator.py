@@ -15,8 +15,6 @@ from gateway.platforms.base import (
 )
 
 
-
-
 def test_strip_media_directives_handles_glued_known_extension_tags(tmp_path):
     """Two known-extension tags glued together must each be delivered (#68773)."""
     png1 = tmp_path / "a.png"

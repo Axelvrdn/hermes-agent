@@ -30,9 +30,9 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_cli.web_server import _SESSION_TOKEN, app
 import hermes_cli.web_routers.oauth as _rt_oauth
 import hermes_cli.web_server_oauth as _web_server_oauth
+from hermes_cli.web_server import _SESSION_TOKEN, app
 
 client = TestClient(app)
 HEADERS = {"X-Hermes-Session-Token": _SESSION_TOKEN}
@@ -608,8 +608,8 @@ def test_xai_dashboard_poller_seeds_single_entry_and_clears_suppression(tmp_path
     ``device_code`` suppression left by a prior ``hermes auth remove
     xai-oauth``.
     """
-    from hermes_cli import auth as auth_mod
     from agent.credential_pool import load_pool
+    from hermes_cli import auth as auth_mod
 
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     monkeypatch.delenv("HERMES_XAI_BASE_URL", raising=False)

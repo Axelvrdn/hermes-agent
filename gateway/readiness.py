@@ -11,7 +11,6 @@ from typing import Any
 from hermes_constants import get_hermes_home
 from utils import load_yaml_file_readonly
 
-
 _DISK_DEGRADED_PERCENT = 90.0
 _CONNECTED_STATES = {"connected", "running", "ok"}
 

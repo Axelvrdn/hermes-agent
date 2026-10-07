@@ -7,15 +7,15 @@ never imports ``cli`` at module load time (import cycle).
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import re
 import shutil
 import textwrap
 import time
-
 from contextlib import contextmanager
 from pathlib import Path
+
 from rich.markup import escape as _escape
 
 from agent.i18n import t
@@ -82,7 +82,10 @@ class CLIStreamMixin:
             if not text:
                 return
             level = getattr(notice, "level", "info") or "info"
-            from gateway.warning_notifications import is_diagnostic_notice, render_notification
+            from gateway.warning_notifications import (
+                is_diagnostic_notice,
+                render_notification,
+            )
             def queue_notice():
                 if not hasattr(self, "_pending_credit_notices"):
                     self._pending_credit_notices = []
@@ -406,7 +409,10 @@ class CLIStreamMixin:
         """Emit the held table block re-aligned as a whole. Cell-level markdown is stripped FIRST
         so the realigner pads to the final visible width, not the marker-decorated width."""
         from cli import (
-            _strip_markdown_syntax, _terminal_width_for_streaming, realign_markdown_tables)
+            _strip_markdown_syntax,
+            _terminal_width_for_streaming,
+            realign_markdown_tables,
+        )
         buf = self._stream_table_buf
         self._stream_table_buf = []
         self._in_stream_table = False
@@ -423,7 +429,14 @@ class CLIStreamMixin:
         """Emit filtered text to the streaming display."""
         from agent.markdown_tables import is_table_divider, looks_like_table_row
         from cli import (
-            HermesCLI, _ACCENT, _RST, _STREAM_PARTIAL_PREVIEW_LEN, _cprint, _strip_markdown_syntax, datetime)
+            _ACCENT,
+            _RST,
+            _STREAM_PARTIAL_PREVIEW_LEN,
+            HermesCLI,
+            _cprint,
+            _strip_markdown_syntax,
+            datetime,
+        )
         if not text:
             return
         # Close a still-open reasoning box on the first content token so the answer streams
@@ -586,8 +599,9 @@ class CLIStreamMixin:
         """Describe attached images via the auxiliary vision model and prepend the descriptions
         to the user's text (works with non-vision models; same approach as the gateway). The
         local path is included so the agent can re-examine via ``vision_analyze``."""
-        from cli import _DIM, _RST, _cprint
         import asyncio as _asyncio
+
+        from cli import _DIM, _RST, _cprint
         from gateway.warning_notifications import render_notification
         from tools.vision_tools import vision_analyze_tool
         analysis_prompt = (
@@ -670,7 +684,7 @@ class CLIStreamMixin:
         Drives the TUI spinner (tool.started stamps the elapsed timer); in "all"/"new"/"verbose"
         progress modes tool.completed also commits a stacked scrollback line (tool history).
         """
-        from cli import CLI_CONFIG, _DIM, _RST, _cprint, _hermes_home
+        from cli import _DIM, _RST, CLI_CONFIG, _cprint, _hermes_home
         # MoA reference outputs (display-only events from the MoA facade): render each answer
         # as a labelled thinking-style block BEFORE the aggregator acts.
         if event_type == "moa.reference":
@@ -745,7 +759,11 @@ class CLIStreamMixin:
                         and self.tool_progress_mode == "all"
                         and duration >= 30.0):
                         from agent.onboarding import (
-                            TOOL_PROGRESS_FLAG, is_seen, mark_seen, tool_progress_hint_cli)
+                            TOOL_PROGRESS_FLAG,
+                            is_seen,
+                            mark_seen,
+                            tool_progress_hint_cli,
+                        )
                         if not is_seen(CLI_CONFIG, TOOL_PROGRESS_FLAG):
                             self._long_tool_hint_fired = True
                             _cprint(f"  {_DIM}{tool_progress_hint_cli()}{_RST}")

@@ -12,10 +12,6 @@ import pytest
 from gateway.config import PlatformConfig
 
 
-
-
-
-
 class TestWeComInboundImageExtension:
     def test_octet_stream_falls_through_to_magic_bytes(self):
         """WeCom's CDN serves images as application/octet-stream; the cached file must get the
@@ -33,7 +29,9 @@ class TestWeComInboundImageExtension:
         """End to end through `_cache_media`: a percent-encoded, unpadded `aeskey` decrypts, and an
         octet-stream-labelled PNG is stored with an image MIME, not application/octet-stream."""
         from urllib.parse import quote
+
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
         from plugins.platforms.wecom import media as wecom_media
         from plugins.platforms.wecom.adapter import WeComAdapter
 
@@ -303,6 +301,7 @@ class TestMediaUpload:
     async def test_download_remote_bytes_blocks_connect_time_rebind(self, monkeypatch):
         import httpcore
         from httpcore._backends.auto import AutoBackend
+
         from plugins.platforms.wecom.adapter import WeComAdapter
         from tools.url_safety import SSRFConnectionBlocked
 

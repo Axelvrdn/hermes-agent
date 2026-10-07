@@ -17,15 +17,20 @@ from urllib.parse import parse_qs, quote
 import httpx
 
 from gateway.config import Platform, PlatformConfig
-from gateway.platforms._shared import extra_or_secret as _extra_or_secret, get_scoped_secret as _get_scoped_secret
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import get_scoped_secret as _get_scoped_secret
 from gateway.platforms.base import (
-    BasePlatformAdapter, SendResult,
-    cache_image_from_bytes_async, cache_audio_from_bytes_async, cache_document_from_bytes_async,
+    BasePlatformAdapter,
+    SendResult,
+    cache_audio_from_bytes_async,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
 )
 from gateway.platforms.event import MessageEvent, MessageType
-from .media_cache import ext_for_mime
 from gateway.platforms.helpers import compile_mention_patterns, strip_markdown
 from utils import TRUTHY_STRINGS
+
+from .media_cache import ext_for_mime
 
 # Historical BlueBubbles mime→ext maps, preserved verbatim as overrides for the shared dispatch in
 # gateway.platforms.media_cache. Both maps are CLOSED: unlisted mimes fall back to .jpg / .mp3.
@@ -197,6 +202,7 @@ class BlueBubblesAdapter(BasePlatformAdapter):
             logger.error("[bluebubbles] BLUEBUBBLES_SERVER_URL and BLUEBUBBLES_PASSWORD are required")
             return False
         from aiohttp import web
+
         # Tighter keepalive so idle CLOSE_WAIT drains promptly.
         # See #18451.
         from gateway.platforms._http_client_limits import platform_httpx_limits

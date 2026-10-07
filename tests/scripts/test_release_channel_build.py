@@ -56,8 +56,8 @@ def test_dispatch_names_channel_and_binds_to_pushed_source(source):
 
 
 def test_missing_default_branch_is_rejected_without_dispatch(source):
-    from scripts.releases.channel_build import prepare_build
     from hermes_cli.release_channels import ChannelError
+    from scripts.releases.channel_build import prepare_build
     with pytest.raises(ChannelError, match="default branch"):
         prepare_build(name="invalid-controller", revision="main", remote="origin", repo=source,
                       repository="example/hermes-agent", default_branch="",
@@ -88,6 +88,7 @@ def test_disposable_scope_is_opt_in_and_lease_bound(monkeypatch):
 
 def test_release_parser_preserves_plain_oneoff_dispatch(monkeypatch):
     import sys
+
     from scripts import release
     from scripts.releases import commit_build
     calls = []

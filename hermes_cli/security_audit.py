@@ -6,10 +6,10 @@ Single-shot, on-demand, never daily — see ``references/security-disclosure-tri
 
 from __future__ import annotations
 
-import logging
 import argparse
 import concurrent.futures
 import json
+import logging
 import re
 import sys
 import urllib.error

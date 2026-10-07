@@ -12,8 +12,8 @@ from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from utils import atomic_write_text
 from tools.threat_patterns import first_threat_message as _first_threat_message
+from utils import atomic_write_text
 
 logger = logging.getLogger("tools.memory_tool")
 
@@ -222,7 +222,9 @@ class MemoryStore:
     def _file_lock(path: Path):
         """Exclusive lock on a separate .lock file so the memory file itself can
         still be atomically replaced."""
-        from tools import memory_tool as _mt  # fcntl/msvcrt live (and are patched) there
+        from tools import (
+            memory_tool as _mt,  # fcntl/msvcrt live (and are patched) there
+        )
         fcntl, msvcrt = _mt.fcntl, _mt.msvcrt
         lock_path = path.with_suffix(path.suffix + ".lock")
         from hermes_constants import mkdir_under_hermes_home

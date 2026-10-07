@@ -2,12 +2,11 @@
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
-
 
 INSTALLER = Path(__file__).resolve().parents[3] / "scripts" / "install.ps1"
 

@@ -1,13 +1,12 @@
 """Tests for PII redaction in gateway session context prompts."""
 
+from gateway.config import HomeChannel, Platform
 from gateway.session import (
     SessionContext,
     SessionSource,
-    build_session_context_prompt,
     _hash_chat_id,
+    build_session_context_prompt,
 )
-from gateway.config import Platform, HomeChannel
-
 
 # ---------------------------------------------------------------------------
 # Low-level helpers

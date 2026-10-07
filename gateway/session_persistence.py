@@ -5,11 +5,12 @@ load/save paths (state.db gateway_routing primary, sessions.json legacy mirror).
 from __future__ import annotations
 
 import contextlib
-import logging
 import json
+import logging
 import threading
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
+
 from utils import atomic_json_write
 
 if TYPE_CHECKING:
@@ -203,7 +204,9 @@ class SessionPersistenceMixin:
         would strand secondary profiles' handles with their WAL lock held ('database is locked' on
         restart). Drained under the lock, closed outside it; a pinned handle is the pinner's."""
         def _close(db) -> None:
-            from hermes_state_registry import release_or_close  # shared instances no-op on close()
+            from hermes_state_registry import (
+                release_or_close,  # shared instances no-op on close()
+            )
             try:
                 release_or_close(db)
             except Exception as exc:

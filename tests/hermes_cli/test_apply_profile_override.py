@@ -15,6 +15,7 @@ import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+
 import pytest
 
 
@@ -179,7 +180,10 @@ class TestApplyProfileOverrideHermesHomeGuard:
 
         monkeypatch.setattr(pwd, "getpwnam", lambda name: SimpleNamespace(pw_dir=str(user_home)))
 
-        from hermes_cli.main import _apply_profile_override, _resolve_sudo_user_profile_env
+        from hermes_cli.main import (
+            _apply_profile_override,
+            _resolve_sudo_user_profile_env,
+        )
         _apply_profile_override()
 
         assert os.environ.get("HERMES_HOME") == str(profile_dir)

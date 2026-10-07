@@ -13,30 +13,30 @@ import queue
 import subprocess
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_platform.host import runtime as host_runtime
+from cli import _should_auto_attach_clipboard_image_on_paste
 from hermes_cli.clipboard import (
-    has_clipboard_image,
-    _linux_save,
-    _macos_pngpaste,
-    _macos_osascript,
-    _macos_has_image,
-    _xclip_save,
-    _xclip_has_image,
-    _wsl_save,
-    _wsl_has_image,
-    _wayland_save,
-    _wayland_has_image,
-    _windows_save,
-    _windows_has_image,
     _convert_to_png,
+    _linux_save,
+    _macos_has_image,
+    _macos_osascript,
+    _macos_pngpaste,
     _pipe_to_file,
     _probe,
+    _wayland_has_image,
+    _wayland_save,
+    _windows_has_image,
+    _windows_save,
+    _wsl_has_image,
+    _wsl_save,
+    _xclip_has_image,
+    _xclip_save,
+    has_clipboard_image,
 )
-from cli import _should_auto_attach_clipboard_image_on_paste
+from hermes_platform.host import runtime as host_runtime
 
 FAKE_PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 100
 FAKE_BMP = b"BM" + b"\x00" * 100

@@ -27,14 +27,14 @@ _repo = str(Path(__file__).resolve().parents[2])
 if _repo not in sys.path:
     sys.path.insert(0, _repo)
 
-from plugins.platforms.telegram.adapter import TelegramAdapter  # noqa: E402
 from gateway.config import PlatformConfig  # noqa: E402
-
 from hermes_cli.plugins import (  # noqa: E402
     PluginContext,
     PluginManager,
     PluginManifest,
 )
+from plugins.platforms.telegram.adapter import TelegramAdapter  # noqa: E402
+
 
 def _make_ctx(name: str = "test_plugin") -> tuple[PluginManager, PluginContext]:
     mgr = PluginManager()

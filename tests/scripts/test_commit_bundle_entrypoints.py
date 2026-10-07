@@ -1,18 +1,22 @@
 """Tagless packaging enters the real builder with an exact source identity."""
 from __future__ import annotations
 
-import os
 import json
-from pathlib import Path
+import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 from scripts.bundles import desktop
-
-from tests.ci.test_desktop_release_tag_admission import _BASH, _child_env, _git, _seed_repo
+from tests.ci.test_desktop_release_tag_admission import (
+    _BASH,
+    _child_env,
+    _git,
+    _seed_repo,
+)
 
 
 @pytest.mark.parametrize("variant", ["bundled", "light"])

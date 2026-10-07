@@ -6,11 +6,11 @@ lock writer produces resolves the same pinned version.
 """
 import json
 import os
-from pathlib import Path
 import shlex
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 

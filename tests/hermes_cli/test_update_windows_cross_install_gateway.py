@@ -15,10 +15,8 @@ import pytest
 
 import hermes_cli.main_install_repair as main_install_repair
 from hermes_cli import gateway as gateway_mod
-from hermes_cli import gateway_windows
+from hermes_cli import gateway_windows, update_cmd, update_cmd_windows
 from hermes_cli import main as cli_main
-from hermes_cli import update_cmd
-from hermes_cli import update_cmd_windows
 
 
 @pytest.fixture

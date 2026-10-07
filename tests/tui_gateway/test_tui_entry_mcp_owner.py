@@ -15,8 +15,6 @@ from hermes_constants import hermes_home_key
 from tui_gateway import entry
 
 
-
-
 def test_wait_falls_through_to_shared_owner(monkeypatch):
     monkeypatch.setattr(entry, "_mcp_discovery_thread", None)
     # The fall-through to the shared owner only exists for the stdio TUI,

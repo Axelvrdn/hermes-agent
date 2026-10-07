@@ -66,6 +66,7 @@ sys.path.insert(0, os.path.abspath(REPO))
 os.environ.setdefault("HERMES_HOME", os.path.expanduser("~/.hermes"))
 import anthropic
 from anthropic.resources.messages import Messages
+
 _orig_stream = Messages.stream
 LOCK = threading.Lock()
 TLS = threading.local()
@@ -108,6 +109,7 @@ def patched_stream(self, **kw):
 Messages.stream = patched_stream
 
 from openai.resources.chat.completions import Completions
+
 _orig_create = Completions.create
 class _OAStream:
     def __init__(self, inner, rec): self.inner, self.rec, self.usage, self._id, self._prov = inner, rec, None, None, None
@@ -164,8 +166,11 @@ else:
 if API_MODE == "chat_completions": Completions.create = patched_create
 
 import agent.prompt_caching as _pc
+
 _pc.effective_cache_ttl = lambda ttl, *, model="", provider="": ARGS.ttl  # the probe pins the TTL; user config must not leak in
 from run_agent import AIAgent
+
+
 def creds():
     if PROVIDER == "openrouter":
         key = ARGS.api_key or os.environ.get("OPENROUTER_API_KEY") or sys.exit("OPENROUTER_API_KEY or --api-key required")

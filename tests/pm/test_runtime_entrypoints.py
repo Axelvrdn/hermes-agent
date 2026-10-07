@@ -73,7 +73,7 @@ def test_store_root_reads_executing_trees_canonical_install_stamp(tmp_path, monk
 
 @pytest.mark.parametrize("distribution", ["nix", "docker"])
 def test_packaged_runtime_uses_explicit_stamp_without_tool_downloads(tmp_path, monkeypatch, distribution):
-    from pm import runtime, paths
+    from pm import paths, runtime
 
     monkeypatch.setattr("pm._uv._toolchain", lambda **kw: pytest.fail("packaged PM tried to download tools"))
     project = tmp_path / "app"

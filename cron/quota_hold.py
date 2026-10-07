@@ -20,7 +20,8 @@ import re
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from hermes_time import now as _hermes_now, safe_strftime
+from hermes_time import now as _hermes_now
+from hermes_time import safe_strftime
 
 logger = logging.getLogger("cron.scheduler")
 
@@ -58,7 +59,10 @@ def hold_seconds_from_failure(exc: BaseException) -> Optional[float]:
 
 def hold_active(job: Dict[str, Any], now: Optional[datetime] = None) -> bool:
     """True while the job is parked inside a provider window (an expired marker is inert)."""
-    from cron.jobs import _instant_after, _parse_aware  # late: jobs imports this module's helpers
+    from cron.jobs import (  # late: jobs imports this module's helpers
+        _instant_after,
+        _parse_aware,
+    )
 
     until = _parse_aware(job.get(STATE_KEY)) if job.get(STATE_KEY) else None
     return until is not None and _instant_after(until, now or _hermes_now())

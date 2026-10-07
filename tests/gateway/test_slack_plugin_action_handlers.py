@@ -18,7 +18,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Ensure the repo root is importable when this test runs directly
 # ---------------------------------------------------------------------------
@@ -59,17 +58,16 @@ def _ensure_slack_mock() -> None:
 _ensure_slack_mock()
 
 import plugins.platforms.slack.adapter as _slack_mod  # noqa: E402
+
 _slack_mod.SLACK_AVAILABLE = True
 
 from gateway.config import PlatformConfig  # noqa: E402
-from plugins.platforms.slack.adapter import SlackAdapter  # noqa: E402
-
 from hermes_cli.plugins import (  # noqa: E402
     PluginContext,
     PluginManager,
     PluginManifest,
 )
-
+from plugins.platforms.slack.adapter import SlackAdapter  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # PluginContext.register_slack_action_handler — input validation + queuing

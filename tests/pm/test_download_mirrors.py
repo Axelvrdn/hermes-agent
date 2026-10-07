@@ -73,6 +73,7 @@ def test_exhausted_mirrors_name_each_attempted_url(tmp_path, dl_server, monkeypa
 @pytest.mark.parametrize("failure", ["503", "tls", "disk", "pause"])
 def test_only_availability_failures_can_use_a_mirror(tmp_path, dl_server, monkeypatch, failure):
     import ssl
+
     from pm import downloader, network
 
     payload = b"still pinned"

@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import pytest
+
 import hermes_yaml as yaml
 
 WORKTREE = Path(__file__).resolve().parents[2]

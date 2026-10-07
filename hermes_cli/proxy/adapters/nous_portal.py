@@ -8,11 +8,11 @@ from typing import Any, Dict, FrozenSet, Optional
 
 from hermes_cli.anon_challenge import background_caller
 from hermes_cli.auth import (
-    AuthError,
     DEFAULT_NOUS_INFERENCE_URL,
-    _load_auth_store,
+    AuthError,
     _auth_store_lock,
     _is_terminal_nous_refresh_error,
+    _load_auth_store,
     _nous_inference_env_override,
     _quarantine_nous_oauth_state,
     _quarantine_nous_pool_entries,

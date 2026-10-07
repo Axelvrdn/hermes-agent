@@ -20,15 +20,14 @@ from typing import Any, Dict, List
 import pytest
 
 from agent.plugin_llm import (
-    PluginLlmTrustError,
     PluginLlmTextInput,
+    PluginLlmTrustError,
     _check_task,
     _resolve_attribution,
     _resolve_task_ownership,
     _TrustPolicy,
     make_plugin_llm_for_test,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

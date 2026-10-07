@@ -81,7 +81,9 @@ def _config_cdp_url() -> str:
     """Persistent ``browser.cdp_url`` from config.yaml, or "" (read here, not via
     ``browser_tool_cdp._get_cdp_override`` — circular import)."""
     try:
-        from hermes_cli.config import read_raw_config  # late-bound: tests patch the source module
+        from hermes_cli.config import (
+            read_raw_config,  # late-bound: tests patch the source module
+        )
         browser_cfg = read_raw_config().get("browser", {})
         if isinstance(browser_cfg, dict):
             return str(browser_cfg.get("cdp_url", "") or "").strip()
@@ -368,8 +370,8 @@ def _fetch_snapshot(session: Dict[str, Any]) -> tuple[str, int]:
     """``(snapshot_text, refs_count)`` truncated like the main browser tool (line boundaries,
     full tree stored to cache/web, read_file pointer appended). Lazy import: ``browser_tool``
     imports this module."""
-    from tools.browser_tool_snapshot import _truncate_snapshot
     from tools.browser_tool import get_browser_snapshot_threshold
+    from tools.browser_tool_snapshot import _truncate_snapshot
     data = _snapshot_data(session)
     snapshot, threshold = data.get("snapshot", ""), get_browser_snapshot_threshold()
     if len(snapshot) > threshold:
@@ -434,7 +436,10 @@ def _camofox_private_page_block(session: Dict[str, Any], task_id: Optional[str],
     the SSRF guard applies (non-local backend, not a local sidecar, ``allow_private_urls``
     unset); fail-open on probe failure like sibling guards. Lazy import (cycle).
     """
-    from tools.browser_tool_eval_policy import _camofox_current_page_private_url, _eval_ssrf_guard_active
+    from tools.browser_tool_eval_policy import (
+        _camofox_current_page_private_url,
+        _eval_ssrf_guard_active,
+    )
     if not _eval_ssrf_guard_active(task_id or "default"):
         return None
     blocked_url = _camofox_current_page_private_url(session["tab_id"], session["user_id"])
@@ -496,7 +501,10 @@ def camofox_type(ref: str, text: str, task_id: Optional[str] = None) -> str:
             return blocked
         clean_ref = ref.lstrip("@")
         _post(_tab_path(session, "type"), {"userId": session["user_id"], "ref": clean_ref, "text": text})
-        from agent.display import redact_browser_typed_text_for_display, redact_tool_args_for_display
+        from agent.display import (
+            redact_browser_typed_text_for_display,
+            redact_tool_args_for_display,
+        )
         # Match browser_tool.browser_type: the raw text is typed into the page, but the
         # returned display value is run through the secret-pattern redactor so API keys /
         # tokens don't leak into tool progress or chat history.
@@ -578,8 +586,8 @@ def camofox_vision(question: str, annotate: bool = False, task_id: Optional[str]
                 logger.debug("Suppressed exception: %s", _exc, exc_info=True)
         # The screenshot itself cannot be redacted, but the text-based accessibility snippet
         # sent alongside it must not leak secret values.
-        from agent.redact import redact_sensitive_text
         from agent.auxiliary_client import call_llm
+        from agent.redact import redact_sensitive_text
         vision_prompt = f"Analyze this browser screenshot and answer: {question}{redact_sensitive_text(annotation_context)}"
         timeout, temperature = _vision_llm_settings()
         response = call_llm(

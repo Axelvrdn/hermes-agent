@@ -4,11 +4,11 @@ The gate belongs to the process, not a profile or transport. Diagnostic ledgers 
 close the check/use race: every source of new work must reserve admission before dispatch.
 """
 
-from contextlib import contextmanager
 import logging
 import secrets
 import threading
 import time
+from contextlib import contextmanager
 
 
 class RetirementFence:

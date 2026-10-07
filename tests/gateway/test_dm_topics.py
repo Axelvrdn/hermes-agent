@@ -19,7 +19,6 @@ import pytest
 
 from gateway.config import PlatformConfig
 
-
 # Use the shared, comprehensive telegram mock from conftest instead of a
 # file-local one. The previous local installer differed from every other
 # telegram test's stub in two ways — it registered a SEPARATE string-valued

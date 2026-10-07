@@ -1,9 +1,10 @@
 """The external action must never install Hermes into the plugin checkout."""
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 import pytest
+
 import hermes_yaml as yaml
 
 

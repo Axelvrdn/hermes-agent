@@ -163,8 +163,14 @@ def _pool_provider(args: Any) -> str:
 def login(provider: str, cfg: OAuthPKCEConfig, *, open_browser: bool = True) -> Dict[str, Any]:
     """Run the browser Authorization-Code + PKCE flow; returns the pool fields for the new grant."""
     from hermes_cli.auth_device_flow import (
-        _bind_loopback_callback_server, _can_open_graphical_browser, _make_loopback_callback_handler,
-        _pkce_code_challenge, _pkce_code_verifier, _print_loopback_ssh_hint, _serve_loopback_callback)
+        _bind_loopback_callback_server,
+        _can_open_graphical_browser,
+        _make_loopback_callback_handler,
+        _pkce_code_challenge,
+        _pkce_code_verifier,
+        _print_loopback_ssh_hint,
+        _serve_loopback_callback,
+    )
 
     validate_config(provider, cfg)
     path = cfg.redirect_path if cfg.redirect_path.startswith("/") else f"/{cfg.redirect_path}"

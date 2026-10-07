@@ -18,15 +18,15 @@ import/patch target): ``terminal_tool_config`` (TERMINAL_* reads, ``_quiet``),
 ``terminal_tool_result`` (foreground result post-processing).
 """
 
+import atexit
 import json
 import logging
 import os
 import sys
-import time
 import threading
-import atexit
+import time
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -39,19 +39,37 @@ def _redact_terminal_error_text(value: Any) -> str:
 
 
 from tools.registry import tool_error
-from tools.terminal_tool_lifecycle import (
-    _check_disk_usage_warning, _cleanup_inactive_envs, _create_configured_env,
-    _evict_environment_for_task, cleanup_all_environments, ensure_task_env,
+from tools.terminal_tool_backends import (
+    _REQUIREMENT_CHECKERS,
+    _VERCEL_SANDBOX_DEFAULT_CWD,
+    _check_plugin_requirements,
+    _record_unavailable_reason,  # noqa: F401 — re-exported
+    terminal_backend_unavailable_reason,
 )
 from tools.terminal_tool_config import (
-    _is_container_backend, _is_host_cwd, _is_mounted_host_cwd, _is_unusable_container_cwd,
-    _is_windows_drive_path, _parse_env_var, _plugin_env_flag, _quiet, _safe_getcwd, _tenv, _tenv_bool,
-    coerce_ssh_remote_cwd, translate_mounted_host_path,
+    _is_container_backend,
+    _is_host_cwd,
+    _is_mounted_host_cwd,
+    _is_unusable_container_cwd,
+    _is_windows_drive_path,
+    _parse_env_var,
+    _plugin_env_flag,
+    _quiet,
+    _safe_getcwd,
+    _tenv,
+    _tenv_bool,
+    coerce_ssh_remote_cwd,
+    translate_mounted_host_path,
 )
-from tools.terminal_tool_backends import (
-    _REQUIREMENT_CHECKERS, _VERCEL_SANDBOX_DEFAULT_CWD, _check_plugin_requirements,
-    _record_unavailable_reason, terminal_backend_unavailable_reason,  # noqa: F401 — re-exported
+from tools.terminal_tool_lifecycle import (
+    _check_disk_usage_warning,
+    _cleanup_inactive_envs,
+    _create_configured_env,
+    _evict_environment_for_task,
+    cleanup_all_environments,
+    ensure_task_env,
 )
+
 # display_hermes_home imported lazily at call site (stale-module safety during hermes update)
 from tools.tool_backend_helpers import coerce_modal_mode, managed_nous_tools_enabled
 
@@ -155,7 +173,6 @@ def _check_all_guards(command: str, env_type: str,
 
 from tools.environments.base import EnvironmentConnectionError
 
-
 # Tool description for LLM
 TERMINAL_TOOL_DESCRIPTION = """Execute shell commands. The host OS, shell, and terminal backend are stated in your environment section — write commands for THAT platform. Filesystem, current working directory, and exported environment variables persist between calls.
 
@@ -214,7 +231,10 @@ def _maybe_reap_docker_orphans(container_config: Dict[str, Any]) -> None:
     max_age = max(60, lifetime) * 2
 
     try:
-        from tools.environments.docker import reap_orphan_containers, _container_identity
+        from tools.environments.docker import (
+            _container_identity,
+            reap_orphan_containers,
+        )
     except ImportError:
         return
     # Never fail the env-creation path because of a janitor problem.
@@ -853,11 +873,18 @@ def _command_requires_pipe_stdin(command: str) -> bool:
     return normalized.startswith("gh auth login") and "--with-token" in normalized
 
 
-from tools.terminal_tool_guards import (
-    _foreground_background_guidance, _safe_command_preview, _validate_workdir,
-    gateway_lifecycle_block, self_repo_block,
+from tools.terminal_tool_background import (
+    _YIELDED_NOTE,
+    spawn_background_process,
+    yield_to_background_handler,
 )
-from tools.terminal_tool_background import _YIELDED_NOTE, spawn_background_process, yield_to_background_handler
+from tools.terminal_tool_guards import (
+    _foreground_background_guidance,
+    _safe_command_preview,
+    _validate_workdir,
+    gateway_lifecycle_block,
+    self_repo_block,
+)
 from tools.terminal_tool_result import finalize_foreground_result
 
 
@@ -1403,7 +1430,9 @@ def terminal_tool(
     ``_host_local`` forces the local backend for Hermes-owned control-plane
     children (kept in a separate env cache from the configured backend).
     """
-    from hermes_cli.observability.shared_metrics_loop import record_terminal_backend as _metered
+    from hermes_cli.observability.shared_metrics_loop import (
+        record_terminal_backend as _metered,
+    )
     plan = None
     try:
         plan = _plan_execution(

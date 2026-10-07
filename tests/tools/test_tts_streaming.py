@@ -8,8 +8,8 @@ availability, the chunked-streamer playback path, and the universal per-sentence
 sync fallback.
 """
 
-import os
 import json
+import os
 import queue
 import sys
 import tempfile
@@ -345,7 +345,11 @@ def test_xai_stream_preserves_profile_and_delivers_before_completion(monkeypatch
     import json
     from urllib.parse import parse_qs, urlsplit
 
-    from agent.secret_scope import build_profile_secret_scope, reset_secret_scope, set_secret_scope
+    from agent.secret_scope import (
+        build_profile_secret_scope,
+        reset_secret_scope,
+        set_secret_scope,
+    )
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     home = tmp_path / profile
@@ -397,7 +401,9 @@ def test_xai_stream_preserves_profile_and_delivers_before_completion(monkeypatch
 def test_xai_stream_reports_errors_and_bounds_received_audio(monkeypatch, outcome):
     import base64
     import json
+
     from websockets.exceptions import ConnectionClosed
+
     import tools.xai_http
 
     monkeypatch.setattr(tools.xai_http, "resolve_xai_http_credentials", lambda **kw: {"api_key": "test-key"})
@@ -1084,6 +1090,7 @@ def test_openai_streamer_honors_endpoint_reported_rate_in_wav_playback(monkeypat
     """Issue #76466: an OpenAI-compatible endpoint answering 44.1 kHz PCM (X-Audio-Sample-Rate)
     must drive the WAV header written for playback, not the construction-time expectation."""
     import wave
+
     from tools import tts_tool_speaker as sp
 
     _patch_openai_speech(monkeypatch, {"content-type": "audio/pcm", "x-audio-sample-rate": "44100"})

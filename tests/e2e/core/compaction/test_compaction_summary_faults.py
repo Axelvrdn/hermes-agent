@@ -12,7 +12,14 @@ from __future__ import annotations
 
 import pytest
 
-from tests.e2e.core.compaction._helpers import REFUSAL_TEXT, SEEDS, TRUNCATED_TEXT, db_rows, drive, warned
+from tests.e2e.core.compaction._helpers import (
+    REFUSAL_TEXT,
+    SEEDS,
+    TRUNCATED_TEXT,
+    db_rows,
+    drive,
+    warned,
+)
 
 FAILING_MODES = ("empty", "refusal", "truncated", "slow")
 

@@ -23,7 +23,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from agent.conversation_loop import _restore_or_build_system_prompt
-from agent.surface_switch import _SURFACE_NAME_END, _SURFACE_SWITCH_NOTE_PREFIX, identity_line_value
+from agent.surface_switch import (
+    _SURFACE_NAME_END,
+    _SURFACE_SWITCH_NOTE_PREFIX,
+    identity_line_value,
+)
 
 
 def _make_agent(session_db=None, prebuilt_prompt: str = "BUILT_PROMPT"):
@@ -113,7 +117,10 @@ class TestSurfaceSwitch:
         assert self._restore(stored="cli", current="cli")._surface_switch_note == ""
 
     def test_stored_prompt_platform_ignores_runtime_hint_decoys(self):
-        from agent.prompt_builder import RUNTIME_ENVIRONMENT_END, RUNTIME_ENVIRONMENT_HEADING
+        from agent.prompt_builder import (
+            RUNTIME_ENVIRONMENT_END,
+            RUNTIME_ENVIRONMENT_HEADING,
+        )
 
         decoy = "Host: Example\nPlatform: tui\n"
         stored = (
@@ -610,8 +617,8 @@ class TestPerResponseSessionWritePath:
 
 def test_null_stored_prompt_does_not_take_the_stale_probe_path(tmp_path):
     """A NULL system_prompt row already rebuilds. The capability probe must not gate it."""
-    from hermes_state import SessionDB
     from agent.conversation_loop import _bot_chat_prompt_stale
+    from hermes_state import SessionDB
 
     agent = SimpleNamespace(
         _bot_mode_protocol=True,

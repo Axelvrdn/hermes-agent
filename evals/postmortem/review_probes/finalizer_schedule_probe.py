@@ -6,6 +6,7 @@ from the command line / environment, never hard-coded. Usage: see the argument p
 """
 import asyncio
 import json
+
 import pytest
 
 
@@ -19,7 +20,7 @@ def finalizer_schedule_probe(request, monkeypatch):
     if mode == 'off':
         yield
         return
-    from agent import relay_llm, chat_completion_helpers
+    from agent import chat_completion_helpers, relay_llm
     print('PROBE_IMPORT', relay_llm.__file__, chat_completion_helpers.__file__)
     original_provider = relay_llm.ManagedLlmStream._provider_stream
     original_count = chat_completion_helpers._StreamingCall._count_chunk

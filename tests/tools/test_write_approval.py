@@ -9,10 +9,11 @@ subcommand dispatch.
 
 import json
 import os
-import tempfile
 import shutil
+import tempfile
 
 import pytest
+
 
 @pytest.fixture
 def hermes_home(monkeypatch):
@@ -64,8 +65,8 @@ def test_normalize_enabled_coerces_values():
 
 def test_memory_gate_off_allows_write(hermes_home):
     # Default (gate off) → write straight through, no staging.
-    from tools.memory_tool import memory_tool, MemoryStore
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore, memory_tool
     store = MemoryStore(); store.load_from_disk()
     r = json.loads(memory_tool("add", "user", "save me", store=store))
     assert r["success"] is True
@@ -78,9 +79,10 @@ def test_cli_memory_approve_without_live_agent_uses_fresh_store(hermes_home, cap
     returned "memory store unavailable" and applied nothing. The CLI handler must
     fall back to a freshly loaded on-disk store, like the gateway path does."""
     import json
-    from tools.memory_tool import memory_tool, MemoryStore
-    from tools import write_approval as wa
+
     from hermes_cli.cli_commands_mixin import CLICommandsMixin
+    from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore, memory_tool
 
     _set_approval("memory", True)
     staging = MemoryStore(); staging.load_from_disk()
@@ -141,8 +143,8 @@ def test_load_on_disk_store_honors_configured_limits_and_permissions(hermes_home
 
 def test_handle_approve_all(hermes_home):
     from hermes_cli.write_approval_commands import handle_pending_subcommand
-    from tools.memory_tool import MemoryStore
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore
     store = MemoryStore(); store.load_from_disk()
     wa.stage_write("memory", {"action": "add", "target": "user", "content": "a"},
                    summary="a", origin="foreground")
@@ -158,8 +160,8 @@ def test_handle_approve_surfaces_overwritten_entry(hermes_home):
     approver the FULL entry it overwrote — the store's replaced_entries field used to be
     dropped by _apply_one, so the incident path stayed silent."""
     from hermes_cli.write_approval_commands import handle_pending_subcommand
-    from tools.memory_tool import MemoryStore
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore
     store = MemoryStore(); store.load_from_disk()
     entry = "RULE A: gate merges. RULE B: ci per HEAD. RULE C: never squash."
     store.add("memory", entry)
@@ -179,8 +181,12 @@ _REVIEWED = "Staging DB: pg-staging-2 (old cluster, retiring)"
 def _review_stages_remove(shape):
     """Seed memory, then stage a remove the way the unattended background review does."""
     from tools.memory_tool import MemoryStore, memory_tool
-    from tools.skill_provenance import (reset_current_write_origin, reset_review_attended,
-                                        set_current_write_origin, set_review_attended)
+    from tools.skill_provenance import (
+        reset_current_write_origin,
+        reset_review_attended,
+        set_current_write_origin,
+        set_review_attended,
+    )
     store = MemoryStore(); store.load_from_disk()
     for entry in (_KEPT, _REVIEWED):
         assert store.add("memory", entry)["success"]
@@ -201,8 +207,8 @@ def test_approve_refuses_staged_remove_whose_entry_changed(hermes_home, shape):
     """Approval re-ran the staged old_text search against the file as it is THEN, so it
     deleted the newer entry the live agent had written in place, which the approver never saw."""
     from hermes_cli.write_approval_commands import handle_pending_subcommand
-    from tools.memory_tool import load_on_disk_store, memory_tool
     from tools import write_approval as wa
+    from tools.memory_tool import load_on_disk_store, memory_tool
     store, pid = _review_stages_remove(shape)
     newer = "Staging DB: pg-staging-3 (migrated 2026-09-20, creds in vault 'stg')"
     assert json.loads(memory_tool(action="replace", old_text="pg-staging-2", content=newer, store=store))["success"]
@@ -220,8 +226,8 @@ def test_approve_refuses_staged_remove_whose_entry_changed(hermes_home, shape):
 def test_approve_names_the_entry_a_remove_deleted(hermes_home, shape):
     """Approve listed what a replace overwrote but was silent about what a remove deleted."""
     from hermes_cli.write_approval_commands import handle_pending_subcommand
-    from tools.memory_tool import load_on_disk_store
     from tools import write_approval as wa
+    from tools.memory_tool import load_on_disk_store
     _store, pid = _review_stages_remove(shape)
     out = handle_pending_subcommand(wa.MEMORY, ["approve", pid], memory_store=load_on_disk_store())
     assert _REVIEWED not in load_on_disk_store().memory_entries, out
@@ -232,8 +238,8 @@ def test_approve_refuses_unpinned_legacy_remove(hermes_home):
     """A record staged before removes were pinned to their full entry has no verifiable target,
     so approve refuses it (keeping the record) instead of replaying its old_text search."""
     from hermes_cli.write_approval_commands import handle_pending_subcommand
-    from tools.memory_tool import load_on_disk_store
     from tools import write_approval as wa
+    from tools.memory_tool import load_on_disk_store
     _store, pid = _review_stages_remove("single")
     path = wa._pending_path(wa.MEMORY, pid)
     record = json.loads(path.read_text(encoding="utf-8"))
@@ -282,9 +288,9 @@ def approval_callback_cleanup():
     set_approval_callback(None)
 
 def test_memory_inline_approve_writes(hermes_home, approval_callback_cleanup):
-    from tools.memory_tool import memory_tool, MemoryStore
-    from tools.terminal_tool import set_approval_callback
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore, memory_tool
+    from tools.terminal_tool import set_approval_callback
     _set_approval("memory", True)
 
     calls = []
@@ -304,9 +310,9 @@ def test_memory_inline_approve_writes(hermes_home, approval_callback_cleanup):
     assert "approved fact" in calls[0][0]
 
 def test_memory_inline_deny_blocks(hermes_home, approval_callback_cleanup):
-    from tools.memory_tool import memory_tool, MemoryStore
-    from tools.terminal_tool import set_approval_callback
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore, memory_tool
+    from tools.terminal_tool import set_approval_callback
     _set_approval("memory", True)
     set_approval_callback(lambda command, description, **kw: "deny")
 
@@ -324,9 +330,9 @@ def test_headless_memory_write_stages_without_inline_prompt(
 ):
     """`hermes chat -q`, cron and unattended platforms can register the CLI callback but have no human to answer
     it: the write stages at once instead of waiting the approval timeout."""
-    from tools.memory_tool import memory_tool, MemoryStore
-    from tools.terminal_tool import set_approval_callback
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore, memory_tool
+    from tools.terminal_tool import set_approval_callback
 
     _set_approval("memory", True)
     monkeypatch.setenv(*{"single_query": ("HERMES_SINGLE_QUERY_SESSION", "1"), "cron": ("HERMES_CRON_SESSION", "1"),
@@ -354,8 +360,8 @@ def test_headless_memory_write_stages_without_inline_prompt(
 def test_memory_invalid_params_rejected_before_staging(hermes_home):
     # Param validation must run BEFORE the gate so a broken write is rejected
     # immediately instead of staged and failing at approve time.
-    from tools.memory_tool import memory_tool, MemoryStore
     from tools import write_approval as wa
+    from tools.memory_tool import MemoryStore, memory_tool
     _set_approval("memory", True)
     store = MemoryStore(); store.load_from_disk()
     r = json.loads(memory_tool("add", "memory", None, store=store))
@@ -368,7 +374,7 @@ def test_memory_invalid_params_rejected_before_staging(hermes_home):
 # ---------------------------------------------------------------------------
 
 def _stage_one_memory_write():
-    from tools.memory_tool import memory_tool, MemoryStore
+    from tools.memory_tool import MemoryStore, memory_tool
     store = MemoryStore(); store.load_from_disk()
     r = json.loads(memory_tool("add", "memory", "surface hint fact", store=store))
     assert r.get("staged") is True, r

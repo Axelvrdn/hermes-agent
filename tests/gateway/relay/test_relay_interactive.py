@@ -31,7 +31,6 @@ from gateway.relay.adapter import RelayAdapter
 from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
 from gateway.relay.ws_transport import _event_from_wire
 from gateway.session import SessionSource
-
 from tests.gateway.relay.stub_connector import StubConnector
 
 FULL_OPS = (

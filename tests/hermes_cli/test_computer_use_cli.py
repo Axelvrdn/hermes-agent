@@ -10,8 +10,6 @@ import pytest
 from tools.computer_use import cua_backend_driver
 
 
-
-
 def _invoke(monkeypatch, *args: str) -> int:
     cli_main = import_module("hermes_cli.main")
     monkeypatch.setattr(sys, "argv", ["hermes", "computer-use", *args])

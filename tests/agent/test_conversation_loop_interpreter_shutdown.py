@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from agent.conversation_loop import _is_interpreter_shutdown_error
 
+
 class TestInterpreterShutdownDetection:
     """Verify the interpreter-shutdown error matcher used by the
     conversation loop's outer except handler."""

@@ -15,7 +15,6 @@ from types import SimpleNamespace
 
 import pytest
 
-
 VALID = {
     "todo",
     "patch",

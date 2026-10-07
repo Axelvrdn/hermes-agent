@@ -16,13 +16,13 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import re
 import shlex
 import shutil
 import signal
 import subprocess
 import time
+from pathlib import Path
 
 import pytest
 
@@ -33,7 +33,13 @@ fcntl = pytest.importorskip("fcntl")  # windows-footgun: ok
 from tests.scripts.desktop_update.legacy_desktop_reader import legacy_read
 from tests.scripts.desktop_update.lineage_rule_cases import ENV_CASES, RULE_CASES
 from tests.scripts.desktop_update.lineage_rule_cases import FACTS as LINEAGE_FACTS
-from tests.scripts.desktop_update.test_desktop_update_posix_marker import POSIX, _calls, _ct, _custodian, _install
+from tests.scripts.desktop_update.test_desktop_update_posix_marker import (
+    POSIX,
+    _calls,
+    _ct,
+    _custodian,
+    _install,
+)
 
 pytestmark = pytest.mark.platforms("linux")  # /proc ancestry and creation times
 

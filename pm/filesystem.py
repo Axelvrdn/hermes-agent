@@ -9,12 +9,12 @@ import errno
 import hashlib
 import ntpath
 import os
-from pathlib import Path
 import shutil
 import stat
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 _LOCK_POLL_SECONDS = 0.05
 

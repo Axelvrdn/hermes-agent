@@ -1,21 +1,22 @@
 """Stable updates consume one remote commit across Git and archive transports."""
-from copy import deepcopy
 import json
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import os
-from pathlib import Path
 import subprocess
 import sys
 import threading
+import urllib.request
+from copy import deepcopy
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urlsplit
-import urllib.request
 
 import pytest
 
-from hermes_cli import main as cli_main, update_cmd, update_receipt
-from hermes_cli.update_inventory import UpdatePlan
+from hermes_cli import main as cli_main
+from hermes_cli import update_cmd, update_receipt
 from hermes_cli.update_cmd import _sync_with_upstream_if_needed
+from hermes_cli.update_inventory import UpdatePlan
 
 
 def git(root, *args):

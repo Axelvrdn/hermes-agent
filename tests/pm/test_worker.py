@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import importlib
-from pathlib import Path
-import subprocess
 import shutil
+import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -13,14 +13,20 @@ from pm import paths
 from pm.package import InstallError
 from pm.plugin_inputs import Members, Selection
 from pm.runtime import runtime_python
-from tests.pm._range_server import RangeHandler, dl_server, url  # noqa: F401
-from tests.pm.test_runtime_wheelhouse import locked_wheelhouse  # noqa: F401
 from tests.pm._fixtures import (
     _wheel,
+)
+from tests.pm._fixtures import (
     build_worker as build_worker,
+)
+from tests.pm._fixtures import (
     client as client,
+)
+from tests.pm._fixtures import (
     isolated_python as isolated_python,
 )
+from tests.pm._range_server import RangeHandler, dl_server, url  # noqa: F401
+from tests.pm.test_runtime_wheelhouse import locked_wheelhouse  # noqa: F401
 
 # Spawns children with a home it builds itself; the parent's must stay real.
 pytestmark = pytest.mark.real_machine_home
@@ -40,6 +46,7 @@ def test_isolated_worker_preserves_install_error(client, monkeypatch):
 
 def test_refused_or_already_paused_install_does_not_acquire_runtime(client, monkeypatch):
     import threading
+
     from pm.downloader import DownloadPaused
 
     monkeypatch.setattr(client, "runtime_command", lambda path, **kwargs: pytest.fail("refusal acquired PM runtime"))
@@ -75,6 +82,7 @@ def _current_environment(tmp_path, monkeypatch, members):
 def test_currency_probe_preserves_union_and_candidate_inputs(client, tmp_path, monkeypatch, isolated_python,
                                                             member_shape, route):
     import json
+
     from pm.environments import runtime_facts_path, selected_venv
     from pm.lock import Facts
     from pm.packages import Venv
@@ -171,8 +179,9 @@ def _assert_worker_holds_lock(repo):
 
 @pytest.mark.parametrize("explicit", [True, False])
 def test_sync_discovers_profile_members_after_worker_acquires_lock(client, tmp_path, monkeypatch, isolated_python, explicit):
-    from concurrent.futures import ThreadPoolExecutor
     import time
+    from concurrent.futures import ThreadPoolExecutor
+
     from hermes_cli.runtime_state import runtime_lock
     from tests.pm._fixtures import worker_toolchain
 
@@ -205,6 +214,7 @@ def test_sync_discovers_profile_members_after_worker_acquires_lock(client, tmp_p
 @pytest.mark.parametrize("tools_present", [False, True], ids=["cold-tools", "ready-tools"])
 def test_lazy_disabled_sync_does_not_bootstrap_tools(client, tmp_path, monkeypatch, isolated_python, current, tools_present):
     import json
+
     from pm import receipt
 
     repo = _current_environment(tmp_path, monkeypatch, [])
@@ -241,6 +251,7 @@ def test_lazy_disabled_sync_does_not_bootstrap_tools(client, tmp_path, monkeypat
 
 def test_invalid_selection_waits_for_failed_receipt_and_lock_release(client, tmp_path, monkeypatch):
     import json
+
     from pm.environments import install_state_dir
     from pm.filesystem import lock_fd
 
@@ -260,6 +271,7 @@ def _node_archive(server, body=b"#!/bin/sh\nexit 0\n"):
     import hashlib
     import io
     import zipfile
+
     from pm.lock import Lockfile
     from pm.registry import get_package
     from pm.store import current_target
@@ -286,6 +298,7 @@ def _node_archive(server, body=b"#!/bin/sh\nexit 0\n"):
 @pytest.mark.parametrize("operation", ["ensure", "stage_only"])
 def test_worker_artifact_lifecycle_keeps_identity_and_relays_progress(client, dl_server, operation):
     import hashlib
+
     from pm.lock import Facts, Lockfile
     from pm.store import tree_digest
 
@@ -349,6 +362,7 @@ def test_worker_artifact_lifecycle_keeps_identity_and_relays_progress(client, dl
 @pytest.mark.parametrize("from_progress", [False, True])
 def test_pause_event_reaches_running_worker_without_hanging(client, dl_server, monkeypatch, from_progress):
     import threading
+
     from pm.downloader import DownloadPaused
     from pm.lock import Facts
 
@@ -406,6 +420,7 @@ def test_environment_probe_needs_no_pm_runtime(client, monkeypatch, tmp_path):
 
 def test_worker_receipt_is_exact_even_if_latest_is_replaced(client, tmp_path, monkeypatch):
     import json
+
     from pm import receipt
 
     _current_environment(tmp_path, monkeypatch, [])
@@ -466,8 +481,8 @@ def test_resolution_conflict_survives_worker_and_receipt(client, tmp_path, monke
 
 
 def test_failed_facts_write_restores_exact_config_before_reporting(client, tmp_path, monkeypatch, isolated_python):
-    from tests.pm._fixtures import worker_toolchain
     from pm.environments import install_state_dir
+    from tests.pm._fixtures import worker_toolchain
 
     repo = _current_environment(tmp_path, monkeypatch, [])
     home = tmp_path / "home"
@@ -506,8 +521,7 @@ def test_worker_death_reports_transport_failure(client, monkeypatch, isolated_py
 
 def test_foreign_checkout_sync_uses_its_own_pm_generation(client, tmp_path, monkeypatch, isolated_python):
     from pm import venv_is_current
-    from pm.environments import selected_venv, runtime_facts_path
-
+    from pm.environments import runtime_facts_path, selected_venv
     from tests.pm._fixtures import worker_toolchain
     worker_toolchain(client, monkeypatch, isolated_python)
     foreign = tmp_path / "other checkout"
@@ -550,8 +564,8 @@ def test_cold_manager_build_does_not_bootstrap_a_worker(client, tmp_path, monkey
 
 def test_worker_side_environment_reuses_and_keeps_selection_on_failed_tool(client, tmp_path, monkeypatch, isolated_python):
     import zipfile
-    from pm import environment_python, python_tool
 
+    from pm import environment_python, python_tool
     from tests.pm._fixtures import worker_toolchain
     worker_toolchain(client, monkeypatch, isolated_python)
     wheel = _wheel(tmp_path, "side_dep")

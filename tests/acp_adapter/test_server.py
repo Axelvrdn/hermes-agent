@@ -3,27 +3,27 @@
 import asyncio
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import MagicMock, AsyncMock, patch
-
-import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import acp
+import pytest
 from acp.agent.router import build_agent_router
 from acp.schema import (
     AuthenticateResponse,
     InitializeResponse,
     PromptResponse,
     ResumeSessionResponse,
+    SessionInfo,
     SessionModelState,
     SessionModeState,
     SetSessionConfigOptionResponse,
-    SessionInfo,
     TextContentBlock,
     ToolCallProgress,
     ToolCallStart,
     UsageUpdate,
     UserMessageChunk,
 )
+
 from acp_adapter.auth import TERMINAL_SETUP_AUTH_METHOD_ID
 from acp_adapter.server import (
     HermesACPAgent,
@@ -637,7 +637,7 @@ class TestRegisterSessionMcpServers:
     @pytest.mark.asyncio
     async def test_registers_stdio_servers(self, agent, mock_manager):
         """McpServerStdio servers are converted and passed to register_mcp_servers."""
-        from acp.schema import McpServerStdio, EnvVariable
+        from acp.schema import EnvVariable, McpServerStdio
 
         state = mock_manager.create_session(cwd="/tmp")
         # Give the mock agent the attributes _register_session_mcp_servers reads

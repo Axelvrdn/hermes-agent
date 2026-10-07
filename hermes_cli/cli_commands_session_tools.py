@@ -221,7 +221,10 @@ class CLICommandsSessionToolsMixin:
         if not text:
             return _cp(f"  {_t('copy.nothing_in_response')}")
         try:
-            from hermes_cli.clipboard import is_remote_shell_session, write_clipboard_text
+            from hermes_cli.clipboard import (
+                is_remote_shell_session,
+                write_clipboard_text,
+            )
             # Over SSH native tools write the REMOTE clipboard; OSC 52 reaches the user's terminal.
             # Locally, OSC 52 is the fallback when native tools are unavailable/fail (SSH/tmux).
             if is_remote_shell_session() or not write_clipboard_text(text):
@@ -235,7 +238,14 @@ class CLICommandsSessionToolsMixin:
 
     def _handle_image_command(self, cmd_original: str):
         """Handle /image <path> — attach a local image file for the next prompt."""
-        from cli import _DIM, _IMAGE_EXTENSIONS, _RST, _cprint, _resolve_attachment_path, _split_path_input
+        from cli import (
+            _DIM,
+            _IMAGE_EXTENSIONS,
+            _RST,
+            _cprint,
+            _resolve_attachment_path,
+            _split_path_input,
+        )
         raw_args = (cmd_original.split(None, 1)[1].strip() if " " in cmd_original else "")
         if not raw_args:
             hint = "/path/to/image.png"
@@ -273,8 +283,8 @@ class CLICommandsSessionToolsMixin:
         _cp(_accent(_t("tools.disabling" if subcommand == "disable" else "tools.enabling",
                        names=", ".join(names))))
         self._run_tools_config(tools_action=subcommand, names=names, platform="cli")
-        from hermes_cli.tools_config import _get_platform_tools
         from hermes_cli.config import load_config
+        from hermes_cli.tools_config import _get_platform_tools
         self.enabled_toolsets = _get_platform_tools(load_config(), "cli")
         self.new_session()
         _cp(_dim(_t("tools.session_reset")))
@@ -284,6 +294,7 @@ class CLICommandsSessionToolsMixin:
         is captured (isatty=True so colors still render) and re-emitted through _cprint so
         patch_stdout's StdoutProxy doesn't garble the escapes; standalone/tests call straight through."""
         from argparse import Namespace
+
         from hermes_cli.tools_config import tools_disable_enable_command
         if getattr(self, "_app", None) is None:
             return tools_disable_enable_command(Namespace(**ns))

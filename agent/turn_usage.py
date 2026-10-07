@@ -17,7 +17,11 @@ from typing import Any, Dict, List
 
 from agent.image_token_cost import calibrate_from_usage
 from agent.usage_anchor import capture_usage_anchor, set_usage_anchor
-from agent.usage_pricing import estimate_usage_cost, normalize_usage, with_served_service_tier
+from agent.usage_pricing import (
+    estimate_usage_cost,
+    normalize_usage,
+    with_served_service_tier,
+)
 
 logger = logging.getLogger("agent.conversation_loop")
 

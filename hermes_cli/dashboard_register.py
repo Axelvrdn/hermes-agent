@@ -8,8 +8,8 @@ idempotently, then print the gate-engagement hint.
 
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import os
 import random
 import sys

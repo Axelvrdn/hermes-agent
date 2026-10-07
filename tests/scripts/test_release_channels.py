@@ -1,14 +1,14 @@
 """Exercise publisher/reader through the real signed HTTP transport."""
 from __future__ import annotations
 
-from contextlib import contextmanager
 import hashlib
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import socket
+import xml.sax.saxutils
+from contextlib import contextmanager
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Lock, Thread
 from urllib.parse import parse_qs, urlsplit
-import xml.sax.saxutils
 
 import pytest
 
@@ -101,7 +101,7 @@ def publisher(url, **kwargs):
 
 
 def test_unknown_channel_created_over_http_retains_identity_and_immutable_requests():
-    from hermes_cli.release_channels import ChannelReader, ChannelNotFound
+    from hermes_cli.release_channels import ChannelNotFound, ChannelReader
     with object_server() as (url, objects, headers, requests, faults):
         pub = publisher(url)
         reader = ChannelReader(url + "/bucket", repository="example/hermes-agent")
@@ -170,6 +170,7 @@ def put_build(objects, request):
 
 def test_concurrent_allocations_reverse_completion_retirement_and_readback():
     from concurrent.futures import ThreadPoolExecutor
+
     from hermes_cli.release_channels import ChannelError, canonical_json
     from scripts.releases.channels import PublicVisibilityError
     with object_server() as (url, objects, headers, requests, faults):
@@ -313,8 +314,8 @@ def test_retire_derives_receiver_kind_from_channel_identity_match():
 
 
 def test_mutable_read_loss_recovery_never_clones_another_allocation():
-    from scripts.releases.channels import ChannelConflict
     from hermes_cli.release_channels import canonical_json
+    from scripts.releases.channels import ChannelConflict
     with object_server() as (url, objects, headers, requests, faults):
         pub = publisher(url)
         pub.create("nonce-check")
@@ -396,12 +397,13 @@ def test_protected_releases_bootstrap_retry_and_refuse_late_or_ungated_promotion
 
 
 def test_accepted_release_receipts_feed_the_protected_head_without_rebuilding(tmp_path, monkeypatch):
-    from scripts.releases import channel_releases
+    import zipfile
+    from copy import deepcopy
+
     from hermes_cli.release_channels import ChannelError, canonical_json
+    from scripts.releases import channel_releases
     from scripts.releases.channels import preview_identity
     from scripts.releases.handoff import receipt_name
-    from copy import deepcopy
-    import zipfile
     identity = preview_identity("released", "2" * 16)
     tag, commit = "v2.0.0", "d" * 40
     with object_server() as (url, objects, headers, requests, faults):
@@ -502,8 +504,8 @@ def test_accepted_release_receipts_feed_the_protected_head_without_rebuilding(tm
 
 
 def test_protected_transaction_refuses_custom_workflow_and_unpublished_release(monkeypatch):
-    from scripts.releases import channel_releases
     from hermes_cli.release_channels import ChannelError
+    from scripts.releases import channel_releases
     attempt, tag, commit = "rc.1-v2.0.0", "v2.0.0", "a" * 40
     env = {"GITHUB_ACTIONS": "true", "GITHUB_EVENT_NAME": "workflow_dispatch",
            "GITHUB_REPOSITORY": "example/hermes-agent", "RELEASE_TAG": attempt,
@@ -537,8 +539,8 @@ def test_protected_transaction_refuses_custom_workflow_and_unpublished_release(m
 
 
 def test_stable_admission_requires_an_attempt_ref_release_tag(monkeypatch):
-    from scripts.releases import channel_releases
     from hermes_cli.release_channels import ChannelError
+    from scripts.releases import channel_releases
     attempt, commit = "rc.2-v1.2.3", "c" * 40
     env = {"GITHUB_ACTIONS": "true", "GITHUB_EVENT_NAME": "workflow_dispatch",
            "GITHUB_REPOSITORY": "example/hermes-agent", "RELEASE_TAG": attempt,
@@ -568,8 +570,8 @@ def test_stable_admission_requires_an_attempt_ref_release_tag(monkeypatch):
 
 
 def test_accepted_stable_reads_the_release_archive_by_tag(monkeypatch):
-    from scripts.releases import channel_releases
     from hermes_cli.release_channels import ChannelError, canonical_json
+    from scripts.releases import channel_releases
     tag, commit = "v2.0.0", "c" * 40
     attempt = "rc.1-v2.0.0"
     with object_server() as (url, objects, headers, requests, faults):

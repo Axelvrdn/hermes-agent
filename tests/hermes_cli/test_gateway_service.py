@@ -12,13 +12,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
 import hermes_constants
 
 pwd = pytest.importorskip("pwd")
 grp = pytest.importorskip("grp")
 
 import hermes_cli.gateway as gateway_cli
-from hermes_cli.gateway_launchd import launchd_program_arguments
 from gateway import status
 from gateway.restart import (
     DEFAULT_GATEWAY_CRON_DRAIN_TIMEOUT,
@@ -27,6 +27,7 @@ from gateway.restart import (
     GATEWAY_SERVICE_RESTART_EXIT_CODE,
     resolve_systemd_timeout_stop_sec,
 )
+from hermes_cli.gateway_launchd import launchd_program_arguments
 
 
 def _osascript_exec_argv(program_args: list[str]) -> list[str]:

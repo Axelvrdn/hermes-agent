@@ -14,6 +14,7 @@ same contract.
 import types
 
 import pytest
+
 import hermes_cli.web_server_profiles as _web_server_profiles
 
 

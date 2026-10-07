@@ -408,7 +408,10 @@ def _reparented_orphan(pid: int) -> bool:
     """
     try:
         from hermes_cli.dashboard_procs import (
-            _REAP_MIN_AGE_SECONDS, _lock_owned_serve_pids, _process_ppid)
+            _REAP_MIN_AGE_SECONDS,
+            _lock_owned_serve_pids,
+            _process_ppid,
+        )
         if _process_ppid(pid) not in (0, 1):
             return False
         if pid in (_lock_owned_serve_pids() or ()):

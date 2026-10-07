@@ -5,9 +5,9 @@ The FIFO releases the real cached update result only after the prompt renders.
 """
 import argparse
 import errno
+import fcntl
 import json
 import os
-from pathlib import Path
 import pty
 import select
 import signal
@@ -17,7 +17,7 @@ import sys
 import tempfile
 import termios
 import time
-import fcntl
+from pathlib import Path
 
 
 def run_case(root, output, name, behind, early=False, cancel=False):

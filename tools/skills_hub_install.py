@@ -8,17 +8,22 @@ is still read from there at call time.
 
 from __future__ import annotations
 
-import logging
 import hashlib
+import logging
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+
 from agent.skill_utils import is_excluded_skill_path
 from tools.skills_guard import ScanResult, content_hash
 from tools.skills_hub_github import GitHubAuth
 from tools.skills_hub_models import (
-    SkillBundle, SkillSource, _normalize_lock_install_path, _validate_bundle_rel_path,
-    _validate_install_parent_path, _validate_skill_name,
+    SkillBundle,
+    SkillSource,
+    _normalize_lock_install_path,
+    _validate_bundle_rel_path,
+    _validate_install_parent_path,
+    _validate_skill_name,
 )
 
 if TYPE_CHECKING:  # origin class; runtime use is via the lazy origin import
@@ -145,7 +150,12 @@ def install_from_quarantine(
     scan_provenance: Optional[Dict[str, Any]] = None,
 ) -> Path:
     """Move a scanned skill from quarantine into the skills directory."""
-    from tools.skills_hub import HubLockFile, _quarantine_dir, _skills_dir, append_audit_log
+    from tools.skills_hub import (
+        HubLockFile,
+        _quarantine_dir,
+        _skills_dir,
+        append_audit_log,
+    )
     safe_skill_name = _validate_skill_name(skill_name)
     safe_category = _validate_install_parent_path(category) if category else ""
     quarantine_resolved = quarantine_path.resolve()

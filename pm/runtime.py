@@ -8,12 +8,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-from typing import Callable
 import uuid
+from pathlib import Path
+from typing import Callable
 
 from pm.filesystem import native
 from pm.package import InstallError
@@ -22,9 +22,8 @@ from pm.package import InstallError
 def runtime_environment() -> dict[str, str]:
     """Do not let an activated application or a uv caller select PM's imports."""
     from hermes_constants import get_hermes_home
-    from pm.paths import store_root
-
     from pm.environment import _base_environment
+    from pm.paths import store_root
 
     env = _base_environment()
     env["HERMES_HOME"] = str(get_hermes_home())
@@ -189,8 +188,8 @@ def collect_runtime_generations(root: Path) -> list[Path]:
     once every worker launched from it has exited; generations published before leases
     existed stay, as the application collector keeps its own.
     """
-    from pm.filesystem import lock_fd
     from hermes_cli.runtime_state import leases_held
+    from pm.filesystem import lock_fd
 
     generations = root / "generations"
     removed: list[Path] = []
@@ -219,8 +218,8 @@ def runtime_python(*, bootstrap: bool = True, cache: Path | None = None) -> Path
     """Resolve PM without selecting, repairing, or importing the app environment."""
     if is_runtime():
         return Path(sys.executable)
-    from pm.environments import install_state_dir
     from pm._uv import _toolchain
+    from pm.environments import install_state_dir
     from pm.paths import repo_root
 
     project = repo_root()

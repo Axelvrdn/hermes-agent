@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pytest
 
+
 @pytest.fixture
 def upstage_profile():
     """Resolve the registered Upstage profile via the provider registry.

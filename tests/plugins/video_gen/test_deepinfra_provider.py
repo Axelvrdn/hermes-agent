@@ -75,8 +75,9 @@ def _fake_openai_with_capture(captured: dict, *, status="succeeded",
 @contextmanager
 def _mock_url_download(captured: dict, raise_exc: Exception | None = None):
     """Patch the shared ``save_url_video`` helper the base provider calls."""
-    import agent.video_gen_provider as base
     from pathlib import Path
+
+    import agent.video_gen_provider as base
 
     def _fake_save_url_video(url, *, prefix="video", **kw):
         captured["url"] = url
@@ -138,7 +139,11 @@ def test_generate_text_to_video_downloads_url_and_saves_locally():
 def test_credentials_follow_the_profile_secret_scope(monkeypatch):
     """On a multiplexed gateway os.environ is the launch profile's .env: the key and base URL come from the
     routed profile's scope, and a profile without a key is unavailable instead of borrowing the launch key."""
-    from agent.secret_scope import reset_secret_scope, set_multiplex_active, set_secret_scope
+    from agent.secret_scope import (
+        reset_secret_scope,
+        set_multiplex_active,
+        set_secret_scope,
+    )
 
     monkeypatch.setenv("DEEPINFRA_BASE_URL", "https://launch.example/v1")
     provider = deepinfra_plugin.DeepInfraVideoGenProvider()

@@ -4,12 +4,14 @@ gateway forwarding.
 
 import asyncio
 import contextlib
-import logging
 import inspect
+import logging
 import re
-from fastapi import HTTPException
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+from fastapi import HTTPException
+
 from hermes_cli.config import cfg_get
 from hermes_cli.web_models import CronJobCreate
 
@@ -83,8 +85,8 @@ def _validate_dashboard_cron_context_from(refs: Optional[List[str]], profile_nam
 def _cron_profile_dicts() -> List[Dict[str, Any]]:
     """Minimal profile records (callers only consume ``name``); avoids ``list_profiles()``,
     whose config parsing, gateway probes and skill counts are GIL pressure on large pools."""
-    from hermes_cli.web_server_profiles import _fallback_profile_dicts
     from hermes_cli import profiles as profiles_mod
+    from hermes_cli.web_server_profiles import _fallback_profile_dicts
     try:
         return [
             {"name": name, "path": str(home), "is_default": name == "default"}
@@ -185,7 +187,10 @@ def _notify_cron_provider_for_profile(target_profile: Optional[str]) -> None:
     """
     try:
         _profile_name, home = _cron_profile_home(target_profile)
-        from cron.scheduler_provider import InProcessCronScheduler, resolve_cron_scheduler
+        from cron.scheduler_provider import (
+            InProcessCronScheduler,
+            resolve_cron_scheduler,
+        )
         with _cron_store_scope(home):
             provider = resolve_cron_scheduler()
             external = not isinstance(provider, InProcessCronScheduler)
@@ -298,7 +303,11 @@ def _fire_cron_job_for_profile(profile: str, job_id: str, *, force: bool = False
     and external callers on the web_deps late-binding seam; do not add new uses.
     """
     _profile_name, home = _cron_profile_home(profile)
-    from cron.scheduler_provider import provider_fire_due_accepts, provider_supports_force_fire, resolve_cron_scheduler
+    from cron.scheduler_provider import (
+        provider_fire_due_accepts,
+        provider_supports_force_fire,
+        resolve_cron_scheduler,
+    )
     with _cron_store_scope(home):
         provider = resolve_cron_scheduler()
         if force:
@@ -335,8 +344,9 @@ def _gateway_fire_endpoint(profile: str, home: Path) -> str:
     mirrors under ``/p/<profile>/…``, so a non-default profile's port must be read from the
     default home (a secondary's own API_SERVER_PORT is a port nothing listens on).
     """
-    from hermes_cli.config import load_config
     import os as _os
+
+    from hermes_cli.config import load_config
     multiplex = False
     try:
         # The live default gateway's own record, else the explicit flag — never the merged default:
@@ -359,7 +369,10 @@ def _gateway_fire_endpoint(profile: str, home: Path) -> str:
     try:
         # Profile-scoped read through the CANONICAL loader (managed-scope overlay, ${ENV_VAR}
         # expansion) — never a raw yaml.safe_load (tests/hermes_cli/test_config_read_guard.py).
-        from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+        from hermes_constants import (
+            reset_hermes_home_override,
+            set_hermes_home_override,
+        )
         token = set_hermes_home_override(str(listener_home))
         try:
             profile_cfg = load_config()

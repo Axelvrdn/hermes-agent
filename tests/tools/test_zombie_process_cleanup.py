@@ -13,7 +13,6 @@ import threading
 import pytest
 
 
-
 def _spawn_sleep(seconds: float = 60) -> subprocess.Popen:
     """Spawn a portable long-lived Python sleep process (no shell wrapper)."""
     return subprocess.Popen(
@@ -276,12 +275,13 @@ class TestDelegationCleanup:
     def test_run_single_child_calls_close(self, monkeypatch, tmp_path):
         """_run_single_child finally block should call close() on child."""
         from unittest.mock import MagicMock
+
+        from agent import relay_runtime
         from hermes_constants import (
             get_hermes_home,
             reset_hermes_home_override,
             set_hermes_home_override,
         )
-        from agent import relay_runtime
         from tools.delegate_tool import _run_single_child
 
         parent = MagicMock()

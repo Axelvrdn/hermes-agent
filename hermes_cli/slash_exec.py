@@ -62,7 +62,11 @@ def _exec_profile(ctx: CommandContext) -> CommandReply:
     # Presentation-only display name (profile.yaml); `data.profile` stays the canonical id.
     label = profile_name
     try:
-        from hermes_cli.profiles import format_profile_label, get_profile_dir, read_profile_meta
+        from hermes_cli.profiles import (
+            format_profile_label,
+            get_profile_dir,
+            read_profile_meta,
+        )
         display = read_profile_meta(get_profile_dir(profile_name)).get("display_name", "")
         label = format_profile_label(profile_name, display)
     except Exception as _exc:

@@ -9,8 +9,8 @@ working model configured (consumer-onboarding audit finding #7, Aug 2026).
 import logging
 from unittest.mock import patch
 
-from hermes_cli.auth import AuthError
 from hermes_cli import nous_subscription
+from hermes_cli.auth import AuthError
 
 
 def _summary_output(capsys, provider_ready: bool):

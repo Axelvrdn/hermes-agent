@@ -2,15 +2,13 @@
 
 import json
 import os
-import subprocess
 import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
 
 from agent import coding_context as cc
-
-
 
 
 def _git_init(path):

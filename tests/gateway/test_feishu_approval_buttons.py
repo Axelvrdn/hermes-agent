@@ -39,10 +39,9 @@ def _ensure_feishu_mocks():
 
 _ensure_feishu_mocks()
 
-from gateway.config import PlatformConfig
 import plugins.platforms.feishu.adapter as feishu_module
+from gateway.config import PlatformConfig
 from plugins.platforms.feishu.adapter import FeishuAdapter
-
 
 # ---------------------------------------------------------------------------
 # Helpers

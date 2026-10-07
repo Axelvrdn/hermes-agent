@@ -561,6 +561,7 @@ def test_delegate_task_background_routes_async_and_does_not_block(monkeypatch):
     child synchronously, and the child completes on the background thread.
     A single task is dispatched as a one-item background batch unit."""
     from unittest.mock import MagicMock
+
     import tools.delegate_tool as dt
 
     parent = MagicMock()
@@ -629,9 +630,13 @@ def test_delegate_task_background_uses_live_tui_agent_session_id(monkeypatch):
     """
     import json
     from unittest.mock import MagicMock
+
     import tools.delegate_tool as dt
     from gateway.session_context import clear_session_vars, set_session_vars
-    from tools.approval_context import reset_current_session_key, set_current_session_key
+    from tools.approval_context import (
+        reset_current_session_key,
+        set_current_session_key,
+    )
 
     parent = MagicMock()
     parent._delegate_depth = 0
@@ -928,6 +933,7 @@ def test_batch_model_rejection_notice_requires_configured_model_in_text(monkeypa
 def _grouped_fanout(monkeypatch, tasks, gates):
     """delegate_task(tasks) in the background with gated fake children; returns the parsed handle."""
     from unittest.mock import MagicMock
+
     import tools.delegate_tool as dt
 
     parent = MagicMock()

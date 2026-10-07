@@ -3,9 +3,9 @@ check routes through the real runtime contracts instead of a parallel scanner.""
 
 from __future__ import annotations
 
-import logging
 import inspect
 import json
+import logging
 import os
 import shutil
 import socket
@@ -278,6 +278,7 @@ def _check_manifest_v2(report: "DoctorReport", manifest: Any) -> None:
     """Manifest v2 checks: versions, deps, pip declarations, config schema."""
     import importlib.metadata
     import re as _re
+
     from hermes_cli.plugins import SUPPORTED_MANIFEST_VERSION
     mv = getattr(manifest, "manifest_version", 1)
     if mv > SUPPORTED_MANIFEST_VERSION:

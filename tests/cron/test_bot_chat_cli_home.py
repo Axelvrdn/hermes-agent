@@ -1,8 +1,8 @@
 """The unowned CLI lane executes only at the home used for owner discovery."""
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest

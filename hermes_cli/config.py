@@ -29,28 +29,44 @@ from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Dict, Any, Literal, Optional, List, Tuple, Set
+from typing import Any, Dict, List, Literal, Optional, Set, Tuple
 
 import hermes_yaml as yaml
-
+from hermes_cli import managed_scope
 from hermes_cli.cli_output import line_input
 from hermes_cli.colors import Colors, color
-from hermes_cli import managed_scope
+from hermes_cli.config_read_errors import (
+    _CONFIG_PARSE_FAILURES,
+    _FIX_PERMS,
+    _FIX_YAML,
+    FailedConfigRead,
+    _backups_dir_display,
+    _refuse_failed_read,
+    _refuse_overwrite,
+    _warn_config_parse_failure,
+    _yaml_error_details,
+    _yaml_error_location,
+)
 from hermes_cli.default_soul import DEFAULT_SOUL_MD, is_legacy_template_soul
 from hermes_cli.secret_prompt import masked_secret_prompt
+
 # Managed-mode, container and HERMES_UID/GID policy live in hermes_constants (import-safe);
 # re-exported here so existing callers/patch targets keep working.
-from hermes_constants import (  # noqa: F401
-    _IGNORED_MANAGED_VALUES, _LEGACY_MANAGED_SYSTEM, _MANAGED_FALSE_VALUES, _MANAGED_TRUE_VALUES,
-    _chown_to_hermes_uid, _container_or_chmod_skipped, _resolve_hermes_uid_gid,
-    apply_secure_dir_policy, get_managed_system)
 # Re-export from hermes_constants — canonical definition lives there.
-from hermes_constants import get_hermes_home, get_process_hermes_home  # noqa: F401
+from hermes_constants import (  # noqa: F401  # noqa: F401
+    _IGNORED_MANAGED_VALUES,
+    _LEGACY_MANAGED_SYSTEM,
+    _MANAGED_FALSE_VALUES,
+    _MANAGED_TRUE_VALUES,
+    _chown_to_hermes_uid,
+    _container_or_chmod_skipped,
+    _resolve_hermes_uid_gid,
+    apply_secure_dir_policy,
+    get_hermes_home,
+    get_managed_system,
+    get_process_hermes_home,
+)
 from utils import atomic_replace, fast_safe_load, file_signature, mkstemp_beside
-from hermes_cli.config_read_errors import (
-    _CONFIG_PARSE_FAILURES, _FIX_PERMS, _FIX_YAML, FailedConfigRead, _backups_dir_display,
-    _refuse_failed_read, _refuse_overwrite, _warn_config_parse_failure, _yaml_error_details,
-    _yaml_error_location)
 
 logger = logging.getLogger(__name__)
 
@@ -589,32 +605,57 @@ def ensure_hermes_home():
 
 # ---- Config loading/saving ----
 
-from hermes_cli.config_defaults import DEFAULT_CONFIG, OPTIONAL_ENV_VARS  # noqa: E402,F401
+from hermes_cli.config_defaults import (  # noqa: E402,F401
+    DEFAULT_CONFIG,
+    OPTIONAL_ENV_VARS,
+)
 from hermes_cli.config_providers import (  # noqa: E402,F401  (re-exported; callers/tests use hermes_cli.config.<name>)
-    _API_MODE_ALIASES, _CAMEL_ALIASES, _KNOWN_PROVIDER_KEYS, _PROVIDER_NORMALIZE_WARNED,
-    _canonical_api_mode, _coerce_ssl_verify, _custom_provider_entry_to_provider_config,
-    _entries_for_route, _normalize_custom_provider_entry, _normalize_provider_models,
-    _pick_provider_base_url, _route_model_cfg, _warn_once_per_provider,
+    _API_MODE_ALIASES,
+    _CAMEL_ALIASES,
+    _KNOWN_PROVIDER_KEYS,
+    _PROVIDER_NORMALIZE_WARNED,
+    _canonical_api_mode,
+    _coerce_ssl_verify,
+    _custom_provider_entry_to_provider_config,
+    _entries_for_route,
+    _normalize_custom_provider_entry,
+    _normalize_provider_models,
+    _pick_provider_base_url,
+    _route_model_cfg,
+    _warn_once_per_provider,
     apply_custom_provider_extra_headers_to_client_kwargs,
-    apply_custom_provider_tls_to_client_kwargs, coerce_provider_id, find_provider_entry,
-    get_compatible_custom_providers, get_custom_provider_api_mode, get_custom_provider_context_length,
-    get_custom_provider_extra_headers, get_custom_provider_model_capability,
+    apply_custom_provider_tls_to_client_kwargs,
+    coerce_provider_id,
+    find_provider_entry,
+    get_compatible_custom_providers,
+    get_custom_provider_api_mode,
+    get_custom_provider_context_length,
+    get_custom_provider_extra_headers,
+    get_custom_provider_model_capability,
     get_custom_provider_session_affinity_header,
-    get_custom_provider_tls_settings, is_provider_enabled, normalize_extra_headers,
-    providers_dict_to_custom_providers, stringify_provider_map)
-# Back-compat re-exports — :mod:`hermes_cli.personality` owns personality/overlay semantics.
-from hermes_cli.personality import (  # noqa: E402,F401
-    NEUTRAL_PERSONALITY_NAMES as _NEUTRAL_PERSONALITY_NAMES,
-    prompt_text as _prompt_text,
-    render_personality_prompt,
-    resolve_ephemeral_system_prompt as resolve_ephemeral_system_prompt_from_config)
+    get_custom_provider_tls_settings,
+    is_provider_enabled,
+    normalize_extra_headers,
+    providers_dict_to_custom_providers,
+    stringify_provider_map,
+)
 
 # ---- Config schema-version stamp ----  (moved into config_version_stamp; re-exported here
 # because callers and tests import these from hermes_cli.config)
-
 from hermes_cli.config_version_stamp import (  # noqa: E402,F401
-    check_config_version, read_config_version_stamp)
+    check_config_version,
+    read_config_version_stamp,
+)
 
+# Back-compat re-exports — :mod:`hermes_cli.personality` owns personality/overlay semantics.
+from hermes_cli.personality import (  # noqa: E402,F401
+    NEUTRAL_PERSONALITY_NAMES as _NEUTRAL_PERSONALITY_NAMES,
+)
+from hermes_cli.personality import prompt_text as _prompt_text
+from hermes_cli.personality import render_personality_prompt
+from hermes_cli.personality import (
+    resolve_ephemeral_system_prompt as resolve_ephemeral_system_prompt_from_config,
+)
 
 # ---- Config Migration System ----
 
@@ -924,7 +965,10 @@ def get_missing_config_fields() -> List[Dict[str, Any]]:
 def get_missing_skill_config_vars() -> List[Dict[str, Any]]:
     """Return skill-declared config vars (``skills.config.<key>``) that are missing or empty."""
     try:
-        from agent.skill_utils import discover_all_skill_config_vars, SKILL_CONFIG_PREFIX
+        from agent.skill_utils import (
+            SKILL_CONFIG_PREFIX,
+            discover_all_skill_config_vars,
+        )
     except Exception:
         return []
 
@@ -1314,7 +1358,10 @@ def migrate_config(interactive: bool = True, quiet: bool = False) -> Dict[str, A
     # Missing/unparseable files never trip the floor gate.
     # Imported lazily because the steps call back into this module.
     from hermes_cli.config_migrations import (
-        SUPPORT_FLOOR_VERSION, run_migrations, support_floor_message)
+        SUPPORT_FLOOR_VERSION,
+        run_migrations,
+        support_floor_message,
+    )
 
     has_explicit_version = stamp is not None
     floor_refused = (
@@ -1402,7 +1449,10 @@ def _warn_invalid_platform_toolsets(results: Dict[str, Any], quiet: bool) -> Non
     """Surface invalid toolset names in platform_toolsets: ``resolve_toolset()`` returns [] for an
     unknown name, silently disabling the affected tools. Best-effort; never blocks migration."""
     try:
-        from hermes_cli.toolset_validation import saved_toolset_resolver, validate_platform_toolsets
+        from hermes_cli.toolset_validation import (
+            saved_toolset_resolver,
+            validate_platform_toolsets,
+        )
 
         config = read_raw_config()
         for w in validate_platform_toolsets(config.get("platform_toolsets"), saved_toolset_resolver(config)):
@@ -1535,7 +1585,8 @@ def _env_ref_lookup(name: str) -> Optional[str]:
     ``gateway.config._getenv`` and ``get_env_value``.
     """
     try:
-        from agent.secret_scope import current_secret_scope, get_secret as _get_secret
+        from agent.secret_scope import current_secret_scope
+        from agent.secret_scope import get_secret as _get_secret
     except Exception:
         return os.environ.get(name)
     if current_secret_scope() is None:
@@ -2504,7 +2555,9 @@ def load_env() -> Dict[str, str]:
     """Load ~/.hermes/.env as a dict. Memoised inside ``load_env_file`` (``get_env_value()`` runs
     hundreds of times per interactive menu render). Each assignment's value is opaque data for
     boundary discovery."""
-    from agent.secret_scope import load_env_file  # the one .env tokenizer; also installs profile scopes
+    from agent.secret_scope import (
+        load_env_file,  # the one .env tokenizer; also installs profile scopes
+    )
 
     return load_env_file(get_env_path())
 
@@ -3043,7 +3096,8 @@ def _show_terminal_section(config: Dict[str, Any]) -> None:
     print(f"  Timeout:      {terminal.get('timeout', 60)}s")
 
     configured = lambda *names: 'configured' if all(get_env_value(n) for n in names) else '(not set)'  # noqa: E731
-    from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE as default_img, DEFAULT_VERCEL_IMAGE as _DEFAULT_VERCEL_IMAGE
+    from hermes_cli.config_defaults import DEFAULT_SANDBOX_IMAGE as default_img
+    from hermes_cli.config_defaults import DEFAULT_VERCEL_IMAGE as _DEFAULT_VERCEL_IMAGE
     backend_lines = {
         'docker': lambda: [f"  Docker image: {terminal.get('docker_image', default_img)}"],
         'singularity': lambda: [f"  Image:        {terminal.get('singularity_image', 'docker://' + default_img)}"],
@@ -3104,7 +3158,10 @@ def _show_aux_overrides(config: Dict[str, Any]) -> None:
 
 def _show_skill_settings() -> None:
     try:
-        from agent.skill_utils import discover_all_skill_config_vars, resolve_skill_config_values
+        from agent.skill_utils import (
+            discover_all_skill_config_vars,
+            resolve_skill_config_values,
+        )
         skill_vars = discover_all_skill_config_vars()
         if not skill_vars:
             return
@@ -3549,7 +3606,9 @@ def _exit_invalid(msg: str) -> None:
 def _write_user_config(config_path: Path, user_config: Dict[str, Any]) -> None:
     """Write only the user's raw config back (never the merged defaults)."""
     ensure_hermes_home()
-    from hermes_cli.observability.shared_metrics_disabled import recording_raw_config_write
+    from hermes_cli.observability.shared_metrics_disabled import (
+        recording_raw_config_write,
+    )
     recording_raw_config_write(config_path, user_config, atomic_config_replace)
 
 

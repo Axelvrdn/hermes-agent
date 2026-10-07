@@ -7,6 +7,7 @@ import pytest
 from gateway.run import GatewayRunner, _bridge_max_turns_to_env, _current_max_iterations
 from hermes_cli.config import TURN_LIMIT_UNLIMITED
 
+
 @pytest.mark.parametrize(
     ("max_turns", "expected"),
     [({"max_turns": 50}, "50"), ({}, "90"), ({"max_turns": "unlimited"}, "unlimited")],

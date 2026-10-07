@@ -8,12 +8,12 @@ router, no state file, or no SSE support (older engines) all read as "nothing lo
 
 from __future__ import annotations
 
-from contextlib import suppress
 import json
 import logging
 import threading
 import time
 import urllib.request
+from contextlib import suppress
 
 logger = logging.getLogger(__name__)
 

@@ -17,7 +17,7 @@ import pytest
 
 from agent import credential_pool
 from agent.credential_pool import load_pool
-from hermes_cli.auth import AuthError, DEFAULT_CODEX_BASE_URL, get_codex_auth_status
+from hermes_cli.auth import DEFAULT_CODEX_BASE_URL, AuthError, get_codex_auth_status
 
 
 def _jwt_with_exp(offset_seconds: int) -> str:

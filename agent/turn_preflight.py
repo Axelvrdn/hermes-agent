@@ -15,14 +15,22 @@ from typing import Any, Dict, List, Optional
 
 from agent.context_engine import automatic_compaction_status_message
 from agent.conversation_compression import (
-    PRE_API_COMPRESSION_STATUS_TEMPLATE, _reset_read_dedup_caches, compression_blocked_transiently,
-    compression_skipped_due_to_lock, context_compression_timed_out,
-    conversation_history_after_compression, ensure_compression_feasibility_checked,
+    PRE_API_COMPRESSION_STATUS_TEMPLATE,
+    _reset_read_dedup_caches,
+    compression_blocked_transiently,
+    compression_skipped_due_to_lock,
+    context_compression_timed_out,
+    conversation_history_after_compression,
+    ensure_compression_feasibility_checked,
 )
 from agent.turn_context import _review_fork_first_request_pending
 from agent.turn_context_compaction import (
-    _apply_grown_window, _blocked_compress_reason, _clear_overflow_warn, _refund_api_call,
-    _reanchor, _reset_retry_state_after_compaction,
+    _apply_grown_window,
+    _blocked_compress_reason,
+    _clear_overflow_warn,
+    _reanchor,
+    _refund_api_call,
+    _reset_retry_state_after_compaction,
 )
 
 logger = logging.getLogger("agent.conversation_loop")
@@ -67,8 +75,11 @@ def run_preflight_compression(
     blocker unarmed. A forced provider-overflow preflight that any gate blocks fails
     closed (llama.cpp may silently truncate)."""
     from agent.conversation_loop import (
-        _COMPRESSION_TIMEOUT_FINAL_RESPONSE, _HANDOFF_SKIP_FINAL_RESPONSE,
-        _compression_deferred_result, _maybe_grow_local_window, _provider_overflow_exhausted_result,
+        _COMPRESSION_TIMEOUT_FINAL_RESPONSE,
+        _HANDOFF_SKIP_FINAL_RESPONSE,
+        _compression_deferred_result,
+        _maybe_grow_local_window,
+        _provider_overflow_exhausted_result,
         _should_skip_model_call_for_reference_handoff,
     )
 
@@ -254,7 +265,8 @@ def compress_after_tool_results(
     deterministic tool-result-only prune, committed only when the engine returns a NEW
     list (never rebuild ``conversation_history`` for it)."""
     from agent.conversation_loop import (
-        _HANDOFF_SKIP_FINAL_RESPONSE, _midturn_request_pressure_tokens,
+        _HANDOFF_SKIP_FINAL_RESPONSE,
+        _midturn_request_pressure_tokens,
         _should_skip_model_call_for_reference_handoff,
     )
     from agent.model_metadata import estimate_request_tokens_rough

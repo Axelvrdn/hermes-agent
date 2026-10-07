@@ -26,9 +26,9 @@ from gateway.platforms.event import MessageEvent
 from gateway.session import AsyncSessionStore
 from gateway.session_transcript import TranscriptReadError
 from gateway.slash_commands_goals import GatewayGoalCommandsMixin
+from gateway.slash_commands_login import GatewayLoginCommandsMixin
 from gateway.slash_commands_model import GatewayModelCommandsMixin
 from gateway.slash_commands_session import GatewaySessionCommandsMixin
-from gateway.slash_commands_login import GatewayLoginCommandsMixin
 from gateway.slash_commands_status import GatewayStatusCommandsMixin, history_unreadable
 from hermes_cli.config import atomic_config_write, cfg_get
 from utils import atomic_json_write, is_truthy_value
@@ -242,6 +242,7 @@ class GatewaySlashCommandsMixin(
         correct for the write-back round-trip (merged defaults must not be persisted back to the
         user's file); the cached agent is dropped so the setting takes effect next message."""
         from gateway.run import _gateway_config_home
+
         # Persist to config (default) unless --session opted out, mirroring the text /model command path
         # above so a picked model survives across sessions like a typed one (#49066).
         from hermes_cli.config import read_user_config_raw
@@ -576,7 +577,10 @@ class GatewaySlashCommandsMixin(
         # Under a service manager (systemd/launchd) or Docker/Podman, exit 75 so the supervisor /
         # restart policy restarts us — detached setsid+bash fails there (systemd KillMode=mixed kills
         # the cgroup; tini exits with the gateway). The explicit marker covers ``sudo env -i`` wrappers.
-        from gateway.restart import is_container_restart_context, is_gateway_supervisor_process
+        from gateway.restart import (
+            is_container_restart_context,
+            is_gateway_supervisor_process,
+        )
         via_service = is_gateway_supervisor_process() or is_container_restart_context()
         self.request_restart(detached=not via_service, via_service=via_service)
         # Track sessions that were active at shutdown for stuck-loop detection (#7536). On each restart, the
@@ -1237,9 +1241,15 @@ class GatewaySlashCommandsMixin(
     async def _handle_debug_command(self, event: MessageEvent) -> str:
         """Handle /debug — upload ONLY the summary (system info + log tails), never full logs, to
         protect privacy; ``hermes debug share`` from the CLI does full uploads."""
-        from hermes_cli.debug import (_GATEWAY_PRIVACY_NOTICE, _best_effort_sweep_expired_pastes,
-                                      _capture_dump, _is_dpaste_url, _schedule_auto_delete,
-                                      collect_debug_report, upload_to_pastebin)
+        from hermes_cli.debug import (
+            _GATEWAY_PRIVACY_NOTICE,
+            _best_effort_sweep_expired_pastes,
+            _capture_dump,
+            _is_dpaste_url,
+            _schedule_auto_delete,
+            collect_debug_report,
+            upload_to_pastebin,
+        )
         from hermes_cli.debug_redaction import redact_debug_support_text
 
         def _collect_and_upload():  # blocking I/O (dump capture, log reads, uploads) -> thread
@@ -1269,8 +1279,9 @@ class GatewaySlashCommandsMixin(
         """Handle /update — spawn ``hermes update`` detached (``setsid``) so it survives the gateway
         restart it may trigger; marker files let this or the next gateway process notify the user."""
         import json
+
         from gateway.run import _hermes_home, _resolve_hermes_bin
-        from hermes_cli.config import is_managed, format_managed_message
+        from hermes_cli.config import format_managed_message, is_managed
         # Block non-messaging platforms (API server, webhooks, ACP); plugin platforms with
         # allow_update_command=True are also allowed.
         src = event.source

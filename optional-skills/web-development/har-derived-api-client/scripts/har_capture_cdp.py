@@ -18,10 +18,10 @@ Usage:
 <cdp_url> is the ws:// or http:// CDP endpoint. For Hermes: run
 `/browser connect` to see the active endpoint, or read BROWSER_CDP_URL.
 """
-import logging
 import argparse
 import base64
 import json
+import logging
 import sys
 import time
 

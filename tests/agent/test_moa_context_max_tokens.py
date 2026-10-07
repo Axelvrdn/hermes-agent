@@ -21,6 +21,7 @@ from types import SimpleNamespace
 
 import pytest
 
+
 def _response(content: str = "ok"):
     message = SimpleNamespace(content=content, tool_calls=[])
     choice = SimpleNamespace(message=message, finish_reason="stop")

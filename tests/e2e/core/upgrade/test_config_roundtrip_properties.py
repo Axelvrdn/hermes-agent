@@ -43,12 +43,11 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 import pytest
-import hermes_yaml as yaml
-
-from tests.e2e.core.upgrade._helpers import WORKTREE, isolated_env
 
 import hermes_cli.config as C
+import hermes_yaml as yaml
 from hermes_cli.config_defaults import DEFAULT_CONFIG
+from tests.e2e.core.upgrade._helpers import WORKTREE, isolated_env
 
 LATEST = int(DEFAULT_CONFIG["_config_version"])
 

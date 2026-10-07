@@ -7,7 +7,7 @@ the _send_update_notification startup hook (sends results after restart).
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -96,6 +96,7 @@ class TestHandleUpdateCommand:
         importable, even when PATH also offers a ``hermes`` binary (#111569: a PATH-first
         lookup would re-exec an attacker-planted executable on /update and /restart)."""
         import sys
+
         from gateway.run import _resolve_hermes_bin
 
         fake_spec = MagicMock()

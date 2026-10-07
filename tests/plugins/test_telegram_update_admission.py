@@ -15,14 +15,24 @@ import pytest
 
 pytest.importorskip("telegram")
 from telegram import InlineQuery, Message, PhotoSize, Sticker, Update
-from telegram.ext import ApplicationHandlerStop, ConversationHandler, Defaults, MessageHandler, TypeHandler, filters
+from telegram.ext import (
+    ApplicationHandlerStop,
+    ConversationHandler,
+    Defaults,
+    MessageHandler,
+    TypeHandler,
+    filters,
+)
 from telegram.request import BaseRequest
 
 from gateway.config import PlatformConfig
 from gateway.platforms.event import MessageType
 from plugins.platforms.telegram import adapter as tg_adapter
 from plugins.platforms.telegram.adapter import TelegramAdapter
-from plugins.platforms.telegram.update_admission import DEFAULT_MAX_CONCURRENT_UPDATES, PerChatUpdateProcessor
+from plugins.platforms.telegram.update_admission import (
+    DEFAULT_MAX_CONCURRENT_UPDATES,
+    PerChatUpdateProcessor,
+)
 
 
 class NoNetwork(BaseRequest):
@@ -123,10 +133,10 @@ async def connected(monkeypatch, *, extra=None, bot_id=111, is_reconnect=False):
 ])
 @pytest.mark.parametrize("concurrent", [False, True])
 async def test_replay_is_admitted_once_before_dispatch(monkeypatch, tmp_path, kind, mode, concurrent):
+    import hermes_cli.lifecycle
     from gateway.config import GatewayConfig
     from gateway.session import SessionStore
-    from hermes_constants import set_hermes_home_override, reset_hermes_home_override
-    import hermes_cli.lifecycle
+    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
     monkeypatch.setattr(hermes_cli.lifecycle, "has_hook", lambda name: True)
     # Transport-only photo stand-in: no file or Telegram network operation.
@@ -258,10 +268,11 @@ async def _check_sticker_handoff(monkeypatch, adapter, app, delivered, stage):
 
 
 async def _check_caught_preparation(monkeypatch, tmp_path, adapter, app, stage):
+    import sqlite3
+
     from gateway.config import GatewayConfig
     from gateway.session import SessionStore
     from plugins.platforms.telegram import inline_picker
-    import sqlite3
 
     if stage == "observed_prepare":
         adapter.config.extra.update(observe_unmentioned_group_messages=True, require_mention=True,

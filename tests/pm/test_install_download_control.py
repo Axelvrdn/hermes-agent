@@ -5,9 +5,9 @@ from __future__ import annotations
 import hashlib
 import io
 import json
-from functools import partial
 import threading
 import zipfile
+from functools import partial
 
 import pytest
 

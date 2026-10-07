@@ -1,12 +1,12 @@
 """Launch the packaged desktop with a competing mutable install."""
 import contextlib
 import os
-from pathlib import Path
 import signal
 import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 
 def _processes_under(home: Path) -> list[int]:

@@ -56,7 +56,7 @@ def env_homes(tmp_path, monkeypatch):
 
 
 def test_save_env_value_managed_key_rejected(env_homes, capsys):
-    from hermes_cli.config import save_env_value, get_env_path
+    from hermes_cli.config import get_env_path, save_env_value
 
     save_env_value("OPENAI_API_BASE", "https://user.example/v1")
     assert "managed" in capsys.readouterr().err.lower()

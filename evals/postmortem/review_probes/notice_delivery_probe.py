@@ -4,10 +4,19 @@ Independent-review probe (written by the /review subagent for tracking issue #10
 It reproduced a defect in the first version of the PR; the fixed head must pass it. Paths are taken
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
-import os, sys, tempfile, socket, json, time, threading, queue, asyncio
+import asyncio
+import json
+import os
+import queue
+import socket
+import sys
+import tempfile
+import threading
+import time
+from collections import OrderedDict
 from pathlib import Path
 from types import SimpleNamespace
-from collections import OrderedDict
+
 root=Path(sys.argv[1]).resolve(); sys.path.insert(0,str(root))
 for key in list(os.environ):
     if key.startswith('HERMES_') or any(s in key for s in ('API_KEY','TOKEN','SECRET')):
@@ -16,9 +25,10 @@ os.environ['HERMES_HOME']=tempfile.mkdtemp(prefix='notice-review-')
 socket.socket.connect=lambda *a,**k: (_ for _ in ()).throw(RuntimeError('network forbidden'))
 import tools.async_delegation as ad
 import tools.delegate_tool_dispatch as dd
+from gateway.run_notifications import GatewayNotificationsMixin
 from tools.process_registry import process_registry as reg
 from tools.process_registry_notifications import format_process_notification
-from gateway.run_notifications import GatewayNotificationsMixin
+
 assert Path(ad.__file__).is_relative_to(root)
 assert Path(dd.__file__).is_relative_to(root)
 print('SOURCE',ad.__file__,dd.__file__,flush=True)

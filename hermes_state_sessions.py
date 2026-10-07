@@ -12,18 +12,37 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 from agent.session_activity import (
-    ActivityProvenance, bound_activity_description, normalize_activity_provenance,
+    ActivityProvenance,
+    bound_activity_description,
+    normalize_activity_provenance,
 )
 from hermes_startup_watchdog import report_startup_progress
-from hermes_state_errors import SessionActiveWriteGuardError
 from hermes_state_common import (
-    _LISTABLE_CHILD_SQL, _RECOVERABLE_END_REASONS,
-    _RECOVERABLE_END_REASONS_SQL, _RESET_CHILD_SQL, _RESET_END_REASONS, _legacy_reset_child_sql, _non_continuation_child_sql,
-    _shape_preview, _sql_preview_raw, QUEUED_PROMPT_METADATA_KEY,
-    _sql_in_window, _sql_json_extract, _sql_session_last_active, _sql_session_last_active_by_id,
-    escape_like as _escape_like, _SQL_IN_CHUNK, _id_chunks, _placeholders as _session_ids_placeholders,
+    _LISTABLE_CHILD_SQL,
+    _RECOVERABLE_END_REASONS,
+    _RECOVERABLE_END_REASONS_SQL,
+    _RESET_CHILD_SQL,
+    _RESET_END_REASONS,
+    _SQL_IN_CHUNK,
+    QUEUED_PROMPT_METADATA_KEY,
+    _id_chunks,
+    _legacy_reset_child_sql,
+    _non_continuation_child_sql,
+    _shape_preview,
+    _sql_in_window,
+    _sql_json_extract,
+    _sql_preview_raw,
+    _sql_session_last_active,
+    _sql_session_last_active_by_id,
+)
+from hermes_state_common import (
+    _placeholders as _session_ids_placeholders,
+)
+from hermes_state_common import (
+    escape_like as _escape_like,
 )
 from hermes_state_compression import _CHAIN_CAP
+from hermes_state_errors import SessionActiveWriteGuardError
 
 # caplog tests pin the "hermes_state" logger name.
 logger = logging.getLogger("hermes_state")
@@ -1496,7 +1515,10 @@ class SessionSessionsMixin:
         it — or raise SessionExportTooLargeError (the LIMITed subquery
         stops once the bound is exceeded). ``None`` resolves ``sessions.max_export_messages``; 0 disables
         the guard."""
-        from hermes_state import SessionExportTooLargeError, resolved_max_export_messages
+        from hermes_state import (
+            SessionExportTooLargeError,
+            resolved_max_export_messages,
+        )
         if max_messages is None:
             max_messages = resolved_max_export_messages()
         if max_messages < 0:

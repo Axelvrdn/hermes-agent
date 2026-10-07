@@ -18,10 +18,10 @@ remain (CPU count, worker count) are addressed by the canonical
 test runner at ``scripts/run_tests.sh``.
 """
 
-import logging
 import asyncio
 import atexit
 import importlib
+import logging
 import os
 import shutil
 import sqlite3
@@ -251,7 +251,10 @@ from tests._fixtures.live_system_guard import (  # noqa: F401 — _live_system_g
     _LIVE_SYSTEM_GUARD_BYPASS_MARK,
     _live_system_guard,
 )
-from tests._fixtures.platform_gating import _platforms_gate_reason, _reject_contradictory_platform_marks
+from tests._fixtures.platform_gating import (
+    _platforms_gate_reason,
+    _reject_contradictory_platform_marks,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -1078,7 +1081,8 @@ def require_mcp_2_sdk():
     tests through — where they fail later with opaque SDK errors. Compare the installed
     distribution against the pin so the outcome is an explicit skip with an actionable reason.
     """
-    from importlib.metadata import PackageNotFoundError, version as dist_version
+    from importlib.metadata import PackageNotFoundError
+    from importlib.metadata import version as dist_version
 
     from packaging.version import Version
 

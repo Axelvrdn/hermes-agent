@@ -23,10 +23,21 @@ import webbrowser
 from typing import Any, Dict, Optional
 from urllib.parse import urlencode
 
-from hermes_cli.auth_constants import AuthError, CODEX_OAUTH_CLIENT_ID, CODEX_OAUTH_TOKEN_URL, _codex_err
+from hermes_cli.auth_constants import (
+    CODEX_OAUTH_CLIENT_ID,
+    CODEX_OAUTH_TOKEN_URL,
+    AuthError,
+    _codex_err,
+)
 from hermes_cli.auth_device_flow import (
-    _bind_loopback_callback_server, _can_open_graphical_browser, _make_loopback_callback_handler,
-    _pkce_code_challenge, _pkce_code_verifier, _print_loopback_ssh_hint, _serve_loopback_callback)
+    _bind_loopback_callback_server,
+    _can_open_graphical_browser,
+    _make_loopback_callback_handler,
+    _pkce_code_challenge,
+    _pkce_code_verifier,
+    _print_loopback_ssh_hint,
+    _serve_loopback_callback,
+)
 
 logger = logging.getLogger("hermes_cli.auth")
 
@@ -61,7 +72,9 @@ def _codex_login_flow(args: Any) -> str:
 
 def codex_oauth_login(args: Any) -> Dict[str, Any]:
     """Run the Codex OAuth flow selected by *args*/config; port-busy browser attempts fall back."""
-    from hermes_cli import auth as auth_mod  # late: ``hermes_cli.auth.<name>`` patches must intercept
+    from hermes_cli import (
+        auth as auth_mod,  # late: ``hermes_cli.auth.<name>`` patches must intercept
+    )
     if _codex_login_flow(args) == "browser":
         try:
             return _codex_browser_login(

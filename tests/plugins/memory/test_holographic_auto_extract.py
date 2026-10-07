@@ -20,10 +20,10 @@ Two compounding defects:
 import pytest
 
 from agent.context_compressor import (
-    COMPRESSED_SUMMARY_METADATA_KEY,
-    SUMMARY_PREFIX,
     _MERGED_PRIOR_CONTEXT_HEADER,
     _MERGED_SUMMARY_DELIMITER,
+    COMPRESSED_SUMMARY_METADATA_KEY,
+    SUMMARY_PREFIX,
     is_compaction_summary_message,
 )
 from plugins.memory.holographic import HolographicMemoryProvider

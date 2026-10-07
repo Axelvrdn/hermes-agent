@@ -6,8 +6,8 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 import pytest
-import hermes_cli.web_server_chat as _web_server_chat
 
+import hermes_cli.web_server_chat as _web_server_chat
 
 pytestmark = pytest.mark.platforms("posix")  # PTY bridge is POSIX-only
 

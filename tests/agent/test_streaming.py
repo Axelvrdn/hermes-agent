@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────
 
 
@@ -268,6 +267,7 @@ class TestStreamingAccumulator:
         the session remembers the rejection (#9705). The compatibility retry must not spend
         the transient-retry budget: with HERMES_STREAM_RETRIES=0 it still happens."""
         from openai import APIStatusError
+
         from run_agent import AIAgent
         monkeypatch.setenv("HERMES_STREAM_RETRIES", "0")
 
@@ -498,8 +498,8 @@ class TestStreamingAccumulator:
         content_filter, while a refusal next to real content stays a normal
         usable turn with the note in provider_data.
         """
-        from run_agent import AIAgent
         from agent.transports.chat_completions import ChatCompletionsTransport
+        from run_agent import AIAgent
 
         def _chunk(content, refusal, finish_reason=None):
             delta = SimpleNamespace(
@@ -733,6 +733,7 @@ class TestStreamingFallback:
         import httpx
         from openai import OpenAI, Stream
         from openai.types.chat import ChatCompletionChunk
+
         from run_agent import AIAgent
 
         request = httpx.Request("POST", "https://gw.example/v1/chat/completions")
@@ -858,12 +859,13 @@ class TestStreamingFallback:
         this.  It should be retried at the streaming level, same as httpx connection
         errors, then propagate to the main retry loop after exhaustion.
         """
-        from run_agent import AIAgent
         import httpx
 
         # Create an APIError that mimics what the OpenAI SDK raises from SSE error events.
         # Key: no status_code attribute (unlike APIStatusError which has one).
         from openai import APIError as OAIAPIError
+
+        from run_agent import AIAgent
         sse_error = OAIAPIError(
             message="Network connection lost.",
             request=httpx.Request("POST", "https://openrouter.ai/api/v1/chat/completions"),
@@ -1006,8 +1008,9 @@ class TestCodexStreamCallbacks:
         raises ``httpx.RemoteProtocolError``, we retry once (matching the
         old behavior on the helper) and re-raise on the second failure.
         """
-        from run_agent import AIAgent
         import httpx
+
+        from run_agent import AIAgent
 
         agent = AIAgent(
             api_key="test-key",
@@ -1460,8 +1463,9 @@ class TestPartialToolCallWarning:
     def _zero_char_agent(mock_create, attempts_that_die: int):
         """Real streaming helper; the stream dies after a whitespace-only delta (nothing
         visible reaches the consumer) on the first ``attempts_that_die`` attempts."""
-        from run_agent import AIAgent
         import httpx
+
+        from run_agent import AIAgent
 
         calls = {"n": 0}
 
@@ -1545,8 +1549,9 @@ class TestSilentRetryMidToolCall:
         """First attempt: text + partial tool-call + connection drop.
         Second attempt: text + complete tool-call.  Response should contain
         the recovered tool call; no warning stub should be returned."""
-        from run_agent import AIAgent
         import httpx as _httpx
+
+        from run_agent import AIAgent
 
         attempts = {"n": 0}
 
@@ -1640,8 +1645,9 @@ class TestSilentRetryMidToolCall:
         """When all retry attempts fail with connection errors, fall back
         to the original stub-with-warning behaviour so the user isn't left
         with zero signal."""
-        from run_agent import AIAgent
         import httpx as _httpx
+
+        from run_agent import AIAgent
 
         def _always_fails():
             yield _make_stream_chunk(content="Let me write the audit: ")
@@ -1695,8 +1701,9 @@ class TestSilentRetryMidToolCall:
         """Text-only stall (no tool call in flight) must NOT trigger silent
         retry — that's the case where the user saw the model's text reply
         and retrying would duplicate it with no benefit."""
-        from run_agent import AIAgent
         import httpx as _httpx
+
+        from run_agent import AIAgent
 
         attempts = {"n": 0}
 

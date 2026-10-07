@@ -1,9 +1,9 @@
 """Background worktree maintenance must not initialize the interactive CLI."""
 
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 
 def test_cold_worktree_maintenance_preserves_terminal_cwd(tmp_path):

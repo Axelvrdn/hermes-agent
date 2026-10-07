@@ -21,6 +21,7 @@ import textwrap
 
 import pytest
 
+
 @pytest.fixture(autouse=True)
 def _clean_env(monkeypatch):
     """Ensure the two env-var gates start AND end each test in a known state.

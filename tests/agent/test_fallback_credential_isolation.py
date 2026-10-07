@@ -127,6 +127,7 @@ class TestFallbackCredentialIsolation:
         """#89401: a fallback whose every credential is benched until the weekly quota resets is
         skipped before any client is built; a short throttle on the next candidate is still tried."""
         import time
+
         from agent.chat_completion_helpers import try_activate_fallback
 
         agent = _make_agent(provider="anthropic", model="claude", base_url="https://api.anthropic.com", api_mode="chat_completions")

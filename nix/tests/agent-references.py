@@ -1,12 +1,11 @@
 """Check the shipped Nix agent, not a reconstruction of its assembly recipe."""
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import tomllib
-
+from pathlib import Path
 
 package, project, inputs_file = map(Path, sys.argv[1:])
 inputs = json.loads(inputs_file.read_text())

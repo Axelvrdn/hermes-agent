@@ -21,12 +21,12 @@ failure never retires the handle: it is re-queued and logged at warning.
 
 from __future__ import annotations
 
-from contextvars import copy_context
 import heapq
 import itertools
 import logging
 import threading
 import time
+from contextvars import copy_context
 from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)

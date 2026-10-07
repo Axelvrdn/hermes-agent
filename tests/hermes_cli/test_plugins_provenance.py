@@ -104,6 +104,7 @@ def test_origin_url_uses_the_resolved_git_and_survives_no_git_at_all(tmp_path, m
     same resolved git as install/update, and with no git anywhere the .git/config parse still
     yields the origin (never a bare ``git`` spawn that raises or picks up a stray binary)."""
     import subprocess
+
     from hermes_cli import plugins_cmd, plugins_provenance
 
     plugin = tmp_path / "plugins" / "p"

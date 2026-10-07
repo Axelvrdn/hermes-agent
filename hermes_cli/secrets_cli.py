@@ -15,10 +15,20 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-
 from hermes_cli._secrets_common import (
-    arg, cfg_str, cli_version, disable_secret_source, flag, print_status_panel, print_table,
-    prompt_index, register_subcommands, require_enabled, rotate_token, secret_cli_env, section_cfg,
+    arg,
+    cfg_str,
+    cli_version,
+    disable_secret_source,
+    flag,
+    print_status_panel,
+    print_table,
+    prompt_index,
+    register_subcommands,
+    require_enabled,
+    rotate_token,
+    secret_cli_env,
+    section_cfg,
     yn,
 )
 from hermes_cli.config import get_env_path, load_config, save_config, save_env_value

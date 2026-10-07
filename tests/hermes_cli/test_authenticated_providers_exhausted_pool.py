@@ -26,8 +26,8 @@ class _FakePool:
 def _patch_opencode_pool(monkeypatch, *, available: bool):
     """Make the opencode-go aggregator look configured but with a pool whose
     only credential is (un)available, depending on ``available``."""
-    import hermes_cli.auth as auth
     import agent.credential_pool as cp
+    import hermes_cli.auth as auth
 
     monkeypatch.setattr(
         auth,

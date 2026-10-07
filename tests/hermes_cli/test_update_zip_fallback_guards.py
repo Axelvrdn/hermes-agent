@@ -17,8 +17,8 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli import main as hermes_main
 import hermes_cli.main_install_repair as main_install_repair
+from hermes_cli import main as hermes_main
 from hermes_cli import update_cmd
 
 
@@ -333,7 +333,11 @@ def test_zip_gate_refuses_on_a_user_file_at_the_old_fixed_journal_temp_name(tmp_
 
 def test_zip_gate_admits_the_retry_after_an_interrupted_swap(tmp_path, monkeypatch):
     """The siblings an interrupted swap's journal owns never refuse the retry: they are settled first."""
-    from hermes_cli._early_recovery_zip import ZIP_SWAP_JOURNAL, write_zip_swap_journal, zip_entry_identity
+    from hermes_cli._early_recovery_zip import (
+        ZIP_SWAP_JOURNAL,
+        write_zip_swap_journal,
+        zip_entry_identity,
+    )
 
     _git_install(tmp_path)
     leftover = tmp_path / "alpha.hermes-update-staging"

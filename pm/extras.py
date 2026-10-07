@@ -12,7 +12,6 @@ import importlib.util
 from pathlib import Path
 from typing import Callable
 
-
 # extra name -> module that proves it is installed
 ANCHORS: dict[str, str | tuple[str, ...]] = {
     "anthropic": "anthropic",
@@ -198,6 +197,7 @@ def ensure_import(extra: str) -> None:
             f"(gate: {marker!r}); the adapter degrades without it",
         )
     import sys
+
     from pm.package import InstallError
 
     # prompt_toolkit already owns stdin during a CLI turn; never read from it.
@@ -220,11 +220,12 @@ def ensure_import(extra: str) -> None:
     # The sync published a new generation. Swap this process onto it when nothing
     # already imported would change underneath it (adopt_selected); otherwise only
     # a restart can load it.
+    import sys
+    from pathlib import Path
+
     from pm.environments import selected_venv, site_packages
     from pm.environments_adopt import adopt_selected, restart_needed
     from pm.paths import repo_root, runtime_facts_path
-    import sys
-    from pathlib import Path
 
     if runtime_facts_path().is_file():
         root = repo_root()

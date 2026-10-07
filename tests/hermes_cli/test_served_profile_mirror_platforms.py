@@ -30,8 +30,8 @@ def served_root(tmp_path, monkeypatch):
         }}), encoding="utf-8")
     monkeypatch.setenv("HERMES_HOME", str(root))
     monkeypatch.delenv("GATEWAY_MULTIPLEX_PROFILES", raising=False)
-    import hermes_constants
     import gateway.status as status
+    import hermes_constants
     # Liveness is a verified identity; this pytest process passes as the default gateway only by
     # wearing a gateway command line.
     monkeypatch.setattr(status, "_read_process_cmdline", lambda pid: "hermes gateway run")
@@ -56,7 +56,10 @@ def test_messaging_card_shows_mirrored_api_server_enabled_without_local_config(s
 
 
 def test_served_profile_projects_the_default_listener_mirrors_with_their_url(served_root):
-    from gateway.status import profile_platforms_from_multiplexer, resolve_gateway_liveness
+    from gateway.status import (
+        profile_platforms_from_multiplexer,
+        resolve_gateway_liveness,
+    )
     alpha = served_root / "profiles" / "alpha"
     live = resolve_gateway_liveness(profile_dir=alpha, health_probe=None, use_cache=False)
     plats = profile_platforms_from_multiplexer(live.runtime, "alpha")
@@ -77,7 +80,10 @@ def test_default_profile_keeps_its_flat_adapters_when_rekeyed(served_root):
     ``gateway.multiplex_profiles`` while its adapters were connected and delivering (#123088).
     A STANDALONE record (``served_profiles: []``, flat keys only) reaches the same re-key through
     the multiplexer rung and must come back unchanged too (#123869)."""
-    from gateway.status import profile_platforms_from_multiplexer, resolve_gateway_liveness
+    from gateway.status import (
+        profile_platforms_from_multiplexer,
+        resolve_gateway_liveness,
+    )
     standalone = {"gateway_state": "running", "served_profiles": [],
                   "platforms": {"feishu": {"state": "connected"}}}
     assert profile_platforms_from_multiplexer(standalone, "default") == {"feishu": {"state": "connected"}}

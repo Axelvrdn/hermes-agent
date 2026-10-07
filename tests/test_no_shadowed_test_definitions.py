@@ -23,8 +23,8 @@ This guard is cheap and catches the whole class at collection time.
 
 from __future__ import annotations
 
-import logging
 import ast
+import logging
 from pathlib import Path
 
 import pytest

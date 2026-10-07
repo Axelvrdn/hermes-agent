@@ -20,8 +20,8 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-from hermes_state import SessionDB
 from agent.context_compressor import _DB_PERSISTED_MARKER as _DB_PERSISTED_MARKER_KEY
+from hermes_state import SessionDB
 from run_agent import AIAgent
 
 
@@ -68,8 +68,8 @@ def test_marker_constant_in_sync() -> None:
     consolidation.
     """
     import agent.context_compressor as cc
-    import agent.turn_finalizer as tf
     import agent.session_persistence as sp
+    import agent.turn_finalizer as tf
 
     assert _DB_PERSISTED_MARKER_KEY == sp._DB_PERSISTED_MARKER
     assert _DB_PERSISTED_MARKER_KEY == cc._DB_PERSISTED_MARKER

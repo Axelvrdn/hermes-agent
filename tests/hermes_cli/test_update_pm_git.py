@@ -1,10 +1,10 @@
 """Windows installs whose git is PM's: install.ps1 stages it, PM's facts must record it."""
 import os
 
-import pm
-import pm.paths
 import pytest
 
+import pm
+import pm.paths
 from hermes_cli import _subprocess_compat as compat
 from pm.package import Runner
 

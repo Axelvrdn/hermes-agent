@@ -12,7 +12,6 @@ import pytest
 from tools.computer_use import cua_backend as cb
 from tools.computer_use import cua_backend_driver as cb_driver
 
-
 # ── _empty_discovery_reason ─────────────────────────────────────────────
 
 

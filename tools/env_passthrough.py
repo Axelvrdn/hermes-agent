@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 from typing import Iterable
+
 from hermes_cli.config import cfg_get, read_raw_config
 
 logger = logging.getLogger(__name__)
@@ -53,7 +54,9 @@ def _is_hermes_provider_credential(name: str) -> bool:
     registerable. Fails closed when the blocklist cannot be imported."""
     try:
         from tools.environments.local_env_policy import (
-            _is_hermes_internal_secret, _is_provider_env_blocklisted)
+            _is_hermes_internal_secret,
+            _is_provider_env_blocklisted,
+        )
     except Exception as e:
         logger.warning(
             "env passthrough: provider credential blocklist import failed; "
@@ -148,7 +151,11 @@ def resolve_passthrough_value(name: str, fallback: str | None = None) -> str | N
     raises the fail-closed ``UnscopedSecretError``. Outside multiplexing an installed
     scope keeps overlay semantics and an unscoped caller keeps its fallback."""
     from agent.secret_scope import (
-        _is_global_env, current_secret_scope, get_secret, is_multiplex_active)
+        _is_global_env,
+        current_secret_scope,
+        get_secret,
+        is_multiplex_active,
+    )
     # Global terminal/runtime settings are not profile secrets; ``fallback`` is
     # already the caller's effective value (incl. an explicit per-call override).
     if _is_global_env(name) and fallback is not None:

@@ -1,5 +1,6 @@
 """Tests for slash command prefix matching in HermesCLI.process_command."""
 from unittest.mock import MagicMock, patch
+
 from cli import HermesCLI
 
 

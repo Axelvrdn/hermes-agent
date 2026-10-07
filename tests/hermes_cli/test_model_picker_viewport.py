@@ -8,7 +8,6 @@ the cursor on screen.
 """
 from cli import HermesCLI
 
-
 _compute = HermesCLI._compute_model_picker_viewport
 
 

@@ -4,12 +4,12 @@ same-gateway Discussion driver; ``groups.capabilities`` keeps that boundary mach
 Handlers are rebound onto server.py's globals at install (method_ctx.py); module-private
 helpers reach them through keyword defaults. ``_room_method`` is the shared envelope."""
 
-from .method_ctx import HandlerRegistry
-
 import contextlib
 import importlib
 import os
 import threading
+
+from .method_ctx import HandlerRegistry
 
 _registry = HandlerRegistry()
 method = _registry.method
@@ -216,7 +216,11 @@ def _room_method(
 @method("groups.capabilities")
 def _(rid, params: dict, _catalog=_local_catalog, _methods=_METHODS) -> dict:
     """Describe the hosted-room protocol implemented by this gateway."""
-    from gateway.hosted_rooms import MAX_LOG_LIMIT, PROTOCOL_VERSION, local_authority_gateway_id
+    from gateway.hosted_rooms import (
+        MAX_LOG_LIMIT,
+        PROTOCOL_VERSION,
+        local_authority_gateway_id,
+    )
     service = get_hosted_room_service()
     driver_ready = bool(service and service.runtime.status()["running"])
     try:
@@ -249,7 +253,10 @@ def _(rid, params: dict, _catalog=_local_catalog, _methods=_METHODS) -> dict:
 def _(rid, params: dict, db_path, _catalog=_local_catalog, _expiry=_grant_expiry) -> dict:
     """Mint one target-issued room/profile grant for a prospective home."""
     from gateway.hosted_room_peer import (
-        decode_room_grant, gateway_room_grant_secret, issue_room_grant)
+        decode_room_grant,
+        gateway_room_grant_secret,
+        issue_room_grant,
+    )
     from gateway.hosted_rooms import local_authority_gateway_id, reserve_peer_room
     if not _room_link_run_storage_durable():
         raise ValueError("durable run idempotency storage is required")
@@ -295,8 +302,8 @@ def _(rid, params: dict, db_path, _expiry=_grant_expiry) -> dict:
 @_room_method("groups.peer.register", code=5120, service_code=4121)
 def _(rid, params: dict, service) -> dict:
     """Register and probe one scoped target route on the room home."""
-    from gateway.hosted_room_peer import (
-        GatewayRoomCatalog, PROTOCOL_VERSION as ROOM_LINK_PROTOCOL_VERSION, validate_room_link_url)
+    from gateway.hosted_room_peer import PROTOCOL_VERSION as ROOM_LINK_PROTOCOL_VERSION
+    from gateway.hosted_room_peer import GatewayRoomCatalog, validate_room_link_url
     from gateway.hosted_rooms import local_authority_gateway_id, room_state
     from tui_gateway.hosted_room_peer_http import PeerRunsHTTPClient
     from tui_gateway.hosted_room_peer_transport import PeerMemberRoute
@@ -399,8 +406,12 @@ def _(rid, params: dict, service) -> dict:
 def _(rid, params: dict, service) -> dict:
     """Permanently tombstone a hosted room id."""
     from gateway.hosted_rooms import (
-        AuthorityConflictError, RoomHistoryExpiredError, disband_room, local_authority_gateway_id,
-        room_state)
+        AuthorityConflictError,
+        RoomHistoryExpiredError,
+        disband_room,
+        local_authority_gateway_id,
+        room_state,
+    )
     room_id = str(params.get("room_id") or "")
 
     def disband_with_state(state: dict | None = None) -> dict:

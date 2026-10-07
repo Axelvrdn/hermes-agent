@@ -1,11 +1,11 @@
 """Credential-free app-server/MCP scope probe; writes only its temporary board."""
 import json
 import os
-from pathlib import Path
-import subprocess
 import shutil
+import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 repo = Path(sys.argv[1]).resolve()
 if len(sys.argv) == 2:
@@ -14,9 +14,9 @@ if len(sys.argv) == 2:
         p = subprocess.run([sys.executable, __file__, str(repo), "isolated"], cwd=home, env=env, stdin=subprocess.DEVNULL)
         sys.exit(p.returncode)
 sys.path.insert(0, str(repo))
+from agent.transports.codex_app_server import CodexAppServerClient
 from hermes_cli import kanban_db as kb
 from hermes_cli.kanban_db_connect import connect
-from agent.transports.codex_app_server import CodexAppServerClient
 
 home = Path(os.environ["HOME"])
 hh = Path(os.environ["HERMES_HOME"])

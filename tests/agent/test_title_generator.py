@@ -1,20 +1,20 @@
 """Tests for agent.title_generator — auto-generated session titles."""
 
-import pytest
 from unittest.mock import MagicMock, patch
 
+import pytest
 
 from agent.title_generator import (
-    MAX_TITLE_INPUT_CHARS,
     _EXAMPLE_ECHO_REJECT,
+    MAX_TITLE_INPUT_CHARS,
+    _title_language,
+    auto_title_session,
     build_title_input,
     derive_title,
     generate_title,
-    auto_title_session,
     is_titleable_user_message,
     maybe_auto_title,
     wait_for_title_upgrades,
-    _title_language,
 )
 from hermes_state import SessionDB
 
@@ -435,6 +435,7 @@ class TestMaybeAutoTitle:
         can decode the title into the main reply. The upgrade must not go on the wire until the caller starts
         it after the turn; every other route keeps the turn-start timing."""
         import threading
+
         from agent import title_generator as tg
         db = MagicMock()
         db.get_session_title.return_value = None
@@ -847,8 +848,8 @@ class TestModelSwitchMarkerNotTitleable:
 
     def test_marker_prefix_matches_gateway_constant(self):
         """The guard must stay in sync with the gateway's marker builder."""
-        from tui_gateway.server import _MODEL_SWITCH_MARKER_PREFIX
         from agent.title_generator import _MACHINE_PREFIXES
+        from tui_gateway.server import _MODEL_SWITCH_MARKER_PREFIX
 
         assert _MODEL_SWITCH_MARKER_PREFIX in _MACHINE_PREFIXES
         assert self.MARKER.startswith(_MODEL_SWITCH_MARKER_PREFIX)

@@ -5,31 +5,48 @@ Extracted from ``hermes_cli.web_server``; app state and helpers are late-bound t
 :mod:`hermes_cli.web_deps` (cycle-safe, monkeypatch-friendly).
 """
 
+import asyncio
 import concurrent.futures
 import importlib
 import logging
-import re
-import asyncio
 import os
+import re
 import sys
 import time
-from fastapi import APIRouter
-from hermes_cli.web_deps import LateState, late
-from hermes_cli.web_server_gateway import _display_system_platform
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from fastapi import APIRouter, HTTPException, Request
 from starlette.concurrency import run_in_threadpool
-from fastapi import HTTPException, Request
+
 from gateway.status import (
-    derive_gateway_busy, derive_gateway_drainable, normalize_updated_at, parse_active_agents,
-    profile_platforms_from_multiplexer, resolve_gateway_liveness, retained_gateway_state,
-    runtime_status_heartbeat_age_s, runtime_status_is_stale)
+    derive_gateway_busy,
+    derive_gateway_drainable,
+    normalize_updated_at,
+    parse_active_agents,
+    profile_platforms_from_multiplexer,
+    resolve_gateway_liveness,
+    retained_gateway_state,
+    runtime_status_heartbeat_age_s,
+    runtime_status_is_stale,
+)
 from hermes_cli import __release_date__
 from hermes_cli.config import get_config_path, get_env_path
 from hermes_cli.version_info import get_version_info
+from hermes_cli.web_deps import LateState, late
+from hermes_cli.web_models import (
+    CuratorPause,
+    DebugShareRequest,
+    LearningNodeEdit,
+    LearningNodeRef,
+)
+from hermes_cli.web_routers._common import (
+    config_scoped_to_thread,
+    destructive_profile,
+    scoped_to_thread,
+)
+from hermes_cli.web_server_gateway import _display_system_platform
 from hermes_constants import get_process_hermes_home, profile_name_for_home
-from hermes_cli.web_models import CuratorPause, LearningNodeRef, LearningNodeEdit, DebugShareRequest
-from hermes_cli.web_routers._common import config_scoped_to_thread, destructive_profile, scoped_to_thread
-from pathlib import Path
-from typing import Any, Dict, Optional
 
 _log = logging.getLogger("hermes_cli.web_server")
 router = APIRouter()
@@ -375,8 +392,10 @@ def _auth_gate_status() -> Dict[str, Any]:
     auth_providers: list[str] = []
     auth_flows: list[str] = []
     try:
+        from hermes_cli.dashboard_auth import list_providers as _list_providers
         from hermes_cli.dashboard_auth import (
-            list_providers as _list_providers, list_session_providers as _list_session_providers)
+            list_session_providers as _list_session_providers,
+        )
         auth_providers = [p.name for p in _list_providers()]
         if auth_required:
             auth_flows.append("cookie")
@@ -448,8 +467,8 @@ async def _advisory_pressure(status: Dict[str, Any], home: Path) -> None:
             status[key] = {"pressure": "unknown"}
 
     try:
-        from hermes_state import SessionDB as _SDB
         from hermes_constants import get_hermes_home as _ghh
+        from hermes_state import SessionDB as _SDB
         _db_path = _ghh() / "state.db"
         if _db_path.exists():
             _sdb = _SDB(db_path=_db_path, read_only=True)
@@ -827,7 +846,7 @@ async def get_logs(
     file: str = "agent", lines: int = 100, level: Optional[str] = None,
     component: Optional[str] = None, search: Optional[str] = None,
     profile: Optional[str] = None):
-    from hermes_cli.logs import _read_tail, LOG_FILES
+    from hermes_cli.logs import LOG_FILES, _read_tail
     log_name = LOG_FILES.get(file)
     if not log_name:
         raise HTTPException(status_code=400, detail=f"Unknown log file: {file}")

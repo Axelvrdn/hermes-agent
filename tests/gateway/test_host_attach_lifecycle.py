@@ -22,7 +22,8 @@ from pathlib import Path
 
 import pytest
 
-from gateway import host_attach, host_rendezvous as hr
+from gateway import host_attach
+from gateway import host_rendezvous as hr
 from gateway import run as gateway_run
 
 

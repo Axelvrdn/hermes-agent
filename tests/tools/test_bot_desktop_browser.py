@@ -298,7 +298,8 @@ def test_headed_chromium_spawn_asks_the_screen_to_start_but_the_env_builder_neve
 def test_janitor_keeps_the_shared_browser_alive_while_a_human_holds_the_lease(monkeypatch):
     """#110064: the agent goes idle BECAUSE the human took over to log in; the janitor must count the human's
     lease as activity for the shared local browser, and reap it again once the lease is handed back."""
-    from tools import browser_tool_lifecycle as lifecycle, browser_tool_session as session
+    from tools import browser_tool_lifecycle as lifecycle
+    from tools import browser_tool_session as session
     from tools.bot_desktop import lease
 
     monkeypatch.setattr(runtime, "published_env", lambda: {"DISPLAY": ":37"})

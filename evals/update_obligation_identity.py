@@ -5,14 +5,21 @@ through production code; only their temporary version fields are altered for
 negative controls. Exit 1 on base, exit 0 when current successors settle.
 """
 
-import json, os, pathlib, subprocess, sys, tempfile, time
+import json
+import os
+import pathlib
+import subprocess
+import sys
+import tempfile
+import time
 
 repo = pathlib.Path(sys.argv[1])
 sys.path.insert(0, str(repo))
 root = pathlib.Path(tempfile.mkdtemp(prefix="obligations-live-"))
 os.environ["HOME"] = str(root)
 os.environ["HERMES_HOME"] = str(root / ".hermes")
-from hermes_cli import update_cmd_fleet as fleet, update_receipt as receipts
+from hermes_cli import update_cmd_fleet as fleet
+from hermes_cli import update_receipt as receipts
 
 print("MODULE", fleet.__file__)
 sha = fleet._current_checkout_sha()

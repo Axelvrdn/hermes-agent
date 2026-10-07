@@ -30,7 +30,7 @@ import time
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Callable, Union, Self
+from typing import Any, Callable, Self, Union
 
 from hermes_cli.observability.shared_metrics_consent import OFFER_VERSION
 

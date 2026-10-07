@@ -1,6 +1,6 @@
 """Tests for _stream_delta's handling of <think> tags in prose vs real reasoning blocks."""
-import sys
 import os
+import sys
 
 import pytest
 
@@ -128,8 +128,8 @@ class TestFlushRecovery:
         cli._close_reasoning_box = lambda: None
 
         # Call flush
-        from unittest.mock import patch
         import shutil
+        from unittest.mock import patch
         with patch.object(shutil, "get_terminal_size", return_value=os.terminal_size((80, 24))):
             with patch("cli._cprint"):
                 cli._flush_stream()

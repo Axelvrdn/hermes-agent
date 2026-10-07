@@ -27,7 +27,6 @@ import pytest
 import agent.auxiliary_client as aux
 from hermes_cli.local_runtime.supervisor import LlamaServerSupervisor
 
-
 MANAGED_URL = "http://127.0.0.1:18434/v1"
 
 

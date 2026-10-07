@@ -7,7 +7,13 @@ STALE JWT that expires in 30 s and each fires one API call concurrently. Count 4
 
 Usage: python stampede_ab.py <repo_root> <n_agents>
 """
-import base64, json, os, sys, tempfile, threading, time
+import base64
+import json
+import os
+import sys
+import tempfile
+import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 root, n = sys.argv[1], int(sys.argv[2])
@@ -53,8 +59,10 @@ srv = ThreadingHTTPServer(("127.0.0.1", 0), H); threading.Thread(target=srv.serv
 base = f"http://127.0.0.1:{srv.server_address[1]}/v1"
 
 import hermes_cli.auth as auth_mod
+
 auth_mod.resolve_nous_runtime_credentials = lambda **kw: {"api_key": FRESH, "base_url": base}
 import hermes_cli.nous_auth_keepalive as ka
+
 ka.start_nous_auth_keepalive = lambda **kw: None  # thread itself is out of scope here; we test adoption
 
 from run_agent import AIAgent

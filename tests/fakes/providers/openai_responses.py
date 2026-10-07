@@ -30,7 +30,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any, Callable, Union, Self
+from typing import Any, Callable, Self, Union
 
 from openai.types.responses import (
     Response,
@@ -51,7 +51,10 @@ from openai.types.responses import (
 )
 from openai.types.responses.response_create_params import ResponseCreateParamsStreaming
 from openai.types.responses.response_reasoning_item import Summary
-from openai.types.responses.response_usage import InputTokensDetails, OutputTokensDetails
+from openai.types.responses.response_usage import (
+    InputTokensDetails,
+    OutputTokensDetails,
+)
 from pydantic import TypeAdapter
 
 MODEL_ID = "fake-responses-model"

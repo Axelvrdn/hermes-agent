@@ -185,7 +185,10 @@ class TurnRunner:
         from gateway.warning_notifications import render_notification
         status = kwargs.get("status")
         try:
-            from tools.delegate_tool import SUBAGENT_FAILURE_STATUSES, format_subagent_failure_line
+            from tools.delegate_tool import (
+                SUBAGENT_FAILURE_STATUSES,
+                format_subagent_failure_line,
+            )
             if status in SUBAGENT_FAILURE_STATUSES and ctx._run_still_current():
                 line = format_subagent_failure_line(
                     kwargs.get("goal"), status, error=kwargs.get("summary") or preview,
@@ -221,7 +224,12 @@ class TurnRunner:
         ctx = self._ctx
         try:
             if (kwargs.get("duration") or 0) >= ctx._LONG_TOOL_THRESHOLD_S and ctx.progress_mode == "all":
-                from agent.onboarding import TOOL_PROGRESS_FLAG, is_seen, mark_seen, tool_progress_hint_gateway
+                from agent.onboarding import (
+                    TOOL_PROGRESS_FLAG,
+                    is_seen,
+                    mark_seen,
+                    tool_progress_hint_gateway,
+                )
                 cfg = _load_gateway_config()
                 gate_on = is_truthy_value(cfg_get(cfg, "display", "tool_progress_command"), default=False)
                 if gate_on and not is_seen(cfg, TOOL_PROGRESS_FLAG):
@@ -293,7 +301,12 @@ class TurnRunner:
             return code
         if not preview:
             return t("gateway.progress.tool_pending", emoji=emoji, tool=tool_name)
-        from agent.display import get_tool_verb, prepare_tool_preview, tool_verb_connector, verb_drops_preview
+        from agent.display import (
+            get_tool_verb,
+            prepare_tool_preview,
+            tool_verb_connector,
+            verb_drops_preview,
+        )
         prepared = prepare_tool_preview(tool_name, args, fallback=preview, max_len=self._preview_cap())
         preview = adapter.format_tool_preview(prepared) if adapter is not None else prepared.text
         # Friendly labels: human-phrased line for built-in tools ("🔍 Searching the web for ...")
@@ -889,7 +902,11 @@ class TurnRunner:
             logger.debug("Failed to attach session title callback", exc_info=True)
 
     def _status_callback_sync(self, event_type: str, message: str) -> None:
-        from gateway.run import _prepare_gateway_status_message, _redact_gateway_user_facing_secrets, _send_or_update_status_coro
+        from gateway.run import (
+            _prepare_gateway_status_message,
+            _redact_gateway_user_facing_secrets,
+            _send_or_update_status_coro,
+        )
         from gateway.warning_notifications import is_warning_status, render_notification
         ctx = self._ctx
         if ctx.mute_notification_reply or not self._status_live():
@@ -1181,7 +1198,10 @@ class TurnRunner:
         """Credits / out-of-band notices (usage bands, depletion, restored) fire from the agent's
         sync worker thread; hop onto the gateway loop. Fired-once latch lives on the cached agent."""
         from gateway.run import render_notice_line
-        from gateway.warning_notifications import is_diagnostic_notice, render_notification
+        from gateway.warning_notifications import (
+            is_diagnostic_notice,
+            render_notification,
+        )
         if self._ctx.mute_notification_reply or not self._status_live():
             return
         diagnostic = is_diagnostic_notice(notice)
@@ -1349,7 +1369,11 @@ class TurnRunner:
         """Answer the clarify tool's questions (clarify_tool's synchronous contract): one card per
         question, stop at the first the user never answers. The stream/typing re-arm waits for the
         last question — between two cards it only opens a bubble the next boundary closes."""
-        from gateway.run_turn_runner_clarify_delivery import UNDELIVERED, UNDELIVERED_DECLINED, UNDELIVERED_NO_SURFACE
+        from gateway.run_turn_runner_clarify_delivery import (
+            UNDELIVERED,
+            UNDELIVERED_DECLINED,
+            UNDELIVERED_NO_SURFACE,
+        )
         from tools.clarify_gateway import CANCELLED, SKIPPED
         answers: Dict[str, Any] = {}
         reply: Dict[str, Any] = {"answers": answers, "outcome": "submitted"}
@@ -1374,10 +1398,14 @@ class TurnRunner:
     def _ask_clarify_question(self, question, choices, multi_select, rearm: bool = True) -> tuple[str, bool]:
         """One card: register, send, wait, then retire it (no answer) or re-arm (answer).
         Returns ``(response, answered)``; the caller decides what "no answer" means."""
-        from gateway.run_turn_runner_clarify_delivery import (
-            UNDELIVERED_NO_SURFACE, _clarify_send_then_wait, text_fallback_coro)
-        from tools import clarify_gateway as clarify_mod
         import uuid
+
+        from gateway.run_turn_runner_clarify_delivery import (
+            UNDELIVERED_NO_SURFACE,
+            _clarify_send_then_wait,
+            text_fallback_coro,
+        )
+        from tools import clarify_gateway as clarify_mod
         ctx = self._ctx
         if not ctx._status_adapter:
             # Nothing can render the question: say so, or the batch's blank answers read as
@@ -1455,7 +1483,12 @@ class TurnRunner:
     def _approval_notify_sync(self, approval_data: dict) -> None:
         """Send the approval request from the agent thread: the adapter's interactive button
         approvals (``send_exec_approval``) when available, else plain text with ``/approve`` steps."""
-        from gateway.run import _approval_send_outcome, _format_exec_approval_fallback, _interim_metadata, _redact_approval_command
+        from gateway.run import (
+            _approval_send_outcome,
+            _format_exec_approval_fallback,
+            _interim_metadata,
+            _redact_approval_command,
+        )
         from gateway.run_turn_runner_approval_settle import register_timeout_notice
         ctx = self._ctx
         adapter = ctx._status_adapter
@@ -1553,7 +1586,9 @@ class TurnRunner:
 
     def _load_turn_history(self, agent, reused_cached_agent):
         from gateway.run import (
-            _build_gateway_agent_history, _collect_history_media_paths, _message_timestamps_enabled,
+            _build_gateway_agent_history,
+            _collect_history_media_paths,
+            _message_timestamps_enabled,
             _select_cached_agent_history,
         )
         ctx = self._ctx
@@ -1616,8 +1651,11 @@ class TurnRunner:
         kept separate from API-only recovery guidance so stale guidance never replays as user text.
         """
         from gateway.run import (
-            _auto_continue_freshness_window, _is_fresh_gateway_interruption,
-            _last_transcript_timestamp, _prepare_resume_pending_message, build_resume_recovery_note,
+            _auto_continue_freshness_window,
+            _is_fresh_gateway_interruption,
+            _last_transcript_timestamp,
+            _prepare_resume_pending_message,
+            build_resume_recovery_note,
         )
         ctx = self._ctx
         persist_override: Optional[Any] = ctx.persist_user_message
@@ -1687,7 +1725,10 @@ class TurnRunner:
         approval blocks the agent thread (mirrors CLI input()); the callback bridges sync→async."""
         from gateway.run import _wrap_current_message_with_observed_context
         from tools.approval import register_gateway_notify, unregister_gateway_notify
-        from tools.approval_context import reset_current_session_key, set_current_session_key
+        from tools.approval_context import (
+            reset_current_session_key,
+            set_current_session_key,
+        )
         ctx = self._ctx
         session_key = ctx.session_key or ""
         token = set_current_session_key(session_key)
@@ -1888,7 +1929,11 @@ class TurnRunner:
         every rebind. session_key propagates via contextvars (_set_session_env / set_current_session_key)
         — never os.environ["HERMES_SESSION_KEY"], which would misroute approvals across sessions.
         """
-        from gateway.run import _current_max_iterations, _normalize_empty_agent_response, _sanitize_gateway_final_response
+        from gateway.run import (
+            _current_max_iterations,
+            _normalize_empty_agent_response,
+            _sanitize_gateway_final_response,
+        )
         ctx = self._ctx
         runner = self._runner
         # Platform.LOCAL ("local") maps to the "cli" hint key the agent understands.

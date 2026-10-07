@@ -29,7 +29,6 @@ from cron.scheduler import _deliver_result
 from cron.scheduler_delivery import _confirm_adapter_delivery
 from gateway.config import Platform, PlatformConfig
 
-
 # ---------------------------------------------------------------------------
 # _confirm_adapter_delivery: the contract in isolation
 # ---------------------------------------------------------------------------

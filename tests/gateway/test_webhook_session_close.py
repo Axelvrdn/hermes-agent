@@ -28,7 +28,7 @@ import pytest
 
 from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.platforms.webhook import WebhookAdapter, _INSECURE_NO_AUTH
+from gateway.platforms.webhook import _INSECURE_NO_AUTH, WebhookAdapter
 from gateway.session import SessionSource, SessionStore
 
 

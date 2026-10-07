@@ -9,11 +9,13 @@ from pathlib import Path
 
 import pytest
 
-from hermes_cli import web_server
 import gateway.status as _gw_status
 import hermes_cli.web_server_gateway as _web_server_gateway
-from hermes_cli.web_server_gateway import _collect_profile_gateway_topology, _profile_platform_ports
-
+from hermes_cli import web_server
+from hermes_cli.web_server_gateway import (
+    _collect_profile_gateway_topology,
+    _profile_platform_ports,
+)
 
 # ---------------------------------------------------------------------------
 # _profile_platform_ports
@@ -56,8 +58,8 @@ def _patch_topology(monkeypatch, homes, running, runtimes):
     ``homes``: list of (name, Path); ``running``: set of profile names with a
     live gateway; ``runtimes``: {name: runtime dict}.
     """
-    import hermes_cli.profiles as profiles_mod
     import gateway.status as status_mod
+    import hermes_cli.profiles as profiles_mod
 
     monkeypatch.setattr(profiles_mod, "profiles_to_serve", lambda multiplex, **kw: homes)
     monkeypatch.setattr(
@@ -280,8 +282,8 @@ class TestStatusEndpointTopology:
             pytest.skip("fastapi/starlette not installed")
 
         import hermes_state
+        from hermes_cli.web_server import _SESSION_HEADER_NAME, _SESSION_TOKEN, app
         from hermes_constants import get_hermes_home
-        from hermes_cli.web_server import app, _SESSION_HEADER_NAME, _SESSION_TOKEN
 
         monkeypatch.setattr(
             hermes_state, "DEFAULT_DB_PATH", get_hermes_home() / "state.db"
@@ -344,8 +346,8 @@ class TestStatusEndpointTopology:
         # one profile the record stores un-prefixed reported ``gateway_platforms: {}`` and
         # ``components.platforms.configured: 0`` while its adapters were up and delivering
         # (#123088).
-        from gateway.status import GatewayLiveness
         import hermes_cli.web_routers.status as status_router
+        from gateway.status import GatewayLiveness
 
         record = {
             "gateway_state": "running",
@@ -389,9 +391,9 @@ class TestStatusEndpointTopology:
         # fabricated ``/p/<basename>/...`` ingress URLs for a profile that does not exist.
         from contextlib import nullcontext
 
-        from gateway.status import GatewayLiveness
         import hermes_cli.web_routers.status as status_router
         import hermes_cli.web_server_profiles as web_server_profiles
+        from gateway.status import GatewayLiveness
 
         home = tmp_path / ".hermes"  # the shipped default root: basename != profile id
         home.mkdir()

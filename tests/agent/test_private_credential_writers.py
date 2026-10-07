@@ -44,15 +44,15 @@ def opens_spy(monkeypatch):
 def _writers(home: Path, monkeypatch):
     """``(label, callable, target_path)`` for every private-credential writer."""
     from agent import anthropic_credentials
-    from agent.secret_sources._cache import CachedFetch, DiskCache
     from agent.proxy_sources import iron_proxy
+    from agent.secret_sources._cache import CachedFetch, DiskCache
     from agent.vault_store import VaultStore
     from gateway import pairing
-    from hermes_cli import auth as auth_mod, copilot_auth
-    from hermes_cli import process_identity
-    from tools import mcp_oauth
+    from hermes_cli import auth as auth_mod
+    from hermes_cli import copilot_auth, process_identity
     from plugins.google_meet.node.server import NodeServer
     from plugins.platforms.photon import adapter as photon_adapter
+    from tools import mcp_oauth
 
     photon_record = home / "runtime" / "photon.json"
     monkeypatch.setattr(photon_adapter, "_runtime_record_path", lambda: photon_record)

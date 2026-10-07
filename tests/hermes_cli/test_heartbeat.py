@@ -5,16 +5,15 @@ import time
 import pytest
 
 from hermes_cli.heartbeat import (
+    MIN_INTERVAL_SECONDS,
     HeartbeatManager,
     HeartbeatState,
-    MIN_INTERVAL_SECONDS,
     format_interval,
     load_heartbeat,
     migrate_heartbeat_to_session,
     parse_interval,
     save_heartbeat,
 )
-
 
 # ──────────────────────────────────────────────────────────────────────
 # interval parsing

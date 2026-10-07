@@ -6,9 +6,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
-from cron.jobs import effective_job_state
-
 import hermes_time
+from cron.jobs import effective_job_state
 
 # Logger parity with the origin module.
 logger = logging.getLogger("tools.cronjob_tools")
@@ -127,7 +126,10 @@ def _local_delivery_notice(job: Dict[str, Any], user_deliver: Optional[str]) -> 
         if targets:
             # _origin_from_env() dropped a non-push origin (api_server) and the job rerouted to a
             # home channel: tell the creating client where the report goes (#69304).
-            from gateway.session_context import async_delivery_supported, get_session_env
+            from gateway.session_context import (
+                async_delivery_supported,
+                get_session_env,
+            )
             fallback = [t for t in targets if t.get("_resolved_from") == "origin_fallback"]
             if fallback and get_session_env("HERMES_SESSION_PLATFORM") and not async_delivery_supported():
                 return ("Note: this stateless HTTP API session cannot receive cron delivery, so this "
@@ -376,11 +378,12 @@ def _validate_cron_base_url(
             "base_url override requires an explicit provider. Set provider to a "
             "configured custom provider to use a custom endpoint.")
     try:
+        from hermes_cli.auth import PROVIDER_REGISTRY
         from hermes_cli.runtime_provider import (
+            _get_named_custom_provider,
             has_named_custom_provider,
             resolve_requested_provider,
-            _get_named_custom_provider)
-        from hermes_cli.auth import PROVIDER_REGISTRY
+        )
     except Exception:
         return f"Unable to validate base_url override for provider {prov!r}; refused."
 

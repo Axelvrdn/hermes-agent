@@ -2,6 +2,7 @@ import sys
 
 import pytest
 
+
 def test_sessions_delete_accepts_unique_id_prefix(monkeypatch, capsys):
     import hermes_cli.main as main_mod
     import hermes_state

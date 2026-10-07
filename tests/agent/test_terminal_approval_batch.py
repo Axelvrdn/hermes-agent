@@ -10,8 +10,8 @@ from unittest.mock import patch
 
 import pytest
 
-from run_agent import AIAgent
 from gateway.session_context import clear_session_vars
+from run_agent import AIAgent
 from tools import approval
 from tools.thread_context import propagate_context_to_thread
 
@@ -22,8 +22,8 @@ def _call(call_id, command):
 
 
 def _agent():
-    from tools.terminal_tool import TERMINAL_SCHEMA
     from tools.file_tools import READ_FILE_SCHEMA
+    from tools.terminal_tool import TERMINAL_SCHEMA
     with (
         patch("model_tools.get_tool_definitions", return_value=[
             {"type": "function", "function": schema}

@@ -26,10 +26,12 @@ import time
 import traceback
 from collections import defaultdict
 from contextlib import nullcontext, suppress
-from typing import Callable, Dict, List, Optional, Any, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import quote, urljoin
 
-from agent.async_utils import (consume_detached_task_result as _consume_background_task_result)
+from agent.async_utils import (
+    consume_detached_task_result as _consume_background_task_result,
+)
 from agent.display import ToolPreview
 from agent.i18n import get_language, t
 from agent.retry_utils import parse_retry_after_seconds
@@ -244,7 +246,8 @@ _DISCORD_NONCONVERSATIONAL_HISTORY_MESSAGE_PATTERNS = (
 )
 try:
     import discord
-    from discord import Message as DiscordMessage, Intents
+    from discord import Intents
+    from discord import Message as DiscordMessage
     from discord.ext import commands
     DISCORD_AVAILABLE = True
 except ImportError:
@@ -256,6 +259,7 @@ except ImportError:
 
 import sys
 from pathlib import Path as _Path
+
 sys.path.insert(0, str(_Path(__file__).resolve().parents[3]))
 
 
@@ -300,26 +304,40 @@ except ImportError:
     from ffmpeg_utils import resolve_ffmpeg_executable
 
 from gateway.config import Platform, PlatformConfig, discord_channel_id_from_link
-
-from gateway.platforms.helpers import (
-    MessageDeduplicator, ThreadParticipationTracker, convert_table_to_bullets, is_discord_channel_obfuscated,
+from gateway.platforms._shared import (
+    decode_json_list_literal as _decode_json_list_literal,
 )
-from gateway.platforms.helpers import cancel_task
-from utils import atomic_json_write, env_float
+from gateway.platforms._shared import env_is_connected as _env_is_connected
+from gateway.platforms._shared import extra_or_secret as _extra_or_secret
+from gateway.platforms._shared import platform_gate_env as _scoped_gate_env
+from gateway.platforms._shared import send_error
+from gateway.platforms._shared import yaml_env_setter as _yaml_env_setter
 from gateway.platforms.base import (
-    BasePlatformAdapter, ExecApprovalPrompt, SendResult, unauthorized_action_notice,
-    cache_image_from_url, cache_image_from_bytes_async, cache_audio_from_url, cache_audio_from_bytes_async,
-    cache_document_from_bytes_async, SUPPORTED_DOCUMENT_TYPES, _TEXT_INJECT_EXTENSIONS,
-    _prefix_within_utf16_limit, utf16_len, validate_inbound_media_size,
+    _TEXT_INJECT_EXTENSIONS,
+    SUPPORTED_DOCUMENT_TYPES,
+    BasePlatformAdapter,
+    ExecApprovalPrompt,
+    SendResult,
+    _prefix_within_utf16_limit,
+    cache_audio_from_bytes_async,
+    cache_audio_from_url,
+    cache_document_from_bytes_async,
+    cache_image_from_bytes_async,
+    cache_image_from_url,
+    unauthorized_action_notice,
+    utf16_len,
+    validate_inbound_media_size,
 )
 from gateway.platforms.event import MessageEvent, MessageType, ProcessingOutcome
-from tools.url_safety import is_safe_url
-from gateway.platforms._shared import (
-    decode_json_list_literal as _decode_json_list_literal, env_is_connected as _env_is_connected,
-    extra_or_secret as _extra_or_secret, platform_gate_env as _scoped_gate_env, send_error,
-    yaml_env_setter as _yaml_env_setter
+from gateway.platforms.helpers import (
+    MessageDeduplicator,
+    ThreadParticipationTracker,
+    cancel_task,
+    convert_table_to_bullets,
+    is_discord_channel_obfuscated,
 )
-
+from tools.url_safety import is_safe_url
+from utils import atomic_json_write, env_float
 
 
 def _unauthorized() -> str:
@@ -643,7 +661,8 @@ def check_discord_requirements() -> bool:
         return False
     try:
         import discord as _discord
-        from discord import Message as _DM, Intents as _Intents
+        from discord import Intents as _Intents
+        from discord import Message as _DM
         from discord.ext import commands as _commands
     except ImportError:
         return False
@@ -1259,7 +1278,10 @@ def _read_discord_prompt_timeout() -> int:
 
 from plugins.platforms.discord.adapter_media import DiscordMediaMixin
 from plugins.platforms.discord.adapter_slash_auth import DiscordSlashAuthMixin
-from plugins.platforms.discord.adapter_thread_titles import DiscordThreadTitlesMixin, SemanticThreadRenames
+from plugins.platforms.discord.adapter_thread_titles import (
+    DiscordThreadTitlesMixin,
+    SemanticThreadRenames,
+)
 from plugins.platforms.discord.adapter_voice_info import DiscordVoiceInfoMixin
 
 
@@ -1517,7 +1539,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             )
             intents.voice_states = True
             # Resolve proxy (DISCORD_PROXY > generic env vars > macOS system proxy)
-            from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_bot
+            from gateway.platforms.base import proxy_kwargs_for_bot, resolve_proxy_url
             proxy_url = resolve_proxy_url(platform_env_var="DISCORD_PROXY")
             if proxy_url:
                 logger.info("[%s] Using proxy for Discord: %s", self.name, proxy_url)
@@ -4662,7 +4684,11 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                 # e.g. name conflict with a subcommand group.
                 logger.debug("Suppressed exception: %s", _exc, exc_info=True)
         try:
-            from hermes_cli.commands import COMMAND_REGISTRY, _is_gateway_available, _resolve_config_gates
+            from hermes_cli.commands import (
+                COMMAND_REGISTRY,
+                _is_gateway_available,
+                _resolve_config_gates,
+            )
             try:
                 already_registered = {cmd.name for cmd in tree.get_commands()}
             except Exception as _exc:
@@ -5573,7 +5599,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         if not cleaned:
             return False
         # Thread names are budgeted in UTF-16 code units (emoji count double) — use the UTF-16 helpers.
-        from gateway.platforms.base import utf16_len, _prefix_within_utf16_limit
+        from gateway.platforms.base import _prefix_within_utf16_limit, utf16_len
         if utf16_len(cleaned) > 80:
             cleaned = _prefix_within_utf16_limit(cleaned, 77).rstrip() + "..."
         try:
@@ -6010,7 +6036,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         if not is_safe_url(att.url):
             raise ValueError(f"Blocked unsafe attachment URL (SSRF protection): {att.url}")
         import aiohttp
-        from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+
+        from gateway.platforms.base import proxy_kwargs_for_aiohttp, resolve_proxy_url
         _proxy = resolve_proxy_url(platform_env_var="DISCORD_PROXY")
         _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(_proxy)
         async with aiohttp.ClientSession(**_sess_kw) as session:
@@ -6415,7 +6442,9 @@ def _define_discord_view_classes() -> None:
             self._message = None
 
         def _check_auth(self, interaction: discord.Interaction) -> bool:
-            from plugins.platforms.discord.adapter_component_auth import _component_check_auth
+            from plugins.platforms.discord.adapter_component_auth import (
+                _component_check_auth,
+            )
             return _component_check_auth(
                 interaction, self.allowed_user_ids, self.allowed_role_ids, live_auth=self.live_auth)
 
@@ -6976,7 +7005,9 @@ def _define_discord_view_classes() -> None:
             # Round-trip the canonical choice text from the entry, not the button label.
             resolved_text: Optional[str] = None
             try:
-                from tools.clarify_gateway import _entries as _clarify_entries  # type: ignore
+                from tools.clarify_gateway import (
+                    _entries as _clarify_entries,  # type: ignore
+                )
                 entry = _clarify_entries.get(self.clarify_id)
                 if entry and entry.choices and 0 <= index < len(entry.choices):
                     resolved_text = entry.choices[index]
@@ -7174,7 +7205,7 @@ async def _standalone_send(
     if not token:
         return send_error("Discord standalone send: DISCORD_BOT_TOKEN is not set")
     try:
-        from gateway.platforms.base import resolve_proxy_url, proxy_kwargs_for_aiohttp
+        from gateway.platforms.base import proxy_kwargs_for_aiohttp, resolve_proxy_url
         _proxy = resolve_proxy_url(platform_env_var="DISCORD_PROXY")
         _sess_kw, _req_kw = proxy_kwargs_for_aiohttp(_proxy)
         auth_headers = {"Authorization": f"Bot {token}"}

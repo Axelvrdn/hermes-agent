@@ -19,7 +19,10 @@ def plugin(monkeypatch):
     """Register *profile* the way plugin discovery does (providers registry + auth mirror), no leaks."""
     import providers
     from hermes_cli import auth
-    from hermes_cli.auth_plugin_providers import PLUGIN_MIRRORED_PROVIDERS, register_plugin_provider
+    from hermes_cli.auth_plugin_providers import (
+        PLUGIN_MIRRORED_PROVIDERS,
+        register_plugin_provider,
+    )
 
     monkeypatch.setattr(providers, "_REGISTRY", dict(providers._REGISTRY))
     monkeypatch.setattr(providers, "_ALIASES", dict(providers._ALIASES))
@@ -122,7 +125,10 @@ def test_any_external_process_plugin_counts_as_signed_in_when_its_binary_resolve
     ``tui_gateway/methods_complete.py::model.options``) keeps an out-of-tree ACP row exactly like the
     bundled one: binary resolves → auth evidence; missing binary → hidden."""
     from hermes_cli import auth
-    from hermes_cli.inventory import _external_process_signed_in, _filter_explicit_provider_rows
+    from hermes_cli.inventory import (
+        _external_process_signed_in,
+        _filter_explicit_provider_rows,
+    )
 
     plugin(ProviderProfile(name="example-acp", auth_type="external_process", base_url="acp://example",
                            process_command="example-acp-bin", fallback_models=("acp-a",)))

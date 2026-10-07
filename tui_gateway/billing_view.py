@@ -22,7 +22,11 @@ def _wire_str(value):
 def _serialize_billing_error(exc) -> dict:
     """Map a BillingError into the result.error envelope the TUI branches on."""
     from hermes_cli.nous_billing import (
-        BillingRemoteSpendingRevoked, BillingScopeRequired, BillingSessionRevoked, BillingTransient)
+        BillingRemoteSpendingRevoked,
+        BillingScopeRequired,
+        BillingSessionRevoked,
+        BillingTransient,
+    )
     typed = {BillingRemoteSpendingRevoked: "remote_spending_revoked",
              BillingSessionRevoked: "session_revoked", BillingScopeRequired: "insufficient_scope"}
     kind = next((k for cls, k in typed.items() if isinstance(exc, cls)), None)

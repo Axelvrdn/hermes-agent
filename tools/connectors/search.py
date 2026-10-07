@@ -4,7 +4,11 @@ import logging
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from tools.connectors.gateway.bridge import SIGN_IN_EXPIRED, UNREACHABLE
-from tools.connectors.gateway.names import format_connector_name, is_connector_name, vendor_slug_candidates
+from tools.connectors.gateway.names import (
+    format_connector_name,
+    is_connector_name,
+    vendor_slug_candidates,
+)
 from tools.tool_search_catalog import CatalogEntry, _fn, _tokenize
 
 logger = logging.getLogger(__name__)
@@ -44,7 +48,9 @@ def connector_entries_by_group(
     per_query: List[List[CatalogEntry]] = [[] for _ in queries]
     try:
         if connector_search is None:
-            from tools.connectors.gateway.bridge import connector_search_hits as connector_search
+            from tools.connectors.gateway.bridge import (
+                connector_search_hits as connector_search,
+            )
         leg = connector_search([{"use_case": q} for q in queries])
         if leg.failure:
             return per_query, leg.failure

@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -12,9 +12,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 def write_facts(payload: Path, lock_path: Path, build_set: Path, tui: Path) -> None:
     from pm.lock import Lockfile
     from pm.registry import get_package
-    from scripts.bundles.payload import record_tools
     from scripts.build.agent import assemble
-    from scripts.build.inputs import AgentInputs, RESOURCE_ENV, dependency_site
+    from scripts.build.inputs import RESOURCE_ENV, AgentInputs, dependency_site
+    from scripts.bundles.payload import record_tools
 
     payload = payload.resolve()
     target = "linux-arm64-bionic"

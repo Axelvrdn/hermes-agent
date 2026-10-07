@@ -16,6 +16,7 @@ from pathlib import Path
 
 from tui_gateway import server as tui_server
 
+
 class TestPrependToolPaths:
     def test_prepends_managed_venv_and_user_bin(self, monkeypatch, tmp_path):
         monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hh"))

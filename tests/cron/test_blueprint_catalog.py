@@ -16,9 +16,9 @@ from cron.blueprint_catalog import (
     CATALOG,
     BlueprintFillError,
     BlueprintSlot,
+    blueprint_deeplink,
     fill_blueprint,
     get_blueprint,
-    blueprint_deeplink,
 )
 
 

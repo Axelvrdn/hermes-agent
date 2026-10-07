@@ -58,7 +58,10 @@ def _builtin_gateway_liveness() -> Optional[bool]:
             from gateway.status import is_gateway_runtime_lock_active
             if is_gateway_runtime_lock_active():
                 return True
-        from hermes_cli.gateway import find_gateway_pids, named_profile_served_by_running_multiplexer
+        from hermes_cli.gateway import (
+            find_gateway_pids,
+            named_profile_served_by_running_multiplexer,
+        )
         if find_gateway_pids():
             return True
         from cron.jobs import get_ticker_heartbeat_age, ticker_heartbeat_writer_alive
@@ -454,7 +457,10 @@ def _print_ticker_health(pids: list, restart_command: str = "hermes gateway rest
     """
     # See #32612, #32895.
     from cron.jobs import (
-        get_ticker_heartbeat_age, get_ticker_last_error, get_ticker_success_age)
+        get_ticker_heartbeat_age,
+        get_ticker_last_error,
+        get_ticker_success_age,
+    )
     from cron.scheduler import _is_fd_exhaustion_text as _cron_is_fd_exhaustion_text
     from cron.scheduler import stale_code_yield_labels
     hb_age = get_ticker_heartbeat_age()
@@ -511,7 +517,10 @@ def _print_ticker_health(pids: list, restart_command: str = "hermes gateway rest
 
 def cron_status():
     """Show cron execution status."""
-    from hermes_cli.gateway import find_gateway_pids, named_profile_served_by_running_multiplexer
+    from hermes_cli.gateway import (
+        find_gateway_pids,
+        named_profile_served_by_running_multiplexer,
+    )
     from hermes_cli.profiles import get_active_profile_name
     print()
 
@@ -551,7 +560,10 @@ def cron_status():
                 # Same false-alarm class the cronjob tool fixed (#95947): the pid scan can transiently miss
                 # a live gateway (just after a restart) while the runtime lock — held for exactly the
                 # gateway's lifetime — proves the ticker's process is alive.
-                from gateway.status import get_running_pid, is_gateway_runtime_lock_active
+                from gateway.status import (
+                    get_running_pid,
+                    is_gateway_runtime_lock_active,
+                )
                 gateway_alive_via_lock = is_gateway_runtime_lock_active()
                 lock_pid = get_running_pid() if gateway_alive_via_lock else None
                 pids = [lock_pid] if lock_pid else pids
@@ -562,7 +574,10 @@ def cron_status():
                 # `hermes serve` / the Desktop backend ticks every local profile in-process: no
                 # gateway argv, lock or host record — only the heartbeat it writes here (#121881).
                 with contextlib.suppress(Exception):
-                    from cron.jobs import get_ticker_heartbeat_age, ticker_heartbeat_writer_alive
+                    from cron.jobs import (
+                        get_ticker_heartbeat_age,
+                        ticker_heartbeat_writer_alive,
+                    )
                     in_process_ticker = (_ticker_age_is_fresh(get_ticker_heartbeat_age())
                                          and ticker_heartbeat_writer_alive())
         if host is not None:

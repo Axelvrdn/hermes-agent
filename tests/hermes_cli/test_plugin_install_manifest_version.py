@@ -12,8 +12,8 @@ import subprocess
 from pathlib import Path
 
 import pytest
-import hermes_yaml as yaml
 
+import hermes_yaml as yaml
 from hermes_cli.plugins import SUPPORTED_MANIFEST_VERSION
 from tests.pm._fixtures import client, isolated_python  # noqa: F401
 

@@ -2,9 +2,9 @@
 """Extract page ranges from a PDF, optionally rotating and/or compressing pages."""
 from __future__ import annotations
 
-import logging
 import argparse
 import json
+import logging
 import sys
 
 

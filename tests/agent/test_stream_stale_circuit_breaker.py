@@ -15,12 +15,11 @@ The harness mirrors tests/agent/test_anthropic_stream_pool_cleanup.py.
 """
 
 import threading
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import httpx
 import pytest
-from unittest.mock import MagicMock
-
-from types import SimpleNamespace
 
 
 def _make_anthropic_agent(**kwargs):

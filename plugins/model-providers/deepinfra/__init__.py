@@ -3,7 +3,11 @@ their own plugin subsystems)."""
 
 from typing import Any
 
-from agent.reasoning_effort import OPENAI_COMPAT_WIRE_EFFORTS, clamp_effort, requested_effort
+from agent.reasoning_effort import (
+    OPENAI_COMPAT_WIRE_EFFORTS,
+    clamp_effort,
+    requested_effort,
+)
 from providers import register_provider
 from providers.base import ProviderProfile
 

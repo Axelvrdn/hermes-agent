@@ -12,7 +12,12 @@ from unittest.mock import patch
 import pytest
 
 from tools import approval as approval_module
-from tools import approval_context, approval_gateway_wait, terminal_tool, terminal_tool_sudo
+from tools import (
+    approval_context,
+    approval_gateway_wait,
+    terminal_tool,
+    terminal_tool_sudo,
+)
 from tools.approval_prompt import prompt_dangerous_approval
 from tools.clarify_tool import clarify_tool
 

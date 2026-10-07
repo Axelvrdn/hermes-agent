@@ -47,7 +47,10 @@ def review_targets_managed_local(agent: Any, task_cfg: Optional[Dict[str, Any]])
     supervisor state file; any failure reads False (immediate spawn is the safe default). The cheap
     TTL-cached netloc probe runs FIRST so cloud-only installs skip runtime resolution on the turn's tail."""
     try:
-        from agent.auxiliary_client import _is_managed_local_endpoint, _managed_local_netloc
+        from agent.auxiliary_client import (
+            _is_managed_local_endpoint,
+            _managed_local_netloc,
+        )
 
         if not _managed_local_netloc():
             return False
@@ -185,8 +188,9 @@ class ReviewIdleQueue:
 def _managed_server_idle() -> bool:
     """No processing slot on any loaded model of the managed router; unreachable/no state file reads idle."""
     try:
-        from hermes_cli.local_runtime.supervisor import state_path
         from urllib.parse import quote
+
+        from hermes_cli.local_runtime.supervisor import state_path
 
         state = json.loads(state_path().read_text(encoding="utf-8-sig"))
         base = str(state.get("base_url", "")).rsplit("/v1", 1)[0]

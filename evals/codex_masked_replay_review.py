@@ -7,17 +7,18 @@ import copy
 import hashlib
 import json
 import os
-from pathlib import Path
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+import httpx
+from openai import APIError
+
 import run_agent
 from agent import error_classifier
-from openai import APIError
-import httpx
 
 ITEM = {"type": "reasoning", "id": "rs_review", "encrypted_content": "signed-control-opaque-do-not-alter", "summary": []}
 ERROR = {"message": "Request blocked.", "type": "invalid_request_error", "param": None, "code": "invalid_prompt"}

@@ -1,19 +1,18 @@
 """Shared guards for historical exports; real child execution lives in test_old_updater_takeover."""
 
 import builtins
-from contextlib import contextmanager
 import importlib
 import importlib.util
 import json
 import os
-from pathlib import Path
 import socket
 import subprocess
 import sys
 import urllib.request
+from contextlib import contextmanager
+from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[2]
 

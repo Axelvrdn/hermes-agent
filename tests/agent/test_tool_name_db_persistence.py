@@ -5,8 +5,8 @@ time. This test verifies that the value survives the flush path into the session
 """
 from unittest.mock import MagicMock, patch
 
-from run_agent import AIAgent
 from agent.tool_dispatch_helpers import make_tool_result_message
+from run_agent import AIAgent
 
 
 def _make_agent(session_db):

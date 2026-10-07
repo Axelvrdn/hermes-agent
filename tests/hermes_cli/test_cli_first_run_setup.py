@@ -18,8 +18,8 @@ import types
 
 import pytest
 
-from hermes_cli.auth import AuthError
 from agent.i18n import t
+from hermes_cli.auth import AuthError
 
 
 def _reset_modules(prefixes: tuple[str, ...]):
@@ -281,6 +281,7 @@ def test_empty_key_error_names_actual_provider(monkeypatch, capsys):
 
 def _bench_nous_pool(monkeypatch, **entry_fields):
     import time
+
     from agent.credential_pool import STATUS_EXHAUSTED, CredentialPool, PooledCredential
 
     benched = PooledCredential(id="e1", provider="nous", auth_type="oauth", access_token="x",

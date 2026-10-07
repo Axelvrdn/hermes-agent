@@ -74,7 +74,10 @@ def _lowest_effort(agent: Any) -> Optional[str]:
     """The weakest enabled level the active route accepts when it cannot switch reasoning OFF, else
     None (OFF goes on the wire as configured). Static knowledge only; a route that 400s on the disable
     anyway is learned by turn_recovery and remembered by ``end_voice_turn_route``."""
-    from agent.auxiliary_reasoning_floor import REASONING_FLOOR_EFFORT, known_reasoning_floor
+    from agent.auxiliary_reasoning_floor import (
+        REASONING_FLOOR_EFFORT,
+        known_reasoning_floor,
+    )
     off = {"enabled": False}
     if known_reasoning_floor(off, agent.provider, agent.base_url, agent.model, TASK) is not off:
         return REASONING_FLOOR_EFFORT
@@ -89,7 +92,10 @@ def _lowest_effort(agent: Any) -> Optional[str]:
             "is_xai_responses": route.is_xai_responses, "reasoning_config": {"enabled": True, "effort": "none"}})
         return None if effort in (None, "none") else effort
     if agent.api_mode == "anthropic_messages":
-        from agent.anthropic_adapter import _MANDATORY_THINKING_CLAUDE_SUBSTRINGS, _model_matches
+        from agent.anthropic_adapter import (
+            _MANDATORY_THINKING_CLAUDE_SUBSTRINGS,
+            _model_matches,
+        )
         # Mandatory-thinking Claude omits the disable and thinks at its default effort.
         return REASONING_FLOOR_EFFORT if _model_matches(agent.model, _MANDATORY_THINKING_CLAUDE_SUBSTRINGS) else None
     return None

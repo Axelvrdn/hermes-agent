@@ -24,8 +24,8 @@ violation (does not modify files).
 
 from __future__ import annotations
 
-import logging
 import ast
+import logging
 import os
 import sys
 from pathlib import Path

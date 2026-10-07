@@ -35,7 +35,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any, Callable, Union, Self
+from typing import Any, Callable, Self, Union
 from urllib.parse import unquote
 
 import botocore.session

@@ -5,14 +5,13 @@ import itertools
 import math
 import os
 import shutil
-from pathlib import Path
 import struct
 import subprocess
 import sys
+from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
 import pytest
-
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
 LAYERED_ICON = "icon.icon"  # apps/desktop/assets/icon.icon: the macOS 26 Icon Composer package
@@ -133,6 +132,7 @@ def test_renderer_canary_rule_is_the_canonical_one(monkeypatch):
     its own copy of the canary rule; both rules must agree on every tag shape."""
     import importlib.util
     import types
+
     from hermes_cli.update_channel import is_canary_tag
 
     monkeypatch.setitem(sys.modules, "resvg_py", types.ModuleType("resvg_py"))

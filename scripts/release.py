@@ -23,7 +23,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from hermes_cli.update_channel import (  # noqa: E402
-    _CANARY_TAG_RE, STABLE_TAG_RE, canary_tag_for_date, canary_timestamp,
+    _CANARY_TAG_RE,
+    STABLE_TAG_RE,
+    canary_tag_for_date,
+    canary_timestamp,
     is_canary_tag,
 )
 from scripts.releases.authors import resolve_author  # noqa: E402
@@ -672,7 +675,11 @@ def main():
         "abandon", help="Clear the outstanding attempt, keeping its attempt ref and writing an abandon marker")
     abandon_cmd.add_argument("--version", required=True)
     abandon_cmd.add_argument("--remote", type=str)
-    from scripts.releases.channel_build import add_arguments, validate_arguments, cmd_channel
+    from scripts.releases.channel_build import (
+        add_arguments,
+        cmd_channel,
+        validate_arguments,
+    )
 
     add_arguments(parser)
     args = parser.parse_args()

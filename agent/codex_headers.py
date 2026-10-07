@@ -7,12 +7,11 @@ new symbol from an older cached ``auxiliary_client`` module.
 
 from __future__ import annotations
 
-import logging
 import base64
 import json
+import logging
 from typing import Any, Dict
 from urllib.parse import urlparse
-
 
 CODEX_AUX_BASE_URL = "https://chatgpt.com/backend-api/codex"
 

@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from evals.heartbeat_idle_wire import WireAdapter
 from gateway.config import Platform, PlatformConfig
 from gateway.run import GatewayRunner
 from gateway.session import SessionSource, build_session_key
 from hermes_cli.heartbeat import HeartbeatManager, HeartbeatState, save_heartbeat
-from evals.heartbeat_idle_wire import WireAdapter
 
 
 @pytest.mark.asyncio

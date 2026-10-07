@@ -14,7 +14,10 @@ import threading
 import uuid
 from typing import Any, Callable, Dict, List, Optional
 
-from plugins.web._common import document as _page, page_error as _page_error, search_fail, search_ok, web_hit as _row
+from plugins.web._common import document as _page
+from plugins.web._common import page_error as _page_error
+from plugins.web._common import search_fail, search_ok
+from plugins.web._common import web_hit as _row
 
 logger = logging.getLogger(__name__)
 
@@ -286,13 +289,19 @@ def exa_extract_keyless(urls: List[str]) -> List[Dict[str, Any]]:
 
 # --- Firecrawl keyless (public cloud API, no auth header) ---------------------
 def firecrawl_search_keyless(query: str, limit: int = 5) -> Dict[str, Any]:
-    from plugins.web.firecrawl.provider import _KeylessFirecrawlClient, _extract_web_search_results
+    from plugins.web.firecrawl.provider import (
+        _extract_web_search_results,
+        _KeylessFirecrawlClient,
+    )
     rows = lambda: _extract_web_search_results(_KeylessFirecrawlClient().search(query=query, limit=limit))  # noqa: E731
     return _search("firecrawl", rows, Exception, lambda exc: _fail_msg("firecrawl", "search", exc))
 
 
 def firecrawl_extract_keyless(urls: List[str]) -> List[Dict[str, Any]]:
-    from plugins.web.firecrawl.provider import _KeylessFirecrawlClient, _extract_scrape_payload
+    from plugins.web.firecrawl.provider import (
+        _extract_scrape_payload,
+        _KeylessFirecrawlClient,
+    )
     client = _KeylessFirecrawlClient()
 
     def _fetch(url: str) -> Dict[str, Any]:

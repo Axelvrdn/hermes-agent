@@ -3,12 +3,6 @@
 from unittest.mock import patch
 
 
-
-
-
-
-
-
 class TestGatewayEmptyModelFallback:
     """Test that _resolve_session_agent_runtime fills in empty model from provider catalog."""
 

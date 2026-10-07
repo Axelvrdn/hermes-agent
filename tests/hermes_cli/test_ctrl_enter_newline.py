@@ -25,7 +25,6 @@ from unittest.mock import patch
 import pytest
 
 
-
 class FakeKeyBindings:
     def __init__(self):
         self.bound = []
@@ -201,8 +200,9 @@ def test_proc_version_microsoft_marker_preserves_newline():
     ``platforms("linux")``: the fallback reads ``/proc/version`` — a Linux-only
     interface, and the WSL kernels it sniffs for are Linux kernels.
     """
-    import cli as cli_mod
     from io import StringIO
+
+    import cli as cli_mod
     with patch.dict(os.environ, {}, clear=True):
         real_open = open
 

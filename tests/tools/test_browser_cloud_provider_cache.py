@@ -67,8 +67,8 @@ class TestCloudProviderCachePolicy:
     def test_same_profile_registry_replacement_invalidates_cache(
         self, tmp_path, monkeypatch
     ):
-        from agent.browser_provider import BrowserProvider
         import agent.browser_registry as browser_registry
+        from agent.browser_provider import BrowserProvider
         from hermes_constants import (
             reset_hermes_home_override,
             set_hermes_home_override,
@@ -124,8 +124,8 @@ class TestCloudProviderCachePolicy:
         from concurrent.futures import ThreadPoolExecutor
         from threading import Event
 
-        from agent.browser_provider import BrowserProvider
         import agent.browser_registry as browser_registry
+        from agent.browser_provider import BrowserProvider
         from hermes_constants import (
             reset_hermes_home_override,
             set_hermes_home_override,

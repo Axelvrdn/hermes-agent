@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -82,8 +82,8 @@ def test_prepare_cli_accepts_request_path_but_refuses_mismatched_checkout_before
 
 
 def test_channel_environment_and_stamp_bind_the_request_not_ambient_oneoff_identity(tmp_path, monkeypatch):
-    from scripts.bundles.desktop_inputs import identity_environment
     from scripts import write_install_stamp
+    from scripts.bundles.desktop_inputs import identity_environment
 
     source, commit = _project(tmp_path)
     admitted = channel_request(commit)

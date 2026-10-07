@@ -10,12 +10,12 @@ Verifies that:
 
 import io
 import sys
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from agent.display import KawaiiSpinner
 from tools.delegate_tool import _build_child_progress_callback
-
 
 # =========================================================================
 # KawaiiSpinner.print_above tests

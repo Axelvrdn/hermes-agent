@@ -14,7 +14,6 @@ import pytest
 from gateway.config import PlatformConfig
 from gateway.relay.adapter import RelayAdapter
 from gateway.relay.descriptor import CONTRACT_VERSION, CapabilityDescriptor
-
 from tests.gateway.relay.stub_connector import StubConnector
 
 

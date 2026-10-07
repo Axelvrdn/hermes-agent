@@ -430,8 +430,8 @@ def test_a_completion_child_runs_only_after_its_bind_and_a_refusal_is_receipted(
     suspended and bound before it runs one instruction; when the real AssignProcessToJobObject
     refuses it (handed an event handle), it still runs (post-commit, ruling) but the refusal is a
     failed ``update_custody`` step in the receipt it finishes."""
-    import ctypes
     import copy
+    import ctypes
 
     from hermes_cli import update_completion, update_lock, update_receipt
 

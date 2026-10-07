@@ -53,6 +53,7 @@ def test_acp_and_dashboard_reject_what_switch_model_rejects(monkeypatch):
     assert made == {} and state.model == "claude-sonnet-5"  # session untouched
 
     from fastapi import HTTPException
+
     from hermes_cli.web_server_config import _apply_model_assignment_sync
     with pytest.raises(HTTPException) as exc:
         _apply_model_assignment_sync("main", "notaprovider", "whatever", "", "")
@@ -104,8 +105,9 @@ def test_acp_set_session_model_runs_switch_model_off_the_event_loop(monkeypatch)
 def test_acp_set_session_model_rejected_while_turn_running(monkeypatch):
     """The picker swaps state.agent wholesale; mid-turn that strands the running agent and
     makes _finish_turn emit a spurious compression-rotation update."""
-    import acp
     import asyncio
+
+    import acp
 
     called = {}
     monkeypatch.setattr(

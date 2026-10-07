@@ -16,10 +16,21 @@ from typing import Any, Dict
 from urllib.parse import urlencode
 
 from hermes_cli.auth_constants import (
-    OPENROUTER_AUTH_KEYS_URL, OPENROUTER_AUTH_URL, OPENROUTER_OAUTH_DOCS_URL, _openrouter_err, httpx)
+    OPENROUTER_AUTH_KEYS_URL,
+    OPENROUTER_AUTH_URL,
+    OPENROUTER_OAUTH_DOCS_URL,
+    _openrouter_err,
+    httpx,
+)
 from hermes_cli.auth_device_flow import (
-    _bind_loopback_callback_server, _can_open_graphical_browser, _is_remote_session,
-    _make_loopback_callback_handler, _pkce_code_challenge, _pkce_code_verifier, _serve_loopback_callback)
+    _bind_loopback_callback_server,
+    _can_open_graphical_browser,
+    _is_remote_session,
+    _make_loopback_callback_handler,
+    _pkce_code_challenge,
+    _pkce_code_verifier,
+    _serve_loopback_callback,
+)
 
 _ERROR_BODY_LIMIT = 2048
 

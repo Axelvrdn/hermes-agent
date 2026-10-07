@@ -7,10 +7,10 @@ import os
 import stat
 import urllib.request
 from dataclasses import dataclass
-from fastapi import HTTPException, Request
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from fastapi import HTTPException, Request
 
 _MANAGED_FILES_ROOT_ENV = "HERMES_DASHBOARD_FILES_ROOT"
 _HOSTED_MANAGED_FILES_ROOT = Path("/opt/data")
@@ -123,8 +123,8 @@ def _dashboard_local_update_managed_externally() -> bool:
     the update button is the correct path. pip stays blocked in containers: its
     apply path mutates the running container filesystem.
     """
-    from hermes_cli.web_server import PROJECT_ROOT
     from hermes_cli.config import detect_install_method
+    from hermes_cli.web_server import PROJECT_ROOT
     if _default_hermes_root_is_opt_data():
         return True
     try:

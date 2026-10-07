@@ -1,8 +1,8 @@
 """A fresh clone never lands inside, or on top of, an unrelated destination."""
 import os
-from pathlib import Path
 import shlex
 import subprocess
+from pathlib import Path
 
 import pytest
 

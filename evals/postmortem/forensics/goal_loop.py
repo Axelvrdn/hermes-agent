@@ -10,8 +10,8 @@ background-process notifications that re-entered the root.
 """
 from __future__ import annotations
 
-import logging
 import json
+import logging
 import re
 from typing import Any, Dict, List
 

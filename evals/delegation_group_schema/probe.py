@@ -6,10 +6,10 @@ Requires tiktoken; no model calls or model-quality claims.
 
 import json
 import os
-from pathlib import Path
 import socket
 import sys
 import tempfile
+from pathlib import Path
 
 root, destination = sys.argv[1:3]
 sys.path.insert(0, root)
@@ -27,6 +27,7 @@ with tempfile.TemporaryDirectory(prefix="delegate-schema-") as home:
 
     socket.socket.connect = deny_network
     import tiktoken
+
     from model_tools import get_tool_definitions
 
     encoder = tiktoken.get_encoding("o200k_base")

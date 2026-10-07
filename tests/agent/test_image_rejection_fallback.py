@@ -7,7 +7,9 @@ require, and that the phrase detector fires on the expected error bodies.
 """
 
 from agent.message_sanitization import (
-    _looks_like_corrupt_image_rejection, _looks_like_image_content_rejection, _strip_images_from_messages,
+    _looks_like_corrupt_image_rejection,
+    _looks_like_image_content_rejection,
+    _strip_images_from_messages,
     strip_images_for_rejecting_model,
 )
 

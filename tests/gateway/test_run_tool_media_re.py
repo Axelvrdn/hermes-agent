@@ -19,7 +19,6 @@ import re
 
 import pytest
 
-
 # Reconstruct the exact _TOOL_MEDIA_RE pattern from gateway/run.py
 # The pattern is built by concatenating raw string parts:
 #   r'MEDIA:((?:[A-Za-z]:[/\\]|/|~\/)\S+\.(?:png|...))'
