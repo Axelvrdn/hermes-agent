@@ -227,7 +227,7 @@ Import the area constants from the SDK; each area has its own `data` payload.
 | Surface | `area` | You provide |
 |---------|--------|-------------|
 | Layout pane | `PANES_AREA` (`'panes'`) | `title` + `render` + `data: { placement, dock?, width?, height? }` |
-| Full page | `ROUTES_AREA` | `data: { path }` + `render` |
+| Page (tile beside the chat) | `ROUTES_AREA` | `data: { path }` + `render` |
 | Sidebar nav | `SIDEBAR_NAV_AREA` | `data: { path, label, codicon }` |
 | Status bar | `STATUSBAR_AREAS.left` / `.right` | `render` (or `data` as `StatusbarItem`) |
 | Title bar | `TITLEBAR_AREAS.left` / `.center` / `.right` | `data` as `TitlebarTool`, or a mount-scoped `<Contribute>` |
@@ -282,8 +282,9 @@ panes.
 
 ### Pages and sidebar nav
 
-A route mounts a full page in the workspace pane, like any built-in view. Pair it
-with a sidebar nav row (and/or a palette command) to make it reachable.
+A route renders your page as a closeable tile docked beside the chat. It never
+replaces the chat or the session list. Pair it with a sidebar nav row (and/or a
+palette command) to make it reachable.
 
 ```javascript
 import { ROUTES_AREA, SIDEBAR_NAV_AREA } from '@hermes/plugin-sdk'
@@ -304,7 +305,10 @@ ctx.registerMany([
 ```
 
 `codicon` is a [VS Code codicon](https://microsoft.github.io/vscode-codicons/dist/codicon.html)
-id. Navigate to a route from anywhere with `host.navigate('/my-page')`.
+id. Open the page from anywhere with `host.navigate('/my-page')`. The sidebar
+row, `host.navigate`, palette rows, deep links and back/forward all open the same
+single tile, or bring it to the front if it is already open. Built-in pages
+(Capabilities, Messaging, Artifacts) still open as full pages.
 
 ### Status bar and title bar
 
