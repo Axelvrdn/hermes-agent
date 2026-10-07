@@ -234,7 +234,7 @@ def print_fast_version_info(*, check_updates: bool = True) -> None:
         elif behind == 0:
             print("Up to date")
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
 
 
 def try_fast_version(argv: list[str] | None = None) -> bool:

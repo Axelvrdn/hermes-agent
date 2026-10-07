@@ -983,5 +983,5 @@ def _read_logging_config():
         if isinstance(log_cfg, dict):
             return (log_cfg.get("level"), log_cfg.get("max_size_mb"), log_cfg.get("backup_count"))
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
     return (None, None, None)

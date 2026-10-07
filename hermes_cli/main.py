@@ -71,7 +71,7 @@ if _argv_is_gateway_run(sys.argv[1:]):
         _arm_sw()
         del _arm_sw
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
 
 
 def _exit_after_oneshot(rc: object) -> None:
@@ -89,11 +89,11 @@ def _exit_after_oneshot(rc: object) -> None:
         try:
             stream.flush()
         except Exception as _exc:
-            logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+            logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
     try:
         logging.shutdown()
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
     os._exit(rc if isinstance(rc, int) else (0 if rc is None else 1))
 
 
@@ -174,7 +174,7 @@ def _run_and_exit_oneshot(
         try:
             traceback.print_exc()
         except Exception as _exc:
-            logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+            logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
         rc = 1
     try:
         _cleanup_oneshot_runtime()
@@ -234,7 +234,7 @@ def _set_process_title() -> None:
             libc = ctypes.CDLL("libc.dylib", use_errno=True)
             libc.pthread_setname_np(b"hermes")
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
 
 
 # Cheap read of `display.interface` for the earliest hot-path decisions
@@ -674,7 +674,7 @@ try:
 
     _export_scratch_tmp_env()
 except Exception as _exc:
-    logging.debug("Suppressed exception: %s", _exc, exc_info=True)  # an unwritable home leaves the system temp dir in place; never block startup
+    logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)  # an unwritable home leaves the system temp dir in place; never block startup
 
 # PM runs after profile resolution but before application dependency imports.
 if sys.argv[1:2] == ["pm"]:
@@ -703,7 +703,7 @@ if sys.platform == "win32":
 
         _install_repair_mod.ensure_windows_bin_launchers(_bootstrap_root)
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)
 
 # Load .env from ~/.hermes/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
@@ -743,7 +743,7 @@ try:
         del _early_cfg_raw
     del _cfg_path
 except Exception as _exc:
-    logging.debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — redaction stays at default (enabled) on config errors
+    logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — redaction stays at default (enabled) on config errors
 
 # Centralized file logging for every subcommand (agent.log + errors.log).
 # Dashboard entrypoints use GUI mode so gui.log captures pre-dispatch failures.
@@ -759,7 +759,7 @@ try:
         )
     )
 except Exception as _exc:
-    logging.debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — don't crash the CLI if logging setup fails
+    logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — don't crash the CLI if logging setup fails
 
 # Apply IPv4 preference before any HTTP client is created.
 if _FORCE_IPV4_EARLY:
@@ -768,7 +768,7 @@ if _FORCE_IPV4_EARLY:
 
         _apply_ipv4(force=True)
     except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — don't crash if hermes_constants not importable yet
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — don't crash if hermes_constants not importable yet
 
 import threading
 from datetime import datetime
