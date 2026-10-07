@@ -31,7 +31,7 @@ def _patch_pipeline(monkeypatch, *, success=True, output="out", final="final res
 
     def fake_deliver(job, content, adapters=None, loop=None, **kwargs):
         calls.append(("deliver", job["id"]))
-        return None
+        return
 
     def fake_mark(jid, ok, err=None, delivery_error=None, **_kw):
         calls.append(("mark", jid, ok))
@@ -392,7 +392,7 @@ def test_run_one_job_installs_secret_scope_under_multiplex(monkeypatch, tmp_path
     def fake_deliver(*args, **kwargs):
         scope_during_delivery["scope"] = ss.current_secret_scope()
         scope_during_delivery["base_url"] = ss.get_secret("OPENROUTER_BASE_URL")
-        return None
+        return
 
     monkeypatch.setattr(s, "run_job", fake_run_job)
     monkeypatch.setattr(s, "save_job_output", lambda jid, out: f"/tmp/{jid}.txt")

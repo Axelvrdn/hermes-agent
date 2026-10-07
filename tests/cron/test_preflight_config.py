@@ -131,7 +131,7 @@ class TestMissingProviderKeyBlocks:
 
         def fake_deliver(job, content, adapters=None, loop=None, **kwargs):
             deliveries.append(content)
-            return None
+            return
 
         with cron_jobs.use_cron_store(tmp_path):
             cron_jobs.save_jobs([job])
@@ -264,7 +264,7 @@ class TestOptOut:
 
         def fake_deliver(job, content, adapters=None, loop=None, **kwargs):
             deliveries.append(content)
-            return None
+            return
 
         with cron_jobs.use_cron_store(tmp_path):
             cron_jobs.save_jobs([job])

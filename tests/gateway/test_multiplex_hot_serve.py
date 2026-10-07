@@ -130,7 +130,7 @@ async def test_stalled_own_gateway_probe_never_wedges_the_loop_or_serves(tmp_pat
 
         def _stalling_probe(profile_home):
             released.wait(timeout=10)  # the control pipe that never answers
-            return None
+            return
 
         monkeypatch.setattr("gateway.status.live_gateway_pid_for_home", _stalling_probe)
         monkeypatch.setattr(reconcile_mod, "_OWN_GATEWAY_PROBE_TIMEOUT_SECS", 0.2)

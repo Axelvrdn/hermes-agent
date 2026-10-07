@@ -125,14 +125,14 @@ class SelfHostedOIDCProvider(JwtOAuthProvider):
         # Best-effort RFC 7009 revocation when the IDP advertises an endpoint.
         # Must never raise — logout is client-side cookie clearing regardless.
         if not refresh_token:
-            return None
+            return
         try:
             disco = self._get_discovery()
         except ProviderError:
-            return None
+            return
         endpoint = str(disco.get("revocation_endpoint") or "").strip()
         if not endpoint:
-            return None
+            return
         # Confidential clients must authenticate on revocation too (RFC 7009 §2.1).
         extra_data, extra_headers = self._token_endpoint_auth(disco)
         data = {"token": refresh_token, "token_type_hint": "refresh_token", "client_id": self._client_id, **extra_data}
@@ -140,7 +140,7 @@ class SelfHostedOIDCProvider(JwtOAuthProvider):
             httpx.post(endpoint, data=data, headers={**JSON_HEADERS, **extra_headers}, timeout=_TOKEN_ENDPOINT_TIMEOUT_SEC)
         except Exception as exc:  # noqa: BLE001 — best-effort
             logger.debug("self-hosted OIDC: revoke failed (ignored): %s", exc)
-        return None
+        return
 
     # ---- JwtOAuthProvider hooks: token exchange ---------------------------
 

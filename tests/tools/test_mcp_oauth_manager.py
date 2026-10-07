@@ -838,7 +838,7 @@ async def test_refresh_fence_surfaces_non_contention_lock_errors_immediately(tmp
 
     def broken_flock(fd, op):
         if op & mcp_oauth.fcntl.LOCK_UN:
-            return None
+            return
         raise OSError(errno.ENOLCK, "No locks available")
 
     monkeypatch.setattr(mcp_oauth.fcntl, "flock", broken_flock)

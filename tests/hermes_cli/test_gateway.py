@@ -850,7 +850,7 @@ class TestReapUnsupervisedGatewayOrphansWindows:
 
         def failing_validation(*a, cleanup_stale=True, **k):
             probe_kwargs.append(cleanup_stale)
-            return None
+            return
 
         monkeypatch.setattr(
             "gateway.status.get_running_pid", failing_validation

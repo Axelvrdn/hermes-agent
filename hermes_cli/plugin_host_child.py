@@ -109,7 +109,7 @@ class RemotePluginContext:
             def skipped(*_args: Any, **_kwargs: Any) -> None:
                 logger.warning("Plugin '%s': ctx.%s() is skipped in the plugin host (%s)",
                                self.manifest.name, name, HOST_SKIPPED_CTX_METHODS[name])
-                return None
+                return
             return skipped
         if name in HOST_REMOTE_FACADES:
             return self._facades.setdefault(name, RemoteFacade(self._runtime, self._plugin_key, name))

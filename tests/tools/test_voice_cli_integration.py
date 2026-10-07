@@ -570,7 +570,7 @@ class TestVoiceFullDuplexListener:
             # turn fully done
             cli._voice_tts_done.set()
             probes["done"] = should_stop()
-            return None
+            return
 
         cli = self._cli(monkeypatch, listen=fake_listen, _agent_running=True)
         cli._voice_tts_done.set()

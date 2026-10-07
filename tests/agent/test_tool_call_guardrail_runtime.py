@@ -279,7 +279,7 @@ def test_relay_rewrite_precedes_sequential_policy_approval_checkpoint_and_dispat
 
     def observe_approval(name, args):
         observed["approval"].append((name, dict(args)))
-        return None
+        return
 
     def dispatch(name, args, task_id, **kwargs):
         del task_id, kwargs

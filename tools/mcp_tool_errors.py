@@ -252,7 +252,7 @@ def _resolve_identity_header(server_name: str, config: dict):
 
     def _ignore(detail: str, *args):
         logger.warning("MCP server '%s': identity_header " + detail + " — ignoring", server_name, *args)
-        return None
+        return
     if not isinstance(raw, dict):
         return _ignore("must be a mapping with 'name' and 'value'/'value_from' keys (got %s)", type(raw).__name__)
     name = raw.get("name")

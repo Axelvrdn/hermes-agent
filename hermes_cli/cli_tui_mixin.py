@@ -1101,7 +1101,7 @@ class CLITuiMixin:
                     break
         except Exception as _exc:
             logging.debug("Suppressed exception: %s", _exc, exc_info=True)
-        return None
+        return
 
     def _tui_handle_escape_modal(self, event):
         """ESC cancels active secret/sudo/connection/slash-confirm prompts."""

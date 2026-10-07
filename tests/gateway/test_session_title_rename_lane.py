@@ -210,7 +210,7 @@ def test_title_thread_copy_preserves_transport_adapter_ref(monkeypatch):
 
     def fake_schedule(coro, loop, logger=None, log_message=None):
         coro.close()
-        return None
+        return
 
     monkeypatch.setattr("gateway.run.safe_schedule_threadsafe", fake_schedule)
 

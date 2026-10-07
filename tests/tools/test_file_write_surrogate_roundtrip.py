@@ -112,7 +112,7 @@ class TestWriteFileSurrogates:
         assert res.verified is True
         assert p.read_bytes() == b"head\n\xff\ntail\n"
 
-    @pytest.mark.parametrize("bad", ["\ud800", "\udc7f", "\udd00"])
+    @pytest.mark.parametrize("bad", ["\ud800", "\udc7f", "\udd00"])  # noqa: PT014 — distinct surrogate ranges (high vs low), ruff miscompares lone surrogates
     def test_unencodable_surrogate_rejected_before_write(self, ops, tmp_path, bad):
         p = tmp_path / "reject.bin"
         res = ops.write_file(str(p), bad)

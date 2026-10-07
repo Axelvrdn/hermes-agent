@@ -813,7 +813,7 @@ class TestFollowProfileConfigRuntimeOverrides:
         class FakeDB:
             def create_session(self, *args, **kwargs):
                 captured["model_config"] = kwargs.get("model_config")
-                return None
+                return
 
         monkeypatch.setattr(server, "_get_db", lambda: FakeDB())
         monkeypatch.setattr(server, "_resolve_model", lambda: "glm-5.1")
@@ -839,7 +839,7 @@ class TestFollowProfileConfigRuntimeOverrides:
         class FakeDB:
             def create_session(self, *args, **kwargs):
                 captured["model_config"] = kwargs.get("model_config")
-                return None
+                return
 
         monkeypatch.setattr(server, "_get_db", lambda: FakeDB())
         monkeypatch.setattr(server, "_resolve_model", lambda: "glm-5.1")

@@ -70,7 +70,7 @@ def test_mentioned_data_file_that_cannot_be_scanned_is_not_a_verdict(tmp_path, m
 
     def remote(path: str):
         remote_misses.append(path)
-        return None
+        return
 
     try:
         for data in (minified, notes, db):

@@ -72,7 +72,7 @@ class TestLoginNous:
 
         def _capture(model_ids, **kwargs):
             seen["model_ids"] = list(model_ids)
-            return None
+            return
 
         monkeypatch.setattr(auth_mod, "_prompt_model_selection", _capture)
 

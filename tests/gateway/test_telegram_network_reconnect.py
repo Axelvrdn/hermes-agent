@@ -288,7 +288,7 @@ async def test_reconnect_stop_deadline_does_not_wait_for_cancel_cleanup(monkeypa
 
     async def _start_polling_with_same_lock(*args, **kwargs):
         async with lifecycle_lock:
-            return None
+            return
 
     mock_updater = MagicMock()
     mock_updater.running = True

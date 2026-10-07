@@ -34,7 +34,7 @@ class _FakeConn:
             outcome = outcomes.pop(0)
             if isinstance(outcome, Exception):
                 raise outcome
-        return None
+        return
 
     def count(self, prefix):
         prefix = prefix.upper()

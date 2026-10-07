@@ -156,18 +156,18 @@ class CronScheduler(ABC):
 
     def stop(self) -> None:
         """Optional eager teardown; stop_event is the primary signal."""
-        return None
+        return
 
     # Optional hooks for external providers — default-safe; keep NON-abstract.
 
     def on_jobs_changed(self) -> None:
         """After a successful store mutation; external providers reconcile. Built-in: no-op."""
-        return None
+        return
 
     def register_job(self, job: dict[str, Any]) -> None:
         """Register the external trigger for a newly persisted job (must complete before callers
         report it as scheduled). Built-in: no-op."""
-        return None
+        return
 
     def recover_interrupted(self) -> int:
         """Run profile-local attempt recovery for every provider lifecycle."""
@@ -238,7 +238,7 @@ class CronScheduler(ABC):
 
     def reconcile(self) -> None:
         """Converge the external registry toward jobs.json (desired state). Built-in: no-op."""
-        return None
+        return
 
 
 def provider_supports_force_fire(provider: Any) -> bool:

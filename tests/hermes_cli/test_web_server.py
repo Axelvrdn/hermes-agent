@@ -719,15 +719,15 @@ class TestWebServerEndpoints:
             # The served-profile probe also verifies the DEFAULT home's gateway identity; the
             # contract here is that the worker's OWN pid file is what the scoped rung reads.
             seen.setdefault("pid_paths", []).append(pid_path)
-            return None
+            return
 
         def _runtime(path=None):
             seen.setdefault("status_paths", []).append(path)
-            return None
+            return
 
         def _runtime_pid(runtime=None, *, expected_home=None):
             seen.setdefault("expected_homes", []).append(expected_home)
-            return None
+            return
 
         monkeypatch.setattr(_gw_status, "get_running_pid_cached", _pid)
         monkeypatch.setattr(_gw_status, "get_running_pid", _pid)

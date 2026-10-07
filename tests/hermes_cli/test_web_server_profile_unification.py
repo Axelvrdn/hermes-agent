@@ -391,7 +391,7 @@ class TestProfileScopedGateway:
             # /api/status?profile= now passes pid_path= explicitly (the TTL
             # cache would otherwise serve another profile's PID) — accept it.
             seen_homes.append(str(get_hermes_home()))
-            return None
+            return
 
         monkeypatch.setattr(_cfg_mod, "check_config_version", lambda: (1, 1))
         # get_status probes via the TTL-cached wrapper (PR #53511 salvage);

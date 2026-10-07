@@ -50,7 +50,7 @@ def _capture_provider_labels(config_home):
         # Only capture the top-level provider menu (the first call).
         if "labels" not in captured:
             captured["labels"] = list(labels)
-        return None  # cancel
+        return  # cancel
 
     with patch("hermes_cli.main._prompt_provider_choice",
                side_effect=_capture_and_cancel), \

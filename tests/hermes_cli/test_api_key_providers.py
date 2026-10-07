@@ -529,7 +529,7 @@ class TestZaiEndpointAutoDetect:
         def _never_called(*a, **kw):
             nonlocal probe_called
             probe_called = True
-            return None
+            return
 
         monkeypatch.setattr("hermes_cli.auth.detect_zai_endpoint", _never_called)
         creds = resolve_api_key_provider_credentials("zai")

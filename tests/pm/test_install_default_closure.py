@@ -34,7 +34,7 @@ def install_spy(monkeypatch):
 
     def fake_sync_venv(extras=None, **kwargs):
         calls["sync_extras"] = list(extras or [])
-        return None
+        return
 
     def fake_activate(**kwargs):
         calls["activated"].append(kwargs)

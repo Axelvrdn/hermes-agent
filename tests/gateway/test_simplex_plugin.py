@@ -307,7 +307,7 @@ async def test_standalone_send_missing_websockets(monkeypatch):
         def find_spec(name, path=None, target=None):
             if name == "websockets" or name.startswith("websockets."):
                 raise ImportError("websockets blocked for test")
-            return None
+            return
 
     sys.meta_path.insert(0, _Blocker())
     try:

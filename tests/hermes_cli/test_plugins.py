@@ -1476,7 +1476,7 @@ class TestForceReloadSymmetry:
             starts.append(1)
             if len(starts) == 1:
                 hold.wait(timeout=10.0)  # the first fire hangs for good
-            return None  # later fires decide: allow
+            return  # later fires decide: allow
 
         mgr = PluginManager()
         mgr._hook_timeout_suppression_seconds = 0.2
@@ -1544,7 +1544,7 @@ class TestForceReloadSymmetry:
 
         def hung_policy(**_kwargs):
             hold.wait(timeout=10.0)
-            return None
+            return
 
         mgr = PluginManager()
         mgr._hooks["pre_tool_call"] = [hung_policy]
@@ -1579,7 +1579,7 @@ class TestForceReloadSymmetry:
 
         def policy(**_kwargs):
             calls.append(1)
-            return None
+            return
 
         real_start = threading.Thread.start
         attempts = 0
@@ -1616,7 +1616,7 @@ class TestForceReloadSymmetry:
 
         def hung_policy(**_kwargs):
             hold.wait(timeout=10.0)
-            return None
+            return
 
         mgr = PluginManager()
         mgr._hooks["pre_tool_call"] = [hung_policy]

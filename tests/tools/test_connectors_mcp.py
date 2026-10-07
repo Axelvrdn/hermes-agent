@@ -174,7 +174,7 @@ def _answering(answer, *, session_id="s1", delay=0.01):
 
         if answer is not None:
             threading.Timer(delay, respond).start()
-        return None
+        return
 
     callback.seen = seen
     return callback

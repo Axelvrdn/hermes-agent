@@ -828,7 +828,7 @@ def test_tool_guard_forwards_the_thread_id(monkeypatch):
 
     def fake_authorize(platform_name, chat_id, thread_id=None):
         seen["args"] = (platform_name, chat_id, thread_id)
-        return None
+        return
 
     import gateway.relay.egress as eg
 
@@ -1358,7 +1358,7 @@ def test_tool_guard_forwards_the_dispatch_token(monkeypatch):
 
     def _spy(platform_name, chat_id, thread_id=None, *, native_token=smt._TOKEN_UNSET):
         seen["native_token"] = native_token
-        return None
+        return
 
     monkeypatch.setattr("gateway.relay.egress.authorize_relay_target", _spy)
     smt._authorize_relay_target("telegram", "@x", None, native_token="123:tok")
@@ -1373,7 +1373,7 @@ def test_a_caller_that_omits_the_snapshot_does_not_get_the_exemption(monkeypatch
 
     def _spy(platform_name, chat_id, thread_id=None, **kwargs):
         seen["kwargs"] = kwargs
-        return None
+        return
 
     monkeypatch.setattr("gateway.relay.egress.authorize_relay_target", _spy)
     smt._authorize_relay_target("telegram", "@x")

@@ -418,7 +418,7 @@ def _hermetic_environment(tmp_path, tmp_path_factory, monkeypatch):
 @pytest.fixture(autouse=True)
 def _isolate_hermes_home(_hermetic_environment):
     """Alias preserved for any test that yields this name explicitly."""
-    return None
+    return
 
 
 @pytest.fixture(autouse=True)
@@ -565,12 +565,12 @@ def _neutralize_webbrowser(monkeypatch):
 def _neutralize_macos_keychain_creds(request, monkeypatch):
     """Default Anthropic credential resolution away from the real macOS Keychain."""
     if request.node.get_closest_marker(_ALLOW_MACOS_KEYCHAIN_MARK):
-        return None
+        return
 
     try:
         _mod = importlib.import_module("agent.anthropic_credentials")
     except Exception:
-        return None
+        return
     monkeypatch.setattr(
         _mod,
         "_read_claude_code_credentials_from_keychain",
@@ -585,7 +585,7 @@ def _neutralize_macos_keychain_creds(request, monkeypatch):
         lambda *_args, **_kwargs: None,
         raising=False,
     )
-    return None
+    return
 
 
 # ── Kanban write guard (#69283) ─────────────────────────────────────────────

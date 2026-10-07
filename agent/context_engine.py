@@ -151,7 +151,7 @@ class ContextEngine(ABC):
         ``None`` when no provider response was reached (interrupt). ``kwargs`` may include
         ``turn_id``, ``task_id``, ``api_call_count``, ``interrupted``, ``failed``, ``turn_exit_reason``.
         """
-        return None
+        return
 
     def should_compress_preflight(self, messages: List[Dict[str, Any]]) -> bool:
         """Cheap rough check before the API call (no real token count yet); default skips."""

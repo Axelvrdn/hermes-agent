@@ -836,7 +836,7 @@ def test_promote_staged_desktop_app_refuses_an_unsigned_staging(tmp_path, monkey
 
     def fake_swap(dir_, st_):
         swapped.append(st_)
-        return None
+        return
 
     monkeypatch.setattr(main_desktop, "_desktop_macos_relaunchable_fixup", fake_fixup)
     monkeypatch.setattr(main_desktop, "_swap_staged_desktop_app", fake_swap)

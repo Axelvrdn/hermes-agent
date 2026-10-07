@@ -51,7 +51,7 @@ def two_homes(tmp_path, monkeypatch):
         entry = ((load_config_readonly().get("plugins") or {}).get("entries") or {}).get("stub") or {}
         seen.append({"home": get_hermes_home().name, "x": (entry.get("settings") or {}).get("x"),
                      "bound": get_hermes_home_override() is not None})
-        return None
+        return
 
     # Plugin managers are keyed per home: each profile loads its own copy of the plugin.
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override

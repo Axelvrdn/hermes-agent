@@ -21511,7 +21511,7 @@ def test_speak_text_with_barge_no_monitor_when_voice_mode_off(monkeypatch):
 
     def fake_listen(should_stop, capture=False, on_trigger=None, **_kw):
         listened.set()
-        return None
+        return
 
     done_speaking = threading.Event()
     monkeypatch.setitem(

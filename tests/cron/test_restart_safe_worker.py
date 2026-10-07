@@ -1021,7 +1021,7 @@ def test_dispatch_failure_notice_resolves_the_owning_profiles_home_channel(
 
     def _deliver(job, content, **_kw):
         resolved.append(delivery._env_home_target_chat_id("telegram"))
-        return None
+        return
 
     monkeypatch.setattr(scheduler, "_deliver_result", _deliver)
 

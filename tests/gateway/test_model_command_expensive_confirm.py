@@ -103,7 +103,7 @@ async def test_typed_model_expensive_confirm_once_applies_switch(tmp_path, monke
 
     async def _fake_request_slash_confirm(**kwargs):
         captured.update(kwargs)
-        return None  # buttons rendered
+        return  # buttons rendered
 
     runner._request_slash_confirm = _fake_request_slash_confirm
 

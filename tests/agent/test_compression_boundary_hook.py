@@ -231,7 +231,7 @@ class TestCompressionBoundaryHook:
             def _raise_on_compression(*args, **kwargs):
                 if kwargs.get("boundary_reason") == "compression":
                     raise RuntimeError("plugin exploded")
-                return None
+                return
             compressor.on_session_start.side_effect = _raise_on_compression
             agent.context_compressor = compressor
 

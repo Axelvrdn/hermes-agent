@@ -158,7 +158,7 @@ def test_engine_mutating_inputs_cannot_corrupt_persisted_state():
                     conversation_messages[0]["content"] = "TAMPERED"
             if isinstance(incoming_message, dict):
                 incoming_message["content"] = "TAMPERED"
-            return None
+            return
 
     agent = _agent_with(_Engine())
     _apply_context_engine_selection(

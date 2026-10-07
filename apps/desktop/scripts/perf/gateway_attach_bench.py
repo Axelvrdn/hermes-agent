@@ -254,7 +254,7 @@ def _report_surfaces() -> None:
         "  while a fresh session's agent is still building. A TUI user launches\n"
         "  once and the build finishes while they type."
     )
-    return None
+    return
 
 
 if __name__ == "__main__":

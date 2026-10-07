@@ -539,7 +539,7 @@ class TestSwrRefreshProfileScope:
             with seen:
                 refreshed_paths.append(str(model_catalog._cache_path()))
             release.wait(5)
-            return None
+            return
 
         set_multiplex_active(True)
         try:

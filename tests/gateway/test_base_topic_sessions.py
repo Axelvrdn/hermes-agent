@@ -40,7 +40,7 @@ class DummyTelegramAdapter(BasePlatformAdapter):
 
     async def send_typing(self, chat_id: str, metadata=None) -> None:
         self.typing.append({"chat_id": chat_id, "metadata": metadata})
-        return None
+        return
 
     async def stop_typing(self, chat_id: str, metadata=None) -> None:
         self.typing.append({"chat_id": chat_id, "stopped": True, "metadata": metadata})

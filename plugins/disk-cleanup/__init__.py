@@ -81,7 +81,7 @@ def _on_pre_tool_call(tool_name: str = "", args: Optional[Dict[str, Any]] = None
     fail CLOSED (a raise would block the tool), so an error records no absent path."""
     extractor = _PATH_EXTRACTORS.get(tool_name)
     if not tool_call_id or extractor is None or not isinstance(args, dict):
-        return None
+        return
     now = time.time()
     try:
         absent = frozenset(str(p) for p in (Path(s).expanduser() for s in extractor(args)) if not p.exists())
@@ -91,7 +91,7 @@ def _on_pre_tool_call(tool_name: str = "", args: Optional[Dict[str, Any]] = None
         for key in [k for k, (taken, _a) in _pre_call.items() if now - taken > _PRE_CALL_TTL_S]:
             del _pre_call[key]
         _pre_call[_pre_call_key(task_id, session_id, tool_call_id)] = (now, absent)
-    return None
+    return
 
 
 def _on_post_tool_call(tool_name: str = "", args: Optional[Dict[str, Any]] = None,

@@ -30,7 +30,7 @@ def stop_thinking_spinner(agent: Any, thinking_spinner: Any) -> None:
         thinking_spinner.stop("")
     if agent.thinking_callback:
         agent.thinking_callback("")
-    return None
+    return
 
 
 @dataclass

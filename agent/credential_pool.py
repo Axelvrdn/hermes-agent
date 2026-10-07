@@ -1635,7 +1635,7 @@ class CredentialPool(CredentialPoolAdminMixin, CredentialPoolModelCooldownMixin)
                 "message": f"rotated credential was not durably written to {store}: {exc}",
             },
         )
-        return None
+        return
 
     def _single_use_refresh_lock_timeout(self) -> float:
         """Configured refresh POST timeout plus margin, so a slow token endpoint cannot starve the flock."""
