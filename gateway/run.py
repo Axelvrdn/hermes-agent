@@ -2040,7 +2040,7 @@ def _bridge_auxiliary_config_to_env(_auxiliary_cfg: dict) -> None:
         for _entry in get_plugin_auxiliary_tasks():
             _aux_bridged_keys.add(_entry["key"])
     except Exception as _exc:
-        logger.debug("Suppressed exception: %s", _exc, exc_info=True)  # plugin discovery failure must not break startup; built-in bridging stays intact
+        logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)  # plugin discovery failure must not break startup; built-in bridging stays intact
     for _task_key in _aux_bridged_keys:
         _task_cfg = _auxiliary_cfg.get(_task_key, {})
         if not isinstance(_task_cfg, dict):

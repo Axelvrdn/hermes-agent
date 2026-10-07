@@ -429,8 +429,8 @@ def _quietly(fn) -> None:
     """Call *fn* (a ``close``/``stop`` bound method) swallowing errors — teardown must never raise."""
     try:
         fn()
-    except Exception as _exc:
-        logging.debug("Suppressed exception: %s", _exc, exc_info=True)
+    except Exception:  # noqa: S110 — logging's own teardown: logging back into mid-teardown logging machinery is re-entrancy Python core itself avoids
+        pass  # health: allow S110 -- logging teardown must never raise nor log into itself
 
 
 class _ManagedRotatingFileHandler(RotatingFileHandler):
