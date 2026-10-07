@@ -648,6 +648,7 @@ from hermes_cli.config_version_stamp import (  # noqa: E402,F401
 # Back-compat re-exports — :mod:`hermes_cli.personality` owns personality/overlay semantics.
 from hermes_cli.personality import (  # noqa: E402,F401
     NEUTRAL_PERSONALITY_NAMES as _NEUTRAL_PERSONALITY_NAMES,
+    resolve_ephemeral_system_prompt as resolve_ephemeral_system_prompt_from_config,
 )
 
 # ---- Config Migration System ----

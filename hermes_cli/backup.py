@@ -17,8 +17,26 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
+# Import order is load-bearing: hermes_constants/hermes_state_dbfile reach the stale-module
+# healer (hermes_cli.config's drop_stale_root_modules, via agent.auxiliary_client) BEFORE
+# hermes_cli.backup_restore binds new ``utils`` symbols (mkstemp_beside) — a pre-handoff
+# updater leaves the OLD utils cached. Keep this block first. See hermes_cli/stale_modules.py.
+from hermes_constants import (
+    LOCAL_RUNTIME_ROOT_DIRS,
+    _get_platform_default_hermes_home,
+    display_hermes_home,
+    get_default_hermes_root,
+    get_hermes_home,
+)
+from hermes_state_dbfile import RETIRED_GENERATION_DIR_SUFFIX
+from hermes_state_holders import read_only_db_uri
+
 from agent.provider_media import GENERATED_SUBDIR
 from hermes_cli.archive_safe import normalize_archive_parts
+from hermes_cli.backup_sqlite import _close_quietly, _safe_copy_db
+from hermes_cli.home_data_layout import PM_RUNTIME_ROOT_DIRS, profile_root_entry
+from hermes_cli.sizefmt import format_bytes as _format_size
+
 from hermes_cli.backup_restore import (
     _count_session_rows,
     _default_new_file_mode,
@@ -29,18 +47,6 @@ from hermes_cli.backup_restore import (
     _safe_restore_db,
     _validate_backup_zip,
 )
-from hermes_cli.backup_sqlite import _close_quietly, _safe_copy_db
-from hermes_cli.home_data_layout import PM_RUNTIME_ROOT_DIRS, profile_root_entry
-from hermes_cli.sizefmt import format_bytes as _format_size
-from hermes_constants import (
-    LOCAL_RUNTIME_ROOT_DIRS,
-    _get_platform_default_hermes_home,
-    display_hermes_home,
-    get_default_hermes_root,
-    get_hermes_home,
-)
-from hermes_state_dbfile import RETIRED_GENERATION_DIR_SUFFIX
-from hermes_state_holders import read_only_db_uri
 
 logger = logging.getLogger(__name__)
 

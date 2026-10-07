@@ -13,25 +13,25 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple
 
-import hermes_cli.auth as auth_mod
+# Import order is load-bearing: hermes_cli.config heals a stale ``sys.modules`` world
+# (``drop_stale_root_modules()`` at its import) BEFORE hermes_cli.auth → auth_oauth_grants
+# binds ``file_signature`` from ``utils``. A pre-handoff updater leaves the OLD ``utils``
+# cached. Keep hermes_cli.config ahead of hermes_cli.auth. See hermes_cli/stale_modules.py.
+from hermes_constants import OPENROUTER_BASE_URL
+from hermes_cli.config import load_env
+from agent.credential_pool_admin import CredentialPoolAdminMixin
+from agent.credential_pool_model_cooldowns import CredentialPoolModelCooldownMixin, model_cooldown_until
+from agent.retry_utils import reset_delay_from_message
+from agent.secret_scope import get_secret as _get_secret, get_secret_str
+from hermes_cli.auth_plugin_providers import plugin_refresh_hook
+from agent.credential_pool_plugin import apply_plugin_refresh_result, plugin_row_is_expiring, recover_failed_plugin_refresh
 from agent.credential_persistence import (
     fingerprint_secret_value,
     is_borrowed_credential_source,
     sanitize_borrowed_credential_payload,
 )
-from agent.credential_pool_admin import CredentialPoolAdminMixin
-from agent.credential_pool_model_cooldowns import (
-    CredentialPoolModelCooldownMixin,
-    model_cooldown_until,
-)
-from agent.credential_pool_plugin import (
-    apply_plugin_refresh_result,
-    plugin_row_is_expiring,
-    recover_failed_plugin_refresh,
-)
-from agent.retry_utils import reset_delay_from_message
-from agent.secret_scope import get_secret as _get_secret
-from agent.secret_scope import get_secret_str
+import hermes_cli.auth as auth_mod
+from hermes_cli.auth_oauth_grants import owned_profile_reads_root_state
 from hermes_cli.auth import (
     CODEX_ACCESS_TOKEN_REFRESH_SKEW_SECONDS,
     PROVIDER_REGISTRY,

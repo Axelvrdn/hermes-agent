@@ -7,19 +7,22 @@ import logging
 import math
 import os
 import re
-from dataclasses import asdict, dataclass, field, fields, is_dataclass
-from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from dataclasses import asdict, dataclass, field, fields, is_dataclass
+from typing import Dict, List, Optional, Any, Callable
+from enum import Enum
 
-from agent.secret_scope import current_secret_scope
-from agent.secret_scope import get_secret as _get_secret
+# Import order is load-bearing: hermes_cli.config heals a stale ``sys.modules`` world
+# (``drop_stale_root_modules()`` at its import; the pre-handoff updater left root modules
+# like ``utils`` cached from the OLD tree) BEFORE agent.secret_scope binds ``file_signature``
+# from ``utils``. Keep hermes_cli.config first. See hermes_cli/stale_modules.py.
+from hermes_cli.config import get_hermes_home
+from agent.secret_scope import current_secret_scope, get_secret as _get_secret
 from gateway.shutdown_watchdog import (
     DEFAULT_LOOP_WATCHDOG_INTERVAL_S,
     DEFAULT_LOOP_WATCHDOG_MAX_STRIKES,
     DEFAULT_LOOP_WATCHDOG_TIMEOUT_S,
 )
-from hermes_cli.config import get_hermes_home
 from utils import fast_safe_load, is_truthy_value
 
 logger = logging.getLogger(__name__)
