@@ -1676,8 +1676,9 @@ def _profile_bound_backend_pids(canon: str, profile_dir: Path) -> list[int]:
                     bound = bool(env_home) and Path(env_home).resolve() == resolved_dir
             if bound:
                 pids.append(pid)
-        except Exception:
-            continue  # NoSuchProcess / AccessDenied / ZombieProcess and anything else
+        except Exception as _exc:
+            logger.debug("Suppressed exception: %s", _exc, exc_info=True)  # NoSuchProcess / AccessDenied / ZombieProcess and anything else
+            continue
     return pids
 
 
