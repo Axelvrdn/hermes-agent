@@ -74,7 +74,6 @@ def test_buildable_pyproject_member_keeps_its_declared_name(tmp_path):
     """uv verifies a buildable member's [project].name against the package metadata
     its backend produces, so renaming it breaks the build ("Package metadata name
     … does not match given name"); only metadata-only members may be renamed."""
-    import tomllib
 
     from pm.workspace import _workspace_member
 

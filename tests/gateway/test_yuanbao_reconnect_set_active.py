@@ -7,7 +7,6 @@ The original ``_do_reconnect()`` succeeded but never called
 ``None`` until a full gateway restart.
 """
 
-import asyncio
 import os
 import sys
 from unittest.mock import AsyncMock, MagicMock, patch

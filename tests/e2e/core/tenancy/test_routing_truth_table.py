@@ -24,7 +24,6 @@ each carrying only that host's own key, and the answer the user sees came from t
 from __future__ import annotations
 
 import concurrent.futures as cf
-import copy
 import importlib.util
 from dataclasses import dataclass, field
 from pathlib import Path

@@ -8,15 +8,13 @@ b-tree/schema header bytes), not mocked cursor exceptions.
 
 from __future__ import annotations
 
-import shutil
 import sqlite3
-import sys
 import time
 from pathlib import Path
 
 import pytest
 
-from hermes_cli import session_recovery, session_schema_history
+from hermes_cli import session_recovery
 from hermes_cli.session_lost_and_found import (
     STUB_TITLE_PREFIX,
     _cli_recover_attempts,

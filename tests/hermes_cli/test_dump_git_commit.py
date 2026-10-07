@@ -12,7 +12,6 @@ project_root the running install cannot speak for).
 
 from pathlib import Path
 from subprocess import run as _run
-from unittest.mock import patch
 
 import pytest
 

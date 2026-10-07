@@ -6,7 +6,6 @@ installed there were ``command not found`` from the terminal tool (#111778).
 """
 
 import os
-import sys
 
 import pytest
 

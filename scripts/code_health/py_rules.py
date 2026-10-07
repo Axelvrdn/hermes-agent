@@ -712,8 +712,8 @@ def _reaped_after_kill(tree: ast.Module, kinds: dict[int, str]) -> set[int]:
     asyncio ``Process.wait()`` (it waits for the pipe transports too); both measured to hang."""
     reaped: set[int] = set()
     for node in ast.walk(tree):
-        for field in ("body", "orelse", "finalbody"):
-            stmts = getattr(node, field, None)
+        for attr in ("body", "orelse", "finalbody"):
+            stmts = getattr(node, attr, None)
             if not isinstance(stmts, list):
                 continue
             for first, second in zip(stmts, stmts[1:]):

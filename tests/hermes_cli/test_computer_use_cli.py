@@ -1,6 +1,5 @@
 """CLI coverage for the public Computer Use command surface."""
 
-import subprocess
 import sys
 from importlib import import_module
 from unittest.mock import Mock

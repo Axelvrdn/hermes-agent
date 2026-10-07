@@ -94,7 +94,6 @@ Path(os.environ["HERMES_HOME"]).mkdir(parents=True, exist_ok=True)
 (Path(os.environ["HERMES_HOME"]) / "config.yaml").write_text(json.dumps(config))
 from agent.transports.chat_completions import ChatCompletionsTransport
 from hermes_cli.config import get_compatible_custom_providers, load_config
-from hermes_cli.config_providers import get_custom_provider_context_length
 from providers import get_provider_profile
 from run_agent import AIAgent
 

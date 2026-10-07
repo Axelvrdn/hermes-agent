@@ -23,8 +23,6 @@ import subprocess
 import sys
 import tempfile
 import threading
-import time
-import unicodedata
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
@@ -650,11 +648,6 @@ from hermes_cli.config_version_stamp import (  # noqa: E402,F401
 # Back-compat re-exports — :mod:`hermes_cli.personality` owns personality/overlay semantics.
 from hermes_cli.personality import (  # noqa: E402,F401
     NEUTRAL_PERSONALITY_NAMES as _NEUTRAL_PERSONALITY_NAMES,
-)
-from hermes_cli.personality import prompt_text as _prompt_text
-from hermes_cli.personality import render_personality_prompt
-from hermes_cli.personality import (
-    resolve_ephemeral_system_prompt as resolve_ephemeral_system_prompt_from_config,
 )
 
 # ---- Config Migration System ----

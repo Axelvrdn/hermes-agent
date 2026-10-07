@@ -3,7 +3,6 @@
 import asyncio
 import contextlib
 import logging
-import os
 import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -19,7 +18,7 @@ from hermes_cli.config import (
 )
 from hermes_cli.mcp_security import validate_mcp_server_entry
 from hermes_constants import display_hermes_home
-from tools.mcp_tool_common import _env_ref_name, mcp_server_enabled
+from tools.mcp_tool_common import mcp_server_enabled
 from tools.mcp_tool_config import _ENV_VAR_PATTERN
 
 logger = logging.getLogger(__name__)

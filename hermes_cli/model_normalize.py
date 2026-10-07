@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import re
 from typing import Optional
 
 # First hyphen-delimited token of a bare model name → vendor slug used by aggregator APIs

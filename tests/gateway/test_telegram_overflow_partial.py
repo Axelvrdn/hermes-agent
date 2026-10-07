@@ -6,8 +6,6 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from gateway.config import PlatformConfig
-from gateway.platforms.base import SendResult
-from gateway.stream_consumer import GatewayStreamConsumer
 from plugins.platforms.telegram.adapter import TelegramAdapter
 
 

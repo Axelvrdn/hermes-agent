@@ -34,7 +34,6 @@ from hermes_cli.dashboard_auth.cookies import SESSION_AT_COOKIE, SESSION_RT_COOK
 from hermes_cli.dashboard_auth.login_page import render_login_html
 from hermes_cli.dashboard_auth.routes import (
     _PW_RATE_MAX_ATTEMPTS,
-    _PW_RATE_MAX_BUCKETS,
     _reset_password_rate_limit,
 )
 from hermes_cli.web_server_lifecycle import _dashboard_forwarded_allow_ips

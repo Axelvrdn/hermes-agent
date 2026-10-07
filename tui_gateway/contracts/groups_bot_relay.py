@@ -9,7 +9,7 @@ Handlers: ``tui_gateway/methods_groups.py``, ``tui_gateway/methods_bot_relay.py`
 
 from __future__ import annotations
 
-from .base import JsonValue, Params, Result, WireEnum
+from .base import JsonValue, Params, Result
 from .common import OkResult, OpenModel, ProfileParams
 from .registry import method
 from .server_requests import ApprovalChoice

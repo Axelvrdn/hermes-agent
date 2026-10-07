@@ -3,7 +3,6 @@ and honors display.suppress_warning_notifications under the parent's turn snapsh
 relayed subagent.complete event are never gated."""
 import json
 
-import pytest
 
 
 def configure(home, setting, monkeypatch):

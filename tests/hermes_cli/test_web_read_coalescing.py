@@ -3,7 +3,6 @@ import asyncio
 import threading
 from functools import wraps
 
-import pytest
 
 
 async def wait_until(predicate):

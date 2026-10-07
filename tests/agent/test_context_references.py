@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import subprocess
 from pathlib import Path
 from unittest.mock import patch
@@ -210,7 +209,6 @@ def test_file_line_range_is_applied_before_oversized_fallback(tmp_path: Path):
 
 
 def test_oversized_file_refused_without_full_read(tmp_path: Path, monkeypatch):
-    from agent import context_references
     from agent.context_references import preprocess_context_references
 
     payload = tmp_path / "huge.txt"

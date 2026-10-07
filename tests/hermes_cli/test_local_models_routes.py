@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import io
-import json
 import os
 import time
 from pathlib import Path
@@ -353,7 +352,6 @@ def test_download_short_of_server_length_errors_and_cleans_up(client, monkeypatc
 
 
 def test_download_already_downloaded_short_circuits(client, monkeypatch):
-    from hermes_cli.local_runtime.bootstrap import models_dir
     from hermes_cli.local_runtime.catalog import CATALOG, select_variant
     from hermes_cli.local_runtime.estimator import HardwareBudget
 

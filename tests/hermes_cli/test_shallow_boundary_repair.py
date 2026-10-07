@@ -11,7 +11,6 @@ boundaries; the updater calls it before the prune at both call sites.
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
 
 import pytest
 

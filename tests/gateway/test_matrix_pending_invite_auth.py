@@ -10,7 +10,6 @@ must apply the same gate, reading the inviter from the stripped invite
 state.
 """
 
-import time
 from unittest.mock import AsyncMock
 
 import pytest

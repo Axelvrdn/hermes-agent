@@ -18,7 +18,6 @@ import textwrap
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from gateway.config import Platform, PlatformConfig
 from gateway.run_plugin_rewire import GatewayPluginRewireMixin

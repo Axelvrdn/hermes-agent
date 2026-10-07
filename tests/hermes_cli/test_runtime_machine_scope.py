@@ -49,7 +49,6 @@ def test_all_runtime_state_follows_runtimes_root(profile_home):
     under runtimes_root() — one resolver, so profile-scoping bugs cannot
     come back one file at a time."""
     root, profile = profile_home
-    import hermes_cli.local_runtime.binaries as binaries
     from hermes_cli.local_runtime.growth import window_overrides_path
     from hermes_cli.local_runtime.presets import read_preset_decisions
 

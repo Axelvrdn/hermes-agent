@@ -13,7 +13,7 @@ from fastapi import APIRouter, HTTPException
 from starlette.concurrency import run_in_threadpool
 
 from agent.model_metadata import is_local_endpoint
-from hermes_cli.web_deps import LateState, late
+from hermes_cli.web_deps import late
 from hermes_cli.web_models import MoaConfigPayload, MoaModelSlot, ModelAssignment
 from hermes_cli.web_routers._common import (
     _CONFIG_MUTATION_LOCK,

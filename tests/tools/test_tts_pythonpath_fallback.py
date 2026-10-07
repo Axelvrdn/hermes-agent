@@ -15,7 +15,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pm.extras import ensure_import as _pm_ensure_import
 
 
 @pytest.fixture(autouse=True)

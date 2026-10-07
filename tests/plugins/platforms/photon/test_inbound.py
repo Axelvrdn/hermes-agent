@@ -5,7 +5,6 @@ Node sidecar or binding ports.
 """
 from __future__ import annotations
 
-import asyncio
 import base64
 import json
 from pathlib import Path

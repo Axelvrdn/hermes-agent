@@ -1,6 +1,5 @@
 """Historical main imports must not restart pre-PM updater work after a swap."""
 
-from pathlib import Path
 
 import pytest
 

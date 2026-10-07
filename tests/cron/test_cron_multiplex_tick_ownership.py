@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import cron.scheduler as sched
 from hermes_constants import (
-    hermes_home_key,
     reset_hermes_home_override,
     set_hermes_home_override,
 )

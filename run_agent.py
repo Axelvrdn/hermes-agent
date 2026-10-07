@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 import os
 import re
 import threading
-import time
 import uuid
 import warnings
 from datetime import datetime
@@ -148,10 +147,9 @@ from hermes_cli.observability.shared_metrics_harness import (
     record_guardrail_warnings,
 )
 from model_tools import get_toolset_for_tool
-from tools.browser_tool_lifecycle import cleanup_browser
 from tools.connectors.turn import agent_connection_surface, scoped_connection_surface
 from tools.interrupt import set_interrupt as _set_interrupt
-from tools.terminal_tool_lifecycle import cleanup_vm, get_active_env
+from tools.terminal_tool_lifecycle import get_active_env
 from utils import (
     base_url_host_matches,
     base_url_hostname,

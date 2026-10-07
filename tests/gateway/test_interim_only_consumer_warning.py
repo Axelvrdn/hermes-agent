@@ -13,7 +13,6 @@ lost its delivery confirmation\", so it logged a guaranteed-false-positive
 import asyncio
 from types import SimpleNamespace
 
-import pytest
 
 from gateway.run_turn import GatewayTurnMixin
 

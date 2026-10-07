@@ -25,7 +25,6 @@ pytestmark = pytest.mark.skipif(not _MCP_AVAILABLE, reason="MCP SDK not installe
 
 def _run_stdio_with_mocks(os_name: str, attach_mock) -> None:
     """Drive _run_stdio's pre-spawn path with the transport mocked out."""
-    import tools.mcp_tool_transport as transport_mod
 
     mock_session = MagicMock()
     mock_session.initialize = AsyncMock()

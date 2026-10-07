@@ -1,8 +1,5 @@
 """Tests for _resolve_path_for_task() — TERMINAL_CWD-aware path resolution in file_tools_paths."""
 
-import os
-from pathlib import Path
-from types import SimpleNamespace
 
 
 class TestResolvePath:

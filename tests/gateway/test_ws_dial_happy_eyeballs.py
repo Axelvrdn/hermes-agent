@@ -9,7 +9,6 @@ sync connects. Each Hermes ``websockets.connect`` call site must pass the RFC 83
 
 from __future__ import annotations
 
-import asyncio
 from unittest.mock import MagicMock, patch
 
 import pytest

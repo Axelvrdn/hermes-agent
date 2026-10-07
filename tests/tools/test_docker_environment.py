@@ -2,8 +2,6 @@ import logging
 import os
 import re
 import subprocess
-import tempfile
-from io import StringIO
 
 import pytest
 

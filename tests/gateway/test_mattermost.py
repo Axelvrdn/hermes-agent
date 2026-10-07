@@ -657,7 +657,6 @@ class TestMultiplexProfileScope:
             set_multiplex_active,
             set_secret_scope,
         )
-        from plugins.platforms.mattermost.adapter import MattermostAdapter
 
         monkeypatch.setenv("MATTERMOST_REQUIRE_MENTION", "true")
         monkeypatch.delenv("MATTERMOST_FREE_RESPONSE_CHANNELS", raising=False)

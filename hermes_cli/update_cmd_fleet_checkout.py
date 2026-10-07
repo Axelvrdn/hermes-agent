@@ -8,7 +8,6 @@ the question these readers ask, so the live fleet can be held to the code on dis
 from __future__ import annotations
 
 import logging
-import subprocess
 
 from hermes_cli._subprocess_compat import NO_LAZY_FETCH_ENV, noninteractive_git_env
 

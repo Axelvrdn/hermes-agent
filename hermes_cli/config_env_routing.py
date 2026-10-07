@@ -17,7 +17,6 @@ lifecycle in ``hermes_cli.credential_lifecycle``.
 
 import re
 import sys
-from pathlib import Path
 from typing import Optional
 
 # Environment-variable shape: what every shell and ``os.getenv`` caller treats as a variable name.

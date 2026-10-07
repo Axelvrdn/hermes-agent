@@ -1,6 +1,5 @@
 """Real-Git rollback contracts for checkpoints containing uncaptured gitlinks."""
 import os
-import shutil
 import subprocess
 
 import pytest

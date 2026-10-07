@@ -15,7 +15,6 @@ This test asserts the live POSIX state (the Linux CI lane).
 
 from __future__ import annotations
 
-import sys
 
 import pytest
 

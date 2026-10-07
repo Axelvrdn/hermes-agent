@@ -70,7 +70,6 @@ threading.Thread(target=server.serve_forever, daemon=True).start()
 from openai import OpenAI
 
 from agent.auxiliary_client import _CodexCompletionsAdapter
-from agent.codex_responses_adapter import _preflight_codex_input_items
 
 client = OpenAI(
     api_key="fixture",

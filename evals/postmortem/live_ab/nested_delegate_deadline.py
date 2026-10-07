@@ -4,8 +4,6 @@
 real result. Uses glm-5.3 via Nous for cost. Deadline shortened via config to keep the run short."""
 import json
 import os
-import re
-import subprocess
 import sys
 import time
 

@@ -23,7 +23,6 @@ import pytest
 import hermes_cli.update_cmd_fleet as fleet
 import hermes_cli.update_host_obligation as host_obligation
 import hermes_cli.update_restart_recovery as recovery
-from hermes_cli import update_cmd
 
 SHA = "a" * 40
 

@@ -1,6 +1,5 @@
 """Regression tests for local terminal initial cwd normalization."""
 
-from pathlib import Path
 
 import pytest
 

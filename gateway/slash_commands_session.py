@@ -21,7 +21,6 @@ from gateway.platforms.base import EphemeralReply
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.session import (
     SessionSource,
-    build_session_key,
     is_shared_multi_user_session,
 )
 from gateway.session_transcript import TranscriptReadError

@@ -10,7 +10,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import NoReturn, Optional
+from typing import NoReturn
 
 
 def _die(msg: str, code: int = 1, *, err: bool = False) -> NoReturn:

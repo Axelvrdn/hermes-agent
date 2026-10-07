@@ -122,7 +122,6 @@ class TestConsolidationProposalSurfaces:
     near-limit denial path drops both the requested update and the proposal, silently (#105921)."""
 
     def _store(self, tmp_path, monkeypatch):
-        import json as _json
 
         from tools.memory_tool_store import MemoryStore
 

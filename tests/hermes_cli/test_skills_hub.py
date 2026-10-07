@@ -4,13 +4,10 @@ from unittest.mock import patch
 import pytest
 from rich.console import Console
 
-from cli import ChatConsole
 from hermes_cli.skills_hub import (
     do_check,
-    do_install,
     do_list,
     do_update,
-    handle_skills_slash,
 )
 
 
@@ -295,7 +292,6 @@ def test_inspect_reuses_one_ssrf_safe_client_for_metadata_and_bundle(monkeypatch
     """A preview's (and an install's) sequential resolver calls must share one guarded connection pool."""
     import hermes_cli.skills_hub as cli_hub
     import tools.skills_hub as hub
-    import tools.skills_hub_clawhub as clawhub
     import tools.skills_hub_search as search
     from tools.skills_hub_models import SkillBundle, SkillMeta
 

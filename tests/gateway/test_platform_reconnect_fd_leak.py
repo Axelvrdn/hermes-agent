@@ -23,7 +23,6 @@ from __future__ import annotations
 import asyncio
 import threading
 import time
-from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -31,7 +30,7 @@ import pytest
 from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.platforms.api_server import APIServerAdapter, ResponseStore
 from gateway.platforms.base import BasePlatformAdapter, SendResult
-from gateway.run import GatewayRunner, _dispose_unused_adapter
+from gateway.run import GatewayRunner
 
 
 def _make_runner() -> GatewayRunner:

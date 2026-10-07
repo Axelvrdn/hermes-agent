@@ -7,7 +7,6 @@ repo's host-native rule: never fake the platform).
 
 import os
 import stat
-import sys
 import tempfile
 import unittest
 from pathlib import Path

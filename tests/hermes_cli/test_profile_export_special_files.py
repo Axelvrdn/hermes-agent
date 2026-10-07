@@ -10,7 +10,6 @@ the whole archive.
 
 import os
 import socket
-import sys
 import tarfile
 
 import pytest

@@ -13,8 +13,6 @@ import threading
 from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-import httpx
-import pytest
 
 from agent import account_usage
 from agent.account_usage import fetch_account_usage

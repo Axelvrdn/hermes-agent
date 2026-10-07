@@ -1,5 +1,4 @@
 """Every verified R2 upload lands in the GitHub step summary, with its public URL."""
-import json
 
 import pytest
 

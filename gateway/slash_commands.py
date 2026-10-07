@@ -6,7 +6,6 @@ the one-off commands.  run.py helpers are imported lazily."""
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import dataclasses
 import inspect
 import logging
@@ -398,7 +397,6 @@ class GatewaySlashCommandsMixin(
             return False
 
         def _sub():
-            from hermes_cli import kanban_db as _kb
             from hermes_cli import kanban_db_connect as _kbc
             from hermes_cli import kanban_db_notify as _kbn
             conn = _kbc.connect(board=requested_board)

@@ -17,7 +17,6 @@ from deep inside ``_init_schema`` — naming no file and no fix.
 import os
 import sqlite3
 import stat
-import sys
 from pathlib import Path
 
 import pytest

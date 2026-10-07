@@ -3,10 +3,9 @@
 import asyncio
 import unittest
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
 
 from plugins.platforms.feishu.feishu_comment import (
-    _ALLOWED_NOTICE_TYPES,
     _resolve_model_and_runtime,
     _sanitize_comment_text,
     parse_drive_comment_event,

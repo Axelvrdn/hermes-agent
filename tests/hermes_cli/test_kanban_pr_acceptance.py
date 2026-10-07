@@ -138,7 +138,6 @@ def test_acceptance_runs_gh_as_the_assignee_profile(tmp_path, monkeypatch):
     """The gh child env carries the assignee's own GH credentials (its .env),
     never the ambient/launch residue, and an invisible repo is classified
     `auth` naming the repository — not a retryable `infra` failure."""
-    from pathlib import Path
 
     launch_home = tmp_path / "home"
     launch_home.mkdir(parents=True)

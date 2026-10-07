@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Self
 
-from tests.e2e.core.chaos._helpers import REPO_ROOT, python_exe
+from tests.e2e.core.chaos._helpers import python_exe
 
 
 class RpcError(AssertionError):

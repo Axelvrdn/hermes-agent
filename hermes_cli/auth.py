@@ -385,7 +385,6 @@ BUILTIN_PROVIDER_IDS = frozenset(PROVIDER_REGISTRY)
 # Plugin profiles (plugins/model-providers/<name>/) are mirrored into PROVIDER_REGISTRY with the
 # auth_type they declare; the mirror lives in the sibling so it can be re-run after discovery.
 from hermes_cli.auth_plugin_providers import (  # noqa: E402
-    get_plugin_oauth_auth_status,
     sync_plugin_provider_registry,
 )
 from hermes_cli.auth_plugin_providers import registry_lookup as _registry_lookup
@@ -1165,11 +1164,11 @@ def _merge_pool_row_generation(
     def _take_from_disk(fields: Iterable[str]) -> None:
         # Absent-on-disk fields are popped, not set to None: a None would make the
         # UPDATE-only root merge see a changed row and force a spurious save.
-        for field in fields:
-            if field in disk_entry:
-                merged[field] = disk_entry[field]
+        for fld in fields:
+            if fld in disk_entry:
+                merged[fld] = disk_entry[fld]
             else:
-                merged.pop(field, None)
+                merged.pop(fld, None)
 
     _take_from_disk(_POOL_TOKEN_GENERATION_FIELDS)
     if not status_cleared and entry.get("last_status") == STATUS_DEAD:

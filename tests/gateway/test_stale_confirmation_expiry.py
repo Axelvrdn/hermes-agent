@@ -18,11 +18,7 @@ tail) by handling the user-side confirmation tail.
 import time
 from typing import Dict, List
 
-import pytest
 
-from agent.replay_cleanup import (
-    is_dangerous_confirmation as _is_dangerous_confirmation,
-)
 from agent.replay_cleanup import (
     strip_stale_dangerous_confirmations as _strip_stale_dangerous_confirmations,
 )

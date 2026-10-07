@@ -9,7 +9,6 @@ that ``GIT_TERMINAL_PROMPT=0`` blocks with "could not read Username ... terminal
 
 import base64
 import subprocess
-import sys
 
 import pytest
 

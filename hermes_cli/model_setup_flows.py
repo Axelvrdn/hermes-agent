@@ -14,8 +14,6 @@ import logging
 import os
 
 from hermes_cli.config import clear_model_endpoint_credentials
-from hermes_cli.model_setup_flows_azure import _model_flow_azure_foundry
-from hermes_cli.model_setup_flows_bedrock import _model_flow_bedrock
 from hermes_cli.model_setup_flows_common import (
     _HTTP,
     _activate_provider_model,
@@ -36,10 +34,6 @@ from hermes_cli.model_setup_flows_common import (
     _run_login,
     _say,
     _show_curated,
-)
-from hermes_cli.model_setup_flows_custom import (
-    _model_flow_custom,
-    _model_flow_named_custom,
 )
 
 

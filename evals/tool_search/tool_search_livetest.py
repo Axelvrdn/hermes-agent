@@ -30,7 +30,7 @@ import tempfile
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 # Scenario D reads this file back; lives in the temp dir, never a hard-coded /tmp.
 FIXTURE_NOTES = Path(tempfile.gettempdir()) / "livetest" / "notes.txt"

@@ -209,7 +209,6 @@ def test_cache_keys_project_as_third_dimension(tmp_path):
 def test_reload_invalidates_every_identity_slot(tmp_path):
     """reload_skills() clears the whole multi-slot dict: a skill edit can affect
     any (platform, home, project) identity, so every cached view must rescan."""
-    import os
 
     import agent.skill_commands as sc_mod
     from agent.skill_commands import reload_skills

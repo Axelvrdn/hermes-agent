@@ -6,9 +6,7 @@ the helpers/handlers via ``from cli import ...`` — cli.py imports this module 
 
 from __future__ import annotations
 
-import argparse
 import atexit
-import io
 import json
 import logging
 import os
@@ -18,16 +16,14 @@ import tempfile
 import threading
 import time
 import uuid
-from contextlib import redirect_stdout, suppress
+from contextlib import suppress
 from datetime import datetime
-from io import StringIO
 from urllib.parse import urlparse
 
 from rich import box as rich_box
 from rich.markup import escape as _escape
 from rich.panel import Panel
 
-from agent.i18n import t
 from agent.message_metadata import message_identity
 from agent.turn_context import extract_api_content_sidecar
 from hermes_cli.browser_connect import (

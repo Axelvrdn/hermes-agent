@@ -6,9 +6,7 @@ when ``~/.bash_profile`` contained ``exec /bin/zsh -l``.
 """
 
 import os
-import shutil
 import subprocess
-import time
 from unittest.mock import patch
 
 import pytest

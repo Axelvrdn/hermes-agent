@@ -635,9 +635,9 @@ def _extract_text_from_slack_attachments(attachments: list) -> str:
         if att.get("is_msg_unfurl"):
             continue
         got: list[str] = [str(att[key]) for key in ("pretext", "title", "text") if att.get(key)]
-        for field in att.get("fields", []) or []:
-            if isinstance(field, dict):
-                got += [str(field[k]) for k in ("title", "value") if field.get(k)]
+        for att_field in att.get("fields", []) or []:
+            if isinstance(att_field, dict):
+                got += [str(att_field[k]) for k in ("title", "value") if att_field.get(k)]
         block_text = _extract_text_from_slack_blocks(att.get("blocks")) if att.get("blocks") else ""
         if block_text:
             got.append(block_text)

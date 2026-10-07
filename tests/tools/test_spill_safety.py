@@ -9,7 +9,6 @@ writes byte-identical.
 
 import os
 import stat
-import sys
 
 import pytest
 

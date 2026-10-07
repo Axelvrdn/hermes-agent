@@ -630,7 +630,6 @@ def test_declined_INITIAL_draft_is_not_retried_as_a_plain_send():
     through to `_first_send`. Measured through the real adapter + real
     StreamTransportMixin: ops were ['draft', 'send'].
     """
-    from gateway.platforms.base import SendResult
     from gateway.stream_consumer_transport import StreamTransportMixin
 
     adapter, connector = _code_only_adapter()

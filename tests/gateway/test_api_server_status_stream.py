@@ -13,7 +13,6 @@ from tests.gateway.test_api_server_reasoning_stream import (
     _fake_writer_env,  # noqa: F401
     _frames,
     _stub_create_agent_runtime,
-    adapter,
 )
 
 _LADDER = "⏳ Provider temporarily unavailable — retrying automatically in 15s (cycle 1/5); cancel the request to stop"

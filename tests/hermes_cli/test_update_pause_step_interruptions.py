@@ -12,7 +12,6 @@ leaves one file half-written and sends the updater SIGINT, as a terminal's Ctrl-
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 

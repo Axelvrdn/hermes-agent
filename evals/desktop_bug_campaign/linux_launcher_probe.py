@@ -1,7 +1,6 @@
 """Real Linux venv/XDG I/O probe; help-launch is NOT a native UI proof."""
 import argparse
 import json
-import os
 import shlex
 import subprocess
 import sys

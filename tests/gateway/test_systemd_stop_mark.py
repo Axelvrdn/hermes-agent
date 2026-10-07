@@ -7,7 +7,6 @@ exit-code``). The generated unit now marks the stop via ``ExecStop=`` first.
 
 from __future__ import annotations
 
-import pytest
 
 from gateway import systemd_stop_mark
 

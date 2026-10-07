@@ -6,7 +6,6 @@ behavior in _handle_message. Previously, the busy path skipped the auth check en
 allowing unauthorized users to inject text into another user's running session.
 """
 import sys
-import time
 import types
 from unittest.mock import AsyncMock, MagicMock
 

@@ -14,7 +14,6 @@ no auto-registered ``custom_providers`` entry.
 """
 
 import importlib
-import sys
 
 import pytest
 

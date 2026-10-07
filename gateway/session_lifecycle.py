@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Optional
 from hermes_state_ids import new_session_id
 
 if TYPE_CHECKING:
-    from gateway.session import SessionEntry, SessionSource
+    from gateway.session import SessionEntry
 
 # Log-record parity with the origin module.
 logger = logging.getLogger("gateway.session")

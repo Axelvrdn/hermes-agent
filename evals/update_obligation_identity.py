@@ -11,7 +11,6 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-import time
 
 repo = pathlib.Path(sys.argv[1])
 sys.path.insert(0, str(repo))

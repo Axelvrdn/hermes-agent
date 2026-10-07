@@ -1,7 +1,6 @@
 """Inline-shell expansion is trust-scoped (#63307): community hub installs never
 auto-execute `` !`cmd` `` snippets, mirroring the hub scan's INSTALL_POLICY trust
 gate — a ``--force`` or pre-scanner community install must not re-arm them."""
-import json
 from unittest.mock import patch
 
 from agent.skill_preprocessing import preprocess_skill_content

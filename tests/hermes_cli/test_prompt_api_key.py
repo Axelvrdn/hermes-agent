@@ -31,7 +31,6 @@ def _pconfig(name="deepseek"):
 
 def _run_prompt(existing_key, choice, new_key="", provider_id="", pconfig_name="deepseek"):
     """Invoke _prompt_api_key with mocked input()/getpass() responses."""
-    from hermes_cli import main as m
 
     pconfig = _pconfig(pconfig_name)
     with patch("builtins.input", return_value=choice), \
@@ -40,7 +39,6 @@ def _run_prompt(existing_key, choice, new_key="", provider_id="", pconfig_name="
 
 
 def test_pool_only_key_does_not_offer_or_execute_clear(profile_env, monkeypatch, capsys):
-    from hermes_cli import main as m
 
     pconfig = _pconfig("deepseek")
     prompts = []

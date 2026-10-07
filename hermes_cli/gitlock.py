@@ -14,8 +14,6 @@ from pathlib import Path
 from typing import Callable, Iterable, List, Optional, Self
 
 from hermes_cli._subprocess_compat import (
-    NO_LAZY_FETCH_ENV,
-    bounded_probe_run,
     noninteractive_git_env,
     windows_hide_flags,
 )

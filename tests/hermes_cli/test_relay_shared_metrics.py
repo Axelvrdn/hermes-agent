@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import multiprocessing as mp
-import os
 import shutil
 import sqlite3
 import stat

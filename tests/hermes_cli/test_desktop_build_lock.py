@@ -202,7 +202,6 @@ def test_gui_releases_lock_after_build_failure(tmp_path, monkeypatch, capsys):
 def test_update_path_waits_for_a_held_lock(tmp_path, monkeypatch, capsys):
     """`hermes update`'s desktop rebuild queues behind a holder instead of failing the update."""
     from hermes_cli import source_build as source_build_mod
-    from hermes_cli.main_desktop import _refresh_installed_desktop_apps
 
     root = _checkout(tmp_path)
 

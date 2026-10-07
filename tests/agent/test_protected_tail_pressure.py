@@ -19,8 +19,6 @@ from unittest.mock import patch
 import pytest
 
 from agent.context_compressor import (
-    _MAX_TAIL_MESSAGE_FLOOR,
-    _PRESSURE_KEEP_RECENT_MESSAGES,
     ContextCompressor,
     _tool_content_has_images,
 )

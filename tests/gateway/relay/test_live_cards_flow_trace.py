@@ -5,12 +5,8 @@ op sequence the connector sees (finding #4/#5 forensics — Alice canary).
 Run: python -m pytest tests/gateway/relay/test_live_cards_flow_trace.py -q -s
 """
 import asyncio
-import sys
-import types
 
-import pytest
 
-from gateway.relay.adapter import RelayAdapter
 
 
 class TraceTransport:

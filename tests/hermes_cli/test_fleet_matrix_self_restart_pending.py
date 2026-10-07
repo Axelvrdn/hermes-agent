@@ -10,7 +10,6 @@ import io
 import json
 import os
 
-import pytest
 
 import hermes_cli.update_cmd_fleet as fleet_mod
 import hermes_cli.update_cmd_fleet_verify as fleet_verify

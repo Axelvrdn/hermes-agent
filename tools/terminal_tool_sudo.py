@@ -9,7 +9,6 @@ import os
 import platform
 import re
 import shlex
-import subprocess
 import sys
 import threading
 import time

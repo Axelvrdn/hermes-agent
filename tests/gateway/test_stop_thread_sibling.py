@@ -12,7 +12,7 @@ import pytest
 
 from gateway.platforms.base import Platform
 from gateway.platforms.event import MessageEvent, MessageType
-from gateway.run import _AGENT_PENDING_SENTINEL, _INTERRUPT_REASON_STOP, GatewayRunner
+from gateway.run import GatewayRunner
 from gateway.session import SessionSource, build_session_key
 
 

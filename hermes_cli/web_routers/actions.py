@@ -9,7 +9,6 @@ import contextlib
 import logging
 import re
 import secrets
-import subprocess
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional

@@ -5,7 +5,6 @@ import json
 import os
 import sys
 import tempfile
-import threading
 import time
 
 root = sys.argv[1]; sys.path.insert(0, root)
@@ -31,7 +30,6 @@ def fake_run_child(self, idx, task, child):
 dd._Batch.run_child = fake_run_child
 
 # Background dispatch requires an async-capable session; emulate a CLI session key.
-import tools.async_delegation as ad
 
 t0 = time.time()
 out = dt.delegate_task(# Grouped: siblings share ONE final result, so a dead sibling would otherwise wait for the slowest. (Ungrouped tasks are

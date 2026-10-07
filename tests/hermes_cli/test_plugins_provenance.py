@@ -14,10 +14,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from hermes_cli.plugins_provenance import (
-    Provenance,
     ProvenanceClass,
     plugins_provenance,
 )

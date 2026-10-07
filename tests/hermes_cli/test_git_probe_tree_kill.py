@@ -13,13 +13,11 @@ membership or survival semantics.
 
 import os
 import subprocess
-import sys
 import textwrap
 import time
 
 import pytest
 
-from hermes_cli import _subprocess_compat
 from hermes_cli._subprocess_compat import bounded_git_probe, kill_process_tree
 
 pytestmark = pytest.mark.platforms("posix")  # POSIX process-group semantics

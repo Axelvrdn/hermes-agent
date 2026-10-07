@@ -5,7 +5,6 @@ from __future__ import annotations
 import threading
 import time
 from collections import deque
-from pathlib import Path
 
 import pytest
 from fastapi import FastAPI

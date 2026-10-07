@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from agent.compression_marker import _COMPRESSION_MARKER_RE
 from agent.lsp.reporter import (
-    MAX_PER_FILE,
     format_diagnostic,
     report_for_file,
     truncate,

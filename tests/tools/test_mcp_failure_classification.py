@@ -15,8 +15,6 @@ import pytest
 
 from tools.mcp_tool import MCPServerTask
 from tools.mcp_tool_errors import (
-    InvalidMcpUrlError,
-    NonMcpEndpointError,
     _auth_error_detail,
     _classify_mcp_failure,
     _mcp_call_failed_message,

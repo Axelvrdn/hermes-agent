@@ -14,7 +14,6 @@ runs after every directory creation in the home-init path).
 """
 from __future__ import annotations
 
-import sys
 from unittest.mock import patch
 
 import pytest

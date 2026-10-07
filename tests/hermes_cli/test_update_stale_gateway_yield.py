@@ -110,7 +110,6 @@ def test_update_signals_proven_stale_gateway_survivor(cron_home, tmp_path):
 def test_verify_fleet_hands_stale_rows_to_survivor_signalling(monkeypatch):
     """The wiring: a stale fleet matrix reaches signal_stale_fleet_survivors; the restart stays owed."""
     import hermes_cli.update_cmd as update_cmd
-    import hermes_cli.update_cmd_fleet as fleet_mod
     import hermes_cli.update_cmd_fleet_verify as fleet_verify
     import hermes_cli.update_cmd_stale_survivors as surv
     from hermes_cli.update_cmd_fleet import _GatewayRestartOutcome

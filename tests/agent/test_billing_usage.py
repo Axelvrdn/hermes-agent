@@ -12,8 +12,6 @@ from typing import Optional
 import pytest
 
 from agent.billing_usage import (
-    LOW_BALANCE_THRESHOLD_USD,
-    UsageBar,
     usage_model_from_account,
 )
 

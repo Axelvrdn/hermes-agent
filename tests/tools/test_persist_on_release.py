@@ -6,7 +6,7 @@ Background processes are killed from three agent-lifecycle paths — the release
 all three, while an operator-driven stop still reaches it.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -124,7 +124,6 @@ def test_list_sessions_flags_persist_on_release(registry):
 def test_spawn_local_stamps_persist_on_release(registry, monkeypatch, tmp_path):
     """spawn_local(persist_on_release=True) stamps the flag onto the minted
     ProcessSession so every kill filter can see it (#41225)."""
-    import os
 
     from tools import terminal_tool_sudo
 

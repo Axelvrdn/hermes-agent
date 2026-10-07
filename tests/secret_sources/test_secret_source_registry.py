@@ -10,7 +10,6 @@ against the bundled Bitwarden source.
 from __future__ import annotations
 
 import sys
-import time
 from pathlib import Path
 
 import pytest
@@ -27,7 +26,6 @@ from agent.secret_sources.base import (  # noqa: E402
     SecretSource,
     is_valid_env_name,
     run_secret_cli,
-    scrub_ansi,
 )
 from agent.secret_sources.bitwarden import BitwardenSource  # noqa: E402
 from tests.secret_sources.conformance import SecretSourceConformance  # noqa: E402

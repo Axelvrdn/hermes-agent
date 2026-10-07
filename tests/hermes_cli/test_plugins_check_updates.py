@@ -17,7 +17,6 @@ import pytest
 
 from hermes_cli.plugins_provenance import Provenance, ProvenanceClass
 from hermes_cli.plugins_updates import (
-    CheckResult,
     check_pip_plugins,
     check_provenanced,
     parse_feed_yml,

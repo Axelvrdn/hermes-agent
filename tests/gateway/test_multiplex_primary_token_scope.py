@@ -14,7 +14,6 @@ this suite locks the complementary primary-path fixes:
 """
 from __future__ import annotations
 
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -332,7 +331,7 @@ class TestReconnectDropsEmptyToken:
     @pytest.mark.asyncio
     async def test_empty_token_removed_from_queue(self):
         from gateway.config import Platform, PlatformConfig
-        from gateway.run import GatewayRunner, _platform_has_bot_credential
+        from gateway.run import _platform_has_bot_credential
 
         # Unit-level: the branch condition the watcher uses.
         platform = Platform.TELEGRAM

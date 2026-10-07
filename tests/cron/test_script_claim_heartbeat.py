@@ -3,7 +3,7 @@
 import contextlib
 import threading
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -77,7 +77,6 @@ def test_script_termination_reaps_descendants(tmp_path, monkeypatch, trigger, to
 
 def test_no_agent_forwards_cancel_event_to_script_runner(monkeypatch):
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     cancel = threading.Event()
     observed = []
@@ -271,7 +270,6 @@ def test_run_one_job_refreshes_fire_claim_in_profile_store(tmp_path, monkeypatch
     """The shared execute/save/deliver body keeps its durable fire claim alive."""
     import cron.jobs as jobs
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     profile_home = tmp_path / "profile"
     profile_home.mkdir()
@@ -309,7 +307,6 @@ def test_run_one_job_refreshes_fire_claim_in_profile_store(tmp_path, monkeypatch
 def test_lost_fire_claim_stops_stale_delivery(monkeypatch):
     """A runner that loses its durable owner must not deliver its stale result."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     lost_seen = threading.Event()
     heartbeat_calls = 0
@@ -481,7 +478,6 @@ def test_self_removal_followed_by_replacement_record_stays_fail_closed(tmp_path,
 def test_initially_lost_fire_claim_finishes_execution_without_running(monkeypatch):
     """A stale claimed snapshot rejected before body entry must close its ledger row."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     run_body = MagicMock(return_value=True)
     finish = MagicMock()
@@ -507,7 +503,6 @@ def test_initially_lost_fire_claim_finishes_execution_without_running(monkeypatc
 def test_initially_lost_claim_does_not_run_when_ledger_write_fails(monkeypatch):
     """A ledger I/O error cannot turn a confirmed ownership loss into execution."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     run_body = MagicMock(return_value=True)
     job = {
@@ -530,7 +525,6 @@ def test_initially_lost_claim_does_not_run_when_ledger_write_fails(monkeypatch):
 def test_initial_heartbeat_exception_does_not_start_execution(monkeypatch):
     """Unconfirmed initial ownership must fail closed before any side effect."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     run_body = MagicMock(return_value=True)
     finish = MagicMock()
@@ -560,7 +554,6 @@ def test_initial_heartbeat_exception_does_not_start_execution(monkeypatch):
 def test_heartbeat_thread_start_failure_does_not_start_execution(monkeypatch):
     """A claimed job cannot run when no renewal monitor protects its lease."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     run_body = MagicMock(return_value=True)
     finish = MagicMock()
@@ -595,7 +588,6 @@ def test_repeated_heartbeat_errors_cancel_after_bounded_grace(monkeypatch):
     count: on a slow host the first wake can land after the grace, so cancellation after a single
     failed renewal is correct (#111471). Assert the contract, never a minimum attempt count."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     last_confirmed_at = []
     cancellation_after = []
@@ -639,7 +631,6 @@ def test_repeated_heartbeat_errors_cancel_after_bounded_grace(monkeypatch):
 def test_terminal_owner_cas_failure_marks_ledger_ownership_lost(monkeypatch):
     """A replacement owner cannot leave the stale ledger recorded as success."""
     import cron.scheduler as scheduler
-    from cron import scheduler_script as sched_script
 
     @contextlib.contextmanager
     def owned_fence(*_args, **_kwargs):

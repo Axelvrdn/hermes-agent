@@ -7,7 +7,6 @@ without depending on a downloaded pet.
 
 from __future__ import annotations
 
-import io
 
 import pytest
 
@@ -163,9 +162,9 @@ def test_trims_trailing_blank_frames(tmp_path):
     assert r.frame_count("review") == 5
 
     # Every stepped frame is non-empty — no blank flash for the trimmed states.
-    for state in ("wave", "jump", "review"):
-        for i in range(r.frame_count(state)):
-            assert r.frame(state, i), f"{state}[{i}] rendered blank"
+    for st in ("wave", "jump", "review"):
+        for i in range(r.frame_count(st)):
+            assert r.frame(st, i), f"{st}[{i}] rendered blank"
 
     counts = render.state_frame_counts(str(sprite))
     assert counts == {

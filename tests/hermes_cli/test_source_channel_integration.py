@@ -3,7 +3,6 @@ import argparse
 import json
 import subprocess
 from copy import deepcopy
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -368,7 +367,6 @@ def test_retirement_refuses_to_downgrade_newer_source(
 def test_tagless_zip_apply_uses_pinned_source_archive(source, monkeypatch, dirty):
     import urllib.request
 
-    from hermes_cli import update_cmd_zip
 
     name = "zip-preview"
     set_install_channel(name, source.root)

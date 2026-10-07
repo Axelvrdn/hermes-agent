@@ -21,7 +21,6 @@ the parent's next command is misread as that child (#90782, #71941).
 import os
 import re
 import subprocess
-import sys
 
 import pytest
 

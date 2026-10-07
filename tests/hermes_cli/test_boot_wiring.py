@@ -9,7 +9,6 @@ invocation (``hermes_cli.main.main()``, ``gateway.run`` housekeeping).
 
 from __future__ import annotations
 
-import time
 
 import pytest
 

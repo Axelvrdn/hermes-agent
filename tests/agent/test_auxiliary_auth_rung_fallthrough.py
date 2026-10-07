@@ -29,12 +29,10 @@ local endpoint, with only the credential sources stubbed (the Nous portal accoun
 probe and the runtime-credential fetch are external boundaries).
 """
 
-import asyncio
 import json
 import socket
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Optional
 
 import pytest
 

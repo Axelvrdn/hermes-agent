@@ -12,7 +12,6 @@ from pathlib import Path
 import pytest
 
 from hermes_cli.update_channel import (
-    CHANNEL_CANARY,
     CHANNEL_MAIN,
     CHANNEL_STABLE,
     default_channel,

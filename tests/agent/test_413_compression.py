@@ -13,7 +13,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import run_agent
 from agent.context_compressor import _DB_PERSISTED_MARKER, SUMMARY_PREFIX
 from agent.conversation_compression import COMPACTION_DONE_STATUS, COMPACTION_STATUS
 from hermes_state import SessionDB

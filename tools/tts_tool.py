@@ -17,7 +17,6 @@ import json
 import logging
 import os
 import re
-import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -51,13 +50,7 @@ from tools.tts_tool_delivery import (
     _resolve_max_text_length,
     _split_text_for_tts,
 )
-from tools.tts_tool_local import (
-    _generate_kittentts,
-    _generate_neutts,
-    _generate_piper_tts,
-)
 from tools.tts_tool_openai import (
-    _generate_deepinfra_tts,
     _generate_openai_tts,
     _has_openai_audio_backend,
 )
@@ -68,11 +61,6 @@ from tools.tts_tool_plugins import (
 )
 from tools.tts_tool_providers import (
     _generate_edge_tts,
-    _generate_elevenlabs,
-    _generate_gemini_tts,
-    _generate_minimax_tts,
-    _generate_mistral_tts,
-    _generate_xai_tts,
     _resolve_minimax_tts_runtime,
 )
 

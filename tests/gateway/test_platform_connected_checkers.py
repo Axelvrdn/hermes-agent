@@ -5,9 +5,7 @@ platforms with bespoke auth requirements.
 """
 
 import logging
-from unittest.mock import MagicMock
 
-import pytest
 
 from gateway.config import (
     _BUILTIN_PLATFORM_VALUES,

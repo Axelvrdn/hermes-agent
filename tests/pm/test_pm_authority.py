@@ -22,7 +22,6 @@ from pm.store import Store, current_target, tree_digest
 from tests.pm._fixtures import make_tar
 from tests.pm._fixtures import served as served
 from tests.pm.test_pm_core import FakeTool  # noqa: F401
-from tests.pm.test_pm_core import pm_env as core_env
 
 
 @pytest.fixture

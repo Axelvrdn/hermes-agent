@@ -86,7 +86,6 @@ def test_connected_deny_all_reports_posture(client):
 
 
 def test_connected_with_allowlist_reports_allowlist(client, monkeypatch):
-    from hermes_constants import get_hermes_home
 
     monkeypatch.setenv("TELEGRAM_ALLOWED_USERS", "42, 43")
     payload = _test(client)

@@ -136,7 +136,6 @@ def run(out_path: str) -> dict:
 
     agent._compress_context = counting  # type: ignore[method-assign]
     from agent.image_token_cost import (
-        current_image_token_cost,
         learned_image_token_cost,
     )
     history: list = []

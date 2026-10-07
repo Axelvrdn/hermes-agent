@@ -58,7 +58,6 @@ def _ensure_discord_mock():
 
 _ensure_discord_mock()
 
-from gateway.platforms.event import MessageType  # noqa: E402
 from plugins.platforms.discord.adapter import DiscordAdapter  # noqa: E402
 
 # Minimal valid image / audio / PDF bytes so the cache_*_from_bytes

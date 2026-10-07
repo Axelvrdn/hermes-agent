@@ -3,7 +3,6 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
-import pytest
 
 from gateway.config import GatewayConfig, Platform, PlatformConfig
 from gateway.session import SessionSource
@@ -322,7 +321,6 @@ def test_extra_allowed_users_not_consulted_without_registry_declaration(monkeypa
     """The fallback is gated on the platform's registry entry declaring
     allowed_users_env — a platform without that contract keeps the previous
     behavior even if its extra happens to hold an allowed_users key."""
-    from tests.gateway.test_buzz_adapter import SELF_PUBKEY
 
     runner = _make_buzz_multiplex_runner(
         monkeypatch, extra={"allowed_users": ["someone"]}

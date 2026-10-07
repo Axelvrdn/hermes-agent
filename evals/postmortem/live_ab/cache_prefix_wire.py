@@ -3,7 +3,6 @@ message prefix between call N and N+1. If Hermes strips prior-turn thinking, cal
 will NOT equal call N's messages (prefix divergence) even though the conversation only grew.
 Also reports cache hit per call. Cost: a handful of calls."""
 import copy
-import json
 import logging
 import os
 import re

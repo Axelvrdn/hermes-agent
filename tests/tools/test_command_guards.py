@@ -1,7 +1,7 @@
 """Tests for check_all_command_guards() — the combined floor + dangerous-command guard."""
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 

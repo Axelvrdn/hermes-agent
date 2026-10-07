@@ -1,8 +1,5 @@
 """App Installer descriptors bind explicit package facts to explicit feed URLs."""
-import subprocess
-import sys
 import xml.etree.ElementTree as ET
-from pathlib import Path
 
 import pytest
 

@@ -7,7 +7,6 @@ import logging
 import threading
 from typing import Optional
 
-from tools.mcp_tool_common import _core
 
 logger = logging.getLogger("tools.mcp_tool")
 

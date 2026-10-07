@@ -18,20 +18,14 @@ from decimal import Decimal
 
 import pytest
 
-import agent.billing_view as bv
 import hermes_cli.nous_billing as nb
 from agent.billing_view import (
     AutoReload,
-    AutoReloadCard,
-    BillingState,
     CardInfo,
     MonthlyCap,
-    PaymentMethodInfo,
     billing_state_from_payload,
     build_billing_state,
-    format_money,
     new_idempotency_key,
-    parse_money,
     validate_charge_amount,
 )
 from hermes_cli.nous_billing import (

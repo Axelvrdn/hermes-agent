@@ -21,7 +21,6 @@ import sqlite3
 import subprocess
 import sys
 
-import pytest
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 VERIFIER = os.path.join(_HERE, "..", "install", "e2e-assets", "verify-user-state.py")

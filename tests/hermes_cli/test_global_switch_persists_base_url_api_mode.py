@@ -13,9 +13,7 @@ canonical ``hermes_cli.model_switch.persist_model_selection`` shape shared by ev
 surface.
 """
 
-from unittest.mock import MagicMock, patch
 
-import pytest
 
 from hermes_cli.model_switch import ModelSwitchResult
 

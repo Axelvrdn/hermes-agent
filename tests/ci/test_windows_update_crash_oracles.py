@@ -4,7 +4,6 @@ update was what the cell claims."""
 
 import importlib
 import inspect
-import os
 import shlex
 import subprocess
 import sys
@@ -12,7 +11,6 @@ import time
 from pathlib import Path
 from types import SimpleNamespace
 
-import psutil
 import pytest
 from _pytest.mark.expression import Expression
 

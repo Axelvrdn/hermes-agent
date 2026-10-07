@@ -10,7 +10,6 @@ fix, ``_make_profile_busy_session_handler`` (the busy path) stamped
 fell through to ``os.environ`` and read the wrong profile's
 ``FEISHU_ALLOWED_USERS``.
 """
-from pathlib import Path
 
 import pytest
 

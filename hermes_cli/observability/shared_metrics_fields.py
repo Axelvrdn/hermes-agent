@@ -13,9 +13,7 @@ from . import shared_metrics_catalog as catalog
 from . import shared_metrics_contract as contract
 from .shared_metrics_contract import (
     MODEL_IDENTIFIER_MAX_LENGTH,
-    PROVIDER_IDENTIFIER_MAX_LENGTH,
     _bucket,
-    _metric_identifier,
     _norm,
 )
 from .shared_metrics_signals import user_created_skill

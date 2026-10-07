@@ -13,9 +13,7 @@ from hermes_cli.dashboard_auth.cookies import (
     SESSION_RT_COOKIE,
     clear_pkce_cookie,
     clear_session_cookies,
-    read_pkce_cookie,
     read_session_cookies,
-    read_session_provider,
     set_pkce_cookie,
     set_session_cookies,
 )
@@ -373,7 +371,7 @@ def test_pkce_callback_works_when_next_query_includes_encoded_path():
     import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from urllib.parse import quote, unquote
+    from urllib.parse import quote
 
     from conftest_dashboard_auth import StubAuthProvider  # type: ignore
 

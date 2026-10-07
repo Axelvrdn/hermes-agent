@@ -7,14 +7,11 @@ kanban_create(board="other-board") / kanban_show(board="other-board")
 silently landed on the caller's own board instead of the requested one —
 exactly the failure mode that stalled t_8239fc9c / t_09015699.
 """
-import os
-import tempfile
 from pathlib import Path
 
 import pytest
 
 from hermes_cli import kanban_db as kb
-from hermes_constants import get_default_hermes_root
 
 
 @pytest.fixture(autouse=True)

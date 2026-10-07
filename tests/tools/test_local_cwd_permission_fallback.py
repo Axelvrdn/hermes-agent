@@ -10,7 +10,6 @@ not enter. The fix checks X_OK and falls back to the nearest usable ancestor.
 
 import logging
 import os
-import sys
 import tempfile
 
 import pytest

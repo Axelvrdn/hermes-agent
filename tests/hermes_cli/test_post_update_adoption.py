@@ -7,7 +7,6 @@ Anything else — untouched. A read-only tree fails soft (nix-like layouts).
 import json
 import os
 import stat
-import sys
 
 import pytest
 

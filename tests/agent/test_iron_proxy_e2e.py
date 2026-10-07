@@ -19,7 +19,6 @@ import subprocess
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from pathlib import Path
 from typing import Optional
 
 import pytest

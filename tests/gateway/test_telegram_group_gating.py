@@ -1,8 +1,7 @@
 import asyncio
-import json
 import os
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock
 
 import pytest
 

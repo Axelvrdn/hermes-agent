@@ -3,14 +3,12 @@ import json
 import os
 import shlex
 import subprocess
-import textwrap
 from pathlib import Path
 
 import pytest
 
 from tests.pm.activation_support import (
     bash,
-    fake_store,
     posix,
     powershell,
     sync_checkout,

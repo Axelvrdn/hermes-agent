@@ -35,7 +35,6 @@ can add one small exercise function + a ``pytest.param`` to ``SURFACES``.
 """
 
 import os
-import sqlite3
 from pathlib import Path
 
 import pytest

@@ -44,8 +44,7 @@ from tools.terminal_tool_backends import (
     _VERCEL_SANDBOX_DEFAULT_CWD,
     _check_plugin_requirements,
     _record_unavailable_reason,  # noqa: F401 — re-exported
-    terminal_backend_unavailable_reason,
-)
+    )
 from tools.terminal_tool_config import (
     _is_container_backend,
     _is_host_cwd,
@@ -67,11 +66,10 @@ from tools.terminal_tool_lifecycle import (
     _create_configured_env,
     _evict_environment_for_task,
     cleanup_all_environments,
-    ensure_task_env,
 )
 
 # display_hermes_home imported lazily at call site (stale-module safety during hermes update)
-from tools.tool_backend_helpers import coerce_modal_mode, managed_nous_tools_enabled
+from tools.tool_backend_helpers import coerce_modal_mode
 
 
 def _safe_parse_import_env(name: str, default: Any, converter, type_label: str):

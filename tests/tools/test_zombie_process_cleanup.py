@@ -10,7 +10,6 @@ import subprocess
 import sys
 import threading
 
-import pytest
 
 
 def _spawn_sleep(seconds: float = 60) -> subprocess.Popen:

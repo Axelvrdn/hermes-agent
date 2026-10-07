@@ -546,7 +546,6 @@ async def _pty_channel_marker_state(
 async def pty_ws(ws: WebSocket) -> None:
     from hermes_cli.web_server_chat import (
         _PTY_BRIDGE_AVAILABLE,
-        _RESIZE_RE,
         PTY_REGISTRY,
         PtyBridge,
         PtyUnavailableError,

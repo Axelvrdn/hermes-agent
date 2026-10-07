@@ -2730,7 +2730,6 @@ class TelegramAdapter(TelegramHeldInboundMixin, BasePlatformAdapter):
             telegram_menu_max_commands,
         )
         from telegram import (
-            BotCommand,
             BotCommandScopeAllGroupChats,
             BotCommandScopeAllPrivateChats,
             BotCommandScopeDefault,
@@ -7306,7 +7305,6 @@ async def _standalone_send(pconfig, chat_id, message, *, thread_id=None, media_f
 
 def interactive_setup() -> None:
     """Configure Telegram credentials and allowlist via the CLI setup wizard (lazy import)."""
-    from hermes_cli import setup as _setup_mod
     setup_platforms._setup_telegram()
 
 

@@ -1,6 +1,5 @@
 """Regression tests for #53009: chat -q final response erased by exit-summary clear."""
 
-import os
 from types import SimpleNamespace
 
 import pytest

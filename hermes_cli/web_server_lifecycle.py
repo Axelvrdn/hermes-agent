@@ -1,7 +1,6 @@
 """Serve-process lifecycle: parent death watchdog, port-conflict preflight, READY announcement, browser open, trusted proxies.
 """
 
-import asyncio
 import ipaddress
 import logging
 import os

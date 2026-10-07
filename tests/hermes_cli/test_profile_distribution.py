@@ -14,7 +14,6 @@ import json
 import shutil
 import stat
 import subprocess
-import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace

@@ -633,7 +633,6 @@ def resolve_codex_runtime_credentials(
     from hermes_cli.auth import (
         _auth_store_lock,
         _codex_access_token_is_expiring,
-        _probe_codex_quota_restored,
         _read_codex_tokens,
     )
     read_error: Optional[AuthError] = None
@@ -767,7 +766,7 @@ def _probe_codex_quota_restored(
     Probes are throttled per access token (module-local cache) so the hot selection path can fire
     this freely.
     """
-    from hermes_cli.auth import _codex_quota_probe_cache, _nonempty_str
+    from hermes_cli.auth import _codex_quota_probe_cache
     token = _stripped(access_token)
     # Real Codex access tokens are JWTs. Refusing to probe non-JWT tokens avoids pointless
     # network calls for corrupt/placeholder entries (and keeps hermetic test fixtures offline).

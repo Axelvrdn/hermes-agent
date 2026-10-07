@@ -22,7 +22,6 @@ contract that real turn-finals still absorb into their stream.
 """
 
 import asyncio
-import json
 
 import pytest
 

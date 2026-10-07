@@ -11,7 +11,6 @@ import threading
 import tracemalloc
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from types import SimpleNamespace
 
 ROOT = Path(sys.argv[1]).resolve()
 RECEIPT = Path(sys.argv[2]).resolve()
@@ -149,7 +148,7 @@ import gateway.run as gateway_run
 from gateway.config import GatewayConfig, Platform
 from gateway.platforms.event import MessageEvent
 from gateway.run import GatewayRunner
-from gateway.session import AsyncSessionStore, SessionSource, SessionStore
+from gateway.session import SessionSource
 from hermes_state import SessionDB
 from run_agent import AIAgent
 

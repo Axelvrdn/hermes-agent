@@ -14,7 +14,6 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from xml.sax.saxutils import escape
 
 
 def _gw():

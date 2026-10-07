@@ -1,6 +1,5 @@
 import argparse
 import importlib.metadata
-import json
 import logging
 import os
 from types import SimpleNamespace

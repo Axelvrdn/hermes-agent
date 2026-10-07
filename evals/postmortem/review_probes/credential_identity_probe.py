@@ -55,7 +55,6 @@ url=f'http://127.0.0.1:{server.server_port}/v1'
 os.environ['NOUS_INFERENCE_BASE_URL']=url
 os.environ['HERMES_SHARED_AUTH_DIR']=str(home/'shared')
 import agent.client_lifecycle as lifecycle
-import hermes_cli.auth as auth
 from agent.turn_iteration_prep import prepare_iteration
 from run_agent import AIAgent
 

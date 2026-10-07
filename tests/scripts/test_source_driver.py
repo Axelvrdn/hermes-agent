@@ -1,6 +1,5 @@
 """Cheap source-driver checks: real shells, disposable installs, no installer."""
 import hashlib
-import json
 import os
 import runpy
 import shutil

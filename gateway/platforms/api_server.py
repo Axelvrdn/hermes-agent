@@ -337,7 +337,6 @@ def _resolve_request_runtime_agent_kwargs(provider: str, target_model: Optional[
     """gateway.run._resolve_runtime_agent_kwargs() for an explicit provider/model, so an API
     caller uses the same authenticated provider catalog without mutating config.yaml."""
     from hermes_cli.runtime_provider import (
-        _get_model_config,
         format_runtime_provider_error,
         resolve_runtime_provider,
     )

@@ -1,5 +1,4 @@
 """Diagnostic-only wakes execute while their unsolicited free-form reply stays private."""
-import asyncio
 from unittest.mock import AsyncMock
 
 import pytest

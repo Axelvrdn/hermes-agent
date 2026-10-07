@@ -17,7 +17,6 @@ before ``main()``.
 The fix routes through ``save_env_value`` so the same gates fire.
 """
 
-import os
 
 import pytest
 

@@ -11,7 +11,6 @@ import operator
 import os
 import re
 import shutil
-import subprocess
 import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone

@@ -10,7 +10,6 @@ from gateway.run import (
     GatewayRunner,
     _is_control_interrupt_message,
 )
-from gateway.run_inbound import GatewayInboundMixin
 
 KEY = "agent:main:telegram:dm:106963"
 

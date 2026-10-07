@@ -17,7 +17,6 @@ Two behavior contracts are pinned here:
 """
 
 import os
-import sys
 import threading
 
 import pytest

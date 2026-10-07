@@ -1,6 +1,5 @@
 """Tests for tools/file_operations.py — deny list, result dataclasses, helpers."""
 
-import base64
 import os
 import shutil
 import subprocess

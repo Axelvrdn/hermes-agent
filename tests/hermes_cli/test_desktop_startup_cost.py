@@ -3,9 +3,7 @@
 Source freshness itself is the compiler's receipt (scripts/build/freshness.mjs), covered in tests-js."""
 
 import argparse
-import os
 import subprocess
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest

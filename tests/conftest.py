@@ -1371,7 +1371,6 @@ def _capture_real_hermes_root() -> list[Path]:
     because hardcoded restatements hit it; the custom one because
     deployment-shaped tests (Docker /opt/data) must not touch the operator's
     real custom root either."""
-    import platform
 
     roots: list[Path] = []
     try:

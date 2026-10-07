@@ -433,7 +433,6 @@ class DiscordMediaMixin:
         """Send an image natively as a Discord file attachment."""
         from plugins.platforms.discord.adapter import (
             _image_ext_from_content_type,
-            _prompt_target_id,
         )
 
         return await self._send_url_media(

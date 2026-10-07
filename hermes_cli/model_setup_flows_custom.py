@@ -8,7 +8,6 @@ tests patch them at call time). Prompt strings and config write order are behavi
 from __future__ import annotations
 
 import contextlib
-import os
 import urllib.parse
 
 from hermes_cli.cli_output import line_input

@@ -8,7 +8,6 @@ import json
 import os
 import shutil
 import subprocess
-import sys
 import time
 from pathlib import Path
 
@@ -21,7 +20,6 @@ from hermes_cli.boot_bootstrap import (
     current_install_identity,
     needs_bootstrap,
     read_git_head,
-    read_last_known,
     record_path,
     run_boot_bootstrap,
 )

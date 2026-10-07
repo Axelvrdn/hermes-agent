@@ -8,11 +8,9 @@ import sys
 
 import pytest
 
-from scripts.build.agent import plant_surfaces
-from scripts.build.inputs import project_entries
 from scripts.build.launchers import posix_launcher
 from scripts.bundles.desktop import release_version
-from scripts.bundles.payload import relativize_links, snapshot
+from scripts.bundles.payload import relativize_links
 
 
 def test_release_version_comes_from_the_release_identity_not_the_checkout(tmp_path):

@@ -13,11 +13,10 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
 import sys
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, get_args, get_type_hints
+from typing import get_args, get_type_hints
 
 from pydantic import TypeAdapter
 from pydantic.json_schema import GenerateJsonSchema

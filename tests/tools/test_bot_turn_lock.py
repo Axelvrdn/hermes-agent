@@ -16,7 +16,6 @@ except ImportError:  # pragma: no cover - Windows
 import json
 import os
 import subprocess
-import sys
 import threading
 import time
 

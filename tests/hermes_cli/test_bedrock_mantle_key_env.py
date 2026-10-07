@@ -9,7 +9,6 @@ These tests lock the seam the bug lived in: what the wizard writes, and what the
 runtime resolver then makes of it.
 """
 
-import os
 
 import hermes_cli.runtime_provider as rp
 import hermes_yaml as yaml

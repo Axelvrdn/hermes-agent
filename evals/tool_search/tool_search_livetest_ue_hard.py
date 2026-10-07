@@ -25,7 +25,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
 import shutil
 import sys
 import time
@@ -39,7 +38,7 @@ sys.path.insert(0, str(_WORKTREE_ROOT))
 sys.path.insert(0, str(_THIS_DIR))
 
 import tool_search_livetest as base
-from tool_search_livetest_ue import _SANITIZE, load_epic_tools  # reuse loader
+from tool_search_livetest_ue import load_epic_tools  # reuse loader
 
 N_REPS = int(os.environ.get("TS_BENCH_REPS", "2"))
 

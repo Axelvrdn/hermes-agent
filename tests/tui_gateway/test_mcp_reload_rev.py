@@ -23,7 +23,6 @@ import threading
 
 import pytest
 
-import tools.mcp_tool as mcp_tool
 import tui_gateway.server as srv
 from tools import mcp_tool_discovery as _mcp_discovery
 from tools import mcp_tool_lifecycle as _mcp_lifecycle

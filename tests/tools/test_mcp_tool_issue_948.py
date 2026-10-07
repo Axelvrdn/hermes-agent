@@ -7,13 +7,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from tools.mcp_tool import _MCP_AVAILABLE, MCPServerTask
-from tools.mcp_tool_common import _prepend_path
 from tools.mcp_tool_config import (
     _first_user_which_hit,
     _resolve_stdio_command,
     _which_with_config_pathext,
 )
-from tools.mcp_tool_errors import _format_connect_error
 
 # Ensure the mcp module symbols exist for patching even when the SDK isn't installed
 if not _MCP_AVAILABLE:

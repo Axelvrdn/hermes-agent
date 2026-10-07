@@ -6,7 +6,6 @@ in its secret scope / home override. Every knob cron reads from ``.env`` and eve
 builds must resolve exactly as it would under a standalone ``hermes -p <name> gateway run``.
 """
 
-from pathlib import Path
 
 import pytest
 

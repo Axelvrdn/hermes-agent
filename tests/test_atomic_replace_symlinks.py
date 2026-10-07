@@ -32,7 +32,6 @@ from utils import (
     atomic_json_write,
     atomic_replace,
     atomic_roundtrip_yaml_save,
-    atomic_roundtrip_yaml_update,
     atomic_yaml_write,
 )
 

@@ -7,7 +7,6 @@ import os
 import pytest
 
 from agent.context_compressor import (
-    _MERGED_SUMMARY_DELIMITER,
     _SUMMARY_END_MARKER,
     HISTORICAL_TASK_HEADING,
     SUMMARY_PREFIX,

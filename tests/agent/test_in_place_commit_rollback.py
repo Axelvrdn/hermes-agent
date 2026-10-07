@@ -154,7 +154,6 @@ class TestInPlaceCommitFailureRollback:
         """The rollback must not fire when the commit landed (#98450 guard)."""
         from agent.context_compressor import _DB_PERSISTED_MARKER
         from agent.conversation_compression import compress_context
-        from hermes_state import SessionDB
 
         with _session_db("committed.db") as db:
             sid = "20260831_120001_committed"

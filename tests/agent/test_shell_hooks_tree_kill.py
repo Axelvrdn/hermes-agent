@@ -14,7 +14,6 @@ semantics cannot be mocked.
 
 import os
 import signal
-import sys
 import textwrap
 import threading
 import time

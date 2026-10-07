@@ -4,7 +4,6 @@ Healthy/damaged real-store activation belongs to tests/pm/test_startup_activatio
 """
 from unittest.mock import AsyncMock
 
-import pytest
 
 
 def test_gateway_main_survives_pm_failure(monkeypatch, tmp_path):

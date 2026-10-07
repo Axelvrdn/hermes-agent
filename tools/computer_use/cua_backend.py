@@ -14,7 +14,6 @@ import os
 import subprocess
 import sys
 import uuid
-from pathlib import PureWindowsPath
 from typing import Any, Dict, List, Optional, Tuple
 
 from hermes_cli._subprocess_compat import windows_hide_flags

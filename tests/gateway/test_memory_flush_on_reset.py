@@ -18,9 +18,7 @@ The fix: in ``_cleanup_agent_resources``, call
 """
 import time
 from types import SimpleNamespace
-from unittest.mock import MagicMock, call
 
-import pytest
 
 import agent.memory_manager as _mm_module
 from agent.memory_manager import MemoryManager

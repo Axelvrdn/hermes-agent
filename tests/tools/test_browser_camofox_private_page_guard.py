@@ -27,7 +27,6 @@ def _session(monkeypatch):
 
 def _block_active(monkeypatch):
     """Make the SSRF guard active and the current page resolve to a private URL."""
-    from tools import browser_tool
 
     monkeypatch.setattr(bt_eval_policy, "_eval_ssrf_guard_active", lambda task_id: True)
     monkeypatch.setattr(
@@ -37,7 +36,6 @@ def _block_active(monkeypatch):
 
 def _block_inactive_guard(monkeypatch):
     """SSRF guard inactive (local backend / allow_private_urls)."""
-    from tools import browser_tool
 
     monkeypatch.setattr(bt_eval_policy, "_eval_ssrf_guard_active", lambda task_id: False)
 
@@ -48,7 +46,6 @@ def _block_inactive_guard(monkeypatch):
 
 
 def _public_page(monkeypatch):
-    from tools import browser_tool
 
     monkeypatch.setattr(bt_eval_policy, "_eval_ssrf_guard_active", lambda task_id: True)
     monkeypatch.setattr(

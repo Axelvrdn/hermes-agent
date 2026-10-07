@@ -11,7 +11,6 @@ from __future__ import annotations
 import errno
 import json
 import logging
-import os
 from typing import Optional
 
 from cron.env_settings import cron_env_setting

@@ -5,7 +5,6 @@ import asyncio
 import email as email_lib
 import imaplib
 import logging
-import os
 import re
 import smtplib
 import socket

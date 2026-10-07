@@ -13,7 +13,6 @@ scrubbing, interpreter/cwd), tools/code_execution_rpc.py (RPC servers).
 
 import json
 import logging
-import os
 import re
 import secrets
 import shlex

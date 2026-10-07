@@ -11,7 +11,7 @@ import asyncio
 import dataclasses
 import logging
 import time
-from contextlib import nullcontext, suppress
+from contextlib import suppress
 from typing import TYPE_CHECKING, Any, Optional
 
 from gateway.platforms.event import MessageEvent, MessageType

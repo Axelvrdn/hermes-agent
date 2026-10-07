@@ -3,7 +3,6 @@ caches that live OUTSIDE HERMES_HOME and survive the home rmtree (#62209)."""
 from __future__ import annotations
 
 import plistlib
-import subprocess
 import sys
 from pathlib import Path
 

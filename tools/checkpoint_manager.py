@@ -61,9 +61,8 @@ from pathlib import Path, PurePosixPath
 from typing import Dict, List, Optional, Set, Tuple
 
 from hermes_cli._subprocess_compat import selected_git_env, windows_hide_flags
-from hermes_cli.gitlock import clear_stale_tmp_packs
 from hermes_constants import get_hermes_home
-from utils import env_int, rmtree_readonly
+from utils import env_int
 
 logger = logging.getLogger(__name__)
 

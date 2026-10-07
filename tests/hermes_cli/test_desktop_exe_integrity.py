@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import struct
 import subprocess
-import sys
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch

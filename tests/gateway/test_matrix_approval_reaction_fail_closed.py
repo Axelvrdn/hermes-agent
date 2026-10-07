@@ -13,7 +13,6 @@ from collections import deque
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-import pytest
 
 # ---------------------------------------------------------------------------
 # Stub mautrix so plugins.platforms.matrix.adapter can be imported without the SDK.

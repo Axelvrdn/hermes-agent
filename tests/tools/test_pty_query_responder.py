@@ -5,8 +5,6 @@ queries, passthrough of unhandled sequences) and a live PTY E2E where a
 subprocess blocks on a cursor-position report until answered.
 """
 
-import os
-import sys
 import time
 
 import pytest

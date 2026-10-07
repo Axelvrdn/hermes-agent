@@ -17,7 +17,6 @@ from fastapi import APIRouter, HTTPException, Request
 
 from hermes_cli import web_git as _web_git
 from hermes_cli._subprocess_compat import bounded_probe_run
-from hermes_cli.web_deps import late
 from hermes_cli.web_models import (
     GitBranchSwitchBody,
     GitCommitBody,

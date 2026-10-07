@@ -15,7 +15,6 @@ locator targets — so the swap path is exercised end to end.
 from __future__ import annotations
 
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest

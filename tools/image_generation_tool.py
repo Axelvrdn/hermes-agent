@@ -33,7 +33,6 @@ from tools.fal_common import (
     _extract_http_status,
     _managed_fal_billing_error,
     _ManagedFalSyncClient,
-    _normalize_fal_queue_url_format,
     submit_managed_fal_with_rate_limit_retry,
 )
 from tools.image_generation_catalog import (

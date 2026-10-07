@@ -1,7 +1,6 @@
 """A removed live-checkout guard can damage only disposable repositories here."""
 import shlex
 import subprocess
-from pathlib import Path
 
 import pytest
 

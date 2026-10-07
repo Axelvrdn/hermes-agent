@@ -318,7 +318,6 @@ def _http_get(url: str, timeout: float):
 
 def _download(url: str, dest: Path, *, timeout: float) -> None:
     """Stream *url* to *dest* via a ``.part`` temp file so a failed download never leaves a truncated sheet."""
-    import httpx
 
     try:
         from tools.url_safety import create_ssrf_safe_client, is_safe_url

@@ -64,7 +64,6 @@ REPO, PROVIDER, N, CALLS, OUT = ARGS.repo, ARGS.provider, ARGS.workers, ARGS.cal
 SETTLE_S = ARGS.settle
 sys.path.insert(0, os.path.abspath(REPO))
 os.environ.setdefault("HERMES_HOME", os.path.expanduser("~/.hermes"))
-import anthropic
 from anthropic.resources.messages import Messages
 
 _orig_stream = Messages.stream

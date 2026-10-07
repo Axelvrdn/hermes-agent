@@ -10,7 +10,6 @@ Usage:
     python extract_pymupdf.py document.pdf --metadata
 """
 import json
-import sys
 
 
 def extract_text(path, pages=None):

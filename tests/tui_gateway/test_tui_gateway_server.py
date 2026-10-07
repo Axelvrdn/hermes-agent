@@ -3238,7 +3238,6 @@ def test_complete_slash_and_skills_reload_are_bound_to_the_session_cwd(tmp_path,
     # The '/' popup and /reload-skills ran the registry unbound: the popup never offered a project skill
     # ``command.dispatch`` accepts, and a rescan after that dispatch reported the session's project skills
     # as "Removed" and republished a registry without them.
-    import agent.skill_commands as skill_commands
 
     _two_repo_project_skill_sessions(tmp_path, monkeypatch)
     items = server._methods["complete.slash"]("s", {"text": "/alph", "session_id": "sid-a"})["result"]["items"]
@@ -12573,7 +12572,6 @@ def test_rollback_restore_truncates_from_real_user_turn_not_marker(monkeypatch):
     """rollback.restore must truncate from the last *real* user turn,
     not a display_kind timeline marker (same bug class as /undo).
     """
-    from pathlib import Path as _Path
 
     class _Mgr:
         enabled = True

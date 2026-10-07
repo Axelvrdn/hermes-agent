@@ -2,7 +2,6 @@
 
 import json
 import os
-import sys
 import time
 from pathlib import Path
 from unittest.mock import patch
@@ -10,12 +9,10 @@ from unittest.mock import patch
 import pytest
 
 from gateway.pairing import (
-    ALPHABET,
     CODE_LENGTH,
     CODE_TTL_SECONDS,
     MAX_FAILED_ATTEMPTS,
     MAX_PENDING_PER_PLATFORM,
-    RATE_LIMIT_SECONDS,
     PairingStore,
     _save_json_file,
 )
@@ -579,7 +576,6 @@ class TestProfileScopedStorage:
     def test_default_store_uses_global_dir(self, tmp_path, monkeypatch):
         """PairingStore() (no profile) keeps the legacy global path so the
         ``hermes pairing`` CLI continues to work without a profile context."""
-        from hermes_constants import get_hermes_home
         monkeypatch.setattr("hermes_constants.get_hermes_home", lambda: tmp_path)
         # Re-import PAIRING_DIR (it's a module-level constant resolved at
         # import time) so the test exercises the right path. We patch it

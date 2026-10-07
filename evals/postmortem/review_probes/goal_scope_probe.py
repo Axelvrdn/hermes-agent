@@ -5,7 +5,6 @@ It reproduced a defect in the first version of the PR; the fixed head must pass 
 from the command line / environment, never hard-coded. Usage: see the argument parsing at the top of the file.
 """
 import asyncio
-import contextlib
 import json
 import os
 import queue

@@ -28,7 +28,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 from evals.compaction.fixtures import (  # noqa: E402
-    estimate_tokens,
     load_transcript,
     total_tokens,
 )

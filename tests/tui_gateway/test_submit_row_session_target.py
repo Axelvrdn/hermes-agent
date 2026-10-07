@@ -277,8 +277,7 @@ def test_out_of_band_probe_reads_the_continuation_after_a_rotation(monkeypatch, 
         # here runs that binding — the same order server.py's own import loop produces.
         from tui_gateway import (
             methods_prompt,  # noqa: F401
-            prompt_turn,
-        )
+            )
         assert hasattr(server, "_message_row_id"), "the bind seam must publish _message_row_id"
         # Stamp the in-memory history with the row ids the rotation actually created, so `seen` is the
         # newest row the agent's own flush wrote and the foreign row is strictly newer.

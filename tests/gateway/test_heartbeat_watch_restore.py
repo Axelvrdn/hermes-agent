@@ -178,7 +178,6 @@ async def test_startup_arms_retry_poller_even_without_any_watches(monkeypatch):
 @pytest.mark.asyncio
 async def test_restore_enters_each_profile_scope_once_per_scan(tmp_path, monkeypatch):
     """N routed sessions in one profile cost one scope entry, not N (scope entry re-parses config)."""
-    from gateway import run_heartbeat_restore
     from gateway.run_heartbeat_restore import restore_heartbeat_watches
 
     home = tmp_path / '.hermes'

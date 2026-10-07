@@ -9,7 +9,6 @@ hint; adapters call it on every read path.
 """
 
 import logging
-import os
 
 import pytest
 

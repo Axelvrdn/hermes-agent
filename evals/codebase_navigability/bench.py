@@ -28,7 +28,6 @@ import logging
 import os
 import statistics
 import sys
-from collections import defaultdict
 from pathlib import Path
 
 SKIP_TOP = {".git", "node_modules", "apps", "website", "build", ".venv", "venv", "MagicMock", "__pycache__",

@@ -8,7 +8,6 @@ configured/enabled`` and overwrite the job's ``last_status`` with ``delivery_fai
 """
 
 import json
-from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest

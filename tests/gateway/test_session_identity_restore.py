@@ -7,7 +7,6 @@ Real ``GatewayRunner`` resolvers and a real ``SessionStore`` over a temp ``HERME
 patched predicates.
 """
 
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 

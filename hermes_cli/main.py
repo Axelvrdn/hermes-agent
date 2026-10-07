@@ -771,7 +771,6 @@ if _FORCE_IPV4_EARLY:
         logging.getLogger(__name__).debug("Suppressed exception: %s", _exc, exc_info=True)  # best-effort — don't crash if hermes_constants not importable yet
 
 import threading
-from datetime import datetime
 
 from hermes_cli.model_setup_flows import (
     _is_profile_plugin_flow_provider,
@@ -817,35 +816,15 @@ from hermes_cli.main_dashboard import (  # frozen updater surface: update_cmd*.p
     _read_ssh_session_token_file,
     _report_dashboard_status,
     _resolve_dashboard_web_dist,
-    _respawn_dashboard_processes,
     _route_named_profile_dashboard,
 )
 from hermes_cli.main_desktop import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _desktop_build_needed,
-    _desktop_dist_exists,
-    _desktop_macos_relaunchable_fixup,
-    _desktop_packaged_executable,
-    _install_rebuilt_desktop_app,
-    _installed_desktop_apps,
     cmd_gui,
 )
 from hermes_cli.main_install_repair import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _UPDATE_REEXEC_ENV,
     _cleanup_quarantined_exes,
-    _clear_lazy_refresh_incomplete_marker,
-    _clear_marker_file,
-    _clear_update_incomplete_marker,
-    _is_termux_env,
-    _is_windows,
-    _is_windows_npm_path,
-    _lazy_refresh_marker_path,
-    _pytest_owns_live_checkout,
     _recover_update_debts_on_startup,
-    _reexec_dependency_sync_off_windows_shim,
-    _resolve_node_runtime_npm,
     _resolve_update_branch,
-    _update_marker_path,
-    _venv_scripts_dir,
 )
 from hermes_cli.main_platform_setup import (
     cmd_slack,
@@ -871,42 +850,11 @@ from hermes_cli.main_tui_launch import (
     _sync_bundled_skills_quietly,
 )
 from hermes_cli.main_web_build import (  # frozen updater surface: update_cmd*.py resolve these via _m()
-    _build_web_ui,
-    _nixos_build_env,
-    _record_bytecode_fingerprint,
-    _run_npm_install_deterministic,
     _sweep_stale_bytecode_if_checkout_changed,
 )
 
 # Frozen external updater API: old in-memory siblings still import these names
 # after a checkout swap. Keep their inert shims separate from live launch helpers.
-from hermes_cli.old_updater_main import (
-    _BYTECODE_FINGERPRINT_FILE,
-    ShimQuarantineError,
-    _desktop_stamp_path,
-    _detect_broken_lazy_refresh_imports,
-    _expected_windows_pe_machines,
-    _hermes_exe_shims,
-    _insert_python_pin,
-    _interpreter_scripts_dir,
-    _load_installable_optional_extras,
-    _parse_pe_machine,
-    _quarantine_running_hermes_exe,
-    _repair_broken_lazy_refresh_imports,
-    _resolve_install_target_python,
-    _restore_quarantined_exes,
-    _run_install_with_heartbeat,
-    _run_package_only_install,
-    _run_quarantined_install,
-    _run_with_idle_timeout,
-    _self,
-    _verify_console_scripts_installed,
-    _verify_core_dependencies_installed,
-    _web_ui_build_needed,
-    _windows_native_machine,
-    _windows_shim_in_process_chain,
-    _write_web_ui_build_stamp,
-)
 from hermes_cli.process_identity import (
     is_desktop_owned_backend as _is_desktop_owned_backend,
 )

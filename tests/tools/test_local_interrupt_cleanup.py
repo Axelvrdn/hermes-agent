@@ -22,7 +22,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from tools.environments import local as local_mod
 from tools.environments.local import LocalEnvironment
 
 

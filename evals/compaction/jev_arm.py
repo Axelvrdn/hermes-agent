@@ -16,7 +16,6 @@ Transport is OpenRouter's Decisions API (`POST /api/alpha/decisions`, model
 """
 from __future__ import annotations
 
-import copy
 import json
 import math
 import os

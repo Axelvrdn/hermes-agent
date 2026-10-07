@@ -16,7 +16,6 @@ from __future__ import annotations
 import secrets
 import sys
 import time
-from pathlib import Path
 from typing import Any, Iterator
 
 import pytest

@@ -1,5 +1,4 @@
 """Desktop launch prepares once, then stages and publishes the local pack."""
-import subprocess
 from argparse import Namespace
 
 import pytest

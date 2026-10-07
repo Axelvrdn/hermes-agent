@@ -11,7 +11,6 @@ import asyncio
 import contextlib
 import json
 import logging
-import os
 import shutil
 import tempfile
 import threading
@@ -29,7 +28,6 @@ from gateway.shutdown_watchdog import (
     get_shutdown_watchdog_dump_path,
     loop_heartbeat_forever,
     resolve_shutdown_watchdog_delay,
-    write_loop_heartbeat,
 )
 
 

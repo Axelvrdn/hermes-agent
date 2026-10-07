@@ -20,7 +20,6 @@ Two failures on a Windows desktop install talking to a remote gateway:
 """
 
 import shlex
-from pathlib import Path
 
 import pytest
 

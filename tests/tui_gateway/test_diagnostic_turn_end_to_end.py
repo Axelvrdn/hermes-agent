@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from tests.tui_gateway.test_auto_continue import _session, marker_home, turn_env
+from tests.tui_gateway.test_auto_continue import _session
 from tui_gateway import server
 
 

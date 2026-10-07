@@ -53,7 +53,6 @@ from gateway.restart import (  # noqa: F401 — resolved lazily by siblings thro
     resolve_systemd_timeout_stop_sec,
 )
 from gateway.status import terminate_pid
-from hermes_cli.colors import Colors, color
 from hermes_cli.config import (  # noqa: F401 — resolved lazily by siblings through the facade
     get_env_value,
     get_hermes_home,

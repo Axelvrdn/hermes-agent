@@ -17,8 +17,6 @@ from hermes_cli import main as cli_main
 from hermes_cli import (
     main_desktop,
     main_desktop_tcc,
-    main_install_repair,
-    main_web_build,
 )
 
 

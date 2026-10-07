@@ -21,7 +21,6 @@ from tests.gateway.test_kanban_notifier_served_apiserver_wake import (
     RecordingApiServerAdapter,  # noqa: F401 (fixture)
     _FakeHttpSession,
     _own_session,
-    served,
 )
 
 SESSION = "20260918_090000_aa11bb"  # a served profile's api_server session (raw id)

@@ -3,7 +3,6 @@
 import asyncio
 import json
 import stat
-import sys
 import time
 from io import BytesIO
 from unittest.mock import MagicMock, patch

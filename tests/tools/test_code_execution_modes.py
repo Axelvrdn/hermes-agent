@@ -1,6 +1,5 @@
 """Real interpreter, environment and RPC contracts for both execution modes."""
 
-import json
 import os
 import subprocess
 import sys

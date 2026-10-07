@@ -34,7 +34,7 @@ from tools.mcp_tool_schema import (
     _normalize_name_filter,
     matches_name_filter,
 )
-from tools.mcp_tool_scope import _key_name, _key_scope, _resolve_server_key, _server_key
+from tools.mcp_tool_scope import _key_name, _key_scope, _server_key
 
 if TYPE_CHECKING:  # pragma: no cover
     from tools.mcp_tool import MCPServerTask

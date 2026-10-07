@@ -13,7 +13,6 @@ only the profile-root location is pointed at tmp_path.
 from pathlib import Path
 
 import hermes_cli.update_cmd as update_cmd
-import hermes_cli.update_cmd_config as update_cmd_config
 import hermes_yaml as yaml
 
 

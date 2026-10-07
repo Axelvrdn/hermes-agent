@@ -7,7 +7,6 @@ covered by a separate live test gated on `codex --version`.
 
 from __future__ import annotations
 
-import sys
 import threading
 
 import pytest

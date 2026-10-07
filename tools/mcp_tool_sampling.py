@@ -7,7 +7,7 @@ import json
 import logging
 import time
 from contextvars import Context
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import Callable, List, Optional
 
 from tools.mcp_tool_common import (
     _MISSING,

@@ -18,7 +18,6 @@ from agent.credential_pool import (  # custom_provider_pool_key_candidates is re
     CredentialPool,  # noqa: F401
     PooledCredential,
     credential_pool_matches_provider,
-    custom_provider_pool_key_candidates,
     load_pool,
 )
 from agent.secret_scope import get_secret_str
@@ -39,7 +38,6 @@ from hermes_cli.auth import (  # resolve_external_process_provider_credentials i
     format_auth_error,
     has_usable_secret,
     is_actual_local_base_url,
-    looks_like_openrouter_key,
     normalize_actual_base_url,
     resolve_api_key_provider_credentials,
     resolve_codex_runtime_credentials,

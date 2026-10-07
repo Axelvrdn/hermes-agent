@@ -9,7 +9,6 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 
 import tools.web_tools as wt
 from tools import web_tools_truncate

@@ -7,7 +7,6 @@ with a fake backend and asserts the thread saw the parent's home.
 """
 from __future__ import annotations
 
-import threading
 from unittest.mock import MagicMock
 
 import pytest

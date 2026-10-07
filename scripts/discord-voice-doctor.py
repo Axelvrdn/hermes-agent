@@ -9,6 +9,7 @@ Usage:
     .venv/bin/python scripts/discord-voice-doctor.py
 """
 
+import importlib.util
 import logging
 import os
 import shutil
@@ -97,23 +98,20 @@ def check_packages():
         ok = False
 
     # Optional: local STT
-    try:
-        import faster_whisper
+    if importlib.util.find_spec("faster_whisper") is not None:
         check("faster-whisper (local STT)", True)
-    except ImportError:
+    else:
         warn("faster-whisper (local STT)", "not installed — local STT unavailable")
 
     # Optional: TTS providers
-    try:
-        import edge_tts
+    if importlib.util.find_spec("edge_tts") is not None:
         check("edge-tts", True)
-    except ImportError:
+    else:
         warn("edge-tts", "not installed — edge TTS unavailable")
 
-    try:
-        import elevenlabs
+    if importlib.util.find_spec("elevenlabs") is not None:
         check("elevenlabs SDK", True)
-    except ImportError:
+    else:
         warn("elevenlabs SDK", "not installed — premium TTS unavailable")
 
     return ok

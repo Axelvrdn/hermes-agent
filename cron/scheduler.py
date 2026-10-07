@@ -30,7 +30,7 @@ except ImportError:
     except ImportError:
         msvcrt = None
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 # Must precede repo-level imports: standalone invocations (e.g. module reload after
 # `hermes update`) otherwise fail with ModuleNotFoundError for hermes_time et al.
@@ -537,12 +537,10 @@ from cron.executions import (
 )
 from cron.jobs import (
     _ensure_cron_dir,
-    advance_next_runs,
     claim_dispatch,
     claim_job_for_fire,
     clear_run_claim,
     fire_claim_fence,
-    get_due_jobs,
     heartbeat_fire_claim,
     heartbeat_run_claim,
     mark_job_run,

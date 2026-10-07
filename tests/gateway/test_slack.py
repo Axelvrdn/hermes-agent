@@ -3360,9 +3360,9 @@ class TestMessageSplitting:
         await adapter.send("C123", "https://example.com/" + "x" * 45000)
 
         assert adapter._app.client.chat_postMessage.call_count >= 2
-        for call in adapter._app.client.chat_postMessage.call_args_list:
-            assert call.kwargs["unfurl_links"] is False
-            assert call.kwargs["unfurl_media"] is False
+        for made_call in adapter._app.client.chat_postMessage.call_args_list:
+            assert made_call.kwargs["unfurl_links"] is False
+            assert made_call.kwargs["unfurl_media"] is False
 
 
 

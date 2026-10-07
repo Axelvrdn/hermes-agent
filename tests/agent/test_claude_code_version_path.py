@@ -9,7 +9,6 @@ bare-name lookup found nothing and detection fell back to the stale constant.
 from __future__ import annotations
 
 import subprocess
-import sys
 
 import pytest
 

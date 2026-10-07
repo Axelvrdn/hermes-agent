@@ -2,11 +2,9 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 _SHA = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")

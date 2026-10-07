@@ -69,7 +69,6 @@ from hermes_state_dbfile import (
     _watched_sqlite_sidecar_paths,
     capture_retired_wal_generation,
     has_invalid_sqlite_header_preopen,
-    is_zeroed_state_db,
     quarantine_cross_process_lock,
     quarantine_invalid_state_db,
     refuse_deleted_wal_generation,

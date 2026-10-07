@@ -8,6 +8,7 @@ Read-only and unauthenticated; no credentials involved.
 
 from __future__ import annotations
 
+import importlib.util
 import logging
 import threading
 import time
@@ -99,10 +100,8 @@ def fetch_manifest(*, timeout: float = _DEFAULT_TIMEOUT, force: bool = False) ->
     global _cache
     if not force and _cache_is_warm():
         return _cache[1]
-    try:
-        import httpx
-    except ImportError as exc:  # pragma: no cover - httpx is a core dep
-        raise ManifestError("httpx is required to fetch the petdex manifest") from exc
+    if importlib.util.find_spec("httpx") is None:  # pragma: no cover - httpx is a core dep
+        raise ManifestError("httpx is required to fetch the petdex manifest")
     try:
         from tools.url_safety import create_ssrf_safe_client, is_safe_url
 

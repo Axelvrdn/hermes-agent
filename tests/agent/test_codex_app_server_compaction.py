@@ -5,7 +5,6 @@ import pytest
 
 from agent.codex_runtime import _record_codex_app_server_compaction
 from agent.conversation_compression import (
-    COMPACTION_DONE_STATUS,
     COMPACTION_STATUS,
     compress_context,
 )

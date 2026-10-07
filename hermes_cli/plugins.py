@@ -89,8 +89,6 @@ from hermes_cli.plugins_manifest import (  # noqa: F401 — re-exported
 )
 from hermes_cli.plugins_state import (
     PluginState,
-    _locked_plugin_state,
-    _nested_plugin_mapping,
     _nested_plugin_value,
     _plugin_relative_segments,
     _plugin_settings_entry,

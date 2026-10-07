@@ -24,7 +24,6 @@ import sqlite3
 from pathlib import Path
 from unittest.mock import patch
 
-import hermes_state
 import hermes_state_repair
 from hermes_state_repair import (
     _MAX_MALFORMED_BACKUPS,

@@ -7,7 +7,6 @@ thread; the adapter is Telegram-shaped (``SendResult`` shapes from
 """
 
 import asyncio
-import json
 import threading
 import time
 from types import SimpleNamespace

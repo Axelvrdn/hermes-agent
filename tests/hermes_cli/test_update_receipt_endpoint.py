@@ -15,7 +15,6 @@ from pathlib import Path
 
 import pytest
 
-import hermes_cli.web_server as web_server
 import hermes_cli.web_server_gateway as _web_server_gateway
 
 

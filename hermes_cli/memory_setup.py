@@ -6,7 +6,6 @@ import logging
 import os
 import shlex
 import sys
-from pathlib import Path
 
 from hermes_cli.secret_prompt import masked_secret_prompt
 from hermes_constants import get_hermes_home

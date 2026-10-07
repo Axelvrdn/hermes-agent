@@ -21,7 +21,6 @@ from hermes_cli import update_cmd_check as _check
 from hermes_cli import update_cmd_commit as _commit
 from hermes_cli import update_cmd_config as _completion_config
 from hermes_cli import update_cmd_posix_pause as _posix_pause
-from hermes_cli import update_handoff as _update_handoff
 from hermes_cli import update_receipt as _completion_receipt
 from hermes_cli._early_recovery import (
     git_operation_in_progress,

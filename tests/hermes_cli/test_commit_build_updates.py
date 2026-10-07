@@ -42,7 +42,7 @@ def test_commit_build_refuses_without_gui_advice(commit_build, git_present):
 
 @pytest.mark.parametrize("passive", [False, True])
 def test_commit_build_never_checks_upstream_or_reuses_source_cache(commit_build, monkeypatch, passive):
-    from hermes_cli import banner, source_check
+    from hermes_cli import source_check
 
     # Even a shared home's source-checkout cache and an embedded SHA cannot turn this into an update.
     monkeypatch.setenv("HERMES_REVISION", "b" * 40)
@@ -53,7 +53,7 @@ def test_commit_build_never_checks_upstream_or_reuses_source_cache(commit_build,
 
 
 def test_commit_version_banner_uses_stamp_not_shared_checkout(commit_build, monkeypatch):
-    from hermes_cli import banner, source_check
+    from hermes_cli import banner
     from hermes_cli.version_info import get_version_info
 
     git = Mock(side_effect=AssertionError("version must not inspect another checkout"))
@@ -71,7 +71,7 @@ def test_commit_backend_update_routes_refuse_before_checks_or_spawns(commit_buil
 
     import hermes_cli.web_server as server
     import hermes_cli.web_server_gateway as gateway
-    from hermes_cli import banner, source_check
+    from hermes_cli import source_check
     from hermes_constants import get_hermes_home
 
     monkeypatch.setattr(server, "PROJECT_ROOT", commit_build)

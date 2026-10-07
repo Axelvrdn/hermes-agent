@@ -2,7 +2,6 @@
 import contextlib
 import subprocess
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -293,7 +292,6 @@ def test_update_autostash_survives_undeletable_untracked_dir(tmp_path):
     """Behavioral E2E of the whole permission-denied class with real git:
     root-owned-style undeletable untracked dir → stash succeeds, update-style
     reset works, restore round-trips, nothing lost. (#70127 follow-up)"""
-    import contextlib
     import os
     import shutil
     import subprocess
@@ -551,7 +549,6 @@ def _active_receipt(probe):
 def test_conflicted_restore_records_parked_step_in_receipt(monkeypatch, tmp_path):
     import subprocess
 
-    from hermes_cli import update_receipt
 
     def git(*args, check=True):
         return subprocess.run(["git", *args], cwd=tmp_path, capture_output=True, text=True, check=check)
@@ -591,7 +588,6 @@ def test_conflicted_restore_records_parked_step_in_receipt(monkeypatch, tmp_path
 def test_clean_restore_records_restored_step_in_receipt(monkeypatch, tmp_path):
     import subprocess
 
-    from hermes_cli import update_receipt
 
     def git(*args, check=True):
         return subprocess.run(["git", *args], cwd=tmp_path, capture_output=True, text=True, check=check)
@@ -624,7 +620,6 @@ def test_clean_restore_records_restored_step_in_receipt(monkeypatch, tmp_path):
 def test_keep_stash_park_records_parked_step_in_receipt(capsys):
     probe = _ReceiptProbe()
     import hermes_cli.update_cmd_stash as stash_mod
-    from hermes_cli import update_receipt
 
     with _active_receipt(probe):
         stash_mod._park_stashed_changes("deadbeefcafe")

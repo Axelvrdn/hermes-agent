@@ -19,7 +19,6 @@ from tools.skills_hub_models import (
     _matches_query,
     _memo_json,
     _parse_frontmatter,
-    hub,
 )
 
 logger = logging.getLogger("tools.skills_hub")

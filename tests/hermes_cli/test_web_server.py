@@ -22,7 +22,6 @@ import hermes_cli.web_server_dashboard as _web_server_dashboard
 import hermes_cli.web_server_files as _web_server_files
 import hermes_cli.web_server_gateway as _web_server_gateway
 import hermes_cli.web_server_lifecycle as _web_server_lifecycle
-import hermes_cli.web_server_memory as _web_server_memory
 import hermes_cli.web_server_messaging as _web_server_messaging
 import hermes_cli.web_server_sessions as _web_server_sessions
 import hermes_yaml as yaml
@@ -3389,7 +3388,6 @@ class TestNewEndpoints:
 
     def _daily_for_local_starts(self, tz_name, local_starts):
         """Seed one session per naive local start in ``tz_name``; return the daily buckets."""
-        from datetime import datetime
         from zoneinfo import ZoneInfo
 
         from hermes_state import SessionDB

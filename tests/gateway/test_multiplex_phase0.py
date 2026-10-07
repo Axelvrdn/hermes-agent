@@ -13,10 +13,8 @@ from unittest.mock import patch
 
 import pytest
 
-import hermes_yaml as yaml
 from gateway.config import GatewayConfig, Platform
 from gateway.session import SessionSource, SessionStore, build_session_key
-from hermes_constants import reset_hermes_home_override, set_hermes_home_override
 
 
 def _src(**kw) -> SessionSource:

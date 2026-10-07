@@ -794,7 +794,6 @@ class TestNativeEnvironmentContracts:
         identifies ``<repo>/venv`` as the Hermes runtime producer contract.
         """
         import tools.environments.local as local
-        from tools.environments import local_pythonpath
 
         repo_root = tmp_path / "hermes-agent"
         runtime_venv = repo_root / "venv"

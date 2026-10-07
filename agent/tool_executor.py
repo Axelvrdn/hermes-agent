@@ -35,9 +35,6 @@ from agent.display import (
     get_cute_tool_message as _get_cute_tool_message_impl,
 )
 from agent.display import (
-    get_tool_emoji as _get_tool_emoji,
-)
-from agent.display import (
     redact_tool_args_for_display as _redact_tool_args_for_display,
 )
 from agent.display import (

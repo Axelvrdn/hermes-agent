@@ -9,7 +9,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import subprocess
 from pathlib import Path
 
 from hermes_cli.steward import UPDATE_MECHANISMS

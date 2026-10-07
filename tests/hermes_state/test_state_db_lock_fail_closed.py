@@ -29,12 +29,10 @@ the primitive and the behavior level.
 
 import logging
 import sqlite3
-import sys
 from pathlib import Path
 
 import pytest
 
-import hermes_state
 import hermes_state_common
 import hermes_state_repair
 from hermes_state import SessionDB

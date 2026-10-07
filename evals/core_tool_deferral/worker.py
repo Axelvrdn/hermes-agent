@@ -175,7 +175,6 @@ def connection_cb(payload):
         {"name": t["name"], "status": "installed"} for t in payload.get("targets", [])]})
 
 # --- import the tree's model_tools + patch registry stubs ------------------
-import model_tools  # noqa: E402  (triggers registrations + plugin discovery)
 from tools.registry import registry  # noqa: E402
 
 

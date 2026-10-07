@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import contextlib
 import threading
-from types import SimpleNamespace
 from unittest.mock import patch
 
 from tui_gateway import server

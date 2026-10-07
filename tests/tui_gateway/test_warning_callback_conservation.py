@@ -7,7 +7,7 @@ import pytest
 
 import hermes_yaml as yaml
 from agent.status_output import StatusOutputMixin
-from tests.tui_gateway.test_auto_continue import _session, marker_home, turn_env
+from tests.tui_gateway.test_auto_continue import _session
 from tui_gateway import server
 
 CLARIFY_QUESTIONS = [{"qid": "q0", "question": "Continue recovery?", "choices": ["yes", "no"], "multi_select": False}]

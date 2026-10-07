@@ -35,14 +35,12 @@ from hermes_cli.local_runtime import (
     binaries,
     bootstrap,
     catalog,
-    context_policy,
     estimator,
     growth,
     hardware,
     hf_browse,
     load_progress,
     presets,
-    supervisor,
 )
 from hermes_cli.local_runtime.endpoint import _state_endpoint
 from hermes_cli.local_runtime.gguf import split_parts

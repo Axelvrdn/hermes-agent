@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 import textwrap
-from types import ModuleType, SimpleNamespace
+from types import SimpleNamespace
 
 import pytest
 

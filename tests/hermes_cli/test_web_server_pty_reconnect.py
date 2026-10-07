@@ -1,8 +1,6 @@
 """Focused tests for dashboard PTY reconnect breadcrumbs."""
 
 import json
-import sys
-from pathlib import Path
 from urllib.parse import urlencode
 
 import pytest

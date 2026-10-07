@@ -19,7 +19,6 @@ import time
 import wave
 from collections import deque
 from contextlib import suppress
-from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)

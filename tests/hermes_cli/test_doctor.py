@@ -10,19 +10,15 @@ import subprocess
 import sys
 import types
 from argparse import Namespace
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 import hermes_cli.doctor as doctor
-import hermes_cli.gateway as gateway_cli
-import hermes_constants
 from hermes_cli import config as config_mod
 from hermes_cli import doctor as doctor_mod
 from hermes_cli import doctor_config, doctor_platform, doctor_state, doctor_tools
 from hermes_cli.doctor_config import _has_provider_env_config
-from hermes_cli.doctor_report import Finding
 from tools import browser_tool_install as bt_install
 
 

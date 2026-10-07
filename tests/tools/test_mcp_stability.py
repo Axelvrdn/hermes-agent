@@ -300,7 +300,6 @@ class TestStdioPgroupReaping:
             _kill_orphaned_mcp_children,
             _orphan_stdio_pids,
             _stdio_pgids,
-            _stdio_starttimes,
         )
 
         self._reset_state()

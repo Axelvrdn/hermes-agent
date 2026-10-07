@@ -17,7 +17,6 @@ import pytest
 from fastapi import HTTPException
 
 import hermes_cli.web_server_sessions as _web_server_sessions
-from hermes_cli import web_server
 from hermes_cli.web_routers import sessions as sessions_router
 
 

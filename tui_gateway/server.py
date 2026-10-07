@@ -16,7 +16,6 @@ import subprocess
 import sys
 import threading
 import time
-import uuid
 from datetime import datetime, timezone  # noqa: F401  (timezone: split modules)
 from pathlib import Path
 from typing import (  # noqa: F401  (Callable: split modules)
@@ -48,7 +47,6 @@ from hermes_constants import (
     get_hermes_home_override,
     get_process_hermes_home,
     profile_name_for_home,
-    reset_hermes_home_override,
     set_hermes_home_override,
 )
 from hermes_state_ids import new_session_id
@@ -62,18 +60,14 @@ from agent.skill_commands import describe_skill_invocation  # noqa: F401
 from agent.conversation_loop import INTERRUPT_WAITING_FOR_MODEL_PREFIX  # noqa: F401
 from tui_gateway import git_probe
 from tui_gateway._env import env_float, env_int
-from tui_gateway.checkpoints import _load_checkpoints_enabled, _resolve_checkpoint_hash
 from tui_gateway.checkpoints import (
     resolve_checkpoints_enabled as _resolve_checkpoints_enabled,  # noqa: F401
 )
 from tui_gateway.contracts import registry as _contracts
 from tui_gateway.transport import (
-    FanoutTransport,
     StdioTransport,
     Transport,
-    bind_transport,
     current_transport,
-    reset_transport,
 )
 from tui_gateway.turn_marker import (  # noqa: F401
     clear_turn_marker,

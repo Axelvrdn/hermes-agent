@@ -11,13 +11,11 @@ converts the contained split-brain into page corruption in the main DB — exact
 incident's close-time damage.
 """
 
-import sys
 from pathlib import Path
-from unittest.mock import ANY, patch
+from unittest.mock import patch
 
 import pytest
 
-import hermes_state
 import hermes_state_wal
 from hermes_state import DeletedWalGenerationError, SessionDB
 

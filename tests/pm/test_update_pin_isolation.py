@@ -8,7 +8,6 @@ reported and summarized, exit stays non-zero, and the latest pm receipt
 (`hermes pm status`, the desktop) records the run as failed.
 """
 
-import pytest
 
 from pm import cli, paths, receipt, registry
 from pm.lock import Lockfile

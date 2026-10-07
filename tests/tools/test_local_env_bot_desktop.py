@@ -1,6 +1,5 @@
 """Terminal child envs route GUI launches to the running Bot Desktop (#125830)."""
 
-import pytest
 
 from tools.environments.local import _make_run_env
 

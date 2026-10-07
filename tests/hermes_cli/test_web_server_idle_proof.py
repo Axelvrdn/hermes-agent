@@ -9,7 +9,6 @@ child runs the in-process ticker), and prompts waiting on a human. Anything unre
 
 import json
 import os
-import socket
 import subprocess
 import sys
 import threading

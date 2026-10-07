@@ -9,9 +9,7 @@ config section when the env var is unset, mirroring the messaging gateway's
 ``_checkpoint_agent_kwargs`` (gateway/run.py).
 """
 
-import os
 
-import pytest
 
 from tui_gateway import server
 

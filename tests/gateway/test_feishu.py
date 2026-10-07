@@ -20,11 +20,9 @@ from gateway.platforms.event import ProcessingOutcome
 if TYPE_CHECKING:
     from plugins.platforms.feishu.adapter import FeishuAdapter
 
-try:
-    import lark_oapi
-    _HAS_LARK_OAPI = True
-except ImportError:
-    _HAS_LARK_OAPI = False
+import importlib.util
+
+_HAS_LARK_OAPI = importlib.util.find_spec("lark_oapi") is not None
 
 class _FakeRequestContent:
     def __init__(self, body: bytes):

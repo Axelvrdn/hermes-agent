@@ -5,7 +5,6 @@ it writes a .clean_shutdown marker.  On the next startup, if the marker exists,
 crash-turn recovery is skipped and orphan turn markers are discarded.
 """
 
-from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from gateway.config import GatewayConfig, Platform

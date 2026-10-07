@@ -152,7 +152,6 @@ def test_readonly_resume_after_restart_retires_marked_row_without_reopen(
     previous turn's user message by alternation repair until the next send. The mount must
     stay read-only for the session row (ended_at keeps, #85303) while retiring the residue.
     """
-    import pytest
 
     db = SessionDB(db_path=tmp_path / "state.db")
     sid, key = _desktop_session(monkeypatch, db)

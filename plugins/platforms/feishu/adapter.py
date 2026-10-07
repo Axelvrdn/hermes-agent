@@ -2444,8 +2444,8 @@ class FeishuAdapter(BasePlatformAdapter):
         now = time.time()
         # Prune expired tokens lazily each call.
         expired = [t for t, ts in self._card_action_tokens.items() if now - ts > _FEISHU_CARD_ACTION_DEDUP_TTL_SECONDS]
-        for t in expired:
-            del self._card_action_tokens[t]
+        for tok in expired:
+            del self._card_action_tokens[tok]
         if token in self._card_action_tokens:
             return True
         self._card_action_tokens[token] = now

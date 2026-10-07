@@ -5,7 +5,6 @@ match what boot_bootstrap gates them with, a failing step must not stop the
 rest, and step_migrate_config must restore its backups when a migration
 fails or does not advance the version.
 """
-from pathlib import Path
 
 import pytest
 

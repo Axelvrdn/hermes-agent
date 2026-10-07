@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 
 import hermes_yaml as yaml
-from hermes_cli.subcommands.plugins import build_plugins_parser
 from tests.hermes_cli.plugin_worker_support import (
     isolated_python as isolated_python,
 )

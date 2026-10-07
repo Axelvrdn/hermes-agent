@@ -4,7 +4,6 @@ import os
 import struct
 import time
 import wave
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
