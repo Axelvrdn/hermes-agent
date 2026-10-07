@@ -12,6 +12,7 @@ import type { AppTourTranslations, HandoffTourTranslations } from './types_app_t
 import type { AuxTaskCopyMap } from './types_aux_tasks'
 import type { BillingTranslations } from './types_billing'
 import type { BootTranslations } from './types_boot'
+import type { CatalogTranslations, SkillDeepLinkTranslations } from './types_catalog'
 import type { CatalogInstallTranslations } from './types_catalog_install'
 import type { ModelMenuTranslations } from './types_model_menu'
 import type { NoticeTranslations } from './types_notices'
@@ -89,6 +90,7 @@ export interface Translations extends NoticeTranslations {
     stock: Record<string, string[]>
     custom: (label: string) => string[]
   }
+  catalog: CatalogTranslations
   connectors: {
     title: string
     connect: string
@@ -1911,17 +1913,7 @@ export interface Translations extends NoticeTranslations {
     }
   }
 
-  skillDeepLink: {
-    installTitle: (name: string) => string
-    installDescription: string
-    installTo: string
-    thisComputer: string
-    installing: string
-    installComplete: (name: string) => string
-    destinationChanged: string
-    installed: string
-    source: string
-  }
+  skillDeepLink: SkillDeepLinkTranslations
   skills: {
     tabSkills: string
     tabToolsets: string
