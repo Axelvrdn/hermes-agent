@@ -150,8 +150,8 @@ def _quietly(fn: Callable, *args, **kwargs) -> None:
     """Run one teardown step, swallowing any exception so sibling steps still run."""
     try:
         fn(*args, **kwargs)
-    except Exception:
-        pass
+    except Exception as _exc:
+        logger.debug("Suppressed exception: %s", _exc, exc_info=True)
 
 
 def _call_engine_hook(engine: Any, hook: str, *args, **kwargs) -> None:
@@ -658,8 +658,8 @@ class AIAgent(
             try:
                 from hermes_cli.models import _should_use_copilot_responses_api
                 return _should_use_copilot_responses_api(model)
-            except Exception:
-                pass  # fall back to the generic GPT-5 rule
+            except Exception as _exc:
+                logger.debug("Suppressed exception: %s", _exc, exc_info=True)  # fall back to the generic GPT-5 rule
         return AIAgent._model_requires_responses_api(model)
 
     def _max_tokens_param(self, value: int) -> dict:
@@ -914,8 +914,8 @@ class AIAgent(
             # Sibling of the build_turn_context() prefetch gate: don't key recall on zero-signal prompts.
             if not is_trivial_prompt(user_text):
                 self._memory_manager.queue_prefetch_all(user_text, session_id=self.session_id or "")
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Suppressed exception: %s", _exc, exc_info=True)
 
     def release_clients(self) -> None:
         """Release LLM clients and child agents WITHOUT tearing down session tool state (gateway cache
@@ -966,8 +966,8 @@ class AIAgent(
                 try:
                     child.release_clients()
                     continue
-                except Exception:
-                    pass
+                except Exception as _exc:
+                    logger.debug("Suppressed exception: %s", _exc, exc_info=True)
             _quietly(lambda: child.close())
 
     def _drop_shared_client(self, close_fn: Callable[[Any], None]) -> None:

@@ -452,8 +452,8 @@ def create_task(payload: CreateTaskBody, board: Optional[str] = Query(None)):
                 running, message = _check_dispatcher_presence(hermes_home=get_hermes_home())
                 if not running and message:
                     body["warning"] = message
-            except Exception:
-                pass  # probe failure must never block the create itself
+            except Exception as _exc:
+                logging.debug("Suppressed exception: %s", _exc, exc_info=True)  # probe failure must never block the create itself
         return body
 
 
@@ -1841,7 +1841,7 @@ async def stream_events(ws: WebSocket):
         log.warning("Kanban event stream error: %s", exc)
         try:
             await ws.close()
-        except Exception:
-            pass
+        except Exception as _exc:
+            logging.debug("Suppressed exception: %s", _exc, exc_info=True)
     finally:
         await tail.shutdown()
