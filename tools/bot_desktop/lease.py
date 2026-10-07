@@ -161,7 +161,8 @@ def on_change(listener: Callable[[str, Lease], None]) -> Callable[[], None]:
 
 
 def _notify(key: str, lease: Lease) -> None:
-    for cb in list(_listeners):
+    # snapshot: a callback may (un)subscribe via on_change/_off while we iterate
+    for cb in list(_listeners):  # noqa: PERF101 — deliberate copy: callbacks mutate _listeners mid-iteration
         try:
             cb(key, lease)
         except Exception as _exc:  # a broken subscriber must not wedge the handoff

@@ -475,7 +475,7 @@ def test_receiver_allocation_uses_official_identity_only_inside_scope(tmp_path):
         pub.reader = ChannelReader(pub.public_base, pub.repository)
         receivers = allocate_receivers(pub, "a" * 40, "1.2.3", "a" * 40)
         assert set(receivers) == {"S", "T"}
-        for slot, request in receivers.items():
+        for request in receivers.values():
             assert request["receiverCandidate"] is True
             assert request["identity"] == product_identity("v" + request["version"])
             assert request["publicBase"] == pub.public_base

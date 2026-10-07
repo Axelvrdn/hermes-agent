@@ -187,7 +187,7 @@ def fetch_prices(mints: List[str], max_lookups: int = 20) -> Dict[str, float]:
         )
         data = _http_get_json(url, timeout=10)
         if data and isinstance(data, dict):
-            for addr, info in data.items():
+            for info in data.values():
                 if isinstance(info, dict) and "usd" in info:
                     prices[mint] = info["usd"]
                     break

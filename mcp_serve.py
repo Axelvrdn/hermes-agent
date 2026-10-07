@@ -638,7 +638,7 @@ class _ToolHandlers:
         if not directory:
             # No cached directory: derive send targets from the routing index.
             targets, seen = [], set()
-            for key, entry in _load_sessions_index().items():
+            for entry in _load_sessions_index().values():
                 origin = entry.get("origin", {})
                 p = entry.get("platform") or origin.get("platform", "")
                 chat_id = origin.get("chat_id", "")
