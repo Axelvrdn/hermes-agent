@@ -1,6 +1,6 @@
 import type { ModelOptionProvider } from '@hermes/shared'
 import { useStore } from '@nanostores/react'
-import { lazy, type ReactNode, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,6 @@ import { Check, ChevronDown, ChevronLeft, KeyRound, Loader2 } from '@/lib/icons'
 import { isSubmitEnter } from '@/lib/ime'
 import { isProviderSetupErrorMessage } from '@/lib/provider-setup-errors'
 import { cn } from '@/lib/utils'
-import { $questionnaireOpen } from '@/onboarding/store'
 import { $desktopBoot, type DesktopBootState } from '@/store/boot'
 import { $freeTierStatus, FREE_TIER_MODEL, freeTierSetupFailure } from '@/store/free-tier'
 import { openFreeTierSignIn } from '@/store/free-tier-sign-in'
@@ -44,6 +43,7 @@ import type { OAuthProvider } from '@/types/hermes'
 import { DocsLink, FlowPanel, Status } from './flow'
 import { FreeTierSetupNotice } from './free-tier-setup-notice'
 import { DecodedLabel } from './glyph'
+import { OverlaySurface } from './overlay-surface'
 import {
   FeaturedProviderRow,
   FireworksProviderRow,
@@ -52,6 +52,7 @@ import {
   ProviderRow,
   sortProviders
 } from './providers'
+import { QuestionnaireLayer } from './questionnaire-layer'
 
 export {
   FeaturedProviderRow,
@@ -193,12 +194,6 @@ function useApiKeyCatalog(scope: OnboardingContext['scope']): ApiKeyOption[] {
     return [...API_KEY_OPTIONS.filter(o => curatedByEnv.has(o.envKey)), ...derived]
   }, [rows])
 }
-
-// Loaded on first use: the questionnaire pulls the layout and theme stores, and this module's
-// picker and key form are also used by Settings, which needs none of that.
-const QuestionnaireScreen = lazy(() =>
-  import('@/onboarding/Questionnaire').then(module => ({ default: module.QuestionnaireScreen }))
-)
 
 // Exit choreography, mirroring the gateway "connecting" overlay's timing:
 // text-out (360ms: CONNECTED fades down, rest scrambles+fades) → hold (300ms)
@@ -482,58 +477,6 @@ export function DesktopOnboardingOverlay({
         </div>
       </div>
     </OverlaySurface>
-  )
-}
-
-function QuestionnaireLayer({
-  refreshReadiness,
-  statusbarVisible
-}: {
-  refreshReadiness: () => Promise<void>
-  statusbarVisible: boolean
-}) {
-  const open = useStore($questionnaireOpen)
-
-  if (!open) {
-    return null
-  }
-
-  return (
-    <OverlaySurface statusbarVisible={statusbarVisible}>
-      <div className="relative w-full max-w-[45rem] overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) p-5 shadow-nous">
-        <Suspense fallback={null}>
-          <QuestionnaireScreen refreshReadiness={refreshReadiness} />
-        </Suspense>
-      </div>
-    </OverlaySurface>
-  )
-}
-
-/**
- * The one first-run layer (z 1300). It masks the app but stops above the status bar, where the free
- * account's progress shows (D22). Must stay filled under window glass or the shell shows through:
- * `[data-glass-opaque]` in styles.css.
- */
-function OverlaySurface({
-  children,
-  className,
-  statusbarVisible
-}: {
-  children: ReactNode
-  className?: string
-  statusbarVisible: boolean
-}) {
-  return (
-    <div
-      className={cn(
-        'fixed inset-x-0 top-0 z-(--z-onboarding) flex items-center justify-center bg-(--ui-chat-surface-background) p-6',
-        statusbarVisible ? 'bottom-5' : 'bottom-0',
-        className
-      )}
-      data-glass-opaque=""
-    >
-      {children}
-    </div>
   )
 }
 
