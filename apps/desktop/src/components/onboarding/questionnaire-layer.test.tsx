@@ -29,7 +29,12 @@ describe('QuestionnaireLayer', () => {
   it('caps the card at the overlay height and scrolls the answers, keeping Skip setup outside the scroller', async () => {
     render(
       <>
-        <Questionnaire enabled={false} openDefaultChat={async () => 'runtime-1'} requestGateway={silent} />
+        <Questionnaire
+          enabled={false}
+          openDefaultChat={async () => 'runtime-1'}
+          openLandedChat={async () => false}
+          requestGateway={silent}
+        />
         <QuestionnaireLayer refreshReadiness={async () => {}} statusbarVisible />
       </>
     )

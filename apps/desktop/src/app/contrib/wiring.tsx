@@ -42,8 +42,9 @@ import { type ChatMessage, chatMessageText } from '@/lib/chat-messages'
 import { isMessagingSource } from '@/lib/session-source'
 import { activateWakeIndicator } from '@/lib/wake-indicator'
 import { playWakeSound } from '@/lib/wake-sound'
-import { targetDefaultProfile } from '@/onboarding/handoff'
+import { firstMessageLanded, targetDefaultProfile } from '@/onboarding/handoff'
 import { Questionnaire } from '@/onboarding/Questionnaire'
+import type { FirstChat } from '@/onboarding/store'
 import { $billingSettingsRequest } from '@/store/billing-block'
 import { $desktopBoot } from '@/store/boot'
 import { requestVoiceConversationStart } from '@/store/composer'
@@ -93,7 +94,7 @@ import { $titlebarAppActionsSide, titlebarAppActionsClusterCounts } from '@/stor
 import { armWakeWord, stopClientCapture } from '@/store/wake-word'
 import { isAuxiliaryWindow, isBrowserWindow, isHudWindow } from '@/store/windows'
 import { useSkinCommand } from '@/themes/use-skin-command'
-import type { SessionInfo } from '@/types/hermes'
+import type { SessionInfo, SessionResumeResult } from '@/types/hermes'
 
 import { closeWorkspaceTab } from '../chat/close-tab'
 import { requestComposerInsert } from '../chat/composer/focus'
@@ -688,12 +689,26 @@ export function ContribWiring({ children }: { children: ReactNode }) {
 
   // The questionnaire's first chat always opens in the default profile (D17), whatever profile is active.
   const openDefaultChat = useCallback(
-    async (text: string) => {
+    async (text: string, onCreated: (chat: FirstChat) => void) => {
       await targetDefaultProfile()
 
-      return (await submitTextToNewSession(text)).runtimeSessionId
+      return (await submitTextToNewSession(text, undefined, onCreated)).runtimeSessionId
     },
     [submitTextToNewSession]
+  )
+
+  // A retried first chat opens the session the failed try created once its first message is there.
+  const openLandedChat = useCallback(
+    async ({ sessionId }: FirstChat) => {
+      if (!firstMessageLanded(await requestGateway<SessionResumeResult>('session.resume', { session_id: sessionId }))) {
+        return false
+      }
+
+      navigate(sessionRoute(sessionId))
+
+      return true
+    },
+    [navigate, requestGateway]
   )
 
   // Runs outside the selected ChatBar so queues belonging to background
@@ -1278,6 +1293,7 @@ export function ContribWiring({ children }: { children: ReactNode }) {
         <Questionnaire
           enabled={gatewayState === 'open'}
           openDefaultChat={openDefaultChat}
+          openLandedChat={openLandedChat}
           requestGateway={ambientRequestGateway}
         />
       )}

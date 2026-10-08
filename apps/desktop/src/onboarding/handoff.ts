@@ -14,6 +14,7 @@ import {
   pinNewChatProfile,
   switchToDefaultProfile
 } from '@/store/profile'
+import type { SessionResumeResult } from '@/types/hermes'
 
 import { type OnboardingRequester, setRun } from './due'
 import { freeAccountState } from './facts'
@@ -32,7 +33,7 @@ import {
   visibleSteps
 } from './flow'
 import { type InferenceClock, realClock, START_WAIT_MS, waitForInference } from './inference'
-import { closeQuestionnaire, setPending, showPreparing } from './store'
+import { $questionnaire, closeQuestionnaire, type FirstChat, noteFirstChat, setPending, showPreparing } from './store'
 
 export const NO_TASK_ASK = 'What can you help me with? Ask me what I want to do first.'
 
@@ -137,7 +138,9 @@ export interface HandoffDeps {
   request: OnboardingRequester
   launchProfile: string
   /** `session.create` in the default profile, then `prompt.submit`; answers the runtime session id. */
-  openDefaultChat: (text: string) => Promise<string>
+  openDefaultChat: (text: string, onCreated: (chat: FirstChat) => void) => Promise<string>
+  /** Opens `chat` when its first message reached the backend; `false` when it did not. */
+  openLandedChat: (chat: FirstChat) => Promise<boolean>
   /** Re-run the overlay's readiness round so it lands on the right screen after the questionnaire. */
   refreshReadiness: () => Promise<void>
   /** The built-in quick tour; resolves once it is closed. */
@@ -205,9 +208,15 @@ export async function finish(facts: Facts, answers: Answers, deps: HandoffDeps):
 export async function openFirstChat(
   facts: Facts,
   answers: Answers,
-  deps: Pick<HandoffDeps, 'openDefaultChat' | 'startQuickstart'>
+  deps: Pick<HandoffDeps, 'openDefaultChat' | 'openLandedChat' | 'startQuickstart'>
 ): Promise<void> {
-  const sessionId = await deps.openDefaultChat(handoffPrompt(facts, answers))
+  // A failed try may have lost only the submit's reply; sending again would run the task twice.
+  const earlier = $questionnaire.get().firstChat
+
+  const sessionId =
+    earlier && (await deps.openLandedChat(earlier))
+      ? earlier.runtimeSessionId
+      : await deps.openDefaultChat(handoffPrompt(facts, answers), noteFirstChat)
 
   noteHandoffSession(sessionId)
 
@@ -215,6 +224,11 @@ export async function openFirstChat(
   if (answers.local === 'yes' && !answers.skipped.includes('local') && facts.local) {
     void deps.startQuickstart(facts.local)
   }
+}
+
+/** The first message reached the backend: its turn is running or its user message is stored. */
+export function firstMessageLanded(resumed: Pick<SessionResumeResult, 'messages' | 'running'>): boolean {
+  return Boolean(resumed.running) || resumed.messages.some(message => message.role === 'user')
 }
 
 /** Aim the next new chat at the default profile (D17), whatever profile is active or was picked for a new chat. */

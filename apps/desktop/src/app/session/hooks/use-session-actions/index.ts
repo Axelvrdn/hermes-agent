@@ -847,7 +847,11 @@ export function useSessionActions({
   )
 
   const submitTextToNewSession = useCallback(
-    async (text: string, owner?: string): Promise<{ runtimeSessionId: string; sessionId: string }> => {
+    async (
+      text: string,
+      owner?: string,
+      onCreated?: (created: { runtimeSessionId: string; sessionId: string }) => void
+    ): Promise<{ runtimeSessionId: string; sessionId: string }> => {
       // IPC delivers the quick-entry submit as one task, and the drift guard
       // classifies by route/selection tokens. Capture them BEFORE the create:
       // the session.create round-trip is seconds long, and this call's own
@@ -910,6 +914,9 @@ export function useSessionActions({
           }),
           stored
         )
+
+        // Before the submit: a submit whose reply is lost may still have started the turn.
+        onCreated?.({ runtimeSessionId: created.session_id, sessionId: stored })
 
         // Submit the exact runtime id returned by session.create so this
         // atomic path cannot fall back to a route token (#85590).

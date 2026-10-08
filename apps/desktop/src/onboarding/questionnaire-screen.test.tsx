@@ -8,8 +8,9 @@ import type { FreeTierStatus } from '@/types/hermes'
 
 import type { OnboardingRequester } from './due'
 import { FIXTURES } from './fixtures.test-util'
+import type { HandoffDeps } from './handoff'
 import { Questionnaire, QuestionnaireScreen } from './Questionnaire'
-import { $questionnaire, closeQuestionnaire, openQuestionnaire, setFacts, skipStep } from './store'
+import { $questionnaire, closeQuestionnaire, type FirstChat, openQuestionnaire, setFacts, skipStep } from './store'
 
 /** A backend that answers `replies` and never answers anything else, so that stays in flight. */
 function backend(replies: Record<string, object> = {}): OnboardingRequester {
@@ -32,11 +33,17 @@ const READY_BACKEND = backend({
 /** The review screen; the step change's exit transition runs before it mounts. */
 async function renderReview({
   openDefaultChat = async () => 'runtime-1',
+  openLandedChat = async () => false,
   request = backend()
-}: { openDefaultChat?: (text: string) => Promise<string>; request?: OnboardingRequester } = {}): Promise<HTMLElement> {
+}: Partial<Pick<HandoffDeps, 'openDefaultChat' | 'openLandedChat'>> & { request?: OnboardingRequester } = {}): Promise<HTMLElement> {
   render(
     <>
-      <Questionnaire enabled={false} openDefaultChat={openDefaultChat} requestGateway={request} />
+      <Questionnaire
+        enabled={false}
+        openDefaultChat={openDefaultChat}
+        openLandedChat={openLandedChat}
+        requestGateway={request}
+      />
       <QuestionnaireScreen refreshReadiness={async () => {}} />
     </>
   )
@@ -91,10 +98,12 @@ describe('QuestionnaireScreen after Start closed it', () => {
   it('offers the first chat again, with the same message, when it fails', async () => {
     const sent: string[] = []
 
-    const openDefaultChat = async (text: string) => {
+    const openDefaultChat: HandoffDeps['openDefaultChat'] = async (text, onCreated) => {
       sent.push(text)
 
       if (sent.length === 1) {
+        onCreated({ runtimeSessionId: 'runtime-1', sessionId: 'stored-1' })
+
         throw new Error('connection lost')
       }
 
@@ -117,6 +126,40 @@ describe('QuestionnaireScreen after Start closed it', () => {
 
     await waitFor(() => expect(sent).toHaveLength(2))
     expect(sent[1]).toBe(sent[0])
+  })
+
+  it('opens the chat the failed try created, without sending again, once its first message is there', async () => {
+    const sent: string[] = []
+    const checked: string[] = []
+
+    // session.create answered and prompt.submit was accepted, but its reply was lost.
+    const openDefaultChat: HandoffDeps['openDefaultChat'] = async (text, onCreated) => {
+      sent.push(text)
+      onCreated({ runtimeSessionId: 'runtime-1', sessionId: 'stored-1' })
+
+      throw new Error('prompt.submit timed out')
+    }
+
+    const openLandedChat = async ({ sessionId }: FirstChat) => {
+      checked.push(sessionId)
+
+      return true
+    }
+
+    fireEvent.click(await renderReview({ openDefaultChat, openLandedChat, request: READY_BACKEND }))
+
+    const retry = await waitFor(() => {
+      const action = $notifications.get().find(item => item.title === 'Could not start your first chat')?.action
+
+      expect(action?.label).toBe('Try again')
+
+      return action
+    })
+
+    act(() => retry?.onClick())
+
+    await waitFor(() => expect(checked).toEqual(['stored-1']))
+    expect(sent).toHaveLength(1)
   })
 })
 

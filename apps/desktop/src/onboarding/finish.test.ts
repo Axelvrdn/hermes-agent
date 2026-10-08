@@ -65,6 +65,7 @@ function harness({ ready = true, launchProfile = 'default' } = {}) {
 
       return 'runtime-1'
     },
+    openLandedChat: async () => false,
     refreshReadiness: async () => {
       log.push('readiness')
     },

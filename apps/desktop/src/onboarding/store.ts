@@ -21,6 +21,12 @@ export type QuestionnairePending = 'skip' | 'start'
 /** `steps`: a question. `review`: the prompt preview and Start. `preparing`: skipped while the account is still being made. */
 export type QuestionnaireView = 'preparing' | 'review' | 'steps'
 
+/** The chat Start created for the first message: runtime and stored session ids. */
+export interface FirstChat {
+  runtimeSessionId: string
+  sessionId: string
+}
+
 export interface QuestionnaireState {
   phase: QuestionnairePhase
   view: QuestionnaireView
@@ -28,6 +34,8 @@ export interface QuestionnaireState {
   answers: Answers
   facts: Facts
   pending: null | QuestionnairePending
+  /** Kept past close so a retried Start can check it before sending the first message again. */
+  firstChat: FirstChat | null
 }
 
 export const LOADING_FACTS: Facts = { connectors: { status: 'loading' }, local: undefined, machine: null, plugins: undefined }
@@ -35,6 +43,7 @@ export const LOADING_FACTS: Facts = { connectors: { status: 'loading' }, local: 
 const IDLE: QuestionnaireState = {
   answers: EMPTY_ANSWERS,
   facts: LOADING_FACTS,
+  firstChat: null,
   pending: null,
   phase: 'idle',
   stepId: null,
@@ -165,6 +174,10 @@ export function passedSteps(state: QuestionnaireState): StepId[] {
 
 export function setPending(pending: null | QuestionnairePending): void {
   patch({ pending })
+}
+
+export function noteFirstChat(firstChat: FirstChat): void {
+  patch({ firstChat })
 }
 
 /** Skip setup while the free account is still being made: hold the overlay on "Starting Hermes…". */

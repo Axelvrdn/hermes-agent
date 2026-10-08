@@ -57,12 +57,12 @@ const mayRunHere = () => window.hermesDesktop?.guestOnboardingEnabled === true &
 
 interface QuestionnaireProps {
   enabled: boolean
-  /** `session.create` in the default profile + `prompt.submit`; answers the runtime session id. */
-  openDefaultChat: (text: string) => Promise<string>
+  openDefaultChat: HandoffDeps['openDefaultChat']
+  openLandedChat: HandoffDeps['openLandedChat']
   requestGateway: OnboardingRequester
 }
 
-export function Questionnaire({ enabled, openDefaultChat, requestGateway }: QuestionnaireProps) {
+export function Questionnaire({ enabled, openDefaultChat, openLandedChat, requestGateway }: QuestionnaireProps) {
   const open = useStore($questionnaireOpen)
 
   useEffect(() => {
@@ -83,11 +83,12 @@ export function Questionnaire({ enabled, openDefaultChat, requestGateway }: Ques
   useEffect(() => {
     $questionnaireHost.set({
       openDefaultChat,
+      openLandedChat,
       request: requestGateway,
       runTour: runQuickTourWhenTargetsPaint,
       startQuickstart: startQuestionnaireQuickstart
     })
-  }, [openDefaultChat, requestGateway])
+  }, [openDefaultChat, openLandedChat, requestGateway])
 
   useEffect(() => (open ? watchFacts(defaultFactSources(requestGateway), setFacts) : undefined), [open, requestGateway])
 

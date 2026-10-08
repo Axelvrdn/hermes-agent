@@ -9,7 +9,7 @@ import {
 } from '@/store/profile'
 
 import { answers, FIXTURES } from './fixtures.test-util'
-import { handoffPrompt, MEMORY_LINE, NO_TASK_ASK, targetDefaultProfile } from './handoff'
+import { firstMessageLanded, handoffPrompt, MEMORY_LINE, NO_TASK_ASK, targetDefaultProfile } from './handoff'
 
 const lines = (text: string) => text.split('\n')
 
@@ -108,5 +108,13 @@ describe('targetDefaultProfile', () => {
     // The two inputs session.create resolves its profile from (desktopSessionCreateParams).
     expect(resolveNewChatOwnerRoute()?.profile ?? 'default').toBe('default')
     expect($newChatProfile.get()).toBe('default')
+  })
+})
+
+describe('firstMessageLanded', () => {
+  it('is true while the turn runs or once a user message is stored, and false for an empty idle session', () => {
+    expect(firstMessageLanded({ messages: [], running: true })).toBe(true)
+    expect(firstMessageLanded({ messages: [{ content: 'Plan my week', role: 'user' }], running: false })).toBe(true)
+    expect(firstMessageLanded({ messages: [], running: false })).toBe(false)
   })
 })
