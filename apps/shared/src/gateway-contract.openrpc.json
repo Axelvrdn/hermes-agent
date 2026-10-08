@@ -2126,7 +2126,7 @@
       "result": {
         "name": "result",
         "schema": {
-          "$ref": "#/components/schemas/OnboardingRunStateResult"
+          "$ref": "#/components/schemas/OnboardingStateRunResult"
         }
       }
     },
@@ -20412,6 +20412,59 @@
           "failed_starts"
         ],
         "title": "OnboardingStateResult",
+        "type": "object"
+      },
+      "OnboardingStateRunResult": {
+        "additionalProperties": false,
+        "description": "The agentic guide's state plus ``run``; the guide's fields stay until its renderer is deleted.",
+        "properties": {
+          "eligible": {
+            "title": "Eligible",
+            "type": "boolean"
+          },
+          "intro": {
+            "$ref": "#/components/schemas/OnboardingIntro"
+          },
+          "failed_starts": {
+            "title": "Failed Starts",
+            "type": "integer"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Completed At"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Profile"
+          },
+          "run": {
+            "title": "Run",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "eligible",
+          "intro",
+          "failed_starts",
+          "run"
+        ],
+        "title": "OnboardingStateRunResult",
         "type": "object"
       },
       "OpenRequestEntry": {

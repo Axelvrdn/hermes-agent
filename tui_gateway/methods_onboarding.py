@@ -50,9 +50,15 @@ def _(rid, params: dict) -> dict:
 
 # onboarding.state and onboarding.set_run are unscoped on purpose: onboarding.run and the first-chat
 # flag live in the root profile's config.yaml whichever profile this backend was launched under.
+# The agentic guide's fields (intro, profile, ...) stay alongside run until that renderer is deleted.
 @method("onboarding.state")
 def _(rid, params: dict) -> dict:
-    return _ok(rid, _run_state())
+    from hermes_cli.setup_profile import read_state, settle_returning_user
+
+    def settle_then_read() -> dict:
+        settle_returning_user()
+        return {**read_state(), **_run_state()}
+    return _onboarding_state_result(rid, settle_then_read)
 
 
 @method("onboarding.set_run")

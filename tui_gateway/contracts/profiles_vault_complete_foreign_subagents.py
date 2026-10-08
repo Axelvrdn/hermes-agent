@@ -406,7 +406,13 @@ class OnboardingRunStateResult(Result):
     eligible: bool
 
 
-method("onboarding.state", params=Params, result=OnboardingRunStateResult,
+class OnboardingStateRunResult(OnboardingStateResult):
+    """The agentic guide's state plus ``run``; the guide's fields stay until its renderer is deleted."""
+
+    run: bool
+
+
+method("onboarding.state", params=Params, result=OnboardingStateRunResult,
        doc="Whether the desktop first-run questionnaire is due; reads the root profile's config.")
 
 

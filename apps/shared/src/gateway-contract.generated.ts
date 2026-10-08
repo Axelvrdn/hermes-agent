@@ -2193,15 +2193,24 @@ export interface OnboardingStateResult {
   profile?: string | null
 }
 export type OnboardingIntro = 'unseen' | 'seen'
-/** ``run``: the questionnaire opens on this launch (root config ``onboarding.run``, else a fresh install). ``eligible``: the free tier is on for this backend (``anon_auth.guest_enabled``). */
-export interface OnboardingRunStateResult {
-  run: boolean
+/** The agentic guide's state plus ``run``; the guide's fields stay until its renderer is deleted. */
+export interface OnboardingStateRunResult {
   eligible: boolean
+  intro: OnboardingIntro
+  failed_starts: number
+  completed_at?: string | null
+  profile?: string | null
+  run: boolean
 }
 /** ``mark_profile_offered`` also latches ``onboarding.seen.profile_build_offered`` in the root config, so the first chat after the questionnaire gets the plain intro instead of the profile offer. */
 export interface OnboardingSetRunParams {
   run: boolean
   mark_profile_offered?: boolean
+}
+/** ``run``: the questionnaire opens on this launch (root config ``onboarding.run``, else a fresh install). ``eligible``: the free tier is on for this backend (``anon_auth.guest_enabled``). */
+export interface OnboardingRunStateResult {
+  run: boolean
+  eligible: boolean
 }
 export interface OnboardingResetSetupProfileResult {
   name: string
@@ -5273,7 +5282,7 @@ export interface RpcMethods {
   /** Write onboarding.run in the root profile's config.yaml; answers the new state. */
   'onboarding.set_run': { params: OnboardingSetRunParams; result: OnboardingRunStateResult }
   /** Whether the desktop first-run questionnaire is due; reads the root profile's config. */
-  'onboarding.state': { params: Params; result: OnboardingRunStateResult }
+  'onboarding.state': { params: Params; result: OnboardingStateRunResult }
   /** Spill a large paste to a file and hand back the inline placeholder. */
   'paste.collapse': { params: PasteCollapseParams; result: PasteCollapseResult }
   /** Render a PDF's pages to PNG and queue them as images for the next turn. */
