@@ -123,3 +123,16 @@ def test_hand_installed_onboarding_skills_are_uninstalled(root):
     assert not skill_dir.exists()
     lock = json.loads((work / "skills" / ".hub" / "lock.json").read_text())
     assert "first-task" not in lock["installed"]
+
+
+def test_the_user_s_own_tool_search_settings_outlive_the_setup_deferred_list(root):
+    setup = _setup_profile("hermes-setup", {"intro": "seen"})
+    config = read_user_config_raw(setup / "config.yaml")
+    config["tools"] = {"tool_search": {"defer": SETUP_DEFER, "enabled": True, "listing_max_tokens": 800},
+                       "web": {"backend": "exa"}}
+    atomic_config_write(setup / "config.yaml", config)
+
+    onboarding_migrations.release_setup_profiles()
+
+    assert read_user_config_raw(setup / "config.yaml")["tools"] == {
+        "tool_search": {"enabled": True, "listing_max_tokens": 800}, "web": {"backend": "exa"}}
