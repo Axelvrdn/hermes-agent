@@ -136,3 +136,29 @@ def test_the_user_s_own_tool_search_settings_outlive_the_setup_deferred_list(roo
 
     assert read_user_config_raw(setup / "config.yaml")["tools"] == {
         "tool_search": {"enabled": True, "listing_max_tokens": 800}, "web": {"backend": "exa"}}
+
+
+def test_a_failed_shared_identity_write_keeps_the_profile_marked_for_the_next_boot(root, monkeypatch):
+    from hermes_cli import auth
+    from hermes_cli.auth_nous import _nous_shared_store_path, _read_shared_nous_state
+
+    setup = _setup_profile("hermes-setup", {"intro": "seen"})
+    save = auth._save_private_json
+
+    def failing_shared_save(target, *args, **kwargs):
+        if Path(target) == _nous_shared_store_path():
+            raise OSError("disk full")
+        return save(target, *args, **kwargs)
+
+    monkeypatch.setattr(auth, "_save_private_json", failing_shared_save)
+    onboarding_migrations.release_setup_profiles()
+
+    assert (setup / MARKER).exists()
+    seen = read_user_config_raw(root / "config.yaml").get("onboarding", {}).get("seen", {})
+    assert "setup_profile_released" not in seen
+
+    monkeypatch.setattr(auth, "_save_private_json", save)
+    onboarding_migrations.release_setup_profiles()
+
+    assert not (setup / MARKER).exists()
+    assert (_read_shared_nous_state() or {}).get("anon_token") == "anon_guest"
