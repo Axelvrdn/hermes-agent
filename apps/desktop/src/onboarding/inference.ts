@@ -6,6 +6,7 @@
 
 import type { SetupRuntimeCheckResult, SetupStatusResult } from '@hermes/shared'
 
+import { withTimeout } from '@/lib/with-timeout'
 import { $freeTierStatus, freeTierSetupFailure } from '@/store/free-tier'
 
 import type { OnboardingRequester } from './due'
@@ -42,23 +43,27 @@ export async function waitForInference(
   { clock = realClock, timeoutMs = START_WAIT_MS }: { clock?: InferenceClock; timeoutMs?: number } = {}
 ): Promise<InferenceWait> {
   const deadline = clock.now() + timeoutMs
+  const left = () => Math.max(0, deadline - clock.now())
 
-  while (clock.now() < deadline) {
-    const status = await request<SetupStatusResult>('setup.status').catch(() => null)
+  // One gateway request can outlast the whole wait, so each gets only what is left of it.
+  const read = <T>(method: string) => withTimeout(request<T>(method), left(), `${method} outlived the Start wait`).catch(() => null)
+
+  while (left() > 0) {
+    const status = await read<SetupStatusResult>('setup.status')
 
     if (terminalFailure(status)) {
       return { ok: false, reason: 'terminal' }
     }
 
     if (statusReady(status)) {
-      const runtime = await request<SetupRuntimeCheckResult>('setup.runtime_check').catch(() => null)
+      const runtime = await read<SetupRuntimeCheckResult>('setup.runtime_check')
 
       if (runtime?.ok) {
         return { ok: true }
       }
     }
 
-    await clock.sleep(RETRY_GAP_MS)
+    await clock.sleep(Math.min(RETRY_GAP_MS, left()))
   }
 
   return { ok: false, reason: 'timeout' }
