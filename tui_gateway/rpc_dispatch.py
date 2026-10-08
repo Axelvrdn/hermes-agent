@@ -68,15 +68,19 @@ def _socket_profile_scope(method: str, params: dict):
     binds that session's profile; a socket with no profile changes nothing."""
     if method in _UNSCOPED_HOT_METHODS or not getattr(current_transport(), "default_profile", None):
         return contextlib.nullcontext()
+    # Never fetch external secret sources here (``op run``/``bws`` can stall up to 30s): Stop and every later
+    # call on this socket would wait behind them. Handlers that need those secrets bind their own scope.
     session = _sessions.get(str(params.get("session_id") or ""))
     if session is not None:
-        return _session_profile_runtime_scope({"profile_home": session.get("profile_home") or None})
+        return _session_profile_runtime_scope({"profile_home": session.get("profile_home") or None},
+                                              hydrate_secrets=False)
     # Only the socket's own profile: an explicit, different ``profile`` (a cross-profile target or selector)
     # stays the handler's to interpret, as before.
     if params.get("profile") not in (None, "", current_transport().default_profile):
         return contextlib.nullcontext()
     home = _profile_home(current_transport().default_profile)
-    return _session_profile_runtime_scope({"profile_home": str(home) if home is not None else None})
+    return _session_profile_runtime_scope({"profile_home": str(home) if home is not None else None},
+                                          hydrate_secrets=False)
 
 
 def _caller_process_homes(params: dict) -> frozenset | None:

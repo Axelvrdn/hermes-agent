@@ -24,8 +24,9 @@ def bound_homes(monkeypatch):
     monkeypatch.setattr(server, "_profile_home", lambda name: homes.get(name or ""))
 
     @contextlib.contextmanager
-    def _scope(session):
-        bound.append(session.get("profile_home"))
+    def _scope(session, *, hydrate_secrets=True):
+        # Never fetch external secret sources per RPC: Stop would wait behind a slow `op run`.
+        bound.append(session.get("profile_home") if hydrate_secrets is False else ("HYDRATED", session))
         yield
 
     monkeypatch.setattr(server, "_session_profile_runtime_scope", _scope)

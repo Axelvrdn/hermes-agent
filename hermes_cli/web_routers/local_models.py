@@ -30,7 +30,7 @@ from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
 
 from hermes_cli import config as config_mod, web_deps
-from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK, _config_profile_scope
+from hermes_cli.web_routers._common import _CONFIG_MUTATION_LOCK, _config_profile_scope, config_scoped_to_thread
 from hermes_cli.local_runtime import (
     binaries, bootstrap, catalog, context_policy, estimator, growth, hardware, hf_browse,
     load_progress, presets, supervisor,
@@ -706,13 +706,9 @@ def _download_target(model_id: str):
 
 
 @router.post("/api/local-models/download")
-def local_models_download(body: ModelDownloadBody, profile: Optional[str] = None):
-    # The job thread inherits the scope: its post-download runtime refresh reads THIS profile's config.
-    with _config_profile_scope(profile):
-        return _local_models_download(body)
-
-
-def _local_models_download(body: ModelDownloadBody):
+def local_models_download(body: ModelDownloadBody):
+    # Deliberately unscoped: the files are machine-wide and the post-download rescan must restart the shared
+    # server with ITS launch settings, never the downloading profile's engine choice.
     """Accepts either a family id (downloads this machine's selected variant) or an exact variant model_id."""
     entry, variant = _download_target(body.model_id)
     plan = _download_plan(entry, variant)
@@ -880,9 +876,9 @@ async def local_models_server(body: ServerActionBody, profile: Optional[str] = N
     if action not in _SERVER_ACTIONS:
         raise HTTPException(status_code=400, detail="action must be 'stop' or 'start'")
     try:
-        # ``local_runtime.enabled`` is the requesting profile's setting, not the launch profile's.
-        with _config_profile_scope(profile):
-            await asyncio.to_thread(_SERVER_ACTIONS[action])
+        # ``local_runtime.enabled`` is the requesting profile's setting, not the launch profile's. Scope entry
+        # can fetch external secrets: off the event loop, or one profile's click stalls every profile's traffic.
+        await config_scoped_to_thread(profile, _SERVER_ACTIONS[action])
     except HTTPException:
         raise
     except Exception as exc:

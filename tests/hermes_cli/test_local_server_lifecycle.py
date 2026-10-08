@@ -152,3 +152,43 @@ def test_stop_for_a_named_profile_writes_that_profiles_config(client, tmp_path, 
 
     assert "enabled: false" in (reviewer / "config.yaml").read_text()
     assert "enabled: true" in (tmp_path / ".hermes" / "config.yaml").read_text()
+
+
+def test_server_toggle_enters_the_profile_scope_off_the_event_loop(client, monkeypatch):
+    """Scope entry can fetch external secrets; on the event loop one profile's click stalls every
+    profile's HTTP and WebSocket traffic."""
+    import asyncio
+    import contextlib
+
+    from hermes_cli.web_routers import local_models
+
+    entered = []
+
+    @contextlib.contextmanager
+    def _scope(profile):
+        try:
+            asyncio.get_running_loop()
+            entered.append("event-loop")
+        except RuntimeError:
+            entered.append("worker")
+        yield
+
+    monkeypatch.setattr("hermes_cli.web_routers._common._config_profile_scope", _scope)
+    monkeypatch.setitem(local_models._SERVER_ACTIONS, "stop", lambda: None)
+    assert client.post("/api/local-models/server?profile=reviewer", json={"action": "stop"}).status_code == 200
+    assert entered == ["worker"]
+
+
+def test_download_never_binds_the_requesting_profile(client, monkeypatch):
+    """The post-download rescan restarts the SHARED server: it must keep the launch settings, not swap in
+    the downloading profile's engine choice (and stop a server other profiles are using)."""
+    from hermes_cli.web_routers import local_models
+
+    entered = []
+    monkeypatch.setattr(local_models, "_config_profile_scope", lambda p: entered.append(p))
+    monkeypatch.setattr(local_models, "_download_target",
+                        lambda model_id: (type("E", (), {"display_name": "M", "id": "m"})(),
+                                          type("V", (), {"model_id": "m-q4", "quant": "Q4"})()))
+    monkeypatch.setattr(local_models, "_download_plan", lambda entry, variant: [])
+    r = client.post("/api/local-models/download?profile=reviewer", json={"model_id": "m"})
+    assert r.status_code == 200 and entered == []
