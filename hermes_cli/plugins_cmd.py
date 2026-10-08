@@ -87,7 +87,6 @@ from hermes_cli.plugins_cmd_update import (  # noqa: F401
 
 # Tests patch these two on the facade; the install/remove siblings read them through it.
 from hermes_cli.secret_prompt import masked_secret_prompt  # noqa: F401
-from hermes_constants import get_hermes_home
 from utils import rmtree_readonly  # noqa: F401
 
 logger = logging.getLogger(__name__)

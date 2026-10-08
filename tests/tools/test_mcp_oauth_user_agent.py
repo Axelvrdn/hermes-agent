@@ -269,7 +269,7 @@ def test_device_flow_token_poll_carries_a_user_agent_on_the_wire(
     provider.context.client_info = OAuthClientInformationFull.model_validate({
         "client_id": "fixture-client",
         "token_endpoint_auth_method": "none",
-        "redirect_uris": [f"http://127.0.0.1:33333/callback"],
+        "redirect_uris": ["http://127.0.0.1:33333/callback"],
     })
 
     httpx = sdk_httpx()

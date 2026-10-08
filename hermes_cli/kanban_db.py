@@ -4417,7 +4417,9 @@ def current_run_started_ats(conn: sqlite3.Connection, task_ids: Iterable[str]) -
 
 
 # --- Split modules (imported at the tail: they import this module as ``_kb``) ---
-from hermes_cli.kanban_db_boards import (  # noqa: E402
+# Facade re-exports: consumers (hermes_cli/kanban.py, plugins/kanban dashboard API, tests,
+# tui_gateway) resolve these through ``hermes_cli.kanban_db`` — the names are public surface.
+from hermes_cli.kanban_db_boards import (  # noqa: E402,F401
     _default_board_display_name,
     _dir_holds_board,
     board_metadata_path,
@@ -4427,7 +4429,7 @@ from hermes_cli.kanban_db_boards import (  # noqa: E402
     remove_board,
     write_board_metadata,
 )
-from hermes_cli.kanban_db_connect import (  # noqa: E402
+from hermes_cli.kanban_db_connect import (  # noqa: E402,F401
     _INITIALIZED_PATHS,
     init_db,
     write_txn,

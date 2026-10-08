@@ -8,8 +8,6 @@ the install/update/dashboard-triggered source build path.
 
 from __future__ import annotations
 
-import pytest
-
 from hermes_cli.web_build_limits import (
     apply_web_build_limits,
     web_build_limits,

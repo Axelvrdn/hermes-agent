@@ -52,10 +52,6 @@ from hermes_cli.auth import (
     read_credential_pool,
     write_credential_pool,
 )
-from hermes_cli.auth_oauth_grants import owned_profile_reads_root_state
-from hermes_cli.auth_plugin_providers import plugin_refresh_hook
-from hermes_cli.config import load_env
-from hermes_constants import OPENROUTER_BASE_URL
 
 logger = logging.getLogger(__name__)
 

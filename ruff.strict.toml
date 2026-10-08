@@ -259,16 +259,16 @@ select = [
     "F524",
     "F525",
     "F541",
-  #  "F601",
-  #  "F602",
-  #  "F621",
-  #  "F622",
-  #  "F631",
-  #  "F632",
-  #  "F633",
-  #  "F634",
-  #  "F701",
-  #  "F702",
+    "F601",
+    "F602",
+    "F621",
+    "F622",
+    "F631",
+    "F632",
+    "F633",
+    "F634",
+    "F701",
+    "F702",
   #  "F704",
   #  "F706",
   #  "F707",
@@ -458,3 +458,9 @@ select = [
 
 [lint.mccabe]
 max-complexity = 20
+
+[lint.per-file-ignores]
+# Frozen legacy data file: entries are kept for grep-based attribution even when the same
+# email appears with multiple historical logins — the map's last-wins semantics are
+# load-bearing for contributor attribution (CI greps this file for literal emails).
+"scripts/releases/authors_legacy.py" = ["F601"]

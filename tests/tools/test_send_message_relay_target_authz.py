@@ -282,7 +282,7 @@ def _send_slack(target: str, sent, *, resolves_to: str | None = SLACK_DM):
 
 @pytest.mark.parametrize(
     "target",
-    [f"slack:@ben", f"slack:{SLACK_USER}", f"slack:<@{SLACK_USER}>"],
+    ["slack:@ben", f"slack:{SLACK_USER}", f"slack:<@{SLACK_USER}>"],
 )
 def test_slack_user_targets_resolve_then_authorize(slack_relay_env, target):
     """An attested DM must SEND regardless of which alias names it.

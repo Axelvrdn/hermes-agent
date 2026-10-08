@@ -49,7 +49,6 @@ from agent.turn_api_call import (
 )
 from agent.turn_api_error import handle_api_error
 from agent.turn_api_request import build_api_request
-from agent.turn_context import PreflightCompressionTimedOut, build_turn_context
 from agent.turn_failure_copy import (
     FAILED_TURN_DISPLAY_KIND,
     failed_turn_notice,
@@ -68,12 +67,7 @@ from agent.turn_preflight_gate import run_preflight_gate
 from agent.turn_request_assembly import assemble_api_request
 from agent.turn_response_check import check_api_response
 from agent.turn_response_intake import normalize_model_response
-from agent.turn_retry_state import TurnRetryState
 from agent.turn_tool_round import run_tool_round
-from hermes_cli.observability.shared_metrics_efficiency import (
-    record_cache_break,
-    record_prompt_rebuild,
-)
 from hermes_logging import set_session_context
 from tools.skill_provenance import set_current_write_origin
 from utils import base_url_host_matches

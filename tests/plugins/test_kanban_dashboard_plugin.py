@@ -7,9 +7,9 @@ REST surface without spinning up the whole dashboard.
 
 from __future__ import annotations
 
-import contextlib
 import importlib.util
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -23,6 +23,8 @@ from fastapi.testclient import TestClient
 
 from hermes_cli import kanban_db as kb
 from hermes_cli import kanban_db_connect as kbc
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -1237,12 +1239,12 @@ def test_ws_events_for_archived_board_does_not_recreate_it(tmp_path, monkeypatch
         received_close = bool(recv.get("closed"))
         try:
             ws.close()
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Suppressed exception: %s", _exc, exc_info=True)  # teardown best-effort: the stream is dead either way
         try:
             ws_cm.__exit__(None, None, None)
-        except Exception:
-            pass
+        except Exception as _exc:
+            logger.debug("Suppressed exception: %s", _exc, exc_info=True)  # teardown best-effort: the stream is dead either way
 
         # With the fix the stream rejects the dead slug at the handshake.
         assert received_close, (

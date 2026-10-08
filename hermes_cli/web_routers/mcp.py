@@ -490,39 +490,7 @@ async def list_mcp_catalog(profile: Optional[str] = None):
         diagnostics = [{"name": n, "kind": k, "message": m} for (n, k, m) in mcp_catalog.catalog_diagnostics()]
     except Exception as _exc:
         logging.debug("Suppressed exception: %s", _exc, exc_info=True)
-    result = {"entries": entries, "diagnostics": diagnostics}
-    if detect_apps:
-        import sys
-
-        try:
-            from hermes_cli.mcp_app_detection import (
-                discover_catalog_apps,
-                validate_applications,
-            )
-
-            applications = {}
-            for entry in entries:
-                labels = (entry["suggest"] or {}).get("applications") or [
-                    entry["name"].replace("-", " ").replace("_", " ")
-                ]
-                try:
-                    applications[entry["name"]] = validate_applications(labels)
-                except ValueError:
-                    # Catalog identifiers allow more than app labels; one unusable
-                    # inference must not suppress valid observations for other entries.
-                    applications[entry["name"]] = []
-
-            # Keep backend-local filesystem work off the event loop and profile lock.
-            detected = await asyncio.to_thread(discover_catalog_apps, applications)
-        except Exception:
-            _log.warning("Backend application discovery unavailable")
-            detected = {"matches": {}, "discovery": {
-                "scope": "backend", "status": "unavailable", "platform": sys.platform,
-            }}
-        for entry in entries:
-            entry["detected_apps"] = detected["matches"].get(entry["name"], [])
-        result["discovery"] = detected["discovery"]
-    return result
+    return {"entries": entries, "diagnostics": diagnostics}
 
 
 @router.post("/api/mcp/catalog/install")

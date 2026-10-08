@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING, Any, Optional
 if TYPE_CHECKING:
     from typing import TypeGuard
 
-from hermes_cli.models_catalog_static import (
+from hermes_cli.models_catalog_static import (  # noqa: F401 — facade re-exports; sibling modules and tests import these through hermes_cli.models
     _AGGREGATOR_PROVIDERS,
     _AZURE_FOUNDRY_RESPONSES_PREFIXES,
     _BORROWED_MODEL_PROVIDERS,
@@ -41,6 +41,7 @@ from hermes_cli.models_catalog_static import (
     _PROVIDER_MODELS,
     _PROVIDER_RETIRED_ALIASES,
     _SILENT_DEFAULT_PROVIDERS,
+    CANONICAL_PROVIDERS,
     OPENROUTER_MODELS,
     PREFERRED_SILENT_DEFAULT_MODEL,
     VERCEL_AI_GATEWAY_MODELS,
