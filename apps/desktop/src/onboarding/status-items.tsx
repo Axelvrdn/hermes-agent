@@ -23,17 +23,17 @@ import { freeAccountState } from './facts'
 import type { LocalFit } from './flow'
 import { $questionnaireOpen } from './store'
 
-/** The model the questionnaire's quickstart is downloading, by display name; `null` when none. */
+/** The job id of the questionnaire's quickstart; `null` when none started (or the POST was refused). */
 export const $questionnaireDownload = atom<null | string>(null)
 
 /** Start's local answer: quickstart `model` in the default profile, the way Settings > Local Models starts one. */
-export function startQuestionnaireQuickstart(model: LocalFit): Promise<void> {
-  $questionnaireDownload.set(model.name)
-
-  return runQuickstart(
+export async function startQuestionnaireQuickstart(model: LocalFit): Promise<void> {
+  const jobId = await runQuickstart(
     { client: queryClient, copy: runtimeTranslations().settings.localModels, owner: localModelsOwner('default') },
     model.id
   )
+
+  $questionnaireDownload.set(jobId)
 }
 
 const ITEM_CLASS = 'flex h-full items-center gap-1.5 px-1.5 text-[0.6875rem]'
@@ -69,18 +69,19 @@ export function FreeAccountStatusItem() {
   )
 }
 
-function DownloadProgress({ model }: { model: string }) {
+function DownloadProgress({ jobId }: { jobId: string }) {
   const { t } = useI18n()
   // Resolved on render, not at import: an owner minted before the backend connected is never live.
   const owner = useLocalModelsOwner('default')
-  const job = useLocalRuntimeJobs(owner, jobs => runningModelDownloads(jobs)[0] ?? null)
+  // Only Start's own job: a later download from Settings is not the questionnaire's.
+  const job = useLocalRuntimeJobs(owner, jobs => runningModelDownloads(jobs).find(row => row.job_id === jobId) ?? null)
 
   if (!job) {
     return null
   }
 
   const percent = Math.round(job.percent ?? (job.total_bytes ? (job.done_bytes / job.total_bytes) * 100 : 0))
-  const label = t.questionnaire.status.downloading(model)
+  const label = t.questionnaire.status.downloading(job.target)
 
   return (
     <span className={ITEM_CLASS} role="status">
@@ -95,7 +96,7 @@ function DownloadProgress({ model }: { model: string }) {
 
 /** The local model the questionnaire started downloading, with a bar, until the job settles. */
 export function LocalDownloadStatusItem() {
-  const model = useStore($questionnaireDownload)
+  const jobId = useStore($questionnaireDownload)
 
-  return model ? <DownloadProgress model={model} /> : null
+  return jobId ? <DownloadProgress jobId={jobId} /> : null
 }

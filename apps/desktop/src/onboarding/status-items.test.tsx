@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import type { HermesConnection } from '@/global'
 import { queryClient } from '@/lib/query-client'
+import { localModelsOwner, watchLocalRuntimeJobs } from '@/store/local-runtime-jobs'
+import { $notifications } from '@/store/notifications'
 import { setConnection } from '@/store/session'
 import { installRestBridge } from '@/test/rest-bridge'
 
@@ -27,8 +29,35 @@ const QUICKSTART_JOB = {
   total_bytes: 100
 }
 
+// A download the user started from Settings > Local Models after the questionnaire's.
+const OTHER_DOWNLOAD = {
+  ...QUICKSTART_JOB,
+  done_bytes: 40,
+  job_id: 'dl-2',
+  kind: 'model-download',
+  model_id: 'gemma-4-12b',
+  percent: 40,
+  target: 'Gemma 4 12B'
+}
+
+async function jobsRead(api: ReturnType<typeof installRestBridge>) {
+  await waitFor(() => {
+    expect(api).toHaveBeenCalledWith(expect.objectContaining({ path: '/api/local-models/jobs' }))
+    expect(queryClient.isFetching()).toBe(0)
+  })
+}
+
+function renderItem() {
+  render(
+    <QueryClientProvider client={queryClient}>
+      <LocalDownloadStatusItem />
+    </QueryClientProvider>
+  )
+}
+
 afterEach(() => {
   cleanup()
+  $notifications.set([])
   $questionnaireDownload.set(null)
   setConnection(null)
   queryClient.clear()
@@ -40,7 +69,7 @@ describe('LocalDownloadStatusItem', () => {
 
     // The status bar module loads before the backend connects; the questionnaire's Start comes later.
     setConnection(CONNECTION)
-    $questionnaireDownload.set('Qwen3.8 27B')
+    $questionnaireDownload.set('qs-1')
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -74,15 +103,13 @@ describe('LocalDownloadStatusItem', () => {
     })
 
     setConnection(CONNECTION)
-    render(
-      <QueryClientProvider client={queryClient}>
-        <LocalDownloadStatusItem />
-      </QueryClientProvider>
-    )
+    renderItem()
+    // Another surface (Settings > Local Models) read the jobs before Start's POST answered.
+    watchLocalRuntimeJobs(localModelsOwner('default'))
 
     const started = startQuestionnaireQuickstart({ id: 'qwen3.8-27b', name: 'Qwen3.8 27B' })
 
-    await waitFor(() => expect(api).toHaveBeenCalledWith(expect.objectContaining({ path: '/api/local-models/jobs' })))
+    await jobsRead(api)
     answerQuickstart()
     await started
 
@@ -93,5 +120,42 @@ describe('LocalDownloadStatusItem', () => {
     expect(api).toHaveBeenCalledWith(
       expect.objectContaining({ body: { model_id: 'qwen3.8-27b' }, path: '/api/local-models/quickstart', profile: 'default' })
     )
+  })
+
+  it('names only the job Start created, not a later download once that job is done', async () => {
+    const api = installRestBridge(request => {
+      if (request.path === '/api/local-models/quickstart') {
+        return { job_id: 'qs-1', model_id: 'qwen3.8-27b' }
+      }
+
+      return request.path === '/api/local-models/jobs' ? { jobs: [{ ...QUICKSTART_JOB, status: 'done' }, OTHER_DOWNLOAD] } : {}
+    })
+
+    setConnection(CONNECTION)
+    await startQuestionnaireQuickstart({ id: 'qwen3.8-27b', name: 'Qwen3.8 27B' })
+    renderItem()
+
+    await jobsRead(api)
+    expect(screen.queryByRole('status')).toBeNull()
+  })
+
+  it('explains a refused quickstart and shows no download for it', async () => {
+    const api = installRestBridge(request => {
+      if (request.path === '/api/local-models/quickstart') {
+        throw new Error('Setup is already running')
+      }
+
+      return request.path === '/api/local-models/jobs' ? { jobs: [OTHER_DOWNLOAD] } : {}
+    })
+
+    setConnection(CONNECTION)
+    // Settings > Local Models is already downloading another model.
+    watchLocalRuntimeJobs(localModelsOwner('default'))
+    await jobsRead(api)
+    await startQuestionnaireQuickstart({ id: 'qwen3.8-27b', name: 'Qwen3.8 27B' })
+    renderItem()
+
+    expect($notifications.get()).toEqual([expect.objectContaining({ kind: 'error' })])
+    expect(screen.queryByRole('status')).toBeNull()
   })
 })
