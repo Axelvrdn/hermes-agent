@@ -1622,3 +1622,38 @@ test('provider OAuth start and poll stay on one backend: the device-code session
     assert.equal(unscopableMutatingRequest({ requestMethod: method, requestPath: path }), false, `${method} ${path}`)
   }
 })
+
+test('a flow polled by id stays on the backend that started it: no local-rest child for its start', () => {
+  // The start POSTs were "unscopable", so a forced-local profile ran them in a
+  // `local-rest::<p>` child while the GET poll asked the shared host, whose
+  // process-local table never saw the id ("job not found", lost pairing).
+  for (const [method, path] of [
+    ['POST', '/api/local-models/download'],
+    ['POST', '/api/local-models/download-browsed'],
+    ['POST', '/api/local-models/download/pause'],
+    ['POST', '/api/local-models/download/resume'],
+    ['POST', '/api/local-models/quickstart'],
+    ['POST', '/api/local-models/runtime/install'],
+    ['POST', '/api/messaging/telegram/onboarding/start'],
+    ['DELETE', '/api/messaging/telegram/onboarding/p1'],
+    ['POST', '/api/messaging/whatsapp/onboarding/start'],
+    ['POST', '/api/mcp/servers/linear/auth'],
+    ['DELETE', '/api/mcp/oauth/flows/f1'],
+    ['POST', '/api/hermes/update'],
+    ['POST', '/api/gateway/migrate']
+  ]) {
+    assert.equal(unscopableMutatingRequest({ requestMethod: method, requestPath: path }), false, `${method} ${path}`)
+  }
+
+  // Machine state carries no profile; a profile's config write does.
+  assert.equal(
+    resolveProfileBackendRoute('reviewer', { requestMethod: 'POST', requestPath: '/api/local-models/download' })
+      .scopePath,
+    false
+  )
+  assert.equal(
+    resolveProfileBackendRoute('reviewer', { requestMethod: 'POST', requestPath: '/api/local-models/quickstart' })
+      .scopePath,
+    true
+  )
+})

@@ -701,6 +701,8 @@ const LOCAL_PRIMARY_SCOPED_ROUTES = new Set([
   'GET /api/portal',
   'GET /api/hermes/update/check',
   'POST /api/local-models/activate',
+  'POST /api/local-models/quickstart',
+  'POST /api/local-models/runtime/install',
   'GET /api/dashboard/themes',
   'PUT /api/dashboard/theme',
   'GET /api/dashboard/font',
@@ -757,6 +759,10 @@ function localPrimaryRequestScope(opts: ProfileRouteOptions): boolean | null {
     return true
   }
 
+  if (MACHINE_SCOPED_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`))) {
+    return false
+  }
+
   // Session WRITES are scoped by `body.profile` (`rename_session_endpoint` ->
   // `_with_db(body.profile, ...)`), not by the query. They ARE scopable — just
   // not through the URL — so they belong on the shared backend with the path
@@ -783,8 +789,30 @@ function localPrimaryRequestScope(opts: ProfileRouteOptions): boolean | null {
  *    the memory of the process that started it, so splitting start (a mutation)
  *    from poll (a read) across two backends answers "Session not found or
  *    expired" right after a successful start.
+ *  - /api/mcp: server CRUD/test/auth take `profile`; the OAuth flow the auth
+ *    call opens is polled and cancelled by id from the same process memory.
+ *  - Telegram/WhatsApp onboarding: start/poll/cancel share an in-memory
+ *    pairing table; apply takes `profile` for the credential write.
  */
-const PROFILE_SCOPED_FAMILIES = ['/api/tools', '/api/webhooks', '/api/ops', '/api/providers/oauth']
+const PROFILE_SCOPED_FAMILIES = [
+  '/api/tools',
+  '/api/webhooks',
+  '/api/ops',
+  '/api/providers/oauth',
+  '/api/mcp',
+  '/api/messaging/telegram/onboarding',
+  '/api/messaging/whatsapp/onboarding'
+]
+
+/**
+ * Machine state, not a profile's: served by the shared backend with no
+ * `?profile=`. Each keeps a job or action id in the memory of the process that
+ * started it, so the start must land where its poll (`/api/local-models/jobs`,
+ * `/api/actions/*`) does. Models live in the machine-wide models dir; the
+ * routes that write a profile's config (activate, quickstart, runtime install)
+ * are listed in LOCAL_PRIMARY_SCOPED_ROUTES and match first.
+ */
+const MACHINE_SCOPED_ROUTES = ['/api/local-models', '/api/hermes/update', '/api/gateway/migrate']
 
 const SAFE_REQUEST_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 

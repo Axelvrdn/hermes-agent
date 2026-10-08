@@ -45,3 +45,27 @@ export async function recycleOwnedBackend(deps: RecycleOwnedBackendDeps): Promis
 
   return target
 }
+
+/**
+ * Pool keys to stop when a non-primary profile's backend is recycled. A "This
+ * device" profile behind a remote primary is served by the shared local host
+ * (`hostKey`) unless it has a backend of its own (an older runtime's
+ * per-profile fallback): restarting only its old per-profile keys would
+ * report success without touching the process the page refreshes against.
+ * Profile DELETE keeps `ownKeys` alone, since it must never stop the host
+ * that serves the other profiles.
+ */
+export function recyclePoolKeys(
+  ownKeys: string[],
+  {
+    hostKey,
+    hostServesProfile,
+    isLive
+  }: { hostKey: string; hostServesProfile: boolean; isLive: (key: string) => boolean }
+): string[] {
+  if (!hostServesProfile || ownKeys.some(key => !key.startsWith('local-rest::') && isLive(key))) {
+    return ownKeys
+  }
+
+  return [...ownKeys, hostKey]
+}

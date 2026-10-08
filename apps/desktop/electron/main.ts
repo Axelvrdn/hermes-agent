@@ -84,7 +84,7 @@ import {
 } from './backend-ownership'
 import { canImportHermesCli, PROBE_TIMEOUT_MS, shouldTrustHermesOverride, verifyHermesCli } from './backend-probes'
 import { waitForDashboardPortAnnouncement } from './backend-ready'
-import { recycleOwnedBackend } from './backend-recycle'
+import { recycleOwnedBackend, recyclePoolKeys } from './backend-recycle'
 import { isPidAliveWindows, waitForBackendRelease } from './backend-release-gate'
 import { createInstalledRuntimeGate } from './backend-resolution'
 import { createBackendServeSupportResolver } from './backend-serve-support'
@@ -319,7 +319,7 @@ import {
   spawnLedgerPath,
   type SpawnReservation
 } from './host-backend-attach'
-import { assertNoSecondLocalBackend, assertNotPassiveSpawn } from './host-backend-singleton'
+import { assertNoSecondLocalBackend, assertNotPassiveSpawn, LOCAL_HOST_POOL_KEY } from './host-backend-singleton'
 import { lookupPublishedSessionToken } from './host-published-token'
 import { claimHostSpawnGate } from './host-spawn-gate'
 import { HERMES_HUB_FALLBACK_ORIGIN, HERMES_HUB_ORIGIN, isHermesHubClipboardWrite } from './hub-iframe-policy'
@@ -12445,6 +12445,17 @@ async function teardownPoolBackendAndWait(profile) {
   await Promise.all(localProfilePoolKeys(profile).map(key => stopPoolBackend(key)))
 }
 
+// Models-page recycle: also the shared local host when that is what serves the profile.
+async function recycleProfilePoolBackends(profile: string) {
+  const keys = recyclePoolKeys(localProfilePoolKeys(profile), {
+    hostKey: LOCAL_HOST_POOL_KEY,
+    hostServesProfile: primaryBackendIsRemote() && !profileHasRemoteOverride(profile) && !globalRemoteActive(),
+    isLive: key => Boolean(backendPool.get(key))
+  })
+
+  await Promise.all(keys.map(key => stopPoolBackend(key)))
+}
+
 async function stopAllPoolBackends() {
   const entries = [...backendPool.values()]
   await poolStopper.stopAll()
@@ -15865,7 +15876,7 @@ ipcMain.handle('hermes:backend:recycle', async (_event, profile) => {
     notifyApplied: sendConnectionApplied,
     primaryProfile: primaryProfileKey(),
     profile: typeof profile === 'string' ? profile : '',
-    teardownPool: teardownPoolBackendAndWait,
+    teardownPool: recycleProfilePoolBackends,
     teardownPrimary: () => teardownPrimaryBackendAndWait({ soft: true }),
     teardownSsh: value => teardownSshConnection(value || null)
   })

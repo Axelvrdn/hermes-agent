@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { recycleOwnedBackend, recycleOwnedBackendTarget } from './backend-recycle'
+import { recycleOwnedBackend, recycleOwnedBackendTarget, recyclePoolKeys } from './backend-recycle'
 
 describe('recycleOwnedBackendTarget', () => {
   it('treats an empty or matching profile as the primary backend', () => {
@@ -88,5 +88,36 @@ describe('recycleOwnedBackend', () => {
     await run
 
     expect(events).toEqual(['ssh-start', 'ssh-done', 'primary', 'applied'])
+  })
+})
+
+describe('recyclePoolKeys', () => {
+  const own = ['reviewer', 'conn:local::reviewer', 'local-rest::reviewer']
+
+  it('adds the shared local host when it is what serves the profile', () => {
+    // Remote primary: "This device" `reviewer` rides conn:local::default, not a key of its own.
+    const keys = recyclePoolKeys(own, {
+      hostKey: 'conn:local::default',
+      hostServesProfile: true,
+      isLive: key => key === 'conn:local::default'
+    })
+
+    expect(keys).toContain('conn:local::default')
+  })
+
+  it('keeps a profile on a backend of its own (older-runtime fallback) off the host', () => {
+    const keys = recyclePoolKeys(own, {
+      hostKey: 'conn:local::default',
+      hostServesProfile: true,
+      isLive: key => key === 'conn:local::reviewer' || key === 'conn:local::default'
+    })
+
+    expect(keys).toEqual(own)
+  })
+
+  it('never touches the host when it does not serve the profile', () => {
+    expect(
+      recyclePoolKeys(own, { hostKey: 'conn:local::default', hostServesProfile: false, isLive: () => true })
+    ).toEqual(own)
   })
 })

@@ -186,10 +186,12 @@ def _backend_dir_entries(search_dir: str, session_key: str | None) -> list[tuple
 
 
 def _dir_listing_items(root: str, word: str, path_part: str, prefix_tag: str, is_context: bool,
-                       session_key: str | None = None) -> list[dict]:
-    """Prefix-match entries of the directory ``path_part`` points at (max 30)."""
+                       session_key: str | None = None, local: bool | None = None) -> list[dict]:
+    """Prefix-match entries of the directory ``path_part`` points at (max 30). ``local`` is the bound
+    profile's terminal backend (None: the launch process's)."""
     import posixpath
-    local = _effective_terminal_backend() == "local"
+    if local is None:
+        local = _effective_terminal_backend() == "local"
     # A non-local backend expands ``~`` itself (the gateway host's home is the wrong one) and its listing
     # script speaks POSIX: from a Windows gateway host, os.path would hand it ``~\\src`` and list nothing.
     pth = os.path if local else posixpath
@@ -237,10 +239,23 @@ def _(rid, params: dict) -> dict:
     if not word:
         return _ok(rid, {"items": []})
     session = _sessions.get(params.get("session_id", ""))
-    local = _effective_terminal_backend() == "local"
+    # Off-turn RPC: bind the owning profile (the session's, else the one the request or its socket names) so a
+    # profile whose terminal runs over ssh/docker lists ITS workspace, not the launch profile's host tree.
+    try:
+        profile_home = session.get("profile_home") if session else _profile_home(params.get("profile"))
+    except ProfileUnavailableError:
+        return _ok(rid, {"items": []})
+    profile_home = str(profile_home) if profile_home else None
+    with _session_profile_runtime_scope({"profile_home": profile_home}, hydrate_secrets=False):
+        return _complete_path(rid, params, word, session, profile_home)
+
+
+def _complete_path(rid, params: dict, word: str, session: dict | None, profile_home: str | None) -> dict:
+    local = _bound_terminal_backend(profile_home) == "local"
     # A non-local backend's cwd lives inside the target; the host cannot validate it, so take the composer's
     # session cwd (Desktop sends it) or the session's terminal cwd as-is.
-    root = _completion_cwd(params) if local else (params.get("cwd") or _terminal_task_cwd(session))
+    root = _completion_cwd(params) if local else (
+        params.get("cwd") or _terminal_task_cwd(session or ({"profile_home": profile_home} if profile_home else None)))
     session_key = session.get("session_key") if session else None
     is_context = word.startswith("@")
     query = word[1:] if is_context else word
@@ -267,7 +282,7 @@ def _(rid, params: dict) -> dict:
     if local and bare_word and len(path_part.strip()) >= 2 and prefix_tag != "folder":
         items = _fuzzy_basename_items(root, path_part, prefix_tag)
     else:
-        items = _dir_listing_items(root, word, path_part, prefix_tag, is_context, session_key)
+        items = _dir_listing_items(root, word, path_part, prefix_tag, is_context, session_key, local)
     # Bare-word `@name` may be an agent mention: profiles rank ABOVE file hits.
     if bare_word and not prefix_tag:
         with contextlib.suppress(Exception):
