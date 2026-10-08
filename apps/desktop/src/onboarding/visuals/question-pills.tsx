@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 
-import { Input } from '@/components/ui/input'
+import { controlVariants } from '@/components/ui/control'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 
@@ -42,35 +42,17 @@ export function QuestionPills({
   question: string
   stepId: StepId
 }) {
-  const { t } = useI18n()
   const detailId = useId()
   const [focused, setFocused] = useState<null | string>(null)
   const detail = choices.find(choice => choice.id === focused)?.detail
   const typed = Boolean(other?.trim())
 
-  if (choices.length === 0 && other !== undefined && onOther) {
-    const placeholder = otherPlaceholder ?? t.assistant.clarify.other
-
-    return (
-      <label className="grid gap-2">
-        <span className="font-medium leading-(--conversation-line-height)">{question}</span>
-        <Input
-          aria-label={placeholder}
-          autoCapitalize="words"
-          autoFocus
-          className="max-w-72"
-          onChange={event => onOther(event.target.value)}
-          placeholder={placeholder}
-          value={other}
-        />
-      </label>
-    )
-  }
+  const standalone = choices.length === 0
 
   return (
     <div className="grid gap-2">
       <span className="font-medium leading-(--conversation-line-height)">{question}</span>
-      <div className="flex min-w-0 flex-wrap gap-2 p-1" role="group">
+      <div className={cn('flex min-w-0 flex-wrap gap-2', !standalone && 'p-1')} role="group">
         {choices.map(choice => {
           const selected = picked === choice.id && !typed
 
@@ -101,18 +83,13 @@ export function QuestionPills({
           )
         })}
         {other !== undefined && onOther ? (
-          <label
-            className={cn(PILL_CLASS, 'cursor-text', typed ? 'border-primary bg-primary/10' : 'border-border bg-card')}
-          >
-            <input
-              aria-label={t.questionnaire.otherLabel}
-              className="min-w-8 bg-transparent leading-5 outline-none [field-sizing:content] placeholder:text-muted-foreground focus:min-w-48"
-              onChange={event => onOther(event.target.value)}
-              placeholder={t.assistant.clarify.other}
-              value={other}
-            />
-            {typed ? <AnswerMark stepId={stepId} /> : null}
-          </label>
+          <OtherField
+            onChange={onOther}
+            placeholder={otherPlaceholder}
+            standalone={standalone}
+            stepId={stepId}
+            value={other}
+          />
         ) : null}
       </div>
       {choices.some(choice => choice.detail) ? (
@@ -121,5 +98,53 @@ export function QuestionPills({
         </p>
       ) : null}
     </div>
+  )
+}
+
+/**
+ * The typed answer: an "Other" pill beside the choices, or the whole answer as a plain field when
+ * there are none. One input either way, so the name field keeps focus when the OS name arrives.
+ */
+function OtherField({
+  onChange,
+  placeholder,
+  standalone,
+  stepId,
+  value
+}: {
+  onChange: (value: string) => void
+  placeholder?: string
+  standalone: boolean
+  stepId: StepId
+  value: string
+}) {
+  const { t } = useI18n()
+  const typed = Boolean(value.trim())
+  const label = standalone ? (placeholder ?? t.assistant.clarify.other) : t.questionnaire.otherLabel
+
+  return (
+    <label
+      className={
+        standalone
+          ? 'contents'
+          : cn(PILL_CLASS, 'cursor-text', typed ? 'border-primary bg-primary/10' : 'border-border bg-card')
+      }
+    >
+      <input
+        aria-label={label}
+        autoCapitalize={standalone ? 'words' : undefined}
+        autoFocus={standalone}
+        className={
+          standalone
+            ? cn(controlVariants(), 'max-w-72')
+            : 'min-w-8 bg-transparent leading-5 outline-none [field-sizing:content] placeholder:text-muted-foreground focus:min-w-48'
+        }
+        onChange={event => onChange(event.target.value)}
+        placeholder={standalone ? label : t.assistant.clarify.other}
+        spellCheck={!standalone}
+        value={value}
+      />
+      {typed && !standalone ? <AnswerMark stepId={stepId} /> : null}
+    </label>
   )
 }

@@ -1,5 +1,5 @@
 import type { MachineFactsResult } from '@hermes/shared'
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { closeQuestionnaire, openQuestionnaire, setFacts } from '../store'
@@ -40,5 +40,21 @@ describe('NameStep', () => {
 
     expect(screen.getByRole('button', { name: /Sid/ })).toBeTruthy()
     expect(screen.getByPlaceholderText('Other (type your answer)')).toBeTruthy()
+  })
+  it('keeps the field typed into while machine facts load when the OS name arrives', () => {
+    openQuestionnaire()
+    render(<NameStep />)
+
+    const field = screen.getByPlaceholderText<HTMLInputElement>('Your name')
+
+    fireEvent.change(field, { target: { value: 'Al' } })
+    field.setSelectionRange(2, 2)
+    act(() => setFacts({ machine: { ...NAMELESS, full_name: 'Sid Balyan' } }))
+
+    expect(screen.getByRole('button', { name: /Sid/ })).toBeTruthy()
+    expect(field.isConnected).toBe(true)
+    expect(field.ownerDocument.activeElement).toBe(field)
+    expect(field.value).toBe('Al')
+    expect(field.selectionStart).toBe(2)
   })
 })
