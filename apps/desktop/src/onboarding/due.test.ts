@@ -21,6 +21,8 @@ const failing: OnboardingRequester = async () => {
 const LOCAL = { baseUrl: 'http://127.0.0.1:9119', isFullscreen: false, mode: 'local' } as HermesConnection
 // SAFETY: as above.
 const REMOTE = { baseUrl: 'https://vps.example:9119', isFullscreen: false, mode: 'remote' } as HermesConnection
+// SAFETY: as above. A pooled local profile runs its own backend on another port.
+const LOCAL_WORK = { baseUrl: 'http://127.0.0.1:9120', isFullscreen: false, mode: 'local', profile: 'work' } as HermesConnection
 
 beforeEach(() => {
   $questionnaireDecided.set(false)
@@ -77,6 +79,19 @@ describe('questionnaire due check', () => {
     await runSetupAgain(request)
     expect(sent).toEqual(['onboarding.state'])
     expect($questionnaire.get().phase).not.toBe('shown')
+  })
+
+  it('keeps offering Run setup again across local profiles, whose pooled backends answer on other ports', async () => {
+    await decideQuestionnaire(answering({ eligible: true, run: false }))
+
+    setConnection(LOCAL_WORK)
+    expect($questionnaireAvailable.get()).toBe(true)
+
+    setConnection(REMOTE)
+    expect($questionnaireAvailable.get()).toBe(false)
+
+    setConnection(LOCAL)
+    expect($questionnaireAvailable.get()).toBe(true)
   })
 
   it('reads only the new shape', () => {

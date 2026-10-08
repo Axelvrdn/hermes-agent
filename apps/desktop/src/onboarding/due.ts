@@ -20,13 +20,16 @@ import { openQuestionnaire } from './store'
  */
 export const mayRunHere = () => window.hermesDesktop?.guestOnboardingEnabled === true && $connection.get()?.mode === 'local'
 
-/** The local backend (its base URL) whose due check answered eligible. */
-const $eligibleBackend = atom<null | string>(null)
+/**
+ * A local backend's due check answered eligible. Every local backend (the primary and each pooled
+ * profile's, on its own port) reads the same root-profile answer, so this holds for all of them.
+ */
+const $eligibleLocally = atom(false)
 
 /** The questionnaire can run on the current connection: Settings shows Run setup again. */
 export const $questionnaireAvailable = computed(
-  [$eligibleBackend, $connection],
-  (backend, connection) => backend !== null && connection?.mode === 'local' && connection.baseUrl === backend
+  [$eligibleLocally, $connection],
+  (eligible, connection) => eligible && connection?.mode === 'local'
 )
 
 /** The gateway requester the free-tier store already takes; the questionnaire shares its reads. */
@@ -69,7 +72,7 @@ export async function decideQuestionnaire(request: OnboardingRequester): Promise
   const state = await readDue(request)
   const due = Boolean(state?.eligible && state.run)
 
-  $eligibleBackend.set(state?.eligible === true ? ($connection.get()?.baseUrl ?? null) : null)
+  $eligibleLocally.set(state?.eligible === true)
 
   if (due) {
     openQuestionnaire()
