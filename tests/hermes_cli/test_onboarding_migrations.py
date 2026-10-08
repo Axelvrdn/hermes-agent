@@ -102,7 +102,8 @@ def test_a_backend_launched_inside_the_setup_profile_does_not_release_it(root, m
     assert not (root / "config.yaml").exists() or "onboarding" not in read_user_config_raw(root / "config.yaml")
 
 
-def _hub_install_first_task(home: Path) -> None:
+def _hub_install_first_task(home: Path, source: str = "official",
+                            identifier: str = "official/productivity/first-task") -> None:
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.skills_hub import HubLockFile
 
@@ -112,7 +113,7 @@ def _hub_install_first_task(home: Path) -> None:
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text("---\nname: first-task\n---\n")
         HubLockFile().record_install(
-            "first-task", "official", "official/productivity/first-task", "builtin", "safe", "sha256:0",
+            "first-task", source, identifier, "builtin", "safe", "sha256:0",
             "productivity/first-task", ["SKILL.md"])
     finally:
         reset_hermes_home_override(token)
@@ -131,6 +132,17 @@ def test_hand_installed_onboarding_skills_are_uninstalled(root):
     onboarding_migrations.release_setup_profiles()
 
     _assert_first_task_gone(work)
+
+
+def test_an_unrelated_skill_named_first_task_survives(root):
+    work = profiles.create_profile("work", no_alias=True)
+    _hub_install_first_task(work, "github", "someone/skills/first-task")
+
+    onboarding_migrations.release_setup_profiles()
+
+    assert (work / "skills" / "productivity" / "first-task" / "SKILL.md").is_file()
+    lock = json.loads((work / "skills" / ".hub" / "lock.json").read_text())
+    assert lock["installed"]["first-task"]["identifier"] == "someone/skills/first-task"
 
 
 def test_the_user_s_own_tool_search_settings_outlive_the_setup_deferred_list(root):
