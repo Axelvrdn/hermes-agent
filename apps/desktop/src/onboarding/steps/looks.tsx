@@ -173,6 +173,7 @@ export function LocalStep() {
   const copy = t.questionnaire.local
   const kind = facts.machine?.machine_kind ?? 'computer'
   const title = facts.machine?.is_spark ? copy.titleSpark : copy.title(kind)
+  const reading = facts.local === undefined
 
   return (
     <StepCard
@@ -187,7 +188,8 @@ export function LocalStep() {
       title={title}
     >
       <MachineSpec />
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div aria-busy={reading || undefined} className="grid gap-2 sm:grid-cols-2">
+        {reading ? <ChipSkeletons count={2} /> : null}
         {stepOptions(STEPS.local, facts, answers).map(option => {
           const on = answers.local === option.id
 
@@ -209,6 +211,10 @@ export function LocalStep() {
   )
 }
 
+function ChipSkeletons({ count }: { count: number }) {
+  return Array.from({ length: count }, (_, index) => <Skeleton className="h-10 rounded-[6px]" key={index} />)
+}
+
 function toggle(list: readonly string[], id: string): string[] {
   return list.includes(id) ? list.filter(item => item !== id) : [...list, id]
 }
@@ -219,6 +225,7 @@ export function AppsStep() {
   const copy = t.questionnaire.apps
   const options = pluginOptions(facts)
   const picked = options.filter(option => answers.apps.includes(option.id))
+  const reading = facts.plugins === undefined
 
   return (
     <StepCard
@@ -229,7 +236,8 @@ export function AppsStep() {
       onSkip={() => skipStep('apps')}
       title={copy.title}
     >
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div aria-busy={reading || undefined} className="grid gap-2 sm:grid-cols-2">
+        {reading ? <ChipSkeletons count={2} /> : null}
         {options.map(option => (
           <Chip
             icon={<Puzzle aria-hidden className="size-4 shrink-0 text-(--ui-text-tertiary)" />}
@@ -275,9 +283,7 @@ export function ConnectorsStep() {
       <FadeScroll className="-m-1 p-1" maxHeight={CONNECTOR_GRID_MAX_HEIGHT}>
         <div aria-busy={loading || undefined} className="grid gap-2 sm:grid-cols-3">
           {loading
-            ? Array.from({ length: SKELETON_ROWS }, (_, index) => (
-                <Skeleton className="h-10 rounded-[6px]" key={index} />
-              ))
+            ? <ChipSkeletons count={SKELETON_ROWS} />
             : options.map(option => (
                 <Chip
                   icon={<ConnectorLogo className="size-5 shrink-0" connector={connectorSubject(option.id)} />}

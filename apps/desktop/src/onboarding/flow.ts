@@ -35,10 +35,10 @@ export type ConnectorList =
 export interface Facts {
   /** `null` when `machine.facts` failed: no machine line, no Spark copy. */
   machine: MachineFactsResult | null
-  /** Presence rows for `PLUGIN_APPS`, in that order; empty when the read failed. */
-  plugins: CatalogPluginPresence[]
-  /** The local model this machine fits (`readLocalSetupEligibility`), else `null`. */
-  local: LocalFit | null
+  /** Presence rows for `PLUGIN_APPS`, in that order; empty when the read failed, `undefined` while it is out. */
+  plugins: CatalogPluginPresence[] | undefined
+  /** The local model this machine fits (`readLocalSetupEligibility`), else `null`; `undefined` while it is read. */
+  local: LocalFit | null | undefined
   connectors: ConnectorList
 }
 
@@ -121,7 +121,7 @@ function nameOptions(facts: Facts): FlowOption[] {
 
 export function pluginOptions(facts: Facts): FlowOption[] {
   return PLUGIN_APPS.flatMap(app => {
-    const row = facts.plugins.find(candidate => candidate.name === app.name)
+    const row = facts.plugins?.find(candidate => candidate.name === app.name)
 
     if (!row || !OFFERABLE.has(row.state)) {
       return []
@@ -190,7 +190,11 @@ const TOUR_OPTIONS: FlowOption[] = [
 ]
 
 function localOptions(facts: Facts): FlowOption[] {
-  const model = facts.local?.name ?? ''
+  if (!facts.local) {
+    return []
+  }
+
+  const model = facts.local.name
 
   return [
     { detail: c => c.local.downloadDetail, id: 'yes', label: c => c.local.download(model) },
@@ -202,8 +206,14 @@ export const STEPS = {
   name: { id: 'name', options: nameOptions, other: true },
   accent: { id: 'accent' },
   layout: { id: 'layout' },
+  // A step whose facts are still being read stays in the flow, so it is not passed before it can be asked.
   local: { id: 'local', options: localOptions, when: facts => facts.local !== null },
-  apps: { id: 'apps', multi: true, options: pluginOptions, when: facts => pluginOptions(facts).length > 0 },
+  apps: {
+    id: 'apps',
+    multi: true,
+    options: pluginOptions,
+    when: facts => facts.plugins === undefined || pluginOptions(facts).length > 0
+  },
   connectors: {
     id: 'connectors',
     multi: true,

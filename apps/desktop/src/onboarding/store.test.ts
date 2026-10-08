@@ -89,4 +89,20 @@ describe('questionnaire store', () => {
 
     expect($questionnaire.get().stepId).toBe('task')
   })
+
+  it('waits on Local and Apps while their facts are still being read', () => {
+    closeQuestionnaire('skipped')
+    openQuestionnaire()
+
+    for (const step of ['name', 'accent', 'layout'] as const) {
+      confirmStep(step)
+    }
+
+    expect($questionnaire.get().stepId).toBe('local')
+
+    setFacts({ local: null, plugins: FIXTURES.spark.plugins })
+
+    expect($questionnaire.get().stepId).toBe('apps')
+    expect(passedSteps($questionnaire.get())).toEqual(['name', 'accent', 'layout'])
+  })
 })

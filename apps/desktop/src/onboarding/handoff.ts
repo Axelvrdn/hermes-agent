@@ -83,7 +83,7 @@ function appsLine(facts: Facts, answers: Answers): null | string {
   const connectorRows = facts.connectors.status === 'ready' ? facts.connectors.rows : []
 
   const titles = [
-    ...facts.plugins.filter(row => plugins.has(row.name) && answers.apps.includes(row.name)).map(row => row.title),
+    ...(facts.plugins ?? []).filter(row => plugins.has(row.name) && answers.apps.includes(row.name)).map(row => row.title),
     ...connectorRows.filter(row => connectors.has(row.id) && answers.connectors.includes(row.id)).map(row => row.label)
   ]
 

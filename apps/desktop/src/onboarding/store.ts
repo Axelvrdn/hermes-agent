@@ -30,7 +30,7 @@ export interface QuestionnaireState {
   pending: null | QuestionnairePending
 }
 
-export const LOADING_FACTS: Facts = { connectors: { status: 'loading' }, local: null, machine: null, plugins: [] }
+export const LOADING_FACTS: Facts = { connectors: { status: 'loading' }, local: undefined, machine: null, plugins: undefined }
 
 const IDLE: QuestionnaireState = {
   answers: EMPTY_ANSWERS,
