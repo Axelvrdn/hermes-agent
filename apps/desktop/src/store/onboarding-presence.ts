@@ -1,6 +1,7 @@
 import { atom, computed } from 'nanostores'
 
 import { setModeContext } from '@/store/interface-mode'
+import { isMainWindow } from '@/store/windows'
 
 type OnboardingSurface = 'questionnaire'
 
@@ -9,10 +10,11 @@ const EMPTY: ReadonlySet<OnboardingSurface> = new Set()
 export const $onboardingSurfaces = atom<ReadonlySet<OnboardingSurface>>(EMPTY)
 
 /**
- * The first-run questionnaire's due check has answered (or timed out, or does not apply in this
- * window). Until it has, every "not during setup" surface waits: the questionnaire may still open.
+ * The first-run questionnaire's due check has answered (or timed out). Until it has, every "not
+ * during setup" surface waits: the questionnaire may still open. Only the main window runs it, so
+ * every other window (secondary, HUD, peer, watch) starts decided.
  */
-export const $questionnaireDecided = atom(false)
+export const $questionnaireDecided = atom(!isMainWindow())
 
 /** How long anything waits on the due check before treating the questionnaire as not due. */
 export const QUESTIONNAIRE_DECIDE_DEADLINE_MS = 4_000

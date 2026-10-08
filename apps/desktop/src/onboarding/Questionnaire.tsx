@@ -65,9 +65,8 @@ export function Questionnaire({ enabled, openDefaultChat, requestGateway }: Ques
   const open = useStore($questionnaireOpen)
 
   useEffect(() => {
+    // Other windows start decided (store/onboarding-presence); only the main one runs the due check.
     if (!isMainWindow()) {
-      markQuestionnaireDecided()
-
       return
     }
 
