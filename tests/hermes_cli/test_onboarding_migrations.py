@@ -145,6 +145,18 @@ def test_an_unrelated_skill_named_first_task_survives(root):
     assert lock["installed"]["first-task"]["identifier"] == "someone/skills/first-task"
 
 
+@pytest.mark.parametrize("cli", [["safe"], []])
+def test_a_cli_toolset_list_the_user_changed_outlives_the_release(root, cli):
+    setup = _setup_profile("hermes-setup", {"intro": "seen"})
+    config = read_user_config_raw(setup / "config.yaml")
+    config["platform_toolsets"] = {"cli": cli}
+    atomic_config_write(setup / "config.yaml", config)
+
+    onboarding_migrations.release_setup_profiles()
+
+    assert read_user_config_raw(setup / "config.yaml")["platform_toolsets"] == {"cli": cli}
+
+
 def test_the_user_s_own_tool_search_settings_outlive_the_setup_deferred_list(root):
     setup = _setup_profile("hermes-setup", {"intro": "seen"})
     config = read_user_config_raw(setup / "config.yaml")
