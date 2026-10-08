@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react'
 import { Puzzle } from 'lucide-react'
 
 import { ConnectorLogo } from '@/components/ui/connector-logo'
+import { FadeScroll } from '@/components/ui/fade-scroll'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useI18n } from '@/i18n'
 import { connectorSubject } from '@/lib/connector-tools'
@@ -252,6 +253,9 @@ export function AppsStep() {
 
 const SKELETON_ROWS = 6
 
+// About five chip rows: a signed-in account lists ~45 connectors, and the card must keep its Confirm bar in view.
+const CONNECTOR_GRID_MAX_HEIGHT = '15.5rem'
+
 export function ConnectorsStep() {
   const { t } = useI18n()
   const { answers, facts } = useStore($questionnaire)
@@ -268,19 +272,23 @@ export function ConnectorsStep() {
       onSkip={() => skipStep('connectors')}
       title={copy.title}
     >
-      <div aria-busy={loading || undefined} className="grid gap-2 sm:grid-cols-3">
-        {loading
-          ? Array.from({ length: SKELETON_ROWS }, (_, index) => <Skeleton className="h-10 rounded-[6px]" key={index} />)
-          : options.map(option => (
-              <Chip
-                icon={<ConnectorLogo className="size-5 shrink-0" connector={connectorSubject(option.id)} />}
-                key={option.id}
-                label={option.label(t.questionnaire)}
-                on={answers.connectors.includes(option.id)}
-                onToggle={() => setAnswers({ connectors: toggle(answers.connectors, option.id) })}
-              />
-            ))}
-      </div>
+      <FadeScroll className="-m-1 p-1" maxHeight={CONNECTOR_GRID_MAX_HEIGHT}>
+        <div aria-busy={loading || undefined} className="grid gap-2 sm:grid-cols-3">
+          {loading
+            ? Array.from({ length: SKELETON_ROWS }, (_, index) => (
+                <Skeleton className="h-10 rounded-[6px]" key={index} />
+              ))
+            : options.map(option => (
+                <Chip
+                  icon={<ConnectorLogo className="size-5 shrink-0" connector={connectorSubject(option.id)} />}
+                  key={option.id}
+                  label={option.label(t.questionnaire)}
+                  on={answers.connectors.includes(option.id)}
+                  onToggle={() => setAnswers({ connectors: toggle(answers.connectors, option.id) })}
+                />
+              ))}
+        </div>
+      </FadeScroll>
       <p className="text-xs text-(--ui-text-tertiary)">{loading ? copy.checking : copy.offered}</p>
     </StepCard>
   )
