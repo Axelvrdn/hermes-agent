@@ -991,6 +991,7 @@ export function useSessionActions({
           }),
           stored
         )
+
         // Submit the exact runtime id returned by session.create so this
         // atomic path cannot fall back to a route token (#85590).
         try {
@@ -1011,6 +1012,7 @@ export function useSessionActions({
 
           throw error
         }
+
         navigate(sessionRoute(stored), { replace: true })
 
         return { runtimeSessionId: created.session_id, sessionId: stored }
