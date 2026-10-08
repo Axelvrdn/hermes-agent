@@ -2424,6 +2424,7 @@
     "questionnaire.name.greeting",
     "questionnaire.name.question",
     "questionnaire.otherLabel",
+    "questionnaire.retry",
     "questionnaire.settings.action",
     "questionnaire.settings.description",
     "questionnaire.settings.failed",

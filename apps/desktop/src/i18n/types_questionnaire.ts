@@ -3,6 +3,7 @@ export interface QuestionnaireTranslations {
   back: string
   trailLabel: string
   changeAnswer: string
+  retry: string
   skipped: string
   otherLabel: string
   kinds: {

@@ -23,7 +23,7 @@ import { isMainWindow } from '@/store/windows'
 import { decideQuestionnaire, type OnboardingRequester, setRun } from './due'
 import { defaultFactSources, freeAccountState, watchFacts } from './facts'
 import type { StepId } from './flow'
-import { finish, type HandoffDeps, skipSetup } from './handoff'
+import { finish, type HandoffDeps, openFirstChat, skipSetup } from './handoff'
 import { startQuestionnaireQuickstart } from './status-items'
 import { AccentStep, AppsStep, ConnectorsStep, LayoutStep, LocalStep } from './steps/looks'
 import { NameStep, TaskStep, TourStep } from './steps/questions'
@@ -176,8 +176,23 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
     refreshReadiness
   }
 
+  const { answers, facts } = state
+
+  // The flags are saved and the questionnaire is gone, so the confirmed answers ride on the toast.
+  const firstChatFailed = (error: unknown) =>
+    notifyError(error, t.questionnaire.start.failed, {
+      action: { label: t.questionnaire.retry, onClick: () => void openFirstChat(facts, answers, deps).catch(firstChatFailed) },
+      id: 'questionnaire-first-chat'
+    })
+
   const start = () => {
-    void finish(state.facts, state.answers, deps).catch(error => {
+    void finish(facts, answers, deps).catch(error => {
+      if ($questionnaire.get().phase === 'done') {
+        firstChatFailed(error)
+
+        return
+      }
+
       setPending(null)
       notifyError(error, t.questionnaire.start.failed)
     })

@@ -189,6 +189,17 @@ export async function finish(facts: Facts, answers: Answers, deps: HandoffDeps):
     await deps.runTour()
   }
 
+  await openFirstChat(facts, answers, deps)
+
+  return 'started'
+}
+
+/** The first chat in default, then the quickstart. Start's last step, and its retry once the questionnaire has closed. */
+export async function openFirstChat(
+  facts: Facts,
+  answers: Answers,
+  deps: Pick<HandoffDeps, 'openDefaultChat' | 'startQuickstart'>
+): Promise<void> {
   const sessionId = await deps.openDefaultChat(handoffPrompt(facts, answers))
 
   noteHandoffSession(sessionId)
@@ -197,8 +208,6 @@ export async function finish(facts: Facts, answers: Answers, deps: HandoffDeps):
   if (answers.local === 'yes' && !answers.skipped.includes('local') && facts.local) {
     void deps.startQuickstart(facts.local)
   }
-
-  return 'started'
 }
 
 /** Resolves once the free account exists, has failed for good, or the Start wait has passed. */

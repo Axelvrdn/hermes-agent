@@ -5,6 +5,7 @@ export const enQuestionnaire: Translations['questionnaire'] = {
   back: 'Back',
   trailLabel: 'Your answers',
   changeAnswer: 'Change this answer',
+  retry: 'Try again',
   skipped: 'Skipped',
   otherLabel: 'Other answer',
   kinds: {

@@ -5,6 +5,7 @@ export const zhHantQuestionnaire: Translations['questionnaire'] = {
   back: '返回',
   trailLabel: '你的回答',
   changeAnswer: '修改此回答',
+  retry: '重試',
   skipped: '已略過',
   otherLabel: '其他回答',
   kinds: {

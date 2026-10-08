@@ -5,6 +5,7 @@ export const ruQuestionnaire: Translations['questionnaire'] = {
   back: 'Назад',
   trailLabel: 'Ваши ответы',
   changeAnswer: 'Изменить этот ответ',
+  retry: 'Повторить',
   skipped: 'Пропущено',
   otherLabel: 'Другой ответ',
   kinds: {

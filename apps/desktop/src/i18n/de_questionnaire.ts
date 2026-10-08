@@ -5,6 +5,7 @@ export const deQuestionnaire: Translations['questionnaire'] = {
   back: 'Zurück',
   trailLabel: 'Ihre Antworten',
   changeAnswer: 'Diese Antwort ändern',
+  retry: 'Erneut versuchen',
   skipped: 'Übersprungen',
   otherLabel: 'Andere Antwort',
   kinds: {

@@ -5,6 +5,7 @@ export const arQuestionnaire: Translations['questionnaire'] = {
   back: 'رجوع',
   trailLabel: 'إجاباتك',
   changeAnswer: 'تغيير هذه الإجابة',
+  retry: 'حاول مرة أخرى',
   skipped: 'تم التخطي',
   otherLabel: 'إجابة أخرى',
   kinds: {
