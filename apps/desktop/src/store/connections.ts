@@ -79,6 +79,9 @@ const $lastProfileByConnection = atom<Record<string, string>>(storedStringRecord
 let pendingTarget: null | string = null
 let restoreAttempted = false
 let switchRevision = 0
+// Counts every pick, including ones that never start a switch, so a pick that waited on its source's backend
+// can tell a later pick happened while it waited.
+let selectRevision = 0
 
 export const $pendingConnectionId = atom<null | string>(null)
 
@@ -144,12 +147,27 @@ function rememberedProfile(connectionId: string): Promise<string> | string {
   )
 }
 
+// The profile a pick lands on: the one asked for, else the one last used there. Only a remembered profile
+// the cache lacks waits on the backend (every other pick stays synchronous); null when a later pick
+// arrived during that wait.
+function pickedProfile(connectionId: string, explicit: null | string | undefined): Promise<null | string> | string {
+  const remembered = String(explicit ?? '').trim() || rememberedProfile(connectionId)
+  const pick = ++selectRevision
+
+  if (typeof remembered === 'string') {
+    return normalizeProfileKey(remembered)
+  }
+
+  return remembered.then(profile => (pick === selectRevision ? normalizeProfileKey(profile) : null))
+}
+
 /** @internal Reset module-owned preferences and switch coordination for tests. */
 export function _resetConnectionsForTests(): void {
   $lastProfileByConnection.set({})
   pendingTarget = null
   restoreAttempted = false
   switchRevision = 0
+  selectRevision = 0
   $pendingConnectionId.set(null)
 }
 
@@ -394,10 +412,13 @@ export async function selectConnection(connectionId: string, options: SelectConn
   // browse-mode preference alone so it survives restart (#93197).
   const restoreOnBoot = pendingTarget === null && $activeConnectionId.get() === null
 
-  const explicitProfile = String(options.profile ?? '').trim()
-  // Only a remembered profile the cache lacks waits on the backend; every other pick stays synchronous.
-  const remembered = explicitProfile || rememberedProfile(connectionId)
-  const targetProfile = normalizeProfileKey(typeof remembered === 'string' ? remembered : await remembered)
+  const picked = pickedProfile(connectionId, options.profile)
+  const targetProfile = typeof picked === 'string' ? picked : await picked
+
+  if (targetProfile === null) {
+    return
+  }
+
   const currentConnectionId = $activeConnectionId.get()
   const currentProfile = normalizeProfileKey($activeGatewayProfile.get())
 
