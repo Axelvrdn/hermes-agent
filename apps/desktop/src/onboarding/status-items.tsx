@@ -10,7 +10,7 @@ import { AnimatedInt } from '@/components/ui/diff-count'
 import { Progress } from '@/components/ui/progress'
 import { useI18n } from '@/i18n'
 import { $freeTierStatus, freeTierSetupFailure } from '@/store/free-tier'
-import { localModelsOwner, runningModelDownloads, useLocalRuntimeJobs } from '@/store/local-runtime-jobs'
+import { runningModelDownloads, useLocalModelsOwner, useLocalRuntimeJobs } from '@/store/local-runtime-jobs'
 
 import { freeAccountState } from './facts'
 import { $questionnaireOpen } from './store'
@@ -51,11 +51,11 @@ export function FreeAccountStatusItem() {
   )
 }
 
-const DEFAULT_OWNER = localModelsOwner('default')
-
 function DownloadProgress({ model }: { model: string }) {
   const { t } = useI18n()
-  const job = useLocalRuntimeJobs(DEFAULT_OWNER, jobs => runningModelDownloads(jobs)[0] ?? null)
+  // Resolved on render, not at import: an owner minted before the backend connected is never live.
+  const owner = useLocalModelsOwner('default')
+  const job = useLocalRuntimeJobs(owner, jobs => runningModelDownloads(jobs)[0] ?? null)
 
   if (!job) {
     return null
