@@ -80,16 +80,28 @@ def test_a_finished_guide_releases_its_profile_and_keeps_its_chats(root):
     assert (_read_shared_nous_state() or {}).get("anon_token") == "anon_guest"
 
 
-def test_an_unstarted_guide_leaves_run_alone_and_runs_once(root):
+def test_an_unfinished_guide_opens_the_questionnaire_and_runs_once(root):
+    from hermes_cli.onboarding_run import should_run
+
     setup = _setup_profile("hermes-setup", {"intro": "unseen", "failed_starts": 0})
 
     onboarding_migrations.release_setup_profiles()
-    assert "run" not in read_user_config_raw(root / "config.yaml")["onboarding"]
+    assert should_run() is True
 
     # Latched: a marker that reappears (an old build ran again) is left for that build.
     (setup / MARKER).write_text("{}")
     onboarding_migrations.release_setup_profiles()
     assert (setup / MARKER).exists()
+
+
+def test_an_unfinished_guide_keeps_an_explicit_run(root):
+    from hermes_cli.onboarding_run import set_run, should_run
+
+    _setup_profile("hermes-setup", {"intro": "unseen", "failed_starts": 1})
+    set_run(False)
+
+    onboarding_migrations.release_setup_profiles()
+    assert should_run() is False
 
 
 def test_a_backend_launched_inside_the_setup_profile_does_not_release_it(root, monkeypatch):

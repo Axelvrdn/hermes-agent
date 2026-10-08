@@ -50,8 +50,11 @@ def release_setup_profiles() -> None:
         if is_seen(read_user_config_raw(config_path), _RELEASED_FLAG):
             return
         marked = {path: _read_marker(path) for path in named_profiles(root) if (path / SETUP_MARKER).is_file()}
-        if _old_guide_done(marked.values(), config_path):
-            _settle_run(config_path)
+        done = _old_guide_done(marked.values(), config_path)
+        if done or marked:
+            # Settled before any marker goes: once released, the setup profile counts as install
+            # history, so an unset run would keep the questionnaire shut for an unfinished guide.
+            _settle_run(config_path, not done)
         # A profile whose identity did not reach the shared store keeps its marker and the latch stays
         # open, so the next boot retries instead of leaving the install without that identity.
         unshared = {path for path in marked if not _share_identity(path)}
@@ -92,13 +95,13 @@ def _old_guide_done(markers, config_path: Path) -> bool:
                for path in {config_path, get_hermes_home() / "config.yaml"})
 
 
-def _settle_run(config_path: Path) -> None:
-    """``onboarding.run = false`` unless the root config already says what it wants."""
+def _settle_run(config_path: Path, run: bool) -> None:
+    """``onboarding.run = run`` unless the root config already says what it wants."""
     from hermes_cli.config import read_user_config_raw
 
     section = read_user_config_raw(config_path).get("onboarding")
     if not isinstance(section, dict) or not isinstance(section.get("run"), bool):
-        set_run(False)
+        set_run(run)
 
 
 def _share_identity(profile: Path) -> bool:
