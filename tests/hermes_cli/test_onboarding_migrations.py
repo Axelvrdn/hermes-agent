@@ -102,14 +102,13 @@ def test_a_backend_launched_inside_the_setup_profile_does_not_release_it(root, m
     assert not (root / "config.yaml").exists() or "onboarding" not in read_user_config_raw(root / "config.yaml")
 
 
-def test_hand_installed_onboarding_skills_are_uninstalled(root):
+def _hub_install_first_task(home: Path) -> None:
     from hermes_constants import reset_hermes_home_override, set_hermes_home_override
     from tools.skills_hub import HubLockFile
 
-    work = profiles.create_profile("work", no_alias=True)
-    token = set_hermes_home_override(work)
+    token = set_hermes_home_override(home)
     try:
-        skill_dir = work / "skills" / "productivity" / "first-task"
+        skill_dir = home / "skills" / "productivity" / "first-task"
         skill_dir.mkdir(parents=True)
         (skill_dir / "SKILL.md").write_text("---\nname: first-task\n---\n")
         HubLockFile().record_install(
@@ -118,11 +117,20 @@ def test_hand_installed_onboarding_skills_are_uninstalled(root):
     finally:
         reset_hermes_home_override(token)
 
+
+def _assert_first_task_gone(home: Path) -> None:
+    assert not (home / "skills" / "productivity" / "first-task").exists()
+    lock = json.loads((home / "skills" / ".hub" / "lock.json").read_text())
+    assert "first-task" not in lock["installed"]
+
+
+def test_hand_installed_onboarding_skills_are_uninstalled(root):
+    work = profiles.create_profile("work", no_alias=True)
+    _hub_install_first_task(work)
+
     onboarding_migrations.release_setup_profiles()
 
-    assert not skill_dir.exists()
-    lock = json.loads((work / "skills" / ".hub" / "lock.json").read_text())
-    assert "first-task" not in lock["installed"]
+    _assert_first_task_gone(work)
 
 
 def test_the_user_s_own_tool_search_settings_outlive_the_setup_deferred_list(root):
@@ -204,3 +212,16 @@ def test_a_distribution_that_ships_a_setup_marker_installs_released(root, tmp_pa
     (staged / "distribution.yaml").write_text("name: staged-setup\nversion: 0.1.0\n")
 
     _assert_released_copy(install_distribution(str(staged), name="installed").target_dir)
+
+
+def test_an_archive_imported_after_the_release_arrives_without_the_retired_skills(root, tmp_path):
+    import tarfile
+
+    onboarding_migrations.release_setup_profiles()  # latched before the archive arrives
+    exported = _setup_profile("old-setup", {"intro": "seen"})
+    _hub_install_first_task(exported)
+    archive = tmp_path / "old-setup.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        tar.add(exported, arcname="old-setup")
+
+    _assert_first_task_gone(profiles.import_profile(str(archive), name="imported"))
