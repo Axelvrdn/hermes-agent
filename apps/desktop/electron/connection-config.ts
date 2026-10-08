@@ -793,6 +793,10 @@ function localPrimaryRequestScope(opts: ProfileRouteOptions): boolean | null {
  *    call opens is polled and cancelled by id from the same process memory.
  *  - Telegram/WhatsApp onboarding: start/poll/cancel share an in-memory
  *    pairing table; apply takes `profile` for the credential write.
+ *  - /api/local-models: model files are machine-wide, but `local_runtime`
+ *    (server on/off, backend) and the active model are the profile's config,
+ *    so status/catalog/server/download/activate take `profile`. Jobs are
+ *    polled by id from the same process memory.
  */
 const PROFILE_SCOPED_FAMILIES = [
   '/api/tools',
@@ -801,18 +805,17 @@ const PROFILE_SCOPED_FAMILIES = [
   '/api/providers/oauth',
   '/api/mcp',
   '/api/messaging/telegram/onboarding',
-  '/api/messaging/whatsapp/onboarding'
+  '/api/messaging/whatsapp/onboarding',
+  '/api/local-models'
 ]
 
 /**
  * Machine state, not a profile's: served by the shared backend with no
- * `?profile=`. Each keeps a job or action id in the memory of the process that
- * started it, so the start must land where its poll (`/api/local-models/jobs`,
- * `/api/actions/*`) does. Models live in the machine-wide models dir; the
- * routes that write a profile's config (activate, quickstart, runtime install)
- * are listed in LOCAL_PRIMARY_SCOPED_ROUTES and match first.
+ * `?profile=`. Each spawns an action polled by name from the memory of the
+ * process that started it (`/api/actions/*`), so it must land where the poll
+ * does.
  */
-const MACHINE_SCOPED_ROUTES = ['/api/local-models', '/api/hermes/update', '/api/gateway/migrate']
+const MACHINE_SCOPED_ROUTES = ['/api/hermes/update', '/api/gateway/migrate']
 
 const SAFE_REQUEST_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 

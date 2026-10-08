@@ -135,3 +135,20 @@ def test_stop_forwards_recovery_and_preserves_conflict(client, tmp_path, monkeyp
     assert response.status_code == (409 if refuse else 200), response.text
     assert called == [True]
     assert disabled == ([] if refuse else [False])
+
+
+def test_stop_for_a_named_profile_writes_that_profiles_config(client, tmp_path, monkeypatch):
+    """One backend serves every "This device" profile: a named profile's Stop must flip ITS
+    ``local_runtime.enabled``, never the launch profile's."""
+    reviewer = tmp_path / ".hermes" / "profiles" / "reviewer"
+    reviewer.mkdir(parents=True)
+    (reviewer / "config.yaml").write_text("local_runtime:\n  enabled: true\n", encoding="utf-8")
+    (tmp_path / ".hermes" / "config.yaml").write_text("local_runtime:\n  enabled: true\n", encoding="utf-8")
+    monkeypatch.setattr("hermes_cli.local_runtime.bootstrap.get_supervisor", lambda: object())
+    monkeypatch.setattr("hermes_cli.local_runtime.bootstrap.shutdown_local_runtime", lambda: None)
+
+    r = client.post("/api/local-models/server?profile=reviewer", json={"action": "stop"})
+    assert r.status_code == 200
+
+    assert "enabled: false" in (reviewer / "config.yaml").read_text()
+    assert "enabled: true" in (tmp_path / ".hermes" / "config.yaml").read_text()

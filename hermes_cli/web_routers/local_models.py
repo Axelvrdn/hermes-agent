@@ -490,9 +490,15 @@ def _active_llamacpp_model_id() -> str | None:
 
 
 @router.get("/api/local-models/status")
-def local_models_status():
+def local_models_status(profile: Optional[str] = None):
     """Cheap, immediate: config state + installed runtime + staged models + supervisor state (GPU facts live
-    in /hardware). Sync def on purpose: blocking urlopen/scans run in the threadpool."""
+    in /hardware). Sync def on purpose: blocking urlopen/scans run in the threadpool. ``profile`` names whose
+    ``local_runtime`` / active model the row reflects (one backend serves several profiles)."""
+    with _config_profile_scope(profile):
+        return _local_models_status()
+
+
+def _local_models_status():
     section = _runtime_section()
     engine = binaries.installed_engine(section.get("backend", "auto"))
     runtime_backend = engine.backend if engine is not None else None
@@ -614,7 +620,12 @@ def _catalog_row(entry, budget, recommended, recommended_reason, staged_ids) -> 
 
 
 @router.get("/api/local-models/catalog")
-def local_models_catalog():
+def local_models_catalog(profile: Optional[str] = None):
+    with _config_profile_scope(profile):
+        return _local_models_catalog()
+
+
+def _local_models_catalog():
     """Every entry answers up front: how big is the download, will it fit, what context/speed shape will I
     get. The row advertises the BEST build for this machine (highest quality fully on GPU at the 64K floor;
     else the smallest that works, spilled and priced). No entry is hidden; unaffordable models show WHY.
@@ -695,7 +706,13 @@ def _download_target(model_id: str):
 
 
 @router.post("/api/local-models/download")
-def local_models_download(body: ModelDownloadBody):
+def local_models_download(body: ModelDownloadBody, profile: Optional[str] = None):
+    # The job thread inherits the scope: its post-download runtime refresh reads THIS profile's config.
+    with _config_profile_scope(profile):
+        return _local_models_download(body)
+
+
+def _local_models_download(body: ModelDownloadBody):
     """Accepts either a family id (downloads this machine's selected variant) or an exact variant model_id."""
     entry, variant = _download_target(body.model_id)
     plan = _download_plan(entry, variant)
@@ -856,14 +873,16 @@ _SERVER_ACTIONS = {"stop": _stop_server, "start": _start_server}
 
 
 @router.post("/api/local-models/server")
-async def local_models_server(body: ServerActionBody):
+async def local_models_server(body: ServerActionBody, profile: Optional[str] = None):
     """Turn the local engine off (stop the server, free ALL GPU memory, disable auto-start) or back on. Unlike
     per-model eject the off switch IS durable: the user said off, so boots stay off until they say on."""
     action = (body.action or "").strip().lower()
     if action not in _SERVER_ACTIONS:
         raise HTTPException(status_code=400, detail="action must be 'stop' or 'start'")
     try:
-        await asyncio.to_thread(_SERVER_ACTIONS[action])
+        # ``local_runtime.enabled`` is the requesting profile's setting, not the launch profile's.
+        with _config_profile_scope(profile):
+            await asyncio.to_thread(_SERVER_ACTIONS[action])
     except HTTPException:
         raise
     except Exception as exc:

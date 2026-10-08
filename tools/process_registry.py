@@ -544,6 +544,7 @@ class ProcessSession:
     owner_task_id: str = ""                     # RAW spawning task id ("sa-..."); ownership
                                                 # checks must use this, not task_id
     session_key: str = ""                       # Gateway session key (reset protection)
+    owner_home: str = ""                        # Routed profile home that spawned it ("" = launch profile)
     pid: Optional[int] = None
     process: Optional[subprocess.Popen] = None  # Popen handle (local only)
     env_ref: Any = None                         # Environment object (sandbox spawns)
@@ -650,7 +651,7 @@ _WATCHER_ROUTE_KEYS = ("platform", "chat_id", "user_id", "user_name", "thread_id
 # ``session_id``; ``command`` is redacted and ``owner_task_id`` defaulted on write).
 _CHECKPOINT_FIELDS = (
     "command", "pid", "pid_scope", "host_start_time", "systemd_unit", "wsl_chain", "cwd",
-    "started_at", "task_id", "owner_task_id", "session_key",
+    "started_at", "task_id", "owner_task_id", "session_key", "owner_home",
     *(f"watcher_{k}" for k in _WATCHER_ROUTE_KEYS), "watcher_interval",
     "parent_session_id", "notify_on_complete", "completion_output_chars", "watch_patterns",
     "heartbeat_seconds", "persist_on_release")
@@ -661,39 +662,7 @@ _CHECKPOINT_DEFAULTS = {
 }
 
 
-_WSL_LAUNCHER_NAMES = frozenset({"wsl", "wsl.exe"})
-
-_WSL_CHAIN_NOTE = (
-    "Spawned via a wsl[.exe] launcher: the recorded host PID is the short-lived "
-    "launcher, not the Linux-side workers. Inspect them with `wsl -e ps` / "
-    "`wsl --list --running` from the host."
-)
-
-
-def _is_wsl_launcher_command(command: str) -> bool:
-    """True when *command* routes through a ``wsl[.exe]`` launcher chain (#120546).
-
-    The host PID recorded for such a spawn belongs to the short-lived launcher;
-    grandchildren inside the VM outlive it, so the entry must say so instead of
-    letting host-side hunting fail silently.
-    """
-    if not isinstance(command, str) or not command.strip():
-        return False
-    candidates = []
-    try:
-        candidates.append((shlex.split(command, posix=True) or [""])[0])
-    except ValueError:
-        pass
-    # POSIX shlex eats Windows backslashes (``C:\...\wsl.exe``), so also try
-    # the naive first token where path separators survive.
-    words = command.strip().split()
-    if words:
-        candidates.append(words[0])
-    for first in candidates:
-        base = os.path.basename(first.replace("\\", "/")).strip("'\"").lower()
-        if base in _WSL_LAUNCHER_NAMES:
-            return True
-    return False
+from tools.process_registry_wsl import _WSL_CHAIN_NOTE, _is_wsl_launcher_command  # noqa: E402,F401
 
 
 class ProcessRegistry(ProcessTerminationMixin, ProcessCheckpointMixin):
@@ -1106,10 +1075,11 @@ class ProcessRegistry(ProcessTerminationMixin, ProcessCheckpointMixin):
     @staticmethod
     def _new_session(command, task_id, owner_task_id, session_key, cwd, **extra) -> ProcessSession:
         from gateway.session_context import get_session_env
-
+        from hermes_constants import get_hermes_home_override as _home
         return ProcessSession(
             id=f"proc_{uuid.uuid4().hex[:12]}", command=command, task_id=task_id,
             owner_task_id=owner_task_id, session_key=session_key, cwd=cwd,
+            owner_home=os.path.realpath(_home()) if _home() else "",
             parent_session_id=get_session_env("HERMES_SESSION_ID", ""),
             wsl_chain=_is_wsl_launcher_command(command),
             started_at=time.time(), **extra)
@@ -2542,7 +2512,7 @@ class ProcessRegistry(ProcessTerminationMixin, ProcessCheckpointMixin):
 
     def kill_all(
         self, task_id: Optional[str] = None, *, exclude_ids: frozenset = frozenset(),
-        source: str = "kill_all", consume_output: bool = False) -> int:
+        source: str = "kill_all", consume_output: bool = False, owner_homes: frozenset | None = None) -> int:
         """Kill all running processes, optionally only those ``task_id`` spawned (its ``owner_task_id``).
         Returns how many it stopped. A session whose systemd scope did not stop is not counted
         (its descendants may live on), and a later sweep retries it even after it finished.
@@ -2552,12 +2522,14 @@ class ProcessRegistry(ProcessTerminationMixin, ProcessCheckpointMixin):
         timeout, or ``agent_close``): an explicitly persisted background job must survive
         session end / compression / error recovery (#41225). An explicit operator stop
         (``process.kill`` via process_manage, CLI /stop) passes its own source and still
-        reaches them, so the user can always stop a persisted process on purpose."""
+        reaches them, so the user can always stop a persisted process on purpose. ``owner_homes`` limits the
+        sweep to processes spawned under those profile homes (``""`` = launch): a sibling profile's survive."""
         lifecycle = source in self._LIFECYCLE_KILL_SOURCES
         with self._lock:
             targets = [
                 s for s in (*self._running.values(), *self._finished.values())
                 if (task_id is None or s.owner_task_id == task_id)
+                and (owner_homes is None or s.owner_home in owner_homes)
                 and s.id not in exclude_ids and (not s.exited or s._scope_stop_pending)
                 and not (lifecycle and s.persist_on_release)
             ]

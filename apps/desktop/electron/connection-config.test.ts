@@ -1645,15 +1645,23 @@ test('a flow polled by id stays on the backend that started it: no local-rest ch
     assert.equal(unscopableMutatingRequest({ requestMethod: method, requestPath: path }), false, `${method} ${path}`)
   }
 
-  // Machine state carries no profile; a profile's config write does.
+  // Machine state carries no profile; local-runtime state is the profile's config (server on/off,
+  // active model), so the whole local-models family is scoped.
   assert.equal(
-    resolveProfileBackendRoute('reviewer', { requestMethod: 'POST', requestPath: '/api/local-models/download' })
-      .scopePath,
+    resolveProfileBackendRoute('reviewer', { requestMethod: 'POST', requestPath: '/api/hermes/update' }).scopePath,
     false
   )
-  assert.equal(
-    resolveProfileBackendRoute('reviewer', { requestMethod: 'POST', requestPath: '/api/local-models/quickstart' })
-      .scopePath,
-    true
-  )
+
+  for (const [method, path] of [
+    ['POST', '/api/local-models/server'],
+    ['GET', '/api/local-models/status'],
+    ['POST', '/api/local-models/download'],
+    ['POST', '/api/local-models/quickstart']
+  ]) {
+    assert.equal(
+      resolveProfileBackendRoute('reviewer', { requestMethod: method, requestPath: path }).scopePath,
+      true,
+      path
+    )
+  }
 })

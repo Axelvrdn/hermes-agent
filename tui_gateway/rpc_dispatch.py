@@ -32,7 +32,8 @@ def _handle_admitted_request(req: dict) -> dict | None:
         params = _socket_profile_params(contract, params)
     token = _current_rpc_method.set(method)
     try:
-        response = fn(rid, params)
+        with _socket_profile_scope(method, params):
+            response = fn(rid, params)
     except ProfileUnavailableError as exc:
         return _err(rid, 4064, str(exc))
     finally:
@@ -53,6 +54,55 @@ def _socket_profile_params(contract, params: dict) -> dict:
             or str(params.get("session_id") or "") in _sessions):
         return params
     return {**params, "profile": profile}
+
+
+# Per-frame RPCs that touch no profile state: binding a scope reads the profile's .env and config each time.
+_UNSCOPED_HOT_METHODS = frozenset({"ping", "wake.feed", "terminal.resize"})
+
+
+def _socket_profile_scope(method: str, params: dict):
+    """Run the RPC inside the profile its socket speaks for: HERMES_HOME, secrets and terminal policy, as a
+    process launched as that profile would. Many handlers read config, ``.env`` or the terminal backend with no
+    ``profile`` plumbing of their own (wake, path completion, process cleanup, tool probes), and on a backend
+    that serves several profiles those reads would otherwise land in the launch profile. A live session's call
+    binds that session's profile; a socket with no profile changes nothing."""
+    if method in _UNSCOPED_HOT_METHODS or not getattr(current_transport(), "default_profile", None):
+        return contextlib.nullcontext()
+    session = _sessions.get(str(params.get("session_id") or ""))
+    if session is not None:
+        return _session_profile_runtime_scope({"profile_home": session.get("profile_home") or None})
+    # Only the socket's own profile: an explicit, different ``profile`` (a cross-profile target or selector)
+    # stays the handler's to interpret, as before.
+    if params.get("profile") not in (None, "", current_transport().default_profile):
+        return contextlib.nullcontext()
+    home = _profile_home(current_transport().default_profile)
+    return _session_profile_runtime_scope({"profile_home": str(home) if home is not None else None})
+
+
+def _caller_process_homes(params: dict) -> frozenset | None:
+    """Profile homes whose background processes this caller may bulk-stop. None (every process) while this
+    backend serves one profile; once it serves several, only the caller's: its session's, else the ``profile``
+    it names (a shared socket's default, ``rpc_dispatch._socket_profile_params``), else the bound scope. The
+    launch profile owns untagged processes."""
+    if not _served_profile_homes:
+        return None
+    session = _sessions.get(str(params.get("session_id") or ""))
+    if session is not None:
+        home = session.get("profile_home") or None
+    elif params.get("profile"):
+        home = _profile_home(params.get("profile"))
+    else:
+        home = get_hermes_home_override()
+    launch = str(Path(_hermes_home).resolve())
+    if not home or str(Path(home).resolve()) == launch:
+        return frozenset({"", launch})
+    return frozenset({str(Path(home).resolve())})
+
+
+def _stop_caller_processes(params: dict) -> int:
+    """``process.stop``: bulk-stop the caller's background processes (``_caller_process_homes``)."""
+    from tools.process_registry import process_registry
+    return process_registry.kill_all(source="process.stop", owner_homes=_caller_process_homes(params))
 
 
 def dispatch(req: dict, transport: Optional[Transport] = None) -> dict | None:
