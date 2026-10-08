@@ -6,6 +6,7 @@ export const deQuestionnaire: Translations['questionnaire'] = {
   trailLabel: 'Ihre Antworten',
   changeAnswer: 'Diese Antwort ändern',
   retry: 'Erneut versuchen',
+  saveFailed: 'Einrichtung konnte nicht als erledigt gespeichert werden',
   skipped: 'Übersprungen',
   otherLabel: 'Andere Antwort',
   kinds: {

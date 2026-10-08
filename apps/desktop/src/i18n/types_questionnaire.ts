@@ -4,6 +4,7 @@ export interface QuestionnaireTranslations {
   trailLabel: string
   changeAnswer: string
   retry: string
+  saveFailed: string
   skipped: string
   otherLabel: string
   kinds: {

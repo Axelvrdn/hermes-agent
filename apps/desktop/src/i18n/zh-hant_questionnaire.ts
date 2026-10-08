@@ -6,6 +6,7 @@ export const zhHantQuestionnaire: Translations['questionnaire'] = {
   trailLabel: '你的回答',
   changeAnswer: '修改此回答',
   retry: '重試',
+  saveFailed: '無法將設定標記為完成',
   skipped: '已略過',
   otherLabel: '其他回答',
   kinds: {

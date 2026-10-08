@@ -6,6 +6,7 @@ export const esQuestionnaire: Translations['questionnaire'] = {
   trailLabel: 'Tus respuestas',
   changeAnswer: 'Cambiar esta respuesta',
   retry: 'Reintentar',
+  saveFailed: 'No se pudo marcar la configuración como terminada',
   skipped: 'Omitido',
   otherLabel: 'Otra respuesta',
   kinds: {

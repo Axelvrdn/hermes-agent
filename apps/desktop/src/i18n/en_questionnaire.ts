@@ -6,6 +6,7 @@ export const enQuestionnaire: Translations['questionnaire'] = {
   trailLabel: 'Your answers',
   changeAnswer: 'Change this answer',
   retry: 'Try again',
+  saveFailed: 'Could not mark setup as done',
   skipped: 'Skipped',
   otherLabel: 'Other answer',
   kinds: {

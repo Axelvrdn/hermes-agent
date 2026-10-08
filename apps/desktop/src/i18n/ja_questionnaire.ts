@@ -6,6 +6,7 @@ export const jaQuestionnaire: Translations['questionnaire'] = {
   trailLabel: 'あなたの回答',
   changeAnswer: 'この回答を変更',
   retry: '再試行',
+  saveFailed: 'セットアップの完了を保存できませんでした',
   skipped: 'スキップ',
   otherLabel: 'その他の回答',
   kinds: {

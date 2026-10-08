@@ -6,6 +6,7 @@ export const ruQuestionnaire: Translations['questionnaire'] = {
   trailLabel: 'Ваши ответы',
   changeAnswer: 'Изменить этот ответ',
   retry: 'Повторить',
+  saveFailed: 'Не удалось отметить настройку как завершённую',
   skipped: 'Пропущено',
   otherLabel: 'Другой ответ',
   kinds: {

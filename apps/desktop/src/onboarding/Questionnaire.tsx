@@ -156,15 +156,24 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
       return
     }
 
+    // A lost save leaves setup due on the next launch, so the toast keeps the write one click away.
+    const saveFailed = (error: unknown) =>
+      notifyError(error, t.questionnaire.saveFailed, {
+        action: { label: t.questionnaire.retry, onClick: () => void setRun(host.request, false).catch(saveFailed) },
+        id: 'questionnaire-save'
+      })
+
     return $freeTierStatus.subscribe(status => {
       const current = $questionnaire.get()
 
       if (freeAccountState(status) === 'failed' && current.phase === 'shown' && current.pending === null) {
         closeQuestionnaire('failed')
-        void setRun(host.request, false).finally(() => void refreshReadiness())
+        void setRun(host.request, false)
+          .catch(saveFailed)
+          .finally(() => void refreshReadiness())
       }
     })
-  }, [host, refreshReadiness])
+  }, [host, refreshReadiness, t])
 
   if (!host) {
     return null

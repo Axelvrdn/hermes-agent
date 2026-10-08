@@ -6,6 +6,7 @@ export const arQuestionnaire: Translations['questionnaire'] = {
   trailLabel: 'إجاباتك',
   changeAnswer: 'تغيير هذه الإجابة',
   retry: 'حاول مرة أخرى',
+  saveFailed: 'تعذّر تسجيل اكتمال الإعداد',
   skipped: 'تم التخطي',
   otherLabel: 'إجابة أخرى',
   kinds: {

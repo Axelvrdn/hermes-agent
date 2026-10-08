@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { $freeTierStatus } from '@/store/free-tier'
 import { $notifications, clearNotifications } from '@/store/notifications'
 import { markQuestionnaireDecided } from '@/store/onboarding-presence'
+import type { FreeTierStatus } from '@/types/hermes'
 
 import type { OnboardingRequester } from './due'
 import { FIXTURES } from './fixtures.test-util'
@@ -116,5 +117,50 @@ describe('QuestionnaireScreen after Start closed it', () => {
 
     await waitFor(() => expect(sent).toHaveLength(2))
     expect(sent[1]).toBe(sent[0])
+  })
+})
+
+// A terminal free-tier refusal: the overlay hands over to the picker on its own (D23).
+const REFUSED: FreeTierStatus = {
+  available: false,
+  enabled: true,
+  error_code: 'anon_gate_closed',
+  has_guest: false,
+  label: 'Nous · free tier',
+  model: 'nous/welcome',
+  notice_pending: true,
+  retryable: false
+}
+
+describe('QuestionnaireScreen when the free account fails for good', () => {
+  it('reports a failed run=false save and offers to save it again', async () => {
+    const saves: string[] = []
+
+    const request: OnboardingRequester = async <T,>(method: string) => {
+      if (method !== 'onboarding.set_run') {
+        return new Promise<T>(() => {})
+      }
+
+      saves.push(method)
+
+      throw new Error('connection lost')
+    }
+
+    await renderReview({ request })
+    act(() => $freeTierStatus.set(REFUSED))
+
+    const retry = await waitFor(() => {
+      const action = $notifications.get().find(item => item.title === 'Could not mark setup as done')?.action
+
+      expect(action?.label).toBe('Try again')
+
+      return action
+    })
+
+    expect($questionnaire.get().phase).toBe('failed')
+
+    act(() => retry?.onClick())
+
+    await waitFor(() => expect(saves).toHaveLength(2))
   })
 })
