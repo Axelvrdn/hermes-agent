@@ -7,7 +7,6 @@ No surface starts an agent turn with it. ``on_session_end`` (per turn) stays obs
 
 from __future__ import annotations
 
-import asyncio
 import threading
 from datetime import datetime
 from types import SimpleNamespace

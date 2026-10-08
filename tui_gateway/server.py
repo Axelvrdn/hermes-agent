@@ -50,7 +50,6 @@ from hermes_constants import (
     set_hermes_home_override,
 )
 from hermes_state_ids import new_session_id
-from tools.environments.local import hermes_subprocess_env
 from agent.fast_mode import STATIC_TIERS
 from agent.replay_cleanup import canonicalize_replay_history
 from agent.reasoning_effort import clamp_effort, route_supported_efforts

@@ -438,7 +438,6 @@ def test_no_changelog_releases_what_the_full_changelog_could_not(source, tmp_pat
 
 def test_changelog_prints_the_notes_a_draft_would_carry_and_claims_nothing(source, monkeypatch, capsys):
     from scripts import release as release_script
-    from scripts.releases import entrypoint
 
     shipped = _advance(source, "fix: shipped in the published release")
     git(source, "tag", "-a", "v0.21.4", shipped, "-m", "published")
