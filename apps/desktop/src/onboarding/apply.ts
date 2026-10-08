@@ -19,6 +19,9 @@ export interface AccentTarget {
   live: boolean
   current: null | string
   setAccent: (id: null | string) => void
+  /** Paints without storing, so quitting before Confirm keeps the stored accent. */
+  preview: (id: null | string) => void
+  clearPreview: () => void
 }
 
 /** Paint a swatch before it is confirmed; answers the revert. Only the live default profile can preview. */
@@ -27,11 +30,9 @@ export function previewAccent(target: AccentTarget, id: null | string): (() => v
     return null
   }
 
-  const previous = target.current
+  target.preview(id)
 
-  target.setAccent(id)
-
-  return () => target.setAccent(previous)
+  return target.clearPreview
 }
 
 export function commitAccent(target: AccentTarget, id: null | string): void {

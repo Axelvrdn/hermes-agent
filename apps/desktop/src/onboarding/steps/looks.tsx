@@ -22,10 +22,10 @@ import { AccentSwatch, LayoutPreviewCard, LAYOUTS } from '../visuals/options'
 import { StepCard } from './step-card'
 
 function useAccentTarget(): AccentTarget {
-  const { accent, setAccent } = useTheme()
+  const { accent, clearAccentPreview, previewAccent, setAccent } = useTheme()
   const live = normalizeProfileKey(useStore($activeGatewayProfile)) === QUESTIONNAIRE_PROFILE
 
-  return { current: accent, live, setAccent }
+  return { clearPreview: clearAccentPreview, current: accent, live, preview: previewAccent, setAccent }
 }
 
 export function AccentStep() {

@@ -482,6 +482,9 @@ interface ThemeContextValue {
   /** The live profile's stored accent swatch id; `null` paints the theme's own accent. */
   accent: null | string
   setAccent: (id: null | string) => void
+  /** Paint an accent without storing it. `setAccent` or `clearAccentPreview` repaints the stored one. */
+  previewAccent: (id: null | string) => void
+  clearAccentPreview: () => void
 }
 
 const SKIN_LIST = BUILTIN_THEME_LIST.map(({ name, label, description }) => ({ name, label, description }))
@@ -498,7 +501,9 @@ const ThemeContext = createContext<ThemeContextValue>({
   previewTheme: () => {},
   clearThemePreview: () => {},
   accent: null,
-  setAccent: () => {}
+  setAccent: () => {},
+  previewAccent: () => {},
+  clearAccentPreview: () => {}
 })
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -580,6 +585,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // persisted. A commit or an explicit clear returns the paint to the
   // committed appearance.
   const [preview, setPreview] = useState<{ name: string; mode: 'light' | 'dark' } | null>(null)
+  // Transient accent preview (the questionnaire's swatches); `undefined` = none, `null` = the theme's own.
+  const [accentPreview, setAccentPreview] = useState<null | string | undefined>(undefined)
 
   // The committed skin, resolved against the CURRENT registry — so a stored
   // backend skin that failed to resolve at boot paints once the gateway seeds it.
@@ -608,8 +615,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const accentOverride = useStore($accentOverride)
 
   const paintedTheme = useMemo(
-    () => accentedTheme(activeTheme, paintedMode, accentOverride, accent),
-    [activeTheme, paintedMode, accentOverride, accent]
+    () => accentedTheme(activeTheme, paintedMode, accentOverride, accentPreview === undefined ? accent : accentPreview),
+    [activeTheme, paintedMode, accentOverride, accent, accentPreview]
   )
 
   // What actually gets painted (matches the `.dark` class applyTheme toggles).
@@ -646,9 +653,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setAccent = useCallback((id: null | string) => {
     recordFeatureUse('skins')
+    setAccentPreview(undefined)
     setAccentState(normalizeAccentId(id))
     accentPref.assign(liveProfile(), id)
   }, [])
+
+  const previewAccent = useCallback((id: null | string) => setAccentPreview(normalizeAccentId(id)), [])
+
+  const clearAccentPreview = useCallback(() => setAccentPreview(undefined), [])
 
   const previewTheme = useCallback((name: string, previewMode: 'light' | 'dark') => {
     setPreview(resolveTheme(name) ? { name, mode: previewMode } : null)
@@ -684,7 +696,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       previewTheme,
       clearThemePreview,
       accent,
-      setAccent
+      setAccent,
+      previewAccent,
+      clearAccentPreview
     }),
     [
       paintedTheme,
@@ -698,7 +712,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       previewTheme,
       clearThemePreview,
       accent,
-      setAccent
+      setAccent,
+      previewAccent,
+      clearAccentPreview
     ]
   )
 
