@@ -7,6 +7,13 @@
 import { $freeTierStatus, ackFreeTierNotice } from '@/store/free-tier'
 import { acceptLocalSetupOffer, dismissLocalSetupOffer, noteHandoffSession } from '@/store/local-setup-offer'
 import { clearFreeTierIntro } from '@/store/onboarding'
+import {
+  $activeGatewayProfile,
+  ensureGatewayProfile,
+  normalizeProfileKey,
+  pinNewChatProfile,
+  switchToDefaultProfile
+} from '@/store/profile'
 
 import { type OnboardingRequester, setRun } from './due'
 import { freeAccountState } from './facts'
@@ -208,6 +215,17 @@ export async function openFirstChat(
   if (answers.local === 'yes' && !answers.skipped.includes('local') && facts.local) {
     void deps.startQuickstart(facts.local)
   }
+}
+
+/** Aim the next new chat at the default profile (D17), whatever profile is active or was picked for a new chat. */
+export async function targetDefaultProfile(): Promise<void> {
+  if (normalizeProfileKey($activeGatewayProfile.get()) !== 'default') {
+    switchToDefaultProfile()
+    await ensureGatewayProfile('default')
+  }
+
+  // session.create ranks a new-chat pick (profile or agent route) above the active profile.
+  pinNewChatProfile('default')
 }
 
 /** Resolves once the free account exists, has failed for good, or the Start wait has passed. */

@@ -42,6 +42,7 @@ import { type ChatMessage, chatMessageText } from '@/lib/chat-messages'
 import { isMessagingSource } from '@/lib/session-source'
 import { activateWakeIndicator } from '@/lib/wake-indicator'
 import { playWakeSound } from '@/lib/wake-sound'
+import { targetDefaultProfile } from '@/onboarding/handoff'
 import { Questionnaire } from '@/onboarding/Questionnaire'
 import { $billingSettingsRequest } from '@/store/billing-block'
 import { $desktopBoot } from '@/store/boot'
@@ -60,8 +61,7 @@ import {
   ALL_PROFILES,
   ensureGatewayProfile,
   newSessionInProfile,
-  normalizeProfileKey,
-  switchToDefaultProfile
+  normalizeProfileKey
 } from '@/store/profile'
 import { $newProjectSessionRequest, $startWorkSessionRequest, followActiveSessionCwd } from '@/store/projects'
 import { $backendRestartRequest, $routeRequest } from '@/store/recovery-requests'
@@ -689,10 +689,7 @@ export function ContribWiring({ children }: { children: ReactNode }) {
   // The questionnaire's first chat always opens in the default profile (D17), whatever profile is active.
   const openDefaultChat = useCallback(
     async (text: string) => {
-      if (normalizeProfileKey($activeGatewayProfile.get()) !== 'default') {
-        switchToDefaultProfile()
-        await ensureGatewayProfile('default')
-      }
+      await targetDefaultProfile()
 
       return (await submitTextToNewSession(text)).runtimeSessionId
     },

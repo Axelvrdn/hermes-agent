@@ -1,7 +1,15 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+
+import {
+  $activeGatewayProfile,
+  $newChatProfile,
+  $newChatRoute,
+  pinNewChatProfile,
+  resolveNewChatOwnerRoute
+} from '@/store/profile'
 
 import { answers, FIXTURES } from './fixtures.test-util'
-import { handoffPrompt, MEMORY_LINE, NO_TASK_ASK } from './handoff'
+import { handoffPrompt, MEMORY_LINE, NO_TASK_ASK, targetDefaultProfile } from './handoff'
 
 const lines = (text: string) => text.split('\n')
 
@@ -81,5 +89,24 @@ describe('handoffPrompt', () => {
   it('adds the task lines only with a task', () => {
     expect(handoffPrompt(spark, answers())).not.toContain('~/hermes-first-task/.')
     expect(handoffPrompt(spark, answers({ task: { id: 'tidy' } }))).toContain('- Put new files in ~/hermes-first-task/.')
+  })
+})
+
+describe('targetDefaultProfile', () => {
+  afterEach(() => {
+    $newChatProfile.set(null)
+    $newChatRoute.set(null)
+  })
+
+  it('aims the next new chat at default over a new-chat pick left on another profile', async () => {
+    $activeGatewayProfile.set('default')
+    pinNewChatProfile('work')
+    $newChatRoute.set({ connectionId: 'local', profile: 'work' })
+
+    await targetDefaultProfile()
+
+    // The two inputs session.create resolves its profile from (desktopSessionCreateParams).
+    expect(resolveNewChatOwnerRoute()?.profile ?? 'default').toBe('default')
+    expect($newChatProfile.get()).toBe('default')
   })
 })
