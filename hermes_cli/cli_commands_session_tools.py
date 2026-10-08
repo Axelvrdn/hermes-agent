@@ -236,7 +236,7 @@ class CLICommandsSessionToolsMixin:
                 _cp(f"  {_t(osc52_key, **kw)}")
             else:
                 _cp(f"  {_t(ok_key, **kw)}")
-        except Exception as e:
+        except OSError as e:  # the OSC 52 terminal write (subprocess errors are absorbed upstream)
             _cp(f"  {_t('copy.failed', error=e)}")
 
     def _copy_scoped_item(self, scope: str, pick: str) -> None:
