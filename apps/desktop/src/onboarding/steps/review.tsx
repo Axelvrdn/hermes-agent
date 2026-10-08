@@ -15,7 +15,7 @@ const PROMPT_MAX_HEIGHT = '22rem'
 /** The last screen: the first message as Hermes will get it, and Start. */
 export function ReviewStep({ onStart }: { onStart: () => void }) {
   const { t } = useI18n()
-  const { answers, facts, starting } = useStore($questionnaire)
+  const { answers, facts, pending } = useStore($questionnaire)
   const copy = t.questionnaire.start
   const prompt = handoffPrompt(facts, answers)
 
@@ -31,8 +31,8 @@ export function ReviewStep({ onStart }: { onStart: () => void }) {
         </FadeScroll>
       </div>
       <div className="flex justify-end">
-        <Button disabled={starting} onClick={onStart} type="button">
-          {starting ? (
+        <Button disabled={pending !== null} onClick={onStart} type="button">
+          {pending === 'start' ? (
             <>
               <Loader2 className="animate-spin" />
               {copy.waiting}

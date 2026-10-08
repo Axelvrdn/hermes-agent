@@ -37,7 +37,7 @@ import {
   passedSteps,
   type QuestionnaireState,
   setFacts,
-  setStarting
+  setPending
 } from './store'
 import { answerSummary } from './summary'
 import { runQuickTourWhenTargetsPaint } from './tour'
@@ -108,6 +108,7 @@ const STEP_VIEWS = {
 function Trail({ state }: { state: QuestionnaireState }) {
   const { t } = useI18n()
   const passed = passedSteps(state)
+  const locked = state.pending !== null
 
   if (passed.length === 0) {
     return null
@@ -116,7 +117,13 @@ function Trail({ state }: { state: QuestionnaireState }) {
   return (
     <nav aria-label={t.questionnaire.trailLabel} className="flex flex-wrap gap-1.5">
       {passed.map(stepId => (
-        <TrailChip key={stepId} label={t.questionnaire.changeAnswer} onClick={() => goToStep(stepId)} stepId={stepId}>
+        <TrailChip
+          disabled={locked}
+          key={stepId}
+          label={t.questionnaire.changeAnswer}
+          onClick={() => goToStep(stepId)}
+          stepId={stepId}
+        >
           {answerSummary(stepId, state, t.questionnaire)}
         </TrailChip>
       ))}
@@ -141,7 +148,7 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
   const { t } = useI18n()
   const state = useStore($questionnaire)
   const host = useStore($questionnaireHost)
-  const { starting, stepId, view } = state
+  const { pending, stepId, view } = state
 
   // D23: a free account that failed for good hands over to the picker at once, mid-question or not.
   useEffect(() => {
@@ -152,7 +159,7 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
     return $freeTierStatus.subscribe(status => {
       const current = $questionnaire.get()
 
-      if (freeAccountState(status) === 'failed' && current.phase === 'shown' && !current.starting && current.view !== 'preparing') {
+      if (freeAccountState(status) === 'failed' && current.phase === 'shown' && current.pending === null) {
         closeQuestionnaire('failed')
         void setRun(host.request, false).finally(() => void refreshReadiness())
       }
@@ -171,12 +178,16 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
 
   const start = () => {
     void finish(state.facts, state.answers, deps).catch(error => {
-      setStarting(false)
+      setPending(null)
       notifyError(error, t.questionnaire.start.failed)
     })
   }
 
-  const skip = () => void skipSetup(deps).catch(error => notifyError(error, t.questionnaire.settings.failed))
+  const skip = () =>
+    void skipSetup(deps).catch(error => {
+      setPending(null)
+      notifyError(error, t.questionnaire.settings.failed)
+    })
 
   if (view === 'preparing') {
     return <Preparing />
@@ -195,11 +206,11 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
           </StepTransition>
         </AnimatePresence>
         <div className="flex items-center justify-between gap-3">
-          <Button disabled={starting} onClick={skip} size="xs" type="button" variant="text">
+          <Button disabled={pending !== null} onClick={skip} size="xs" type="button" variant="text">
             {t.questionnaire.skipSetup}
           </Button>
           {canGoBack ? (
-            <Button disabled={starting} onClick={goBack} size="xs" type="button" variant="text">
+            <Button disabled={pending !== null} onClick={goBack} size="xs" type="button" variant="text">
               {t.questionnaire.back}
             </Button>
           ) : null}

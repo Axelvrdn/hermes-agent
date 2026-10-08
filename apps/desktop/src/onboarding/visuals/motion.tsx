@@ -48,11 +48,13 @@ export function AnswerMark({ stepId }: { stepId: StepId }) {
 /** A trail chip: reflows by position as answers join, and receives the answer's outline. */
 export function TrailChip({
   children,
+  disabled,
   label,
   onClick,
   stepId
 }: {
   children: ReactNode
+  disabled: boolean
   label: string
   onClick: () => void
   stepId: StepId
@@ -62,7 +64,8 @@ export function TrailChip({
   return (
     <motion.button
       aria-label={label}
-      className="relative inline-flex max-w-48 items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-foreground transition-colors hover:bg-accent/60"
+      className="relative inline-flex max-w-48 items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-foreground transition-colors enabled:hover:bg-accent/60 disabled:opacity-60"
+      disabled={disabled}
       layout="position"
       onClick={onClick}
       transition={reduced ? STILL : MOVE}

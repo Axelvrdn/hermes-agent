@@ -25,7 +25,7 @@ import {
   visibleSteps
 } from './flow'
 import { type InferenceClock, realClock, START_WAIT_MS, waitForInference } from './inference'
-import { closeQuestionnaire, setStarting, showPreparing } from './store'
+import { closeQuestionnaire, setPending, showPreparing } from './store'
 
 export const NO_TASK_ASK = 'What can you help me with? Ask me what I want to do first.'
 
@@ -156,7 +156,7 @@ function applyLocalAnswer(answers: Answers): void {
 
 /** Start: wait for inference, settle the flags, close, tour, then the first chat in default. */
 export async function finish(facts: Facts, answers: Answers, deps: HandoffDeps): Promise<FinishResult> {
-  setStarting(true)
+  setPending('start')
   const ready = await waitForInference(deps.request, { clock: deps.clock })
 
   if (!ready.ok) {
@@ -223,6 +223,7 @@ function freeAccountSettled(clock: InferenceClock): Promise<void> {
  * ready screen or the picker on its own.
  */
 export async function skipSetup(deps: Pick<HandoffDeps, 'clock' | 'refreshReadiness' | 'request'>): Promise<void> {
+  setPending('skip')
   await setRun(deps.request, false)
 
   if (freeAccountState($freeTierStatus.get()) === 'waiting') {

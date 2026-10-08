@@ -15,6 +15,9 @@ import { type Answers, EMPTY_ANSWERS, type Facts, FLOW, type StepId, visibleStep
 
 export type QuestionnairePhase = 'done' | 'failed' | 'idle' | 'shown' | 'skipped'
 
+/** Start or Skip in flight; one at a time, and no answer changes until it ends. */
+export type QuestionnairePending = 'skip' | 'start'
+
 /** `steps`: a question. `review`: the prompt preview and Start. `preparing`: skipped while the account is still being made. */
 export type QuestionnaireView = 'preparing' | 'review' | 'steps'
 
@@ -24,8 +27,7 @@ export interface QuestionnaireState {
   stepId: null | StepId
   answers: Answers
   facts: Facts
-  /** Start is waiting for inference. */
-  starting: boolean
+  pending: null | QuestionnairePending
 }
 
 export const LOADING_FACTS: Facts = { connectors: { status: 'loading' }, local: null, machine: null, plugins: [] }
@@ -33,8 +35,8 @@ export const LOADING_FACTS: Facts = { connectors: { status: 'loading' }, local: 
 const IDLE: QuestionnaireState = {
   answers: EMPTY_ANSWERS,
   facts: LOADING_FACTS,
+  pending: null,
   phase: 'idle',
-  starting: false,
   stepId: null,
   view: 'steps'
 }
@@ -161,8 +163,8 @@ export function passedSteps(state: QuestionnaireState): StepId[] {
   return state.view === 'review' ? ids : ids.slice(0, state.stepId ? ids.indexOf(state.stepId) : 0)
 }
 
-export function setStarting(starting: boolean): void {
-  patch({ starting })
+export function setPending(pending: null | QuestionnairePending): void {
+  patch({ pending })
 }
 
 /** Skip setup while the free account is still being made: hold the overlay on "Starting Hermes…". */
@@ -178,5 +180,5 @@ export function closeQuestionnaire(phase: Exclude<QuestionnairePhase, 'idle' | '
   }
 
   dropPreview()
-  patch({ phase, starting: false })
+  patch({ pending: null, phase })
 }
