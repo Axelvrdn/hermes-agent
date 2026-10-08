@@ -26,7 +26,7 @@ describe('LayoutStep', () => {
 
     expect(basicBox).toEqual(sizeClasses(elite.firstElementChild))
     // A box sized by its own width and height, not by the button's content width.
-    expect(basicBox.some(name => /^h-/.test(name))).toBe(true)
+    expect(basicBox.some(name => name.startsWith('h-'))).toBe(true)
     expect(basicBox.some(name => /^w-(\d|\[)/.test(name))).toBe(true)
     expect(basicBox).not.toContain('w-full')
     // Equal cells: each button fills its card, so its label row starts under a box of the same height.
