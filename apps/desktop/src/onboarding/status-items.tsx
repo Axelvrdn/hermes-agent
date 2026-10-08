@@ -4,6 +4,7 @@
  */
 
 import { useStore } from '@nanostores/react'
+import { QueryObserver, type QueryObserverResult } from '@tanstack/react-query'
 import { atom } from 'nanostores'
 
 import { runQuickstart } from '@/app/settings/local-models-actions'
@@ -12,12 +13,15 @@ import { Progress } from '@/components/ui/progress'
 import { runtimeTranslations, useI18n } from '@/i18n'
 import { queryClient } from '@/lib/query-client'
 import { $freeTierStatus, freeTierSetupFailure } from '@/store/free-tier'
+import { setModeContext } from '@/store/interface-mode'
 import {
+  localModelsJobsOptions,
   localModelsOwner,
   runningModelDownloads,
   useLocalModelsOwner,
   useLocalRuntimeJobs
 } from '@/store/local-runtime-jobs'
+import type { LocalRuntimeJob } from '@/types/hermes'
 
 import { freeAccountState } from './facts'
 import type { LocalFit } from './flow'
@@ -34,6 +38,49 @@ export async function startQuestionnaireQuickstart(model: LocalFit): Promise<voi
   )
 
   $questionnaireDownload.set(jobId)
+
+  if (jobId) {
+    holdStatusBarFor(jobId)
+  }
+}
+
+/**
+ * Simple mode shows the status bar only while setup is open, and Start closes setup before the
+ * download begins. Keep the bar up until the job leaves the download phases, as its item does.
+ */
+function holdStatusBarFor(jobId: string): void {
+  const observer = new QueryObserver(queryClient, localModelsJobsOptions(localModelsOwner('default')))
+  // A read that began before the job existed answers without it; only a job seen running can vanish.
+  let seen = false
+
+  const settled = (result: QueryObserverResult<readonly LocalRuntimeJob[]>) => {
+    if (!result.isSuccess) {
+      return result.isError
+    }
+
+    const job = result.data.find(row => row.job_id === jobId)
+
+    if (job && runningModelDownloads([job]).length > 0) {
+      seen = true
+
+      return false
+    }
+
+    return job !== undefined || seen
+  }
+
+  setModeContext({ setupDownloadRunning: true })
+  observer.subscribe(result => {
+    if (!settled(result)) {
+      return
+    }
+
+    observer.destroy()
+
+    if ($questionnaireDownload.get() === jobId) {
+      setModeContext({ setupDownloadRunning: false })
+    }
+  })
 }
 
 const ITEM_CLASS = 'flex h-full items-center gap-1.5 px-1.5 text-[0.6875rem]'

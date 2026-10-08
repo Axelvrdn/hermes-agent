@@ -4,9 +4,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import type { HermesConnection } from '@/global'
 import { queryClient } from '@/lib/query-client'
-import { localModelsOwner, watchLocalRuntimeJobs } from '@/store/local-runtime-jobs'
+import { setInterfaceMode } from '@/store/interface-mode'
+import { localModelsKey, localModelsOwner, watchLocalRuntimeJobs } from '@/store/local-runtime-jobs'
 import { $notifications } from '@/store/notifications'
 import { setConnection } from '@/store/session'
+import { $statusbarVisible } from '@/store/statusbar-prefs'
 import { installRestBridge } from '@/test/rest-bridge'
 
 import { $questionnaireDownload, LocalDownloadStatusItem, startQuestionnaireQuickstart } from './status-items'
@@ -57,6 +59,7 @@ function renderItem() {
 
 afterEach(() => {
   cleanup()
+  setInterfaceMode('advanced')
   $notifications.set([])
   $questionnaireDownload.set(null)
   setConnection(null)
@@ -185,5 +188,31 @@ describe('LocalDownloadStatusItem', () => {
 
     expect($notifications.get()).toEqual([expect.objectContaining({ kind: 'error' })])
     expect(screen.queryByRole('status')).toBeNull()
+  })
+})
+
+describe('the Simple-mode status bar after Start', () => {
+  it('stays up after setup closes while Start\'s download runs, and rests hidden once it is done', async () => {
+    let status = 'running'
+
+    installRestBridge(request => {
+      if (request.path === '/api/local-models/quickstart') {
+        return { job_id: 'qs-1', model_id: 'qwen3.8-27b' }
+      }
+
+      return request.path === '/api/local-models/jobs' ? { jobs: [{ ...QUICKSTART_JOB, status }] } : {}
+    })
+
+    setConnection(CONNECTION)
+    setInterfaceMode('simple')
+    // Setup is closed and there is no Sign in chip: the bar rests hidden.
+    expect($statusbarVisible.get()).toBe(false)
+
+    await startQuestionnaireQuickstart({ id: 'qwen3.8-27b', name: 'Qwen3.8 27B' })
+    await waitFor(() => expect($statusbarVisible.get()).toBe(true))
+
+    status = 'done'
+    await queryClient.refetchQueries({ queryKey: localModelsKey(localModelsOwner('default'), 'jobs') })
+    await waitFor(() => expect($statusbarVisible.get()).toBe(false))
   })
 })
