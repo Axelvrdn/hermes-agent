@@ -5,16 +5,29 @@
  */
 
 import type { OnboardingRunStateResult } from '@hermes/shared'
-import { atom } from 'nanostores'
+import { atom, computed } from 'nanostores'
 
 import { withTimeout } from '@/lib/with-timeout'
 import type { FreeTierRequester } from '@/store/free-tier'
 import { markQuestionnaireDecided, QUESTIONNAIRE_DECIDE_DEADLINE_MS } from '@/store/onboarding-presence'
+import { $connection } from '@/store/session'
 
 import { openQuestionnaire } from './store'
 
-/** The questionnaire can run here (free tier on, local primary backend): Settings shows Run setup again. */
-export const $questionnaireAvailable = atom(false)
+/**
+ * D2: a free-tier build (the launch flag the backend spawn also carries) on the local primary
+ * backend; a remote host is not this computer.
+ */
+export const mayRunHere = () => window.hermesDesktop?.guestOnboardingEnabled === true && $connection.get()?.mode === 'local'
+
+/** The local backend (its base URL) whose due check answered eligible. */
+const $eligibleBackend = atom<null | string>(null)
+
+/** The questionnaire can run on the current connection: Settings shows Run setup again. */
+export const $questionnaireAvailable = computed(
+  [$eligibleBackend, $connection],
+  (backend, connection) => backend !== null && connection?.mode === 'local' && connection.baseUrl === backend
+)
 
 /** The gateway requester the free-tier store already takes; the questionnaire shares its reads. */
 export type OnboardingRequester = FreeTierRequester
@@ -56,7 +69,7 @@ export async function decideQuestionnaire(request: OnboardingRequester): Promise
   const state = await readDue(request)
   const due = Boolean(state?.eligible && state.run)
 
-  $questionnaireAvailable.set(state?.eligible === true)
+  $eligibleBackend.set(state?.eligible === true ? ($connection.get()?.baseUrl ?? null) : null)
 
   if (due) {
     openQuestionnaire()
@@ -78,6 +91,11 @@ export async function setRun(
 
 /** Settings → Run setup again: due on the next launch too, and open now without a reload. */
 export async function runSetupAgain(request: OnboardingRequester): Promise<void> {
+  // The Settings row hides as the connection moves; this covers a click made on the way out.
+  if (!$questionnaireAvailable.get()) {
+    return
+  }
+
   await setRun(request, true)
   openQuestionnaire()
 }

@@ -18,10 +18,9 @@ import { $freeTierStatus } from '@/store/free-tier'
 import { notifyError } from '@/store/notifications'
 import { markQuestionnaireDecided } from '@/store/onboarding-presence'
 import { $activeGatewayProfile, normalizeProfileKey } from '@/store/profile'
-import { $connection } from '@/store/session'
 import { isMainWindow } from '@/store/windows'
 
-import { decideQuestionnaire, type OnboardingRequester, setRun } from './due'
+import { decideQuestionnaire, mayRunHere, type OnboardingRequester, setRun } from './due'
 import { defaultFactSources, freeAccountState, watchFacts } from './facts'
 import type { StepId } from './flow'
 import { finish, type HandoffDeps, openFirstChat, skipSetup } from './handoff'
@@ -49,12 +48,6 @@ type QuestionnaireHost = Omit<HandoffDeps, 'launchProfile' | 'refreshReadiness'>
 
 const $questionnaireHost = atom<null | QuestionnaireHost>(null)
 
-/**
- * D2: a free-tier build (the launch flag the backend spawn also carries) on the local primary
- * backend; a remote host is not this computer. Anything else is decided at once, without an RPC.
- */
-const mayRunHere = () => window.hermesDesktop?.guestOnboardingEnabled === true && $connection.get()?.mode === 'local'
-
 interface QuestionnaireProps {
   enabled: boolean
   openDefaultChat: HandoffDeps['openDefaultChat']
@@ -72,6 +65,7 @@ export function Questionnaire({ enabled, openDefaultChat, openLandedChat, reques
     }
 
     if (enabled) {
+      // Anywhere else the questionnaire is decided at once, without an RPC.
       if (mayRunHere()) {
         void decideQuestionnaire(requestGateway)
       } else {
