@@ -18,7 +18,8 @@ export const deQuestionnaire: Translations['questionnaire'] = {
   },
   name: {
     greeting: 'Hallo, ich bin Hermes.',
-    question: 'Wie soll ich Sie nennen?'
+    question: 'Wie soll ich Sie nennen?',
+    placeholder: 'Dein Name'
   },
   accent: {
     title: 'Wählen Sie eine Farbe',

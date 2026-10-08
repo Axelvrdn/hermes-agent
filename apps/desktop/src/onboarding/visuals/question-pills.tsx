@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 
+import { Input } from '@/components/ui/input'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,7 @@ export function QuestionPills({
   onOther,
   onPick,
   other,
+  otherPlaceholder,
   picked,
   question,
   stepId
@@ -34,6 +36,8 @@ export function QuestionPills({
   onPick: (id: string) => void
   /** The typed answer; `undefined` hides the Other pill. */
   other?: string
+  /** With no pills to pick, Other is the whole answer: a plain field with this placeholder. */
+  otherPlaceholder?: string
   picked: null | string
   question: string
   stepId: StepId
@@ -43,6 +47,25 @@ export function QuestionPills({
   const [focused, setFocused] = useState<null | string>(null)
   const detail = choices.find(choice => choice.id === focused)?.detail
   const typed = Boolean(other?.trim())
+
+  if (choices.length === 0 && other !== undefined && onOther) {
+    const placeholder = otherPlaceholder ?? t.assistant.clarify.other
+
+    return (
+      <label className="grid gap-2">
+        <span className="font-medium leading-(--conversation-line-height)">{question}</span>
+        <Input
+          aria-label={placeholder}
+          autoCapitalize="words"
+          autoFocus
+          className="max-w-72"
+          onChange={event => onOther(event.target.value)}
+          placeholder={placeholder}
+          value={other}
+        />
+      </label>
+    )
+  }
 
   return (
     <div className="grid gap-2">
@@ -70,7 +93,9 @@ export function QuestionPills({
               type="button"
             >
               <span>{choice.label}</span>
-              {choice.detail ? <span aria-hidden className="size-1 shrink-0 rounded-full bg-current opacity-60" /> : null}
+              {choice.detail ? (
+                <span aria-hidden className="size-1 shrink-0 rounded-full bg-current opacity-60" />
+              ) : null}
               {selected ? <AnswerMark stepId={stepId} /> : null}
             </button>
           )

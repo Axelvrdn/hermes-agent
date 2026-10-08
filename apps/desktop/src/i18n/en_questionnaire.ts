@@ -18,7 +18,8 @@ export const enQuestionnaire: Translations['questionnaire'] = {
   },
   name: {
     greeting: "Hi, I'm Hermes.",
-    question: 'What should I call you?'
+    question: 'What should I call you?',
+    placeholder: 'Your name'
   },
   accent: {
     title: 'Pick a color',

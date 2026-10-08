@@ -14,7 +14,11 @@ export function NameStep() {
   const { answers, facts } = useStore($questionnaire)
   const suggested = firstName(facts.machine?.full_name)
   const name = answers.name ?? suggested ?? ''
-  const choices = stepOptions(STEPS.name, facts, answers).map(option => ({ id: option.id, label: option.label(t.questionnaire) }))
+
+  const choices = stepOptions(STEPS.name, facts, answers).map(option => ({
+    id: option.id,
+    label: option.label(t.questionnaire)
+  }))
 
   return (
     <StepCard
@@ -33,6 +37,7 @@ export function NameStep() {
         onOther={value => setAnswers({ name: value.trim() ? value : (suggested ?? '') })}
         onPick={id => setAnswers({ name: id })}
         other={name === suggested ? '' : name}
+        otherPlaceholder={t.questionnaire.name.placeholder}
         picked={name === suggested ? suggested : null}
         question={t.questionnaire.name.question}
         stepId="name"

@@ -18,7 +18,8 @@ export const zhQuestionnaire: Translations['questionnaire'] = {
   },
   name: {
     greeting: '你好，我是 Hermes。',
-    question: '我该怎么称呼你？'
+    question: '我该怎么称呼你？',
+    placeholder: '你的名字'
   },
   accent: {
     title: '选一个颜色',

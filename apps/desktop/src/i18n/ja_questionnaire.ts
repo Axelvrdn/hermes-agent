@@ -18,7 +18,8 @@ export const jaQuestionnaire: Translations['questionnaire'] = {
   },
   name: {
     greeting: 'こんにちは、Hermes です。',
-    question: 'なんとお呼びすればいいですか？'
+    question: 'なんとお呼びすればいいですか？',
+    placeholder: 'お名前'
   },
   accent: {
     title: '色を選んでください',

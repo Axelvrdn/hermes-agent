@@ -18,7 +18,8 @@ export const ruQuestionnaire: Translations['questionnaire'] = {
   },
   name: {
     greeting: 'Привет, я Hermes.',
-    question: 'Как к вам обращаться?'
+    question: 'Как к вам обращаться?',
+    placeholder: 'Ваше имя'
   },
   accent: {
     title: 'Выберите цвет',

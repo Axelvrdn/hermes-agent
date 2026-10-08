@@ -2422,6 +2422,7 @@
     "questionnaire.local.title",
     "questionnaire.local.titleSpark",
     "questionnaire.name.greeting",
+    "questionnaire.name.placeholder",
     "questionnaire.name.question",
     "questionnaire.otherLabel",
     "questionnaire.retry",

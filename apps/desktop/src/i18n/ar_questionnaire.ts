@@ -18,7 +18,8 @@ export const arQuestionnaire: Translations['questionnaire'] = {
   },
   name: {
     greeting: 'مرحبًا، أنا Hermes.',
-    question: 'بماذا أناديك؟'
+    question: 'بماذا أناديك؟',
+    placeholder: 'اسمك'
   },
   accent: {
     title: 'اختر لونًا',

@@ -17,6 +17,8 @@ export interface QuestionnaireTranslations {
   name: {
     greeting: string
     question: string
+    /** The name field's placeholder when the OS gave no name to offer. */
+    placeholder: string
   }
   accent: {
     title: string
