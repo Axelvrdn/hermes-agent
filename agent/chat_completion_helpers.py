@@ -44,6 +44,7 @@ from agent.message_content import flatten_message_text
 from agent.message_metadata import PERSISTENCE_ONLY_MESSAGE_FIELDS, append_message, stamp_message_timestamp
 from agent.message_sanitization import (
     _sanitize_messages_surrogates, _sanitize_surrogates, _repair_tool_call_arguments,
+    INTERRUPTED_FINISH_REASONS as _INTERRUPTED_FINISH_REASONS,
     normalize_finish_reason as _normalize_finish_reason, sanitize_outbound_kwargs, strip_images_for_rejecting_model,
 )
 from agent.reasoning_summaries import (
@@ -57,7 +58,7 @@ from utils import base_url_host_matches, base_url_hostname, env_float, env_int
 
 logger = logging.getLogger(__name__)
 _OPENROUTER_PROVIDER_SORT_VALUES = {"throughput", "latency", "price"}
-_PROVIDER_STREAM_ERROR_FINISH_REASONS = {"error", "error_finish", "network_error", "network-error"}
+_PROVIDER_STREAM_ERROR_FINISH_REASONS = {"error", "error_finish"}
 _PROVIDER_STREAM_SSE_FIELDS = {"event", "data", "id", "retry"}
 _PROVIDER_STREAM_ERROR_TEXT_LIMIT = 4096
 
@@ -3344,6 +3345,26 @@ class _StreamingCall(StreamingWaitMonitor):
                                          args_repaired=arguments != tc["function"]["arguments"])))
         return mock_tool_calls or None, has_truncated_tool_args
 
+    @staticmethod
+    def _interrupted_stream_response(role, content_parts, reasoning_parts, refusal_parts, tool_calls_acc,
+        finish_reason, full_content, full_reasoning, model_name, usage_obj):
+        """A provider-interrupted generation (``_INTERRUPTED_FINISH_REASONS``) is never a final
+        answer: nothing delivered → EmptyStreamError (fresh-connection stream retry); otherwise
+        a partial-stream stub, so the loop asks for a continuation and tool calls are re-requested,
+        never executed, even when their JSON parses (the batch or the intent may be incomplete).
+        No ``dropped_tool_names``: that nudge tells the model its call was too LARGE, which is
+        not what happened here."""
+        if not (content_parts or reasoning_parts or refusal_parts or tool_calls_acc):
+            raise EmptyStreamError(
+                f"Provider stream ended with finish_reason={finish_reason} and no content "
+                "(generation interrupted upstream).")
+        dropped = [(tool_calls_acc[idx]["function"]["name"] or "?") for idx in sorted(tool_calls_acc)]
+        logger.warning(
+            "Provider ended the stream with finish_reason=%s (generation interrupted upstream) after "
+            "partial output%s; requesting a continuation instead of accepting it as final.",
+            finish_reason, f" (tool calls not executed: {dropped})" if dropped else "")
+        return _build_partial_stream_stub(role, full_content, full_reasoning, model_name, usage_obj)
+
     def _finish_chat_stream(self, stream, role, content_parts, reasoning_parts, tool_calls_acc, finish_reason,
         model_name, usage_obj, *, flush_pending, response_id=None, upstream_provider=None, reasoning_details=None,
         refusal_parts=None):
@@ -3359,25 +3380,15 @@ class _StreamingCall(StreamingWaitMonitor):
             from agent.agent_runtime_helpers import extract_reasoning
 
             full_reasoning = extract_reasoning(self.agent, SimpleNamespace(content=full_content))
+        if str(finish_reason or "").strip().lower() in _INTERRUPTED_FINISH_REASONS:
+            return self._interrupted_stream_response(
+                role, content_parts, reasoning_parts, refusal_parts, tool_calls_acc, finish_reason,
+                full_content, full_reasoning, model_name, usage_obj)
         mock_tool_calls, has_truncated_tool_args = self._assemble_tool_calls(tool_calls_acc, finish_reason)
         # Zero-chunk guard: nothing usable = upstream error / malformed SSE.
         if finish_reason is None and not content_parts and not reasoning_parts and not refusal_parts and not tool_calls_acc:
             raise EmptyStreamError(
                 "Provider returned an empty stream with no finish_reason (possible upstream error or malformed SSE response).")
-        # finish_reason="network_error"/"network-error" (observed on OpenCode Zen
-        # x-preview-f-free): the stream terminates cleanly with an error finish reason
-        # and often ZERO content. Raise so the bounded stream-retry machinery handles it
-        # like any transient provider drop.
-        _fr_text = str(finish_reason or "").strip().lower()
-        if (
-            _fr_text in ("network_error", "network-error")
-            and not content_parts
-            and not reasoning_parts
-            and not tool_calls_acc
-        ):
-            raise EmptyStreamError(
-                f"Provider stream ended with finish_reason={_fr_text} and no "
-                "content (transient upstream network failure).")
         if has_truncated_tool_args and finish_reason is None:
             # Partial args WITH finish_reason="length" is a real output cap; with NONE the
             # upstream dropped mid tool-call, and stamping "length" burns 3 useless retries.

@@ -6090,6 +6090,38 @@ class TestStreamingApiCall:
         assert "Rate limit exceeded" in str(exc)
         agent.stream_delta_callback.assert_not_called()
 
+    @pytest.mark.parametrize("reason", ["insufficient_system_resource", "aborted", "network_error"])
+    def test_interrupted_finish_reason_never_yields_executable_tool_calls(self, agent, reason):
+        """A provider that stops generating for its own reasons (DeepSeek
+        ``insufficient_system_resource``/``aborted``, OpenCode Zen ``network_error``)
+        must not hand the loop a final turn: a complete-looking tool call from that
+        generation would otherwise execute, and partial text would be the answer."""
+        from hermes_constants import PARTIAL_STREAM_STUB_ID
+
+        chunks = [
+            _make_chunk(tool_calls=[_make_tc_delta(0, "call_1", "terminal", '{"command": "echo hi"}')]),
+            _make_chunk(finish_reason=reason),
+        ]
+        agent.client.chat.completions.create.return_value = iter(chunks)
+
+        resp = agent._interruptible_streaming_api_call({"messages": []})
+
+        assert resp.id == PARTIAL_STREAM_STUB_ID
+        assert resp.choices[0].finish_reason == "length"
+        assert resp.choices[0].message.tool_calls is None
+
+    def test_interrupted_finish_reason_non_streaming_routes_to_continuation(self, agent):
+        from agent.turn_response_check import _derive_finish_reason
+
+        agent.api_mode = "chat_completions"
+        msg = SimpleNamespace(role="assistant", content="Step one is done and", tool_calls=None)
+        response = SimpleNamespace(
+            id="r", model="test/model", usage=None,
+            choices=[SimpleNamespace(index=0, message=msg, finish_reason="insufficient_system_resource")],
+        )
+
+        assert _derive_finish_reason(agent, response, []) == "length"
+
     def test_choiceless_error_chunk_raises_provider_stream_error(self, agent):
         """DeepInfra-style in-stream error: choices=None + error_type/error_message.
 
