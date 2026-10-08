@@ -65,7 +65,9 @@ afterEach(() => {
 
 describe('LocalDownloadStatusItem', () => {
   it('shows the quickstart download with its percent once the backend connected after app start', async () => {
-    const api = installRestBridge(request => (request.path === '/api/local-models/jobs' ? { jobs: [QUICKSTART_JOB] } : {}))
+    const api = installRestBridge(request =>
+      request.path === '/api/local-models/jobs' ? { jobs: [QUICKSTART_JOB] } : {}
+    )
 
     // The status bar module loads before the backend connects; the questionnaire's Start comes later.
     setConnection(CONNECTION)
@@ -82,6 +84,26 @@ describe('LocalDownloadStatusItem', () => {
     expect(item.textContent).toContain('Qwen3.8 27B')
     await waitFor(() => expect(item.textContent).toContain('20'))
     expect(api).toHaveBeenCalledWith(expect.objectContaining({ path: '/api/local-models/jobs', profile: 'default' }))
+  })
+
+  it('names the engine, not the model, while quickstart fetches the engine first', async () => {
+    const engineStage = {
+      ...QUICKSTART_JOB,
+      detail: 'Downloading the local engine (2/2)',
+      percent: 63,
+      phase: 'downloading-runtime'
+    }
+
+    installRestBridge(request => (request.path === '/api/local-models/jobs' ? { jobs: [engineStage] } : {}))
+    setConnection(CONNECTION)
+    $questionnaireDownload.set('qs-1')
+
+    renderItem()
+
+    const item = await screen.findByRole('status')
+
+    await waitFor(() => expect(item.textContent).toContain('Downloading the local engine'))
+    expect(item.textContent).not.toContain('Qwen3.8 27B')
   })
 
   it("shows the download Start's quickstart created, though the first jobs read came before the job", async () => {
@@ -118,7 +140,11 @@ describe('LocalDownloadStatusItem', () => {
     expect(item.textContent).toContain('Qwen3.8 27B')
     await waitFor(() => expect(item.textContent).toContain('20'))
     expect(api).toHaveBeenCalledWith(
-      expect.objectContaining({ body: { model_id: 'qwen3.8-27b' }, path: '/api/local-models/quickstart', profile: 'default' })
+      expect.objectContaining({
+        body: { model_id: 'qwen3.8-27b' },
+        path: '/api/local-models/quickstart',
+        profile: 'default'
+      })
     )
   })
 
@@ -128,7 +154,9 @@ describe('LocalDownloadStatusItem', () => {
         return { job_id: 'qs-1', model_id: 'qwen3.8-27b' }
       }
 
-      return request.path === '/api/local-models/jobs' ? { jobs: [{ ...QUICKSTART_JOB, status: 'done' }, OTHER_DOWNLOAD] } : {}
+      return request.path === '/api/local-models/jobs'
+        ? { jobs: [{ ...QUICKSTART_JOB, status: 'done' }, OTHER_DOWNLOAD] }
+        : {}
     })
 
     setConnection(CONNECTION)

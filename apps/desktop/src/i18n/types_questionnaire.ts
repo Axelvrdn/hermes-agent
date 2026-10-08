@@ -96,6 +96,7 @@ export interface QuestionnaireTranslations {
     stillSettingUp: string
     unavailable: string
     ready: string
+    downloadingEngine: string
     downloading: (model: string) => string
   }
   settings: {

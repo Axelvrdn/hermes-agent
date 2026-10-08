@@ -98,6 +98,7 @@ export const arQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: 'لا يزال إعداد حسابك المجاني جاريًا',
     unavailable: 'الحساب المجاني غير متاح',
     ready: 'Nous · الخطة المجانية',
+    downloadingEngine: 'جارٍ تنزيل المحرك المحلي',
     downloading: model => `جارٍ تنزيل ${model}`
   },
   settings: {

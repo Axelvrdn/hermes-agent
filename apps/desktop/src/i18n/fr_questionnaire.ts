@@ -54,7 +54,8 @@ export const frQuestionnaire: Translations['questionnaire'] = {
   connectors: {
     title: 'Connecter vos apps ?',
     checking: 'Vérification des apps que votre compte peut connecter…',
-    offered: 'Voici la liste proposée par votre compte en ce moment. Vous vous connectez à chacune dans votre premier chat.'
+    offered:
+      'Voici la liste proposée par votre compte en ce moment. Vous vous connectez à chacune dans votre premier chat.'
   },
   task: {
     title: 'Par quoi commencer ?',
@@ -98,6 +99,7 @@ export const frQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: 'Configuration de votre compte gratuit en cours',
     unavailable: 'Compte gratuit indisponible',
     ready: 'Nous · offre gratuite',
+    downloadingEngine: 'Téléchargement du moteur local',
     downloading: model => `Téléchargement de ${model}`
   },
   settings: {

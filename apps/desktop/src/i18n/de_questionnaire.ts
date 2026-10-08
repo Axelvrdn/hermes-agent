@@ -98,6 +98,7 @@ export const deQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: 'Ihr kostenloses Konto wird noch eingerichtet',
     unavailable: 'Kostenloses Konto nicht verfügbar',
     ready: 'Nous · kostenlos',
+    downloadingEngine: 'Lokale Engine wird heruntergeladen',
     downloading: model => `${model} wird heruntergeladen`
   },
   settings: {

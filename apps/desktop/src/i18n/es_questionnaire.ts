@@ -98,6 +98,7 @@ export const esQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: 'Aún configurando tu cuenta gratuita',
     unavailable: 'Cuenta gratuita no disponible',
     ready: 'Nous · plan gratuito',
+    downloadingEngine: 'Descargando el motor local',
     downloading: model => `Descargando ${model}`
   },
   settings: {

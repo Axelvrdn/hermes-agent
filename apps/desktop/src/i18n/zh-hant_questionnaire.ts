@@ -98,6 +98,7 @@ export const zhHantQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: '仍在設定你的免費帳號',
     unavailable: '免費帳號無法使用',
     ready: 'Nous · 免費方案',
+    downloadingEngine: '正在下載本機引擎',
     downloading: model => `正在下載 ${model}`
   },
   settings: {

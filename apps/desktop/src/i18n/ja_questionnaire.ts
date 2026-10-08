@@ -98,6 +98,7 @@ export const jaQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: '無料アカウントをまだ設定中',
     unavailable: '無料アカウントを利用できません',
     ready: 'Nous · 無料プラン',
+    downloadingEngine: 'ローカルエンジンをダウンロード中',
     downloading: model => `${model} をダウンロード中`
   },
   settings: {

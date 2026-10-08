@@ -98,6 +98,7 @@ export const ruQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: 'Всё ещё настраиваем ваш бесплатный аккаунт',
     unavailable: 'Бесплатный аккаунт недоступен',
     ready: 'Nous · бесплатный тариф',
+    downloadingEngine: 'Загрузка локального движка',
     downloading: model => `Загрузка ${model}`
   },
   settings: {

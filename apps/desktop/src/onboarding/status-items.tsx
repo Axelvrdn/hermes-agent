@@ -69,6 +69,8 @@ export function FreeAccountStatusItem() {
   )
 }
 
+const ENGINE_PHASES = new Set(['downloading-runtime', 'unpacking-runtime', 'verifying-runtime'])
+
 function DownloadProgress({ jobId }: { jobId: string }) {
   const { t } = useI18n()
   // Resolved on render, not at import: an owner minted before the backend connected is never live.
@@ -81,7 +83,11 @@ function DownloadProgress({ jobId }: { jobId: string }) {
   }
 
   const percent = Math.round(job.percent ?? (job.total_bytes ? (job.done_bytes / job.total_bytes) * 100 : 0))
-  const label = t.questionnaire.status.downloading(job.target)
+
+  // Quickstart fetches the engine first, then the model; each stage counts its own percent from 0.
+  const label = ENGINE_PHASES.has(job.phase)
+    ? t.questionnaire.status.downloadingEngine
+    : t.questionnaire.status.downloading(job.target)
 
   return (
     <span className={ITEM_CLASS} role="status">

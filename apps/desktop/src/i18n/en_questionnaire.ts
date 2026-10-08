@@ -98,6 +98,7 @@ export const enQuestionnaire: Translations['questionnaire'] = {
     stillSettingUp: 'Still setting up your free account',
     unavailable: 'Free account unavailable',
     ready: 'Nous · free tier',
+    downloadingEngine: 'Downloading the local engine',
     downloading: model => `Downloading ${model}`
   },
   settings: {
