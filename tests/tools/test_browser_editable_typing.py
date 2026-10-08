@@ -66,3 +66,27 @@ def test_private_page_guard_precedes_any_input_probe(monkeypatch):
     monkeypatch.setattr(bs, "_run_browser_command", lambda *args, **kwargs: pytest.fail("guard must run first"))
     result = registry.dispatch("browser_type", {"ref": "e1", "text": "text"}, task_id="guard-test")
     assert not json.loads(result)["success"]
+
+
+def test_native_select_chooses_an_option_and_reports_a_miss(monkeypatch):
+    # agent-browser `fill` on a <select> reports success and changes nothing; the option is
+    # chosen in-page instead, and a no-match outcome must surface as a failure.
+    monkeypatch.setattr(bt, "_is_camofox_mode", lambda: False)
+    monkeypatch.setattr(bt, "_blocked_private_page_action", lambda *args: None)
+    calls = []
+
+    def command(task, name, args, **kwargs):
+        calls.append((name, args))
+        if name == "eval" and "activeElement.isContentEditable" in args[0]:
+            return {"success": True, "data": {"result": json.dumps({"editable": False, "select": True})}}
+        if name == "eval":
+            outcome = {"ok": True} if '"Skill"' in args[0] else {"error": 'no option matches "Nope"; options: Skill'}
+            return {"success": True, "data": {"result": json.dumps(outcome)}}
+        return {"success": True}
+
+    monkeypatch.setattr(bs, "_run_browser_command", command)
+    ok = json.loads(registry.dispatch("browser_type", {"ref": "e2", "text": "Skill"}, task_id="select-test"))
+    miss = json.loads(registry.dispatch("browser_type", {"ref": "e2", "text": "Nope"}, task_id="select-test"))
+    assert ok["success"] is True
+    assert miss["success"] is False and "options: Skill" in miss["error"]
+    assert not any(name == "fill" for name, _ in calls)

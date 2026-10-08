@@ -517,7 +517,7 @@ BROWSER_TOOL_SCHEMAS = [
     },
     {
         "name": "browser_type",
-        "description": "Replace text in an input, textarea, or contentEditable editor identified by its ref ID. Clears existing content first and preserves paragraph breaks in rich editors. Requires browser_navigate and browser_snapshot to be called first.",
+        "description": "Replace text in an input, textarea, or contentEditable editor identified by its ref ID, or choose an option in a native dropdown (combobox) by its value or visible label. Clears existing content first and preserves paragraph breaks in rich editors. Requires browser_navigate and browser_snapshot to be called first.",
         "parameters": {
             "type": "object",
             "properties": {
