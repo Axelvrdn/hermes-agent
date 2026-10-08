@@ -1,7 +1,8 @@
 import { act, cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { accentPref, ThemeProvider, useTheme } from '@/themes/context'
+import { accentPref } from '@/themes/accent-pref'
+import { ThemeProvider, useTheme } from '@/themes/context'
 
 import { type AccentTarget, commitAccent, previewAccent } from './apply'
 

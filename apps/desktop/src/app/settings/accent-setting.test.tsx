@@ -2,7 +2,8 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, expect, test } from 'vitest'
 
 import { en } from '@/i18n/en'
-import { accentPref, ThemeProvider } from '@/themes/context'
+import { accentPref } from '@/themes/accent-pref'
+import { ThemeProvider } from '@/themes/context'
 
 import { AccentSetting } from './accent-setting'
 

@@ -2,8 +2,9 @@ import { act, cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { $accentOverride } from './accent-override'
+import { accentPref } from './accent-pref'
 import { hexToOklch, hueDelta, luminance } from './color'
-import { accentPref, modePref, ThemeProvider, useTheme } from './context'
+import { modePref, ThemeProvider, useTheme } from './context'
 
 const ACCENTS_KEY = 'hermes-desktop-profile-accents-v1'
 const WIZARD_KEY = 'hermes-onboarding-wizard-answers-v1'

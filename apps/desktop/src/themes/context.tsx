@@ -22,6 +22,7 @@ import { $connection } from '@/store/session'
 import { setAppearance } from '@/store/translucency'
 
 import { $accentOverride } from './accent-override'
+import { accentPref, PROFILE_ACCENTS_KEY } from './accent-pref'
 import { normalizeAccentId, resolveAccent } from './accents'
 import {
   $backendCustomCSS,
@@ -49,9 +50,6 @@ const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
 // Last active profile, recorded so the boot-time paint can pick that profile's
 // theme before the gateway reports which profile actually launched.
 const LAST_PROFILE_KEY = 'hermes-desktop-active-profile-v1'
-// Per-profile accent swatch id: { [profileKey]: id }. No global slot: a profile
-// without its own pick paints its theme's accent.
-const PROFILE_ACCENTS_KEY = 'hermes-desktop-profile-accents-v1'
 // The old onboarding wizard's accent never applied after a restart; drop it
 // rather than carry a color the user never saw persist.
 const LEGACY_WIZARD_ANSWERS_KEY = 'hermes-onboarding-wizard-answers-v1'
@@ -127,18 +125,6 @@ const profilePref = <T extends string>(record: string, legacy: string, normalize
 
 export const skinPref = profilePref(PROFILE_SKINS_KEY, SKIN_KEY, normalizeSkin)
 export const modePref = profilePref(PROFILE_MODES_KEY, MODE_KEY, normalizeMode)
-
-// Unlike skin and mode, an accent never mirrors into a global slot: a Bot Mode
-// hop onto another profile must not inherit a color picked for this one.
-export const accentPref = {
-  stored: (profile: string): null | string => normalizeAccentId(storedStringRecord(PROFILE_ACCENTS_KEY)[profile] ?? null),
-  assign: (profile: string, value: null | string): void => {
-    const { [profile]: _previous, ...others } = storedStringRecord(PROFILE_ACCENTS_KEY)
-    const id = normalizeAccentId(value)
-
-    persistStringRecord(PROFILE_ACCENTS_KEY, id === null ? others : { ...others, [profile]: id })
-  }
-}
 
 // The bridge's local skin is only a fallback for the profile this window booted
 // into. A desktop-side pick remains the source of truth, and switching to a

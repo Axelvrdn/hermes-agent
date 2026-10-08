@@ -7,7 +7,7 @@
 import { setInterfaceMode } from '@/store/interface-mode'
 import { setSidebarOpen } from '@/store/layout'
 import { applyDesktopLayoutPreset } from '@/store/pane-focus'
-import { accentPref } from '@/themes/context'
+import { accentPref } from '@/themes/accent-pref'
 
 import { LAYOUTS } from './visuals/options'
 
