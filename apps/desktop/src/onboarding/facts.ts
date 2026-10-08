@@ -31,7 +31,7 @@ export const defaultFactSources = (request: OnboardingRequester): FactSources =>
   request
 })
 
-/** Whether the account the connector list needs exists, is still coming, or will not come. */
+/** Whether the account the connector list needs exists, may still be coming (or is a signed-in one), or will not come. */
 export function freeAccountState(status: FreeTierStatus | null): 'failed' | 'ready' | 'waiting' {
   if (!status?.enabled || status.has_guest) {
     // No free tier here (an account of the user's own, or an older backend): the list answers for itself.
@@ -80,13 +80,19 @@ export function watchFacts(sources: FactSources, report: (facts: Partial<Facts>)
     const account = freeAccountState(status)
     const mine = ++generation
 
-    if (account !== 'ready') {
-      reportLive({ connectors: account === 'failed' ? { status: 'unavailable' } : { status: 'loading' } })
+    if (account === 'failed') {
+      reportLive({ connectors: { status: 'unavailable' } })
 
       return
     }
 
-    void readConnectorList(sources).then(connectors => mine === generation && reportLive({ connectors }))
+    // `waiting` also covers a signed-in Nous account, which never gets a free one: its list answers now.
+    // A pending free account's list is not ready yet, so it stays `loading` until `setup.ready`.
+    void readConnectorList(sources).then(
+      connectors =>
+        mine === generation &&
+        reportLive({ connectors: account === 'waiting' && connectors.status !== 'ready' ? { status: 'loading' } : connectors })
+    )
   }
 
   void readMachine(sources).then(machine => reportLive({ machine }))
