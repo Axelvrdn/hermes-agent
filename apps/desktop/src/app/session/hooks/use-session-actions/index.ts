@@ -993,7 +993,9 @@ export function useSessionActions({
         )
         // Submit the exact runtime id returned by session.create so this
         // atomic path cannot fall back to a route token (#85590).
-        await requestGateway('prompt.submit', { session_id: created.session_id, text }).catch((error: unknown) => {
+        try {
+          await requestGateway('prompt.submit', { session_id: created.session_id, text })
+        } catch (error) {
           // A refused prompt leaves no turn behind, so its bubble and spinner go too.
           updateSessionState(
             created.session_id,
@@ -1008,7 +1010,7 @@ export function useSessionActions({
           )
 
           throw error
-        })
+        }
         navigate(sessionRoute(stored), { replace: true })
 
         return { runtimeSessionId: created.session_id, sessionId: stored }
