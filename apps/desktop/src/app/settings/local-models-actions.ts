@@ -48,9 +48,11 @@ export function isActiveStatus(status: LocalRuntimeJob['status']): boolean {
 // The actions below never reject: a failure toasts only while its owner is
 // still the one on screen, so a late error cannot land on the next connection.
 
-export async function runQuickstart({ owner, client, copy }: LocalModelsActionScope): Promise<void> {
+// The jobs read after the POST is what shows the new job: a watch started before it saw no
+// running job, so it is not polling.
+export async function runQuickstart({ owner, client, copy }: LocalModelsActionScope, modelId?: string): Promise<void> {
   try {
-    await quickstartLocalModels(undefined, localModelsRequestScope(owner))
+    await quickstartLocalModels(modelId, localModelsRequestScope(owner))
     watchLocalRuntimeJobs(owner, client)
   } catch (err) {
     if (isCurrentLocalModelsOwner(owner)) {

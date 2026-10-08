@@ -6,17 +6,35 @@
 import { useStore } from '@nanostores/react'
 import { atom } from 'nanostores'
 
+import { runQuickstart } from '@/app/settings/local-models-actions'
 import { AnimatedInt } from '@/components/ui/diff-count'
 import { Progress } from '@/components/ui/progress'
-import { useI18n } from '@/i18n'
+import { runtimeTranslations, useI18n } from '@/i18n'
+import { queryClient } from '@/lib/query-client'
 import { $freeTierStatus, freeTierSetupFailure } from '@/store/free-tier'
-import { runningModelDownloads, useLocalModelsOwner, useLocalRuntimeJobs } from '@/store/local-runtime-jobs'
+import {
+  localModelsOwner,
+  runningModelDownloads,
+  useLocalModelsOwner,
+  useLocalRuntimeJobs
+} from '@/store/local-runtime-jobs'
 
 import { freeAccountState } from './facts'
+import type { LocalFit } from './flow'
 import { $questionnaireOpen } from './store'
 
 /** The model the questionnaire's quickstart is downloading, by display name; `null` when none. */
 export const $questionnaireDownload = atom<null | string>(null)
+
+/** Start's local answer: quickstart `model` in the default profile, the way Settings > Local Models starts one. */
+export function startQuestionnaireQuickstart(model: LocalFit): Promise<void> {
+  $questionnaireDownload.set(model.name)
+
+  return runQuickstart(
+    { client: queryClient, copy: runtimeTranslations().settings.localModels, owner: localModelsOwner('default') },
+    model.id
+  )
+}
 
 const ITEM_CLASS = 'flex h-full items-center gap-1.5 px-1.5 text-[0.6875rem]'
 

@@ -10,12 +10,10 @@ import { AnimatePresence, LayoutGroup } from 'motion/react'
 import { atom } from 'nanostores'
 import { type ComponentType, useEffect } from 'react'
 
-import { quickstartLocalModels } from '@/api/local-models'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { useI18n } from '@/i18n'
 import { $freeTierStatus } from '@/store/free-tier'
-import { localModelsOwner, localModelsRequestScope } from '@/store/local-runtime-jobs'
 import { notifyError } from '@/store/notifications'
 import { markQuestionnaireDecided } from '@/store/onboarding-presence'
 import { $activeGatewayProfile, normalizeProfileKey } from '@/store/profile'
@@ -26,7 +24,7 @@ import { decideQuestionnaire, type OnboardingRequester, setRun } from './due'
 import { defaultFactSources, freeAccountState, watchFacts } from './facts'
 import type { StepId } from './flow'
 import { finish, type HandoffDeps, skipSetup } from './handoff'
-import { $questionnaireDownload } from './status-items'
+import { startQuestionnaireQuickstart } from './status-items'
 import { AccentStep, AppsStep, ConnectorsStep, LayoutStep, LocalStep } from './steps/looks'
 import { NameStep, TaskStep, TourStep } from './steps/questions'
 import { ReviewStep } from './steps/review'
@@ -87,10 +85,7 @@ export function Questionnaire({ enabled, openDefaultChat, requestGateway }: Ques
       openDefaultChat,
       request: requestGateway,
       runTour: runQuickTourWhenTargetsPaint,
-      startQuickstart: async model => {
-        $questionnaireDownload.set(model.name)
-        await quickstartLocalModels(model.id, localModelsRequestScope(localModelsOwner('default')))
-      }
+      startQuickstart: startQuestionnaireQuickstart
     })
   }, [openDefaultChat, requestGateway])
 
