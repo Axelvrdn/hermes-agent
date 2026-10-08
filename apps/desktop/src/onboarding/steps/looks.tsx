@@ -112,13 +112,13 @@ export function LayoutStep() {
       onSkip={() => skipStep('layout')}
       title={copy.title}
     >
-      <div className="grid grid-cols-2 gap-4 p-1">
+      <div className="grid grid-cols-2 items-start justify-items-center gap-4 p-1">
         {LAYOUTS.map(layout => {
           const keys = LAYOUT_COPY.get(layout.id)
           const active = answers.layout === layout.id
 
           return (
-            <div className="relative rounded-[8px]" key={layout.id}>
+            <div className="relative w-72 max-w-full rounded-[8px]" key={layout.id}>
               <LayoutPreviewCard
                 active={active}
                 description={keys ? copy[keys.detail] : layout.description}

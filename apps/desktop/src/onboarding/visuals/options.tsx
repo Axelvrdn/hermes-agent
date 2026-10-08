@@ -171,9 +171,15 @@ export function LayoutPreviewCard({
   tree: MiniNode
 }) {
   return (
-    <button aria-pressed={active} className="group flex flex-col items-center gap-2" onClick={onSelect} type="button">
+    <button
+      aria-pressed={active}
+      className="group flex w-full flex-col items-center gap-2"
+      onClick={onSelect}
+      type="button"
+    >
+      {/* A fixed box: a fit-content button sized the preview by its description, so cards drifted apart. */}
       <span
-        className={cn('flex aspect-[10/7] w-full flex-col gap-1.5 rounded-[8px] p-2', selectableClass(active))}
+        className={cn('flex h-[12.6rem] w-72 max-w-full flex-col gap-1.5 rounded-[8px] p-2', selectableClass(active))}
         style={previewStyle}
       >
         <MiniWindowButtons />
@@ -183,7 +189,7 @@ export function LayoutPreviewCard({
       </span>
       <span className="flex flex-col items-center gap-0.5">
         <span className={cn('text-xs', active ? 'text-foreground' : 'text-muted-foreground')}>{name}</span>
-        {description && <span className="text-[0.68rem] text-muted-foreground/70">{description}</span>}
+        {description && <span className="text-center text-[0.68rem] text-muted-foreground/70">{description}</span>}
       </span>
     </button>
   )
