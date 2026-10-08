@@ -162,3 +162,45 @@ def test_a_failed_shared_identity_write_keeps_the_profile_marked_for_the_next_bo
 
     assert not (setup / MARKER).exists()
     assert (_read_shared_nous_state() or {}).get("anon_token") == "anon_guest"
+
+
+def _assert_released_copy(path: Path) -> None:
+    assert not (path / MARKER).exists()
+    config = read_user_config_raw(path / "config.yaml")
+    assert config["agent"]["disabled_toolsets"] == ["browser"]
+    assert "platform_toolsets" not in config and "tools" not in config
+
+
+def test_a_clone_of_an_unreleased_setup_profile_drops_its_setup_limits(root):
+    setup = _setup_profile("hermes-setup", {"intro": "seen"})
+
+    clone = profiles.create_profile("copy", clone_from="hermes-setup", no_alias=True)
+    clone_all = profiles.create_profile("full-copy", clone_from="hermes-setup", clone_all=True, no_alias=True)
+
+    _assert_released_copy(clone)
+    _assert_released_copy(clone_all)
+    assert (setup / MARKER).exists()  # the source is left for the boot release
+
+
+def test_an_archive_of_a_setup_profile_imported_after_the_release_is_released(root, tmp_path):
+    import tarfile
+
+    onboarding_migrations.release_setup_profiles()  # latched before the archive arrives
+    exported = _setup_profile("old-setup", {"intro": "seen"})
+    archive = tmp_path / "old-setup.tar.gz"
+    with tarfile.open(archive, "w:gz") as tar:
+        tar.add(exported, arcname="old-setup")
+
+    _assert_released_copy(profiles.import_profile(str(archive), name="imported"))
+
+
+def test_a_distribution_that_ships_a_setup_marker_installs_released(root, tmp_path):
+    from hermes_cli.profile_distribution import install_distribution
+
+    import shutil
+
+    staged = tmp_path / "dist"
+    shutil.copytree(_setup_profile("staged-setup", {"intro": "seen"}), staged)
+    (staged / "distribution.yaml").write_text("name: staged-setup\nversion: 0.1.0\n")
+
+    _assert_released_copy(install_distribution(str(staged), name="installed").target_dir)
