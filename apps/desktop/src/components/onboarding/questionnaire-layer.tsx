@@ -27,7 +27,7 @@ export function QuestionnaireLayer({
 
   return (
     <OverlaySurface statusbarVisible={statusbarVisible}>
-      <div className="relative w-full max-w-[45rem] overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) p-5 shadow-nous">
+      <div className="relative flex max-h-full w-full max-w-[45rem] flex-col overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) p-5 shadow-nous">
         <Suspense fallback={null}>
           <QuestionnaireScreen refreshReadiness={refreshReadiness} />
         </Suspense>

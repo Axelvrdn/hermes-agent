@@ -11,6 +11,7 @@ import { atom } from 'nanostores'
 import { type ComponentType, useEffect } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { FadeScroll } from '@/components/ui/fade-scroll'
 import { Progress } from '@/components/ui/progress'
 import { useI18n } from '@/i18n'
 import { $freeTierStatus } from '@/store/free-tier'
@@ -221,14 +222,19 @@ export function QuestionnaireScreen({ refreshReadiness }: { refreshReadiness: ()
 
   return (
     <LayoutGroup>
-      <div className="grid gap-5">
-        <Trail state={state} />
-        <AnimatePresence initial={false} mode="wait">
-          <StepTransition key={view === 'review' ? 'review' : (stepId ?? 'none')}>
-            {view === 'review' ? <ReviewStep onStart={start} /> : Step ? <Step /> : null}
-          </StepTransition>
-        </AnimatePresence>
-        <div className="flex items-center justify-between gap-3">
+      {/* The card is capped at the overlay's height: the answers scroll, Skip setup and Back stay in view. */}
+      <div className="flex min-h-0 flex-col gap-5">
+        <FadeScroll className="-m-1 min-h-0 p-1" maxHeight="none">
+          <div className="grid gap-5">
+            <Trail state={state} />
+            <AnimatePresence initial={false} mode="wait">
+              <StepTransition key={view === 'review' ? 'review' : (stepId ?? 'none')}>
+                {view === 'review' ? <ReviewStep onStart={start} /> : Step ? <Step /> : null}
+              </StepTransition>
+            </AnimatePresence>
+          </div>
+        </FadeScroll>
+        <div className="flex shrink-0 items-center justify-between gap-3">
           <Button disabled={pending !== null} onClick={skip} size="xs" type="button" variant="text">
             {t.questionnaire.skipSetup}
           </Button>
