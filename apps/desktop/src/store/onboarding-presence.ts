@@ -50,6 +50,11 @@ export function onboardingSurfaceActive(): boolean {
   return !$onboardingSurfaceClear.get()
 }
 
+/** A first-run surface is open now; an undecided due check does not count. */
+export function onboardingSurfaceOpen(): boolean {
+  return $onboardingSurfaces.get().size > 0
+}
+
 /** Run once nothing first-run owns the screen (now, when it already doesn't). */
 export function afterOnboardingSurfaceClear(run: () => void): void {
   if ($onboardingSurfaceClear.get()) {

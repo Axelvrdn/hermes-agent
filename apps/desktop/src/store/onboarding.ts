@@ -26,7 +26,7 @@ import {
 import { $gatewayBootGeneration } from '@/store/live-sync'
 import { setMainModelAssignment } from '@/store/model-assignment'
 import { dismissNotification, notify, notifyError } from '@/store/notifications'
-import { afterOnboardingSurfaceClear, onboardingSurfaceActive } from '@/store/onboarding-presence'
+import { afterOnboardingSurfaceClear, onboardingSurfaceOpen } from '@/store/onboarding-presence'
 import { captureOnboardingScope, type OnboardingScope } from '@/store/onboarding-scope'
 import type { OAuthProvider, OAuthStartResponse } from '@/types/hermes'
 
@@ -590,7 +590,8 @@ let pendingCredentialWarning: null | string = null
 export function requestDesktopOnboardingForCredentialWarning(reason: null | string | undefined) {
   const warning = reason?.trim()
 
-  if (!warning || !isProviderSetupErrorMessage(warning) || onboardingSurfaceActive()) {
+  // Stash while the due check is still undecided: submit consumes it later. Drop only under an open questionnaire.
+  if (!warning || !isProviderSetupErrorMessage(warning) || onboardingSurfaceOpen()) {
     pendingCredentialWarning = null
 
     return
