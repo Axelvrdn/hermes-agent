@@ -486,6 +486,24 @@ export async function waitForInteractive(app: ElectronApplication, page: Page, t
           return false
         }
 
+        // The first-run layer stops above the status bar, so it is not full-viewport; the composer
+        // must also be the hit target at its own centre.
+        const composerHit = Array.from(
+          document.querySelectorAll('[data-slot="composer-root"] [contenteditable="true"]')
+        ).some(input => {
+          const box = input.getBoundingClientRect()
+
+          return (
+            box.width > 0 &&
+            box.height > 0 &&
+            input.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2))
+          )
+        })
+
+        if (!composerHit) {
+          return false
+        }
+
         while (node) {
           const cs = window.getComputedStyle(node)
 
