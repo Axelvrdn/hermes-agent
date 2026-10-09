@@ -1844,6 +1844,11 @@ DEFAULT_CONFIG = {
             # silent, no-push deliveries.
             "notify": True,
         },
+        # Deterministic calendar actions emitted by interactive cron deliveries. The account is a
+        # non-secret Google Workspace identifier; credentials remain owned by Executor.
+        "calendar_approval": {
+            "google_account": "",
+        },
         # Make cron deliveries CONTINUABLE (user can reply to a brief with it in context). False
         # keeps deliveries isolated to the job's session; per-job `attach_to_session` overrides.
         # Thread-capable platforms (Telegram topics, Discord/Slack threads) get a seeded thread per

@@ -1962,6 +1962,11 @@ def test_gateway_multiplex_keys_are_recognized_config_keys():
     assert suggestion == "gateway.auto_multiplex_migration"
 
 
+def test_cron_calendar_approval_account_is_a_recognized_config_key():
+    from hermes_cli.config import _validate_config_key
+    assert _validate_config_key("cron.calendar_approval.google_account") == (True, None)
+
+
 def test_empty_dict_default_sections_are_open_containers():
     """``compression.model_thresholds.<model>`` / ``terminal.docker_env.<VAR>`` are free-form
     mappings declared as ``{}`` in DEFAULT_CONFIG: their user-chosen keys must not be refused as
