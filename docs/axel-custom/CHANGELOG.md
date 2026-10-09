@@ -4,6 +4,13 @@ All notable changes carried by Axel's Hermes fork are documented here. Dates use
 
 ### 2026-10-09
 
+### Planned: Contextual conversation initialization (Turn 1)
+
+- Planned automatic context recovery on new Discord conversations:
+  - Multi-signal detection from the initial user prompt, channel/thread title, and Discord forum tags (`applied_tags`).
+  - Pre-turn context retrieval combining Obsidian vault notes (MCP) and past session history (`session_search` / `state.db`).
+  - Clean prologue injection preserving role alternation and prefix prompt caching.
+
 ### Generic deterministic cron actions
 
 - Added a typed `discord_cron_actions` delivery contract.

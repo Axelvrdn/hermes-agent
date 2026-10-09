@@ -19,6 +19,12 @@
 - [x] Add deterministic `Relancer` actions to continuable Discord cron deliveries.
 - [x] Resolve calendar approval buttons through a local script instead of an LLM interaction.
 - [ ] Add per-job action configuration and additional reviewed actions such as refresh, acknowledge, cancel and export.
+- [ ] Contextual initialization on new conversation (Turn 1):
+  - [ ] Extract topic signals from the first prompt, thread title, and Discord forum applied tags.
+  - [ ] Automatically query relevant notes via Obsidian MCP (`search_notes`, index matching).
+  - [ ] Automatically recall past conversations via session search (`session_search` / `state.db`).
+  - [ ] Inject retrieved context into Turn 1 system/session prologue without violating prompt caching invariants.
+
 
 ## Phase 3 — Voicebox
 
