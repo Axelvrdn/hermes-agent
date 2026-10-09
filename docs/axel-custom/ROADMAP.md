@@ -18,6 +18,11 @@
 - [x] Extend interactive cron controls beyond the calendar-specific protocol through a generic, typed action contract.
 - [x] Add deterministic `Relancer` actions to continuable Discord cron deliveries.
 - [x] Resolve calendar approval buttons through a local script instead of an LLM interaction.
+- [ ] Add interactive input modales (`discord.ui.Modal` + `TextInput`):
+  - [ ] **Check-in / Douleurs du jour** (pour le cron workout `a07f7b874d27`) : modal avec notation douleur (épaule, genou, mollets) + fatigue/ressenti, mise à jour directe de la base sqlite `checkins` et recalcul immédiat du plan.
+  - [ ] **Saisie de note / question rapide** (pour le cron scolaire `eefcdf90b2c1`) : modal pour consigner une question/remarque directement dans la note de révision ou le brief.
+- [ ] Add an Obsidian Vault Quick Action button (adaptation du bouton d'export .md de FRFlo) :
+  - [ ] Bouton **« 📝 Créer note Obsidian »** : crée ou synchronise un fichier Markdown structuré directement dans le coffre `/home/axel/Documents/Obsidian Vault/` avec métadonnées YAML et lien de retour Obsidian (`obsidian://`).
 - [ ] Add per-job action configuration and additional reviewed actions such as refresh, acknowledge, cancel and export.
 - [ ] Contextual initialization on new conversation (Turn 1):
   - [ ] Extract topic signals from the first prompt, thread title, and Discord forum applied tags.

@@ -11,6 +11,14 @@ All notable changes carried by Axel's Hermes fork are documented here. Dates use
   - Pre-turn context retrieval combining Obsidian vault notes (MCP) and past session history (`session_search` / `state.db`).
   - Clean prologue injection preserving role alternation and prefix prompt caching.
 
+### Planned: Interactive Discord Modals & Obsidian Actions
+
+- Interactive modals (`discord.ui.Modal` + `TextInput`):
+  - Daily check-in modal for the workout briefing (pain levels for shoulder/knee/calf, fatigue) directly updating SQLite without a cloud LLM.
+  - Quick note modal for the school briefing to record a question or remark.
+- Obsidian Vault Action button:
+  - Adapted from FRFlo's file-export concept, saving markdown notes straight to `/home/axel/Documents/Obsidian Vault/` and responding with clickable `obsidian://` links.
+
 ### Generic deterministic cron actions
 
 - Added a typed `discord_cron_actions` delivery contract.
