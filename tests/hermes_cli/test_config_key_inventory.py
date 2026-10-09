@@ -33,7 +33,8 @@ def test_inventory_covers_registered_paths_without_loading_user_config(monkeypat
         for name, value in mapping.items():
             if name.startswith("_"):
                 continue
-            key = f"{prefix}.{name}" if prefix else name
+            segment = name.replace(".", "\\.")
+            key = f"{prefix}.{segment}" if prefix else segment
             assert key in keys
             if isinstance(value, dict):
                 check(value, key)
@@ -45,14 +46,19 @@ def test_inventory_covers_registered_paths_without_loading_user_config(monkeypat
 
 def test_inventory_handles_nested_empty_and_scalar_defaults(monkeypatch, capsys):
     monkeypatch.setattr(config, "DEFAULT_CONFIG", {
-        "nested": {"enabled": False, "empty": {}, "names": ["not-a-key"], "value": None},
+        "nested": {"enabled": False, "empty": {}, "names": ["not-a-key"], "value": None,
+                   "attrs": {"service.name": "gw"}},
         "_private": "not-a-key",
     })
     monkeypatch.setattr(config, "_known_top_level_keys", lambda: {"nested", "unseeded"})
     _invoke("--json")
-    assert json.loads(capsys.readouterr().out) == [
-        "nested", "nested.empty", "nested.enabled", "nested.names", "nested.value", "unseeded",
+    keys = json.loads(capsys.readouterr().out)
+    assert keys == [
+        "nested", "nested.attrs", "nested.attrs.service\\.name", "nested.empty", "nested.enabled",
+        "nested.names", "nested.value", "unseeded",
     ]
+    # A literal dotted key prints escaped, so the path round-trips to the real leaf.
+    assert config._get_nested(config.DEFAULT_CONFIG, keys[2]) == "gw"
     monkeypatch.setattr(config, "DEFAULT_CONFIG", {})
     monkeypatch.setattr(config, "_known_top_level_keys", lambda: set())
     _invoke("--json")
