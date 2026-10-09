@@ -48,6 +48,7 @@ async def test_send_attaches_controls_only_to_last_fragment():
     assert channel.send.await_args_list[0].kwargs["view"] is None
     view = channel.send.await_args_list[1].kwargs["view"]
     assert isinstance(view, CronCalendarApprovalView)
+    assert len(view.children) == 2
 
 
 @pytest.mark.asyncio
@@ -86,3 +87,19 @@ async def test_wrong_user_cannot_resolve():
 
     adapter._dispatch_cron_calendar_authorization.assert_not_awaited()
     interaction.response.send_message.assert_awaited_once()
+
+
+def test_view_children_include_explicit_action_buttons():
+    adapter = _adapter({"42"})
+    view = CronCalendarApprovalView(
+        adapter=adapter,
+        approval_id="REV-20261006-1915",
+        expected_user_id="42",
+        allowed_user_ids={"42"},
+    )
+    assert len(view.children) == 2
+    labels = [getattr(child, "label", None) for child in view.children]
+    custom_ids = [getattr(child, "custom_id", None) for child in view.children]
+    assert labels == ["Autoriser", "Refuser"]
+    assert custom_ids == ["hermes:cron-calendar:authorize", "hermes:cron-calendar:refuse"]
+

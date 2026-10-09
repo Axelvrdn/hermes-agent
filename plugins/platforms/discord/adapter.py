@@ -1267,6 +1267,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                      BasePlatformAdapter):
     """Discord bot adapter: guild/DM messages, threads, slash commands, button approvals, reactions."""
 
+    supports_inchannel_continuable = True
+
     MAX_MESSAGE_LENGTH = 2000
     _SPLIT_THRESHOLD = 1900  # near the 2000-char split point
     supports_code_blocks = True  # Discord markdown renders fenced code blocks natively
@@ -6516,6 +6518,23 @@ def _define_discord_view_classes() -> None:
             self.approval_id = approval_id
             self.expected_user_id = str(expected_user_id)
             self._decision_lock = asyncio.Lock()
+            btn_cls = getattr(getattr(discord, "ui", None), "Button", None)
+            style_cls = getattr(discord, "ButtonStyle", None)
+            if btn_cls is not None and style_cls is not None and not getattr(self, "children", None):
+                authorize_btn = btn_cls(
+                    label="Autoriser",
+                    style=getattr(style_cls, "green", getattr(style_cls, "success", 1)),
+                    custom_id="hermes:cron-calendar:authorize",
+                )
+                authorize_btn.callback = self.authorize
+                self.add_item(authorize_btn)
+                refuse_btn = btn_cls(
+                    label="Refuser",
+                    style=getattr(style_cls, "red", getattr(style_cls, "danger", 3)),
+                    custom_id="hermes:cron-calendar:refuse",
+                )
+                refuse_btn.callback = self.refuse
+                self.add_item(refuse_btn)
 
         def _check_auth(self, interaction: discord.Interaction) -> bool:
             user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")

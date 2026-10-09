@@ -1897,7 +1897,12 @@ def _prepare_target_delivery(
     mirror_this_target = mirror_enabled and _target_mirror_eligible(
         job, target, global_mirror=mirror_enabled, origin_match=origin_target)
     # Resolved for ANY origin match (not just mirror-enabled): the in_channel seed needs it too.
-    origin_user_id = origin.get("user_id") if origin_target else None
+    # An explicit Discord delivery attached to a session still inherits the trusted origin user.
+    origin_user_id = (
+        origin.get("user_id")
+        if (origin_target or (target.get("_resolved_from") == "explicit" and job.get("attach_to_session") is True))
+        else None
+    )
 
     # DM shape for BOTH the flatten gate and seed chat_type (Slack DM ids start with "D").
     origin_chat_type = str(origin.get("chat_type") or "").lower()
@@ -1979,7 +1984,7 @@ def _prepare_target_delivery(
             if (
                 platform_name.lower() == "discord"
                 and job.get("attach_to_session") is True
-                and origin_target
+                and (origin_target or target.get("_resolved_from") == "explicit")
                 and origin_user_id
                 and live_adapter_ready
             )

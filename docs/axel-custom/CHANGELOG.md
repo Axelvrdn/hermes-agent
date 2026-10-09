@@ -2,7 +2,15 @@
 
 All notable changes carried by Axel's Hermes fork are documented here. Dates use UTC.
 
-## 2026-10-09
+### 2026-10-09
+
+### Discord cron in-channel surface and explicit delivery buttons
+
+- Fixed `CronCalendarApprovalView` so action buttons are materialized as real `discord.ui.Button` children via `add_item()`.
+- Allowed explicit Discord channel targets (`deliver: discord:<channel_id>`) attached to a session to inherit the trusted origin user and attach authorization buttons.
+- Enabled `supports_inchannel_continuable = True` on `DiscordAdapter` so Discord can honor `cron_continuable_surface: in_channel` and post directly to inbox channels without opening a thread.
+- Added regression tests covering Discord button child materialization, explicit target approval attachment, and in-channel delivery without thread creation.
+
 
 ### Repository foundation
 
