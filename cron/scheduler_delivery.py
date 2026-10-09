@@ -1494,6 +1494,23 @@ def _live_route_metadata(t: _TargetDelivery) -> tuple[Optional[str], dict, dict]
             "job_id": str(job.get("id") or ""),
             "execution_id": str(job.get("execution_id") or ""),
         }
+    if (
+        t.platform_name.lower() == "discord"
+        and job.get("attach_to_session") is True
+        and t.origin_user_id
+    ):
+        actions = ["rerun"]
+        if t.discord_calendar_approval_id:
+            actions.extend(["calendar_authorize", "calendar_refuse"])
+        route_metadata["discord_cron_actions"] = {
+            "version": 1,
+            "job_id": str(job.get("id") or ""),
+            "execution_id": str(job.get("execution_id") or ""),
+            "expected_user_id": str(t.origin_user_id),
+            "actions": actions,
+        }
+        if t.discord_calendar_approval_id:
+            route_metadata["discord_cron_actions"]["approval_id"] = t.discord_calendar_approval_id
     return route_thread_id, route_metadata, media_metadata
 
 
@@ -2055,6 +2072,21 @@ def _deliver_result(
     content, discord_calendar_approval_id = _extract_discord_calendar_confirmation(content)
     if for_failure:
         discord_calendar_approval_id = None
+    elif discord_calendar_approval_id:
+        try:
+            from cron.calendar_approvals import register_calendar_approval
+            register_calendar_approval(
+                content,
+                discord_calendar_approval_id,
+                job_id=str(job.get("id") or ""),
+                execution_id=str(job.get("execution_id") or ""),
+            )
+        except Exception:
+            # Never render actionable controls without a durable, typed record behind them.
+            logger.exception(
+                "Job '%s': failed to persist Discord calendar approval %s; omitting controls",
+                job.get("id"), discord_calendar_approval_id)
+            discord_calendar_approval_id = None
 
     from gateway.config import load_gateway_config
 

@@ -15,7 +15,10 @@
 - [ ] Port only missing user-visible behavior; avoid importing obsolete architecture wholesale.
 - [ ] Add Components V2 progressively behind compatibility fallbacks.
 - [ ] Validate message edit/delete synchronization without breaking session role alternation or prompt caching.
-- [ ] Extend interactive cron controls beyond the calendar-specific protocol through a generic, typed action contract.
+- [x] Extend interactive cron controls beyond the calendar-specific protocol through a generic, typed action contract.
+- [x] Add deterministic `Relancer` actions to continuable Discord cron deliveries.
+- [x] Resolve calendar approval buttons through a local script instead of an LLM interaction.
+- [ ] Add per-job action configuration and additional reviewed actions such as refresh, acknowledge, cancel and export.
 
 ## Phase 3 — Voicebox
 

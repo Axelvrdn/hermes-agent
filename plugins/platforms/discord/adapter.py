@@ -20,6 +20,7 @@ import os
 import re
 import struct
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -3335,18 +3336,29 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             )
             message_ids = []
             reference = self._reply_reference_for_send(reply_to, channel)
+            cron_actions = (metadata or {}).get("discord_cron_actions") or {}
             approval = (metadata or {}).get("discord_cron_authorization") or {}
-            approval_id = str(approval.get("approval_id") or "")
-            expected_user_id = str(approval.get("expected_user_id") or "")
+            approval_id = str(cron_actions.get("approval_id") or approval.get("approval_id") or "")
+            expected_user_id = str(
+                cron_actions.get("expected_user_id") or approval.get("expected_user_id") or "")
+            job_id = str(cron_actions.get("job_id") or approval.get("job_id") or "")
+            actions = list(cron_actions.get("actions") or [])
             approval_view = None
-            if approval_id and expected_user_id:
-                approval_view = CronCalendarApprovalView(
+            if job_id and expected_user_id and actions:
+                approval_view = CronActionsView(
                     adapter=self,
+                    job_id=job_id,
                     approval_id=approval_id,
                     expected_user_id=expected_user_id,
+                    actions=actions,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids,
                 )
+            elif approval_id and expected_user_id:
+                approval_view = CronCalendarApprovalView(
+                    adapter=self, approval_id=approval_id, expected_user_id=expected_user_id,
+                    allowed_user_ids=self._allowed_user_ids,
+                    allowed_role_ids=self._allowed_role_ids)
             for i, chunk in enumerate(chunks):
                 if self._reply_to_mode == "all":
                     chunk_reference = reference
@@ -4913,10 +4925,49 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     async def _dispatch_cron_calendar_authorization(
         self, interaction: discord.Interaction, approval_id: str, decision: str,
-    ) -> None:
-        """Inject a cron calendar decision as a normal authenticated inbound Discord message."""
-        prefix = "✅ AUTORISER" if decision == "authorize" else "❌ REFUSER"
-        await self.handle_message(self._build_slash_event(interaction, f"{prefix} {approval_id}"))
+    ) -> str:
+        """Resolve a calendar approval locally without creating an agent/LLM turn."""
+        script = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
+            "scripts", "resolve_cron_calendar_approval.py")
+
+        def _run_script():
+            return subprocess.run(
+                [sys.executable, script, approval_id, decision],
+                text=True, capture_output=True, timeout=180, check=False)
+
+        proc = await asyncio.to_thread(_run_script)
+        try:
+            payload = json.loads(proc.stdout or "{}")
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Le script calendrier a retourné une réponse invalide") from exc
+        if proc.returncode != 0 or not payload.get("ok"):
+            raise RuntimeError(str(payload.get("error") or proc.stderr or "Échec du script calendrier"))
+        record = payload.get("result") or {}
+        return str(record.get("message") or f"Décision {decision} enregistrée pour {approval_id}.")
+
+    async def _dispatch_cron_action(
+        self, interaction: discord.Interaction, job_id: str, action: str,
+    ) -> str:
+        """Execute a deterministic cron control without routing the click through an LLM turn."""
+        if action != "rerun":
+            raise ValueError(f"Unsupported cron action: {action}")
+
+        def _trigger() -> dict:
+            from cron.jobs import trigger_job
+            updated = trigger_job(job_id)
+            if updated is None:
+                raise ValueError(f"Cron job not found: {job_id}")
+            try:
+                from cron.scheduler import _notify_provider_jobs_changed
+                _notify_provider_jobs_changed()
+            except Exception:
+                logger.debug("Failed to notify cron scheduler after Discord rerun", exc_info=True)
+            return updated
+
+        updated = await asyncio.to_thread(_trigger)
+        name = str(updated.get("name") or job_id)
+        return f"🔄 Relance programmée pour **{name}**."
 
     # --- Thread creation helpers ---
 
@@ -6424,7 +6475,7 @@ def _resolve_exec_approval_admin_gate(config_extra: Optional[dict]) -> tuple[boo
 def _define_discord_view_classes() -> None:
     """Register Discord UI view classes as module globals.
     Called at module load and after a lazy install so the classes exist whenever DISCORD_AVAILABLE."""
-    global ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView, ClarifyChoiceView, ChoicePickerView, CronCalendarApprovalView
+    global ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView, ClarifyChoiceView, ChoicePickerView, CronActionsView, CronCalendarApprovalView
 
     class _HermesView(discord.ui.View):
         """Shared plumbing for Hermes component views: allowlist auth, single-use
@@ -6505,6 +6556,98 @@ def _define_discord_view_classes() -> None:
             self.resolved = True
             self._disable_all()
             await self._expire_embed(t("platform.discord.prompt.expired_footer"))
+
+    class CronActionsView(_HermesView):
+        """Typed controls for a cron delivery; deterministic actions never enter the agent loop."""
+
+        def __init__(
+            self, adapter, job_id: str, expected_user_id: str, actions: list[str],
+            allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
+            approval_id: str = "",
+        ):
+            super().__init__(allowed_user_ids, allowed_role_ids, timeout=7 * 24 * 60 * 60)
+            self.adapter = adapter
+            self.job_id = str(job_id)
+            self.approval_id = str(approval_id or "")
+            self.expected_user_id = str(expected_user_id)
+            self.actions = tuple(dict.fromkeys(str(a) for a in actions))
+            self._action_lock = asyncio.Lock()
+            self._calendar_resolved = False
+            # This view is fully dynamic: clear any decorator-materialized children inherited from
+            # discord.py and add exactly the actions declared by the scheduler contract.
+            for child in list(getattr(self, "children", None) or []):
+                self.remove_item(child)
+            button_cls = discord.ui.Button
+            if "rerun" in self.actions:
+                button = button_cls(
+                    label="Relancer", style=discord.ButtonStyle.blurple,
+                    custom_id="hermes:cron:rerun")
+                button.callback = self._resolve_rerun
+                self.add_item(button)
+            if self.approval_id and "calendar_authorize" in self.actions:
+                button = button_cls(
+                    label="Autoriser", style=discord.ButtonStyle.green,
+                    custom_id="hermes:cron-calendar:authorize")
+                button.callback = self._authorize_calendar
+                self.add_item(button)
+            if self.approval_id and "calendar_refuse" in self.actions:
+                button = button_cls(
+                    label="Refuser", style=discord.ButtonStyle.red,
+                    custom_id="hermes:cron-calendar:refuse")
+                button.callback = self._refuse_calendar
+                self.add_item(button)
+
+        def _check_auth(self, interaction: discord.Interaction) -> bool:
+            user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")
+            return user_id == self.expected_user_id and super()._check_auth(interaction)
+
+        async def _resolve_rerun(self, interaction: discord.Interaction) -> None:
+            if not self._check_auth(interaction):
+                await interaction.response.send_message(_unauthorized(), ephemeral=True)
+                return
+            async with self._action_lock:
+                await interaction.response.defer(ephemeral=True)
+                try:
+                    message = await self.adapter._dispatch_cron_action(
+                        interaction, self.job_id, "rerun")
+                except Exception as exc:
+                    logger.exception("Failed to rerun cron job %s from Discord", self.job_id)
+                    message = f"La relance a échoué : {exc}"
+                await interaction.followup.send(message, ephemeral=True)
+
+        async def _resolve_calendar(self, interaction: discord.Interaction, decision: str) -> None:
+            async with self._action_lock:
+                if self._calendar_resolved:
+                    await interaction.response.send_message(
+                        "Cette demande a déjà été traitée.", ephemeral=True)
+                    return
+                if not self._check_auth(interaction):
+                    await interaction.response.send_message(_unauthorized(), ephemeral=True)
+                    return
+                self._calendar_resolved = True
+                await interaction.response.defer(ephemeral=True)
+                try:
+                    message = await self.adapter._dispatch_cron_calendar_authorization(
+                        interaction, self.approval_id, decision)
+                except Exception:
+                    self._calendar_resolved = False
+                    logger.exception(
+                        "Failed to dispatch Discord cron calendar decision %s", self.approval_id)
+                    await interaction.followup.send(
+                        "La décision n'a pas pu être transmise. Réessaie.", ephemeral=True)
+                    return
+                for child in getattr(self, "children", None) or []:
+                    if str(getattr(child, "custom_id", "")).startswith("hermes:cron-calendar:"):
+                        child.disabled = True
+                with suppress(Exception):
+                    await interaction.message.edit(view=self)
+                await interaction.followup.send(message, ephemeral=True)
+
+        async def _authorize_calendar(self, interaction: discord.Interaction) -> None:
+            await self._resolve_calendar(interaction, "authorize")
+
+        async def _refuse_calendar(self, interaction: discord.Interaction) -> None:
+            await self._resolve_calendar(interaction, "refuse")
 
     class CronCalendarApprovalView(_HermesView):
         """Non-blocking Authorize/Refuse controls for a continuable Discord cron brief."""

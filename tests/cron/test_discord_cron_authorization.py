@@ -111,3 +111,38 @@ def test_prepare_target_delivery_honors_discord_inchannel_surface():
     assert t.thread_id is None
 
 
+def test_live_route_metadata_adds_generic_rerun_action_without_calendar_marker():
+    from unittest.mock import MagicMock
+    from gateway.config import GatewayConfig, Platform, PlatformConfig
+    from cron import scheduler_delivery as sd
+
+    job = {
+        "id": "eefcdf90b2c1",
+        "attach_to_session": True,
+        "origin": {"platform": "discord", "chat_id": "1", "user_id": "42"},
+    }
+    target = {
+        "platform": "discord", "chat_id": "2", "thread_id": None,
+        "_resolved_from": "explicit",
+    }
+    adapter = MagicMock()
+    adapter.name = "discord"
+    loop = MagicMock()
+    loop.is_running.return_value = True
+    config = GatewayConfig(platforms={Platform.DISCORD: PlatformConfig(enabled=True)})
+    delivery = sd._prepare_target_delivery(
+        job, target, adapters={Platform.DISCORD: adapter}, loop=loop, config=config,
+        notify_delivery=True, mirror_enabled=False, mirror_text="", delivery_errors=[],
+    )
+
+    assert delivery is not None
+    _thread, metadata, _media = sd._live_route_metadata(delivery)
+    assert metadata["discord_cron_actions"] == {
+        "version": 1,
+        "job_id": "eefcdf90b2c1",
+        "execution_id": "",
+        "expected_user_id": "42",
+        "actions": ["rerun"],
+    }
+
+

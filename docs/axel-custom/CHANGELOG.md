@@ -4,6 +4,16 @@ All notable changes carried by Axel's Hermes fork are documented here. Dates use
 
 ### 2026-10-09
 
+### Generic deterministic cron actions
+
+- Added a typed `discord_cron_actions` delivery contract.
+- Added a reusable `Relancer` button to continuable Discord cron deliveries.
+- The rerun click calls `cron.jobs.trigger_job()` directly and never creates an LLM interaction turn.
+- Calendar requests are persisted as profile-local JSON records under `cron/pending_approvals/`.
+- Calendar `Autoriser` / `Refuser` clicks now execute `scripts/resolve_cron_calendar_approval.py` instead of reinjecting a chat message into an agent session.
+- Authorization checks Google Calendar conflicts, creates the exact stored event, reads it back, and records its event ID; refusal remains fully local.
+- Added deterministic tests for parsing, persistence, conflict failure, creation verification, generic actions, authorization and no-LLM dispatch.
+
 ### Discord cron in-channel surface and explicit delivery buttons
 
 - Fixed `CronCalendarApprovalView` so action buttons are materialized as real `discord.ui.Button` children via `add_item()`.
