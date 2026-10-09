@@ -11,7 +11,7 @@
 
 ## Phase 2 — Discord improvements
 
-- [ ] Produce a current-upstream porting matrix for the FRFlo Discord commits.
+- [x] Produce a current-upstream porting matrix for the FRFlo Discord commits.
 - [ ] Port only missing user-visible behavior; avoid importing obsolete architecture wholesale.
 - [ ] Add Components V2 progressively behind compatibility fallbacks.
 - [ ] Validate message edit/delete synchronization without breaking session role alternation or prompt caching.

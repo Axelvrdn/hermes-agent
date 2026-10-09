@@ -26,3 +26,9 @@ Pinned for analysis:
 - `frflo/discord-message-session-sync` — message edit/delete session reconciliation.
 
 These branches are historical design inputs, not branches to merge wholesale. Their base predates many current upstream changes.
+
+### FRFlo porting analysis
+
+- Documented the five Discord commits in `FRFLO-DISCORD-PORTING.md`.
+- Confirmed that the final FRFlo session-rewind schema consistently uses `target_message`.
+- Chose progressive redesign over a wholesale merge: limited adapter extraction, incremental Components V2, then opt-in message/session synchronization with persistent per-generation correlation.
