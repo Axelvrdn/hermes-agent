@@ -31,7 +31,23 @@ metadata:
 
 Generate images, video, audio, and 3D content through ComfyUI using the
 official `comfy-cli` for setup/lifecycle and direct REST/WebSocket API
-for workflow execution.
+for workflow execution. For unattended local requests use the **reviewed
+allowlist path** in `references/reviewed-local.md` and
+`scripts/reviewed_local.py`; the older scripts below accept arbitrary graphs
+and are for explicit, supervised workflows only.
+
+## Reviewed local requests (default for autonomous Hermes)
+
+Load `references/reviewed-local.md` before submitting. Map “make an SD1.5
+image of X” to reviewed `sd15-image` with `prompt=X`; bounded `steps`,
+`seed`, and `negative_prompt` are optional. Inventory with `terminal` running
+`scripts/reviewed_local.py ... inventory`, then `... run sd15-image --params
+'{"prompt":"X"}'`. Output JSON contains a `discord_message` with `MEDIA:`
+paths: include that in the reply to the authorized Discord destination; the
+gateway validates attachments against its media allowlist. Do **not** invent a
+template for other models/videos or fall back to `run_workflow.py`,
+`run_batch.py`, or arbitrary graphs; have an operator review and hash-pin a
+new workflow first. Never run an expensive real workflow without consent.
 
 ## What's in this skill
 
@@ -40,6 +56,8 @@ for workflow execution.
 - `official-cli.md` — every `comfy ...` command, with flags
 - `rest-api.md` — REST + WebSocket endpoints (local + cloud), payload schemas
 - `workflow-format.md` — API-format JSON, common node types, param mapping
+- `reviewed-local.md` — secure local path: API/WS inventory, pinned templates,
+  progress/cancel, allowlisted media, Discord delivery contract
 - `template-integrity.md` — converting `comfyui-workflow-templates` from
   editor format to API format: Reroute bypass, dotted dynamic-input keys
   (`values.a`, `resize_type.width`), Cloud quirks (302 redirect, 1 concurrent
@@ -57,7 +75,8 @@ for workflow execution.
 | `extract_schema.py` | Read a workflow → list controllable params + model deps |
 | `check_deps.py` | Check workflow against running server → list missing nodes/models |
 | `auto_fix_deps.py` | Run check_deps then `comfy node install` / `comfy model download` |
-| `run_workflow.py` | Inject params, submit, monitor, download outputs (HTTP or WS) |
+| `run_workflow.py` | Manual only: inject params into arbitrary graphs; never use for unattended agent requests |
+| `reviewed_local.py` | Unattended local path: pinned reviewed templates, safe media, poll/progress/cancel |
 | `run_batch.py` | Submit a workflow N times with sweeps, parallel up to your tier |
 | `ws_monitor.py` | Real-time WebSocket viewer for executing jobs (live progress) |
 | `health_check.py` | Verification checklist runner — comfy-cli + server + models + smoke test |
@@ -70,7 +89,7 @@ SDXL inpaint, ESRGAN upscale, AnimateDiff video, Wan T2V. See
 ## When to Use
 
 - User asks to generate images with Stable Diffusion, SDXL, Flux, SD3, etc.
-- User wants to run a specific ComfyUI workflow file
+- User wants to run a specific ComfyUI workflow file (**only after operator review for unattended use**)
 - User wants to chain generative steps (txt2img → upscale → face restore)
 - User needs ControlNet, inpainting, img2img, or other advanced pipelines
 - User asks to manage ComfyUI queue, check models, or install custom nodes

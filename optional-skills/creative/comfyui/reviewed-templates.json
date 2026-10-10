@@ -1,0 +1,12 @@
+{
+  "sd15-image": {
+    "file": "workflows/sd15_txt2img.json",
+    "sha256": "db6ef4f9bf3b8e0f0c88c08ab8f0a45ae3816fb2ea2ad4460443b1ac424052a5",
+    "parameters": {
+      "prompt": {"node": "6", "input": "text", "type": "text", "max_length": 2000},
+      "negative_prompt": {"node": "7", "input": "text", "type": "text", "max_length": 2000},
+      "seed": {"node": "3", "input": "seed", "type": "integer", "min": 0, "max": 18446744073709551615},
+      "steps": {"node": "3", "input": "steps", "type": "integer", "min": 1, "max": 60}
+    }
+  }
+}
