@@ -3359,15 +3359,30 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                     adapter=self, approval_id=approval_id, expected_user_id=expected_user_id,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids)
+            # V2 is opt-in for a single immutable final text message only. Multi-chunk,
+            # interactive and provisional/streaming messages retain editable legacy content.
+            from .components_v2 import definitely_rejected, static_text_view
+            use_v2 = (
+                self.config.extra.get("components_v2_static") is True
+                and final_delivery and len(chunks) == 1 and approval_view is None
+                and not (metadata or {}).get("expect_edits")
+                and not (metadata or {}).get("streaming")
+                and not (metadata or {}).get("discord_cron_actions")
+                and not (metadata or {}).get("discord_cron_authorization")
+            )
             for i, chunk in enumerate(chunks):
                 if self._reply_to_mode == "all":
                     chunk_reference = reference
                 else:  # "first" (default) or "off"
                     chunk_reference = reference if i == 0 else None
                 chunk_view = approval_view if approval_view is not None and i == len(chunks) - 1 else None
+                v2_view = static_text_view(discord, chunk) if use_v2 else None
+                send_kwargs = ({"view": v2_view, "reference": chunk_reference} if v2_view is not None
+                               else {"content": chunk, "reference": chunk_reference})
+                if approval_view is not None:
+                    send_kwargs["view"] = chunk_view
                 try:
-                    msg = await channel.send(
-                        content=chunk, reference=chunk_reference, view=chunk_view)
+                    msg = await channel.send(**send_kwargs)
                 except Exception as e:
                     if chunk_reference is not None and self._is_reply_reference_rejected(e):
                         logger.warning(
@@ -3375,7 +3390,11 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                             self.name, reply_to,
                         )
                         reference = None
-                        msg = await channel.send(content=chunk, reference=None, view=chunk_view)
+                        send_kwargs["reference"] = None
+                        msg = await channel.send(**send_kwargs)
+                    elif v2_view is not None and definitely_rejected(e):
+                        logger.warning("[%s] Components V2 rejected by Discord; retrying legacy text", self.name)
+                        msg = await channel.send(content=chunk, reference=chunk_reference)
                     else:
                         raise
                 message_ids.append(str(msg.id))
