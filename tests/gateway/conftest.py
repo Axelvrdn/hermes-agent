@@ -268,6 +268,24 @@ def _ensure_discord_mock() -> None:
             self.description = description
     discord_mod.SelectOption = _FakeSelectOption
 
+    class _FakeModal(_FakeView):
+        def __init__(self, *, title=None, **_):
+            super().__init__()
+            self.title = title
+            self.id = title or "modal"
+
+    class _FakeTextInput:
+        def __init__(self, *, label=None, custom_id=None, **_):
+            self.label = label
+            self.custom_id = custom_id
+            self._value = ""
+
+        @property
+        def value(self):
+            return self._value
+
+    discord_mod.TextStyle = SimpleNamespace(short=1, paragraph=2)
+
     # AudioSource: real class so VoiceMixer(discord.AudioSource) can subclass
     # it cleanly in tests.  MagicMock auto-attributes would make is_opus()
     # return a Mock instead of False, breaking 9 TestVoiceMixerCore tests.
@@ -284,6 +302,8 @@ def _ensure_discord_mock() -> None:
         View=_FakeView,
         Select=_FakeSelect,
         Button=_FakeButton,
+        Modal=_FakeModal,
+        TextInput=_FakeTextInput,
         button=lambda *a, **k: (lambda fn: fn),
     )
     discord_mod.ButtonStyle = SimpleNamespace(

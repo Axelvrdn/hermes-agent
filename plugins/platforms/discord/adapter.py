@@ -25,6 +25,7 @@ import tempfile
 import threading
 import time
 import traceback
+import uuid
 from collections import defaultdict
 from contextlib import nullcontext, suppress
 from typing import Callable, Dict, List, Optional, Any, Tuple
@@ -3353,6 +3354,9 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                     actions=actions,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids,
+                    profile_home=cron_actions.get("profile_home"),
+                    action_config=cron_actions.get("action_config"),
+                    brief=content,
                 )
             elif approval_id and expected_user_id:
                 approval_view = CronCalendarApprovalView(
@@ -6477,6 +6481,43 @@ def _define_discord_view_classes() -> None:
     Called at module load and after a lazy install so the classes exist whenever DISCORD_AVAILABLE."""
     global ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView, ClarifyChoiceView, ChoicePickerView, CronActionsView, CronCalendarApprovalView
 
+    class CronTextModal(discord.ui.Modal):
+        def __init__(self, view, action):
+            super().__init__(title="Check-in sportif" if action == "workout_checkin" else "Note rapide")
+            self.owner = view
+            self.action = action
+            self.submitted = False
+            self.submission_id = uuid.uuid4().hex
+            fields = (("Épaule (0-10)", "shoulder"), ("Genou (0-10)", "knee"),
+                      ("Mollets (0-10)", "calves"), ("Fatigue (0-10)", "fatigue"),
+                      ("Commentaire", "comment")) if action == "workout_checkin" else (("Note / question", "note"),)
+            for label, key in fields:
+                self.add_item(discord.ui.TextInput(label=label, custom_id=key,
+                              required=key != "comment", max_length=1000 if key == "comment" else 2000 if key == "note" else 2,
+                              style=discord.TextStyle.paragraph if key in {"comment", "note"} else discord.TextStyle.short))
+
+        async def on_submit(self, interaction):
+            view = self.owner
+            if not view._check_auth(interaction):
+                await interaction.response.send_message(_unauthorized(), ephemeral=True)
+                return
+            async with view._action_lock:
+                if self.submitted:
+                    await interaction.response.send_message("Déjà enregistré.", ephemeral=True)
+                    return
+                from plugins.platforms.discord.cron_actions import save_context
+                values = {child.custom_id: child.value for child in self.children}
+                try:
+                    saved = await asyncio.to_thread(save_context, view.job_id, view.expected_user_id,
+                                                    self.action, values, home=view.profile_home,
+                                                    submission_id=self.submission_id,
+                                                    workout_db=(view.action_config.get("workout") or {}).get("database"))
+                except (ValueError, KeyError) as exc:
+                    await interaction.response.send_message(str(exc), ephemeral=True)
+                    return
+                self.submitted = True
+                await interaction.response.send_message("Enregistré." if saved else "Déjà enregistré.", ephemeral=True)
+
     class _HermesView(discord.ui.View):
         """Shared plumbing for Hermes component views: allowlist auth, single-use
         ``resolved`` flag, ``_message`` handle for timeout edits."""
@@ -6564,6 +6605,7 @@ def _define_discord_view_classes() -> None:
             self, adapter, job_id: str, expected_user_id: str, actions: list[str],
             allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
             approval_id: str = "",
+            profile_home=None, action_config=None, brief="",
         ):
             super().__init__(allowed_user_ids, allowed_role_ids, timeout=7 * 24 * 60 * 60)
             self.adapter = adapter
@@ -6571,6 +6613,9 @@ def _define_discord_view_classes() -> None:
             self.approval_id = str(approval_id or "")
             self.expected_user_id = str(expected_user_id)
             self.actions = tuple(dict.fromkeys(str(a) for a in actions))
+            self.profile_home = profile_home
+            self.action_config = action_config or {}
+            self.brief = brief
             self._action_lock = asyncio.Lock()
             self._calendar_resolved = False
             # This view is fully dynamic: clear any decorator-materialized children inherited from
@@ -6596,6 +6641,37 @@ def _define_discord_view_classes() -> None:
                     custom_id="hermes:cron-calendar:refuse")
                 button.callback = self._refuse_calendar
                 self.add_item(button)
+            for action, label in (("workout_checkin", "🩹 Check-in / Douleurs"),
+                                  ("school_note", "📝 Note rapide"),
+                                  ("obsidian_capture", "📝 Créer note Obsidian"),
+                                  ("obsidian_save", "📝 Créer note Obsidian")):
+                if action in self.actions:
+                    button = button_cls(label=label, style=discord.ButtonStyle.blurple,
+                                        custom_id=f"hermes:cron:{action}")
+                    button.callback = lambda interaction, a=action: self._resolve_typed(interaction, a)
+                    self.add_item(button)
+
+        async def _resolve_typed(self, interaction, action):
+            if not self._check_auth(interaction):
+                await interaction.response.send_message(_unauthorized(), ephemeral=True)
+                return
+            if action in {"workout_checkin", "school_note"}:
+                await interaction.response.send_modal(CronTextModal(self, action))
+                return
+            async with self._action_lock:
+                from plugins.platforms.discord.cron_actions import save_obsidian
+                config = self.action_config.get("obsidian") or {}
+                try:
+                    link = await asyncio.to_thread(
+                        save_obsidian, self.job_id, self.expected_user_id, self.brief,
+                        vault=config.get("vault"), folder=config.get("folder"),
+                        allowed_folders=config.get("allowed_folders"),
+                        bridge_url=config.get("bridge_url"),
+                        submission_id=f"{self.job_id}:{getattr(interaction.message, 'id', '')}")
+                except (ValueError, OSError, TypeError) as exc:
+                    await interaction.response.send_message(f"Archivage impossible : {exc}", ephemeral=True)
+                    return
+                await interaction.response.send_message(f"[Ouvrir la note]({link})", ephemeral=True)
 
         def _check_auth(self, interaction: discord.Interaction) -> bool:
             user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")

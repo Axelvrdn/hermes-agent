@@ -1502,6 +1502,11 @@ def _live_route_metadata(t: _TargetDelivery) -> tuple[Optional[str], dict, dict]
         actions = ["rerun"]
         if t.discord_calendar_approval_id:
             actions.extend(["calendar_authorize", "calendar_refuse"])
+        action_config = job.get("discord_actions")
+        if isinstance(action_config, dict) and isinstance(action_config.get("actions"), list):
+            actions.extend(action for action in action_config["actions"]
+                           if action in {"workout_checkin", "school_note", "obsidian_capture", "obsidian_save"}
+                           and action not in actions)
         route_metadata["discord_cron_actions"] = {
             "version": 1,
             "job_id": str(job.get("id") or ""),
@@ -1511,6 +1516,10 @@ def _live_route_metadata(t: _TargetDelivery) -> tuple[Optional[str], dict, dict]
         }
         if t.discord_calendar_approval_id:
             route_metadata["discord_cron_actions"]["approval_id"] = t.discord_calendar_approval_id
+        if isinstance(action_config, dict):
+            route_metadata["discord_cron_actions"]["action_config"] = action_config
+            from hermes_constants import get_hermes_home
+            route_metadata["discord_cron_actions"]["profile_home"] = str(get_hermes_home())
     return route_thread_id, route_metadata, media_metadata
 
 

@@ -1725,6 +1725,25 @@ def _normalize_failure_deliver(value: Any) -> Optional[str]:
     return _normalize_job_optional_text(value)
 
 
+def _normalize_discord_actions(value: Any) -> Optional[dict]:
+    if value is None:
+        return None
+    if not isinstance(value, dict) or not isinstance(value.get("actions"), list):
+        raise ValueError("discord_actions requires an actions list")
+    allowed = {"workout_checkin", "school_note", "obsidian_capture", "obsidian_save"}
+    actions = value["actions"]
+    if any(not isinstance(action, str) or action not in allowed for action in actions):
+        raise ValueError("Unsupported Discord cron action")
+    if any(action.startswith("obsidian_") for action in actions):
+        config = value.get("obsidian")
+        if not isinstance(config, dict) or not all(config.get(key) for key in
+                ("vault", "folder", "allowed_folders", "bridge_url")):
+            raise ValueError("Obsidian actions require vault, folder, allowed_folders and bridge_url")
+        if not isinstance(config["allowed_folders"], list) or config["folder"] not in config["allowed_folders"]:
+            raise ValueError("Obsidian folder must be allowed")
+    return copy.deepcopy(value)
+
+
 def _normalize_reasoning_effort(value: Any) -> Optional[str]:
     """Spelling-only validation via the shared parser (cron knob never stricter/looser than
     config.yaml); model capability is deliberately NOT checked (model unknowable at create time,
@@ -1749,6 +1768,7 @@ def _normalize_reasoning_effort(value: Any) -> Optional[str]:
 # Normalizers for create_job (all fields) / update_job (present fields). Invalid values raise BEFORE
 # storing.
 _CREATE_FIELD_NORMALIZERS: dict[str, Callable[[Any], Any]] = {
+    "discord_actions": _normalize_discord_actions,
     "model": _normalize_job_optional_text,
     "provider": _normalize_job_optional_text,
     "base_url": _normalize_base_url,
@@ -1763,6 +1783,7 @@ _CREATE_FIELD_NORMALIZERS: dict[str, Callable[[Any], Any]] = {
     "interpreter": _normalize_job_optional_text,
 }
 _UPDATE_FIELD_NORMALIZERS: dict[str, Callable[[Any], Any]] = {
+    "discord_actions": _normalize_discord_actions,
     # [] is an explicit zero-tool allowlist and must survive the update path as [] too (#82010).
     "enabled_toolsets": _normalize_enabled_toolsets,
     "workdir": lambda v: None if v in {None, "", False} else _normalize_workdir(v),
@@ -1841,6 +1862,7 @@ def create_job(
     paused_reason: Optional[str] = None,
     pinned: bool = False,
     interpreter: Optional[str] = None,
+    discord_actions: Optional[dict] = None,
 ) -> dict[str, Any]:
     """Create a new cron job and return the stored record.
 
@@ -1932,6 +1954,7 @@ def create_job(
         "origin": origin,  # Tracks where job was created for "origin" delivery
         "enabled_toolsets": f["enabled_toolsets"],
         "workdir": f["workdir"],
+        "discord_actions": f["discord_actions"],
     }
     # Optional keys are persisted only when explicitly set: an absent key falls back to global
     # config (attach/reasoning) or to ``deliver`` (failure_deliver), byte-identical to pre-feature
