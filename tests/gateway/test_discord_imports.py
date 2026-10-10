@@ -24,3 +24,4 @@ class TestDiscordImportSafety:
 
         assert module.DISCORD_AVAILABLE is False
         assert module.discord is None
+        assert "plugins.platforms.discord.adapter_views" not in sys.modules
