@@ -1894,6 +1894,96 @@ class SessionMessagesMixin:
             "THEN json_extract(display_metadata, '$.gateway_input_owner') END = ? LIMIT 1",
             (session_id, owner)) is not None
 
+    def record_discord_turn(self, session_id: str, inbound_id: str, generation: int, author_id: str) -> bool:
+        """Bind an admitted human turn before execution. A claimed generation cannot be revived."""
+        if not all((session_id, inbound_id, author_id)) or generation < 1:
+            return False
+        def _do(conn):
+            row = conn.execute("SELECT claimed, author_id FROM discord_mutation_turns "
+                               "WHERE session_id=? AND inbound_id=? AND generation=?",
+                               (session_id, inbound_id, generation)).fetchone()
+            if row:
+                return not row["claimed"] and row["author_id"] == author_id
+            conn.execute("INSERT INTO discord_mutation_turns "
+                         "(session_id, inbound_id, generation, author_id) VALUES (?, ?, ?, ?)",
+                         (session_id, inbound_id, generation, author_id))
+            return True
+        return self._execute_write(_do)
+
+    def record_discord_output(self, session_id: str, inbound_id: str, generation: int,
+                              author_id: str, message_id: str) -> bool:
+        """Store only acknowledged, complete IDs. A late sender cannot attach to a claimed turn."""
+        if not message_id:
+            return False
+        def _do(conn):
+            row = conn.execute("SELECT claimed, author_id FROM discord_mutation_turns "
+                               "WHERE session_id=? AND inbound_id=? AND generation=?",
+                               (session_id, inbound_id, generation)).fetchone()
+            if row is None:
+                return False
+            if row["claimed"] or row["author_id"] != author_id:
+                return False
+            conn.execute("INSERT OR IGNORE INTO discord_mutation_outputs "
+                         "(session_id, inbound_id, generation, message_id) VALUES (?, ?, ?, ?)",
+                         (session_id, inbound_id, generation, message_id))
+            return True
+        return self._execute_write(_do)
+
+    def probe_discord_mutation(self, session_id: str, inbound_id: str, author_id: str) -> bool:
+        """Read-only preflight: absent, composite, ambiguous or foreign input is never interrupted."""
+        rows = self._read_all("SELECT id, role, active, compacted, content, display_metadata FROM messages "
+                              "WHERE session_id=? AND platform_message_id=? AND active=1", (session_id, inbound_id))
+        if len(rows) != 1 or rows[0]["role"] != "user" or rows[0]["active"] != 1 or rows[0]["compacted"]:
+            return False
+        # Composite carriers need scaffold preservation. Refuse rather than silently drop their history.
+        try:
+            handoff = self._split_rewind_target(dict(rows[0]), None, False)
+            if handoff is not None:
+                return False
+        except (ValueError, RuntimeError):
+            return False
+        return self._read_one("SELECT 1 FROM discord_mutation_turns WHERE session_id=? AND inbound_id=? "
+                              "AND author_id=? AND claimed=0 LIMIT 1", (session_id, inbound_id, author_id)) is not None
+
+    def claim_discord_mutation(self, session_id: str, inbound_id: str, author_id: str,
+                               kind: str) -> Optional[dict[str, Any]]:
+        """CAS the input, correlations and suffix in one write transaction; no remote I/O in txn."""
+        if kind not in {"edit", "delete"} or not all((session_id, inbound_id, author_id)):
+            return None
+        def _do(conn):
+            self._check_transcript_write_guards(conn, session_id, None,
+                reject_active_turn_lease=True, reject_active_compression_lock=True)
+            rows = conn.execute("SELECT * FROM messages WHERE session_id=? AND platform_message_id=? "
+                                "AND active=1", (session_id, inbound_id)).fetchall()
+            if len(rows) != 1 or rows[0]["role"] != "user" or rows[0]["active"] != 1 or rows[0]["compacted"]:
+                return None
+            target = dict(rows[0])
+            try:
+                # Composite carriers are deliberately unsupported until their scaffold can be preserved.
+                handoff = self._split_rewind_target(target, None, False)
+                if handoff is not None:
+                    return None
+            except (ValueError, RuntimeError):
+                return None
+            turns = conn.execute("SELECT generation FROM discord_mutation_turns WHERE session_id=? "
+                                 "AND inbound_id=? AND author_id=? AND claimed=0",
+                                 (session_id, inbound_id, author_id)).fetchall()
+            if len(turns) != 1:
+                return None
+            generation = int(turns[0][0])
+            outputs = [r[0] for r in conn.execute("SELECT message_id FROM discord_mutation_outputs "
+                        "WHERE session_id=? AND inbound_id=? AND generation=?",
+                        (session_id, inbound_id, generation))]
+            conn.execute("UPDATE discord_mutation_turns SET claimed=1 WHERE session_id=? AND inbound_id=?",
+                         (session_id, inbound_id))
+            conn.execute("UPDATE messages SET active=0 WHERE session_id=? AND id>=? AND active=1",
+                         (session_id, target["id"]))
+            conn.execute("UPDATE sessions SET rewind_count=COALESCE(rewind_count,0)+1 WHERE id=?", (session_id,))
+            count, calls = self._active_transcript_counts(conn, session_id)
+            conn.execute(f"{_SET_COUNTERS_SQL} WHERE id=?", (count, calls, session_id))
+            return {"target_id": target["id"], "generation": generation, "output_ids": outputs}
+        return self._execute_write(_do)
+
     def has_platform_message_id(self, session_id: str, platform_message_id: str) -> bool:
         """True when *platform_message_id* exists (partial-index probe; the gateway's transient-failure dedupe).
 
