@@ -2182,6 +2182,17 @@ class GatewayTurnMixin:
             if not heartbeat_owner_is_current(self, event, session_key):
                 return
             _run_start_session_id = session_entry.session_id
+            if (source.platform.value == "discord" and event.message_id and source.user_id
+                    and not event.internal):
+                _adapter = self._delivery_adapter_for(source)
+                _extra = getattr(getattr(_adapter, "config", None), "extra", None)
+                if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
+                    # The persisted input's owner is established before execution or delivery.
+                    # A failed claim cannot silently create an unowned, deletable response.
+                    if await self._session_db.record_discord_turn(
+                            _run_start_session_id, str(event.message_id), run_generation, str(source.user_id)):
+                        event._discord_sync_session_id = _run_start_session_id
+                        event._discord_sync_generation = run_generation
             _turn_started_monotonic = time.monotonic()
             # Admission/typing is not execution. All routing, authorization and
             # turn preparation gates have passed when the agent runner is entered.

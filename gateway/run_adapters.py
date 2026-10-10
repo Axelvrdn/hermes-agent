@@ -1796,12 +1796,76 @@ class GatewayAdapterLifecycleMixin:
     def _multiplex_on(self) -> bool:
         return bool(getattr(self.config, "multiplex_profiles", False))
 
+    async def _sync_discord_mutation(self, event: dict, source) -> bool:
+        """Opt-in mutation: exact author, active input and persisted output ownership only."""
+        if event.get("platform") != "discord" or event.get("event_type") not in {"message_edited", "message_deleted"}:
+            return False
+        adapter = self._delivery_adapter_for(source)
+        extra = getattr(getattr(adapter, "config", None), "extra", None)
+        if not isinstance(extra, dict) or extra.get("sync_message_mutations") is not True:
+            return False
+        payload = event.get("payload") or {}
+        inbound = str(payload.get("message_id") or "")
+        author = str(source.user_id or "")
+        if not inbound or not author or (event["event_type"] == "message_deleted" and payload.get("author_id") != author):
+            return False
+        if not self._is_user_authorized_for_source(source):
+            return False
+        key = self._session_key_for_source(source)
+        entry = self.session_store.lookup_by_session_key(key)
+        db = self._session_db
+        if entry is None or db is None:
+            return False
+        sid = entry.session_id
+        if not await db.probe_discord_mutation(sid, inbound, author):
+            return False
+        # Cached delete events carry the AUTHOR, not the actor; do not treat a deletion
+        # observed from Discord as proof that the author requested transcript destruction.
+        if event["event_type"] == "message_deleted":
+            return False
+        if not isinstance(payload.get("text"), str) or not payload["text"].strip():
+            return False
+        if self._is_session_running(key):
+            await self._interrupt_and_clear_session(
+                key, source, interrupt_reason="Discord message mutation",
+                invalidation_reason="discord_message_mutation", release_running_state=True)
+        try:
+            claim = await db.claim_discord_mutation(sid, inbound, author,
+                "edit" if event["event_type"] == "message_edited" else "delete")
+        except Exception:
+            logger.warning("Discord mutation refused by transcript guard", exc_info=True)
+            return False
+        if not claim:
+            return False
+        self._invalidate_session_run_generation(key, reason="discord_message_mutation")
+        chat = str(source.thread_id or source.chat_id)
+        for output_id in claim["output_ids"]:
+            try:
+                if not await adapter.delete_message(chat, output_id):
+                    logger.warning("Discord mutation could not delete correlated output %s", output_id)
+            except Exception:
+                logger.warning("Discord mutation failed to delete correlated output %s", output_id, exc_info=True)
+        if event["event_type"] == "message_edited" and isinstance(payload.get("text"), str) and payload["text"].strip():
+            await self._readmit_discord_edit(payload["text"], source, inbound)
+        return True
+
+    async def _readmit_discord_edit(self, text: str, source, inbound: str) -> None:
+        """Re-enter ordinary admission after the previous run's slot has been released."""
+        from gateway.platforms.base import MessageEvent, MessageType
+        event = MessageEvent(text=text, message_type=MessageType.TEXT, source=source, message_id=inbound)
+        adapter = self._delivery_adapter_for(source)
+        if adapter is not None:
+            await adapter.handle_message(event)
+
     async def _handle_gateway_platform_event(self, event: dict, source) -> None:
         """Authorize and publish one normalized adapter event to plugin hooks."""
         # Observer failures must never break the adapter's update loop.
         with _log_suppressed(logging.DEBUG, "gateway_platform_event hook dispatch failed", exc_info=True):
+            authorized = self._is_user_authorized_for_source(source)
+            if authorized:
+                await self._sync_discord_mutation(event, source)
             from hermes_cli.lifecycle import has_hook, invoke_hook
-            if has_hook("gateway_platform_event") and self._is_user_authorized_for_source(source):
+            if authorized and has_hook("gateway_platform_event"):
                 invoke_hook("gateway_platform_event", **event)
 
     def _make_profile_platform_event_handler(self, profile_name: str):

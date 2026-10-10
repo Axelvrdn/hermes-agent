@@ -1855,7 +1855,10 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     async def _emit_platform_event(self, event_type: str, build) -> None:
         """Normalize one event via ``build()`` -> ``(payload, source_kwargs)`` (None drops) and dispatch."""
-        if not self._platform_events_subscribed():
+        if not self._platform_events_subscribed() and not (
+            event_type in {"message_edited", "message_deleted"}
+            and getattr(getattr(self, "config", None), "extra", {}).get("sync_message_mutations") is True
+        ):
             return
         try:
             built = build()
@@ -3497,6 +3500,21 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         return SendResult(
             success=True, message_id=message_id, raw_response={"thread_id": thread_id},
         )
+
+    async def delete_message(self, chat_id: str, message_id: str) -> bool:
+        """Delete an explicitly correlated Discord output; never guess after an API failure."""
+        if not self._client:
+            return False
+        try:
+            channel = await self._resolve_channel(chat_id)
+            if channel is None:
+                return False
+            await channel.get_partial_message(int(message_id)).delete()
+            return True
+        except Exception:
+            logger.warning("[%s] Failed to delete Discord message %s in %s", self.name,
+                           message_id, chat_id, exc_info=True)
+            return False
 
     async def edit_message(
         self, chat_id: str, message_id: str, content: str, *, finalize: bool = False,
