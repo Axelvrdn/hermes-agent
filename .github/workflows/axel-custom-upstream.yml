@@ -1,0 +1,85 @@
+name: Axel custom upstream drift
+
+on:
+  schedule:
+    - cron: '17 7 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [axel-custom]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.repository == 'Axelvrdn/hermes-agent'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v7.0.1
+        with:
+          ref: axel-custom
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch upstream and custom refs
+        run: |
+          git remote add official https://github.com/NousResearch/hermes-agent.git
+          git fetch --no-tags official main:refs/remotes/official/main
+          git fetch --no-tags origin axel-custom:refs/remotes/origin/axel-custom
+          echo "upstream_ahead=$(git rev-list --count origin/axel-custom..official/main)" >> "$GITHUB_STEP_SUMMARY"
+      - name: Validate rebase, targeted tests and repo checks
+        id: probe
+        continue-on-error: true
+        run: |
+          python scripts/custom_maintenance.py validate \
+            --custom origin/axel-custom --upstream official/main \
+            --report "$RUNNER_TEMP/custom-upstream-report.json" \
+            --test 'scripts/run_tests.sh tests/cron/test_calendar_approvals.py tests/cron/test_discord_cron_authorization.py tests/gateway/test_discord_cron_authorization_buttons.py tests/scripts/test_custom_maintenance.py' \
+            --test 'python scripts/check'
+      - name: Publish report
+        if: always()
+        env:
+          REPORT: ${{ runner.temp }}/custom-upstream-report.json
+          OUTCOME: ${{ steps.probe.outcome }}
+        run: |
+          if [ -f "$REPORT" ]; then
+            python -m json.tool "$REPORT" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Probe did not produce a report; inspect job logs." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "Validation: $OUTCOME. No branches or live installations were updated." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: custom-upstream-report
+          path: ${{ runner.temp }}/custom-upstream-report.json
+          if-no-files-found: ignore
+      - name: Fail on conflict or failed checks
+        if: steps.probe.outcome != 'success'
+        run: exit 1
+
+  notify-inbox:
+    needs: validate
+    if: always() && github.repository == 'Axelvrdn/hermes-agent' && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post scheduled status to Discord inbox
+        env:
+          DISCORD_INBOX_WEBHOOK_URL: ${{ secrets.DISCORD_INBOX_WEBHOOK_URL }}
+          VALIDATION_RESULT: ${{ needs.validate.result }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$DISCORD_INBOX_WEBHOOK_URL" ]; then
+            echo 'DISCORD_INBOX_WEBHOOK_URL missing: scheduled report cannot be delivered' >&2
+            exit 1
+          fi
+          python - <<'PY'
+          import json, os, urllib.request
+          status = os.environ['VALIDATION_RESULT']
+          url = os.environ['RUN_URL']
+          payload = json.dumps({'content': f'Upstream axel-custom validation: {status}. Report and conflict details: {url}'}).encode()
+          request = urllib.request.Request(os.environ['DISCORD_INBOX_WEBHOOK_URL'], data=payload,
+              headers={'Content-Type': 'application/json', 'User-Agent': 'hermes-custom-upstream-check'}, method='POST')
+          with urllib.request.urlopen(request, timeout=20) as response:
+              if response.status not in (200, 204):
+                  raise RuntimeError(f'Discord delivery returned HTTP {response.status}')
+          PY

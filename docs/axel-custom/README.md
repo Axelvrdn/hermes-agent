@@ -61,7 +61,7 @@ git push --force-with-lease origin axel-custom
 
 ## Deployment rule
 
-The development checkout is `/home/axel/projects/hermes-agent-custom`. The running installation is `/home/axel/.hermes/hermes-agent`. Development and rebases happen in the former. Updating the running installation is a separate, explicit deployment step.
+The development checkout is `/home/axel/projects/hermes-agent-custom`. The running installation is `/home/axel/.hermes/hermes-agent`. Development and rebases happen in the former. Updating the running installation is a separate, explicit deployment step. For scheduled drift checks, report routing to the Discord inbox, tagged backups, safe promotion, and rollback, see [UPSTREAM-DEPLOYMENT.md](UPSTREAM-DEPLOYMENT.md).
 
 ## Integration direction
 
