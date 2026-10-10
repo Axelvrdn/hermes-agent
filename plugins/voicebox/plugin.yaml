@@ -1,0 +1,8 @@
+name: voicebox
+version: 0.1.0
+description: Opt-in local Voicebox speech synthesis with reviewed profiles and bounded output.
+author: Axel Verdon
+kind: standalone
+provides_tools:
+  - voicebox_discover
+  - voicebox_synthesize
