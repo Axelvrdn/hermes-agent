@@ -5,6 +5,7 @@ import asyncio
 import json
 import logging
 import os
+from urllib.parse import unquote
 from typing import Any, Dict, List, Optional, Tuple
 
 from agent.i18n import t
@@ -19,6 +20,21 @@ logger = logging.getLogger("plugins.platforms.discord.adapter")
 # effective limit is never taken below this floor. See issue #50846 and
 # https://docs.discord.com/developers/change-log (Sep 3, 2026).
 _DISCORD_DEFAULT_UPLOAD_LIMIT_BYTES = 20 * 1024 * 1024
+
+
+def _local_image_path(image_url: str, *, is_windows: Optional[bool] = None) -> Optional[str]:
+    """Decode a local image URI, including Windows drive and UNC forms (#2)."""
+    if not image_url.startswith("file://"):
+        return None
+    path = unquote(image_url[7:])
+    if is_windows is None:
+        is_windows = os.name == "nt"
+    if is_windows:
+        if path.startswith("/") and len(path) > 2 and path[1].isalpha() and path[2] == ":":
+            path = path[1:]
+        elif path and not path.startswith("/") and not (len(path) > 1 and path[1] == ":"):
+            path = "//" + path
+    return path
 
 
 class DiscordMediaMixin:
@@ -143,7 +159,6 @@ class DiscordMediaMixin:
         try:
             import discord as _discord_mod
             import io as _io
-            from urllib.parse import unquote as _unquote
         except Exception:  # pragma: no cover
             return await super().send_multiple_images(chat_id, images, metadata, human_delay)
         try:
@@ -168,8 +183,8 @@ class DiscordMediaMixin:
                 for image_url, alt_text in chunk:
                     if alt_text:
                         captions.append(alt_text)
-                    if image_url.startswith("file://"):
-                        local_path = _unquote(image_url[7:])
+                    local_path = _local_image_path(image_url)
+                    if local_path is not None:
                         if not os.path.exists(local_path):
                             logger.warning("[%s] Skipping missing image: %s", self.name, local_path)
                             continue
