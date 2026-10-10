@@ -103,6 +103,11 @@ class DiscordThreadTitlesMixin:
             return f"{parent_name} / {thread_name}"
         return thread_name
 
+    @staticmethod
+    def _forum_tag_names(thread: Any) -> tuple[str, ...]:
+        from gateway.turn1_context import resolve_forum_tags
+        return resolve_forum_tags(thread)
+
     def _guild_channel_labels(self, channel: Any) -> tuple[str, str | None]:
         """``(chat_name, chat_topic)`` for a guild channel or thread, as a message posted there gets them."""
         if isinstance(channel, discord.Thread):

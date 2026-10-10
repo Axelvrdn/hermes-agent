@@ -2102,6 +2102,12 @@ class GatewayTurnMixin:
             return t("gateway.errors.history_unavailable"), _session_env_tokens
 
         await self._hmwa_first_contact_notes(source, history, turn_sidecar_notes, event.text, internal=event.internal)
+        if _is_new_session and not history and not event.internal:
+            from gateway.turn1_context import stage_turn1_recall
+            await stage_turn1_recall(
+                self.config, source, event.text or "", history, session_entry.session_id,
+                turn_sidecar_notes, internal=event.internal,
+            )
 
         # Voice channel state rides the user message ONLY when changed (in the system prompt it
         # forced a rebuild + prompt-cache re-key per message).
