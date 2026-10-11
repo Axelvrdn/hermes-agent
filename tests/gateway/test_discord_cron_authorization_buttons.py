@@ -55,7 +55,7 @@ async def test_send_attaches_controls_only_to_last_fragment():
 
 
 @pytest.mark.asyncio
-async def test_send_attaches_rerun_to_cron_without_calendar_request():
+async def test_send_attaches_rerun_and_pause_to_cron_without_calendar_request():
     adapter = _adapter({"42"})
     channel = MagicMock()
     channel.send = AsyncMock(return_value=SimpleNamespace(id=1))
@@ -69,7 +69,7 @@ async def test_send_attaches_rerun_to_cron_without_calendar_request():
                 "version": 1,
                 "job_id": "eefcdf90b2c1",
                 "expected_user_id": "42",
-                "actions": ["rerun"],
+                "actions": ["rerun", "pause"],
             }
         },
     )
@@ -77,7 +77,33 @@ async def test_send_attaches_rerun_to_cron_without_calendar_request():
     assert result.success
     view = channel.send.await_args.kwargs["view"]
     assert isinstance(view, CronActionsView)
-    assert [child.label for child in view.children] == ["Relancer"]
+    assert [child.label for child in view.children] == ["Relancer", "Arrêter le cron"]
+
+
+@pytest.mark.asyncio
+async def test_pause_requires_second_confirmation_then_pauses_without_llm():
+    adapter = _adapter({"42"})
+    adapter._dispatch_cron_action = AsyncMock(return_value="Cron mis en pause.")
+    view = CronActionsView(
+        adapter=adapter,
+        job_id="job-1",
+        expected_user_id="42",
+        actions=["pause"],
+        allowed_user_ids={"42"},
+    )
+    interaction = _interaction("42")
+    button = view.children[0]
+
+    await button.callback(interaction)
+    assert button.label == "Confirmer l'arrêt"
+    assert not adapter._dispatch_cron_action.await_args_list
+    interaction.response.send_message.assert_awaited_once()
+
+    interaction = _interaction("42")
+    interaction.message = SimpleNamespace(edit=AsyncMock())
+    await button.callback(interaction)
+    adapter._dispatch_cron_action.assert_awaited_once_with(interaction, "job-1", "pause")
+    interaction.followup.send.assert_awaited_once_with("Cron mis en pause.", ephemeral=True)
 
 
 @pytest.mark.asyncio

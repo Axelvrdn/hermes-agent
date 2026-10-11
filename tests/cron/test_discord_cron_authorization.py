@@ -142,7 +142,7 @@ def test_live_route_metadata_adds_generic_rerun_action_without_calendar_marker()
         "job_id": "eefcdf90b2c1",
         "execution_id": "",
         "expected_user_id": "42",
-        "actions": ["rerun"],
+        "actions": ["rerun", "pause"],
     }
 
 

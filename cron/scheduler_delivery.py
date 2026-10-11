@@ -1496,10 +1496,11 @@ def _live_route_metadata(t: _TargetDelivery) -> tuple[Optional[str], dict, dict]
         }
     if (
         t.platform_name.lower() == "discord"
-        and job.get("attach_to_session") is True
         and t.origin_user_id
     ):
-        actions = ["rerun"]
+        # Every user-owned Discord cron gets deterministic controls by default. Jobs without a
+        # trusted origin user remain buttonless rather than exposing a control to an unknown actor.
+        actions = ["rerun", "pause"]
         if t.discord_calendar_approval_id:
             actions.extend(["calendar_authorize", "calendar_refuse"])
         route_metadata["discord_cron_actions"] = {
@@ -2108,8 +2109,6 @@ def _deliver_result(
             f"(job_id: {job.get('id', '')})\n"
             f"-------------\n\n"
             f"{content}\n\n"
-            "To stop or manage this job, send me a new message "
-            f"(e.g. \"stop reminder {task_name}\")."
         )
     else:
         delivery_content = content
