@@ -17,6 +17,7 @@
 - [ ] Validate message edit/delete synchronization without breaking session role alternation or prompt caching.
 - [x] Extend interactive cron controls beyond the calendar-specific protocol through a generic, typed action contract.
 - [x] Add deterministic `Relancer` actions to continuable Discord cron deliveries.
+- [x] Add deterministic default `Arrêter le cron` control for user-owned Discord deliveries, with a second confirmation click before pausing.
 - [x] Resolve calendar approval buttons through a local script instead of an LLM interaction.
 - [ ] Add interactive input modales (`discord.ui.Modal` + `TextInput`):
   - [ ] **Check-in / Douleurs du jour** (pour le cron workout `a07f7b874d27`) : modal avec notation douleur (épaule, genou, mollets) + fatigue/ressenti, mise à jour directe de la base sqlite `checkins` et recalcul immédiat du plan.

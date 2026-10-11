@@ -21,6 +21,9 @@ All notable changes carried by Axel's Hermes fork are documented here. Dates use
 
 ### Generic deterministic cron actions
 
+- Cron deliveries to Discord expose a default `Relancer` action and a second-confirmation `Arrêter le cron` action when a trusted origin user is available.
+- The stop action pauses the job directly through the local cron store; it never creates an LLM turn.
+
 - Added a typed `discord_cron_actions` delivery contract.
 - Added a reusable `Relancer` button to continuable Discord cron deliveries.
 - The rerun click calls `cron.jobs.trigger_job()` directly and never creates an LLM interaction turn.

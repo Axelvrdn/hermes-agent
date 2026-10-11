@@ -4950,6 +4950,18 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         self, interaction: discord.Interaction, job_id: str, action: str,
     ) -> str:
         """Execute a deterministic cron control without routing the click through an LLM turn."""
+        if action == "pause":
+            from cron.jobs import pause_job
+            updated = pause_job(job_id, reason="paused from Discord cron control")
+            if updated is None:
+                raise ValueError(f"Cron job not found: {job_id}")
+            try:
+                from cron.scheduler import _notify_provider_jobs_changed
+                _notify_provider_jobs_changed()
+            except Exception:
+                logger.debug("Failed to notify cron scheduler after Discord pause", exc_info=True)
+            name = str(updated.get("name") or job_id)
+            return f"⏸️ Cron **{name}** mis en pause."
         if action != "rerun":
             raise ValueError(f"Unsupported cron action: {action}")
 
@@ -6584,6 +6596,12 @@ def _define_discord_view_classes() -> None:
                     custom_id="hermes:cron:rerun")
                 button.callback = self._resolve_rerun
                 self.add_item(button)
+            if "pause" in self.actions:
+                button = button_cls(
+                    label="Arrêter le cron", style=discord.ButtonStyle.red,
+                    custom_id="hermes:cron:pause")
+                button.callback = self._resolve_pause
+                self.add_item(button)
             if self.approval_id and "calendar_authorize" in self.actions:
                 button = button_cls(
                     label="Autoriser", style=discord.ButtonStyle.green,
@@ -6614,6 +6632,41 @@ def _define_discord_view_classes() -> None:
                     logger.exception("Failed to rerun cron job %s from Discord", self.job_id)
                     message = f"La relance a échoué : {exc}"
                 await interaction.followup.send(message, ephemeral=True)
+
+        async def _resolve_pause(self, interaction: discord.Interaction) -> None:
+            if not self._check_auth(interaction):
+                await interaction.response.send_message(_unauthorized(), ephemeral=True)
+                return
+            async with self._action_lock:
+                button = next(
+                    (child for child in getattr(self, "children", None) or []
+                     if getattr(child, "custom_id", "") in {
+                         "hermes:cron:pause", "hermes:cron:pause_confirm"
+                     }),
+                    None)
+                if button is None:
+                    await interaction.response.send_message("Ce contrôle n'est plus disponible.", ephemeral=True)
+                    return
+                if getattr(button, "custom_id", "") == "hermes:cron:pause_confirm":
+                    await interaction.response.defer(ephemeral=True)
+                    try:
+                        message = await self.adapter._dispatch_cron_action(
+                            interaction, self.job_id, "pause")
+                    except Exception as exc:
+                        logger.exception("Failed to pause cron job %s from Discord", self.job_id)
+                        message = f"La mise en pause a échoué : {exc}"
+                    button.disabled = True
+                    with suppress(Exception):
+                        await interaction.message.edit(view=self)
+                    await interaction.followup.send(message, ephemeral=True)
+                    return
+                button.label = "Confirmer l'arrêt"
+                button.custom_id = "hermes:cron:pause_confirm"
+                await interaction.response.send_message(
+                    "⚠️ Confirme l'arrêt de ce cron en cliquant à nouveau sur le bouton.",
+                    ephemeral=True)
+                with suppress(Exception):
+                    await interaction.message.edit(view=self)
 
         async def _resolve_calendar(self, interaction: discord.Interaction, decision: str) -> None:
             async with self._action_lock:
