@@ -37,7 +37,7 @@ def test_manual_script_run_receives_force_environment(monkeypatch, tmp_path):
     monkeypatch.setattr(scheduler_script.subprocess, "Popen", fake_popen)
     monkeypatch.setattr(scheduler_script, "_get_script_timeout", lambda: 5)
     monkeypatch.setattr(scheduler_script, "_drain_script_pipes", lambda proc: None)
-    monkeypatch.setattr(scheduler_script, "build_subprocess_env", lambda **kwargs: {}, raising=False)
+    monkeypatch.setattr("tools.environments.local.build_subprocess_env", lambda **kwargs: {})
     monkeypatch.setattr(scheduler_script, "redact_sensitive_text", lambda text: text, raising=False)
 
     ok, output = scheduler_script._run_job_script("job.py", manual_run=True)
