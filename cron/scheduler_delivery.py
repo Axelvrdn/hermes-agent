@@ -1918,7 +1918,15 @@ def _prepare_target_delivery(
     # An explicit Discord delivery attached to a session still inherits the trusted origin user.
     origin_user_id = (
         origin.get("user_id")
-        if (origin_target or (target.get("_resolved_from") == "explicit" and job.get("attach_to_session") is True))
+        if (
+            origin_target
+            or (
+                target.get("_resolved_from") == "explicit"
+                and str(platform_name).lower() == "discord"
+                and origin.get("platform") == "discord"
+                and origin.get("user_id")
+            )
+        )
         else None
     )
 

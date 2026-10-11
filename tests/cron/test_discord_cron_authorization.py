@@ -111,14 +111,14 @@ def test_prepare_target_delivery_honors_discord_inchannel_surface():
     assert t.thread_id is None
 
 
-def test_live_route_metadata_adds_generic_rerun_action_without_calendar_marker():
+def test_live_route_metadata_adds_default_actions_for_any_discord_delivery():
     from unittest.mock import MagicMock
     from gateway.config import GatewayConfig, Platform, PlatformConfig
     from cron import scheduler_delivery as sd
 
     job = {
         "id": "eefcdf90b2c1",
-        "attach_to_session": True,
+        "attach_to_session": False,
         "origin": {"platform": "discord", "chat_id": "1", "user_id": "42"},
     }
     target = {
