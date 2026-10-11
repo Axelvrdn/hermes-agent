@@ -1536,7 +1536,10 @@ def _run_no_agent_job(
 
         return _block_and_pause_job(job_id, job_name, NO_AGENT_WITHOUT_SCRIPT_ERROR)
 
-    # Pass workdir as subprocess cwd; never os.chdir() (leaks into concurrent gateway sessions).
+    force_script = bool(job.pop("manual_run_force", False))
+    if force_script:
+        job["_manual_run_force"] = True
+
     _job_workdir = _resolve_job_workdir(job, job_id)
     try:
         ok, output = _run_job_script_with_claim_heartbeat(

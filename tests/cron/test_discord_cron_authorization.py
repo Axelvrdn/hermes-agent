@@ -1,7 +1,51 @@
+import pytest
+
 from cron.scheduler_delivery import _extract_discord_calendar_confirmation
 
 
-def test_extracts_exact_final_line_marker():
+def test_trigger_job_marks_manual_force_for_script_reruns(monkeypatch):
+    from cron import jobs
+
+    job = {"id": "job-1", "name": "Workout", "enabled": True, "state": "scheduled",
+           "schedule": {"kind": "interval", "every_seconds": 3600}}
+    monkeypatch.setattr(jobs, "resolve_job_ref", lambda ref: job)
+    monkeypatch.setattr(jobs, "update_job", lambda job_id, updates: {**job, **updates})
+    updated = jobs.trigger_job("job-1")
+    assert updated["manual_run_force"] is True
+
+
+def test_manual_script_run_receives_force_environment(monkeypatch, tmp_path):
+    from cron import scheduler_script
+
+    captured = {}
+
+    class Proc:
+        returncode = 0
+
+        def communicate(self, timeout=None):
+            return "ok", ""
+
+        def poll(self):
+            return 0
+
+    def fake_popen(argv, **kwargs):
+        captured.update(kwargs.get("env", {}))
+        return Proc()
+
+    monkeypatch.setattr(scheduler_script, "_resolve_script_path", lambda value: (tmp_path / "job.py", None))
+    monkeypatch.setattr(scheduler_script, "_script_argv", lambda path, interpreter: (["python", str(path)], {}, None))
+    monkeypatch.setattr(scheduler_script.subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(scheduler_script, "_get_script_timeout", lambda: 5)
+    monkeypatch.setattr(scheduler_script, "_drain_script_pipes", lambda proc: None)
+    monkeypatch.setattr(scheduler_script, "build_subprocess_env", lambda **kwargs: {}, raising=False)
+    monkeypatch.setattr(scheduler_script, "redact_sensitive_text", lambda text: text, raising=False)
+
+    ok, output = scheduler_script._run_job_script("job.py", manual_run=True)
+    assert ok is True
+    assert output == "ok"
+    assert captured["HERMES_CRON_MANUAL_RUN"] == "1"
+
+
     content = "Brief\n\n[HERMES_DISCORD_CALENDAR_CONFIRM_V1:REV-20261006-1915]\n"
     clean, approval_id = _extract_discord_calendar_confirmation(content)
     assert clean == "Brief"

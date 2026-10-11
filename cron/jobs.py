@@ -2230,6 +2230,7 @@ def trigger_job(job_id: str, extra_prompt: Optional[str] = None) -> Optional[dic
         # Run-now intent, so cron expression/TZ repair guards don't treat it as stale state.
         "manual_run_at": manual_run_at,
         "manual_run_prompt": (extra_prompt or None),
+        "manual_run_force": True,
     })
 
 
@@ -2373,6 +2374,7 @@ def _record_run_outcome(
     job.pop("manual_run_at", None)
     # The transient manual-run context is single-fire: the run that just completed consumed it.
     job.pop("manual_run_prompt", None)
+    job.pop("manual_run_force", None)
     delivery_failed = isinstance(delivery_error, str) and bool(delivery_error.strip())
     job["last_status"] = status or (
         "error" if not success else ("delivery_failed" if delivery_failed else "ok"))
