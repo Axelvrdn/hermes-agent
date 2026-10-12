@@ -14,7 +14,22 @@ def test_trigger_job_marks_manual_force_for_script_reruns(monkeypatch):
     assert updated["manual_run_force"] is True
 
 
-def test_manual_script_run_receives_force_environment(monkeypatch, tmp_path):
+def test_claim_manual_run_marks_no_agent_force(monkeypatch):
+    from cron import jobs
+
+    raw = {"id": "job-1", "enabled": True, "state": "scheduled",
+           "schedule": {"kind": "interval", "minutes": 60}, "next_run_at": "2099-01-01T00:00:00+00:00"}
+    monkeypatch.setattr(jobs, "resolve_job_ref", lambda ref: raw)
+    monkeypatch.setattr(jobs, "_under_fire_fence", lambda job_id, callback: callback())
+    monkeypatch.setattr(jobs, "_with_job", lambda job_id, apply, default: apply([raw], 0, raw))
+    monkeypatch.setattr(jobs, "save_jobs", lambda jobs_list: None)
+    monkeypatch.setattr(jobs, "_hermes_now", lambda: jobs.datetime.now(jobs.timezone.utc))
+    claimed = jobs.claim_job_for_fire("job-1", manual=True, return_job=True)
+    assert claimed["manual_run_force"] is True
+
+
+@pytest.mark.asyncio
+async def test_manual_script_run_receives_force_environment(monkeypatch, tmp_path):
     from cron import scheduler_script
 
     captured = {}
