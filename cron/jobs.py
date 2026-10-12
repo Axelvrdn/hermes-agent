@@ -2803,6 +2803,10 @@ def claim_job_for_fire(
             nxt = compute_next_run(job["schedule"], now.isoformat())
             if nxt:
                 job["next_run_at"] = nxt
+        if manual:
+            # Manual runs initiated inside the gateway claim directly instead of going through
+            # trigger_job(); preserve the force marker for no_agent scripts in that path too.
+            job["manual_run_force"] = True
         save_jobs(jobs)
         return dict(copy.deepcopy(job), _scheduled_instant=instant) if return_job else True
 
