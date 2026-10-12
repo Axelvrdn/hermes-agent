@@ -1921,8 +1921,7 @@ def _prepare_target_delivery(
         if (
             origin_target
             or (
-                target.get("_resolved_from") == "explicit"
-                and str(platform_name).lower() == "discord"
+                str(platform_name).lower() == "discord"
                 and origin.get("platform") == "discord"
                 and origin.get("user_id")
             )
