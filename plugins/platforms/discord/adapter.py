@@ -301,6 +301,7 @@ except ImportError:
     from ffmpeg_utils import resolve_ffmpeg_executable
 
 from gateway.config import Platform, PlatformConfig, discord_channel_id_from_link
+from plugins.platforms.discord.components_v2 import definitely_rejected, static_text_view
 
 from gateway.platforms.helpers import (
     MessageDeduplicator, ThreadParticipationTracker, convert_table_to_bullets, is_discord_channel_obfuscated,
@@ -1855,7 +1856,10 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     async def _emit_platform_event(self, event_type: str, build) -> None:
         """Normalize one event via ``build()`` -> ``(payload, source_kwargs)`` (None drops) and dispatch."""
-        if not self._platform_events_subscribed():
+        if not self._platform_events_subscribed() and not (
+            event_type in {"message_edited", "message_deleted"}
+            and getattr(getattr(self, "config", None), "extra", {}).get("sync_message_mutations") is True
+        ):
             return
         try:
             built = build()
@@ -3359,6 +3363,28 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                     adapter=self, approval_id=approval_id, expected_user_id=expected_user_id,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids)
+            use_v2 = bool(
+                final_delivery
+                and (metadata or {}).get("components_v2_static", self.config.extra.get("components_v2_static", False))
+                and len(chunks) == 1
+                and approval_view is None
+                and not (metadata or {}).get("streaming")
+                and not (metadata or {}).get("expect_edits")
+            )
+            if use_v2:
+                v2_view = static_text_view(discord, chunks[0])
+                if v2_view is not None:
+                    try:
+                        msg = await channel.send(view=v2_view, reference=reference)
+                    except Exception as exc:
+                        if not definitely_rejected(exc):
+                            raise
+                        msg = await channel.send(content=chunks[0], reference=reference, view=None)
+                    message_ids.append(str(msg.id))
+                else:
+                    use_v2 = False
+            if use_v2:
+                chunks = []
             for i, chunk in enumerate(chunks):
                 if self._reply_to_mode == "all":
                     chunk_reference = reference
@@ -3497,6 +3523,21 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         return SendResult(
             success=True, message_id=message_id, raw_response={"thread_id": thread_id},
         )
+
+    async def delete_message(self, chat_id: str, message_id: str) -> bool:
+        """Delete an explicitly correlated Discord output; never guess after an API failure."""
+        if not self._client:
+            return False
+        try:
+            channel = await self._resolve_channel(chat_id)
+            if channel is None:
+                return False
+            await channel.get_partial_message(int(message_id)).delete()
+            return True
+        except Exception:
+            logger.warning("[%s] Failed to delete Discord message %s in %s", self.name,
+                           message_id, chat_id, exc_info=True)
+            return False
 
     async def edit_message(
         self, chat_id: str, message_id: str, content: str, *, finalize: bool = False,
@@ -4950,18 +4991,6 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         self, interaction: discord.Interaction, job_id: str, action: str,
     ) -> str:
         """Execute a deterministic cron control without routing the click through an LLM turn."""
-        if action == "pause":
-            from cron.jobs import pause_job
-            updated = pause_job(job_id, reason="paused from Discord cron control")
-            if updated is None:
-                raise ValueError(f"Cron job not found: {job_id}")
-            try:
-                from cron.scheduler import _notify_provider_jobs_changed
-                _notify_provider_jobs_changed()
-            except Exception:
-                logger.debug("Failed to notify cron scheduler after Discord pause", exc_info=True)
-            name = str(updated.get("name") or job_id)
-            return f"⏸️ Cron **{name}** mis en pause."
         if action != "rerun":
             raise ValueError(f"Unsupported cron action: {action}")
 
@@ -6638,12 +6667,9 @@ def _define_discord_view_classes() -> None:
                 await interaction.response.send_message(_unauthorized(), ephemeral=True)
                 return
             async with self._action_lock:
-                button = next(
-                    (child for child in getattr(self, "children", None) or []
-                     if getattr(child, "custom_id", "") in {
-                         "hermes:cron:pause", "hermes:cron:pause_confirm"
-                     }),
-                    None)
+                button = next((child for child in getattr(self, "children", None) or []
+                               if getattr(child, "custom_id", "") in {
+                                   "hermes:cron:pause", "hermes:cron:pause_confirm"}), None)
                 if button is None:
                     await interaction.response.send_message("Ce contrôle n'est plus disponible.", ephemeral=True)
                     return
@@ -6663,8 +6689,7 @@ def _define_discord_view_classes() -> None:
                 button.label = "Confirmer l'arrêt"
                 button.custom_id = "hermes:cron:pause_confirm"
                 await interaction.response.send_message(
-                    "⚠️ Confirme l'arrêt de ce cron en cliquant à nouveau sur le bouton.",
-                    ephemeral=True)
+                    "⚠️ Confirme l'arrêt de ce cron en cliquant à nouveau sur le bouton.", ephemeral=True)
                 with suppress(Exception):
                     await interaction.message.edit(view=self)
 

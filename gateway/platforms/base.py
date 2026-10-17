@@ -4395,6 +4395,26 @@ class BasePlatformAdapter(ABC):
             await self._release_turn_marker(event)  # the ledger now owns the crash recovery
         result = await delivery_adapter._send_with_retry(
             chat_id=event.source.chat_id, content=text_content, reply_to=reply_to, metadata=metadata)
+        # Only a complete, acknowledged send owns remote IDs. Unknown/partial failures never confer
+        # deletion authority, even when a message_id was returned by the transport.
+        extra = getattr(getattr(delivery_adapter, "config", None), "extra", None)
+        sid = getattr(event, "_discord_sync_session_id", None)
+        generation = getattr(event, "_discord_sync_generation", None)
+        if (delivery_adapter.platform.value == "discord" and isinstance(extra, dict)
+                and extra.get("sync_message_mutations") is True and sid and generation
+                and getattr(result, "success", False)):
+            raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+            ids = raw.get("message_ids") if isinstance(raw.get("message_ids"), list) else [result.message_id]
+            if not raw.get("partial_overflow") and ids:
+                db = getattr(self.gateway_runner, "_session_db", None)
+                if db is not None:
+                    for output_id in ids:
+                        if isinstance(output_id, str) and output_id:
+                            try:
+                                await db.record_discord_output(sid, str(event.message_id), generation,
+                                                               str(event.source.user_id), output_id)
+                            except Exception:
+                                logger.warning("Discord output correlation persistence failed", exc_info=True)
         stop_reply_clock(delivery_adapter, event.source.chat_id, result)
         if obligation_id is not None:
             await self._finalize_delivery_obligation(obligation_id, result, event, delivery_adapter)
@@ -4411,6 +4431,12 @@ class BasePlatformAdapter(ABC):
         self, event: MessageEvent, session_key: str, text_content: str, metadata: dict[str, Any],
         is_ephemeral_response: bool, ephemeral_ttl: int, record_delivery: Callable) -> None:
         """Normal-lane final: the ledger bracket plus the message-id owner's ephemeral delete."""
+        # The adapter may still be extracting media or synthesizing TTS after the runner
+        # invalidated its generation. Never deliver a retired turn's final text.
+        _generation = getattr(event, "_discord_sync_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(session_key, _generation):
+            return
         result, delivery_adapter = await self.send_final_ledgered(
             event, session_key, text_content, metadata,
             reply_to=_reply_anchor_for_event(event), is_ephemeral_response=is_ephemeral_response)
