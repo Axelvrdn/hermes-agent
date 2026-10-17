@@ -301,6 +301,7 @@ except ImportError:
     from ffmpeg_utils import resolve_ffmpeg_executable
 
 from gateway.config import Platform, PlatformConfig, discord_channel_id_from_link
+from plugins.platforms.discord.components_v2 import definitely_rejected, static_text_view
 
 from gateway.platforms.helpers import (
     MessageDeduplicator, ThreadParticipationTracker, convert_table_to_bullets, is_discord_channel_obfuscated,
@@ -3362,6 +3363,28 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                     adapter=self, approval_id=approval_id, expected_user_id=expected_user_id,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids)
+            use_v2 = bool(
+                final_delivery
+                and (metadata or {}).get("components_v2_static", self.config.extra.get("components_v2_static", False))
+                and len(chunks) == 1
+                and approval_view is None
+                and not (metadata or {}).get("streaming")
+                and not (metadata or {}).get("expect_edits")
+            )
+            if use_v2:
+                v2_view = static_text_view(discord, chunks[0])
+                if v2_view is not None:
+                    try:
+                        msg = await channel.send(view=v2_view, reference=reference)
+                    except Exception as exc:
+                        if not definitely_rejected(exc):
+                            raise
+                        msg = await channel.send(content=chunks[0], reference=reference, view=None)
+                    message_ids.append(str(msg.id))
+                else:
+                    use_v2 = False
+            if use_v2:
+                chunks = []
             for i, chunk in enumerate(chunks):
                 if self._reply_to_mode == "all":
                     chunk_reference = reference
@@ -6602,6 +6625,12 @@ def _define_discord_view_classes() -> None:
                     custom_id="hermes:cron:rerun")
                 button.callback = self._resolve_rerun
                 self.add_item(button)
+            if "pause" in self.actions:
+                button = button_cls(
+                    label="Arrêter le cron", style=discord.ButtonStyle.red,
+                    custom_id="hermes:cron:pause")
+                button.callback = self._resolve_pause
+                self.add_item(button)
             if self.approval_id and "calendar_authorize" in self.actions:
                 button = button_cls(
                     label="Autoriser", style=discord.ButtonStyle.green,
@@ -6632,6 +6661,37 @@ def _define_discord_view_classes() -> None:
                     logger.exception("Failed to rerun cron job %s from Discord", self.job_id)
                     message = f"La relance a échoué : {exc}"
                 await interaction.followup.send(message, ephemeral=True)
+
+        async def _resolve_pause(self, interaction: discord.Interaction) -> None:
+            if not self._check_auth(interaction):
+                await interaction.response.send_message(_unauthorized(), ephemeral=True)
+                return
+            async with self._action_lock:
+                button = next((child for child in getattr(self, "children", None) or []
+                               if getattr(child, "custom_id", "") in {
+                                   "hermes:cron:pause", "hermes:cron:pause_confirm"}), None)
+                if button is None:
+                    await interaction.response.send_message("Ce contrôle n'est plus disponible.", ephemeral=True)
+                    return
+                if getattr(button, "custom_id", "") == "hermes:cron:pause_confirm":
+                    await interaction.response.defer(ephemeral=True)
+                    try:
+                        message = await self.adapter._dispatch_cron_action(
+                            interaction, self.job_id, "pause")
+                    except Exception as exc:
+                        logger.exception("Failed to pause cron job %s from Discord", self.job_id)
+                        message = f"La mise en pause a échoué : {exc}"
+                    button.disabled = True
+                    with suppress(Exception):
+                        await interaction.message.edit(view=self)
+                    await interaction.followup.send(message, ephemeral=True)
+                    return
+                button.label = "Confirmer l'arrêt"
+                button.custom_id = "hermes:cron:pause_confirm"
+                await interaction.response.send_message(
+                    "⚠️ Confirme l'arrêt de ce cron en cliquant à nouveau sur le bouton.", ephemeral=True)
+                with suppress(Exception):
+                    await interaction.message.edit(view=self)
 
         async def _resolve_calendar(self, interaction: discord.Interaction, decision: str) -> None:
             async with self._action_lock:
