@@ -4991,6 +4991,18 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         self, interaction: discord.Interaction, job_id: str, action: str,
     ) -> str:
         """Execute a deterministic cron control without routing the click through an LLM turn."""
+        if action == "pause":
+            from cron.jobs import pause_job
+            updated = pause_job(job_id, reason="paused from Discord cron control")
+            if updated is None:
+                raise ValueError(f"Cron job not found: {job_id}")
+            try:
+                from cron.scheduler import _notify_provider_jobs_changed
+                _notify_provider_jobs_changed()
+            except Exception:
+                logger.debug("Failed to notify cron scheduler after Discord pause", exc_info=True)
+            name = str(updated.get("name") or job_id)
+            return f"⏸️ Cron **{name}** mis en pause."
         if action != "rerun":
             raise ValueError(f"Unsupported cron action: {action}")
 

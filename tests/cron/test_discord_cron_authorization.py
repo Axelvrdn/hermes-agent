@@ -14,7 +14,20 @@ def test_trigger_job_marks_manual_force_for_script_reruns(monkeypatch):
     assert updated["manual_run_force"] is True
 
 
-def test_claim_manual_run_marks_no_agent_force(monkeypatch):
+def test_dispatch_pause_uses_local_cron_store_without_llm(monkeypatch):
+    import asyncio
+    from unittest.mock import MagicMock
+    from plugins.platforms.discord.adapter import DiscordAdapter
+    from gateway.config import PlatformConfig
+
+    adapter = DiscordAdapter(PlatformConfig(enabled=True, token="test", extra={}))
+    updated = {"id": "job-1", "name": "Workout"}
+    monkeypatch.setattr("cron.jobs.pause_job", lambda job_id, reason=None: updated)
+    monkeypatch.setattr("cron.scheduler._notify_provider_jobs_changed", lambda: None)
+    result = asyncio.run(adapter._dispatch_cron_action(MagicMock(), "job-1", "pause"))
+    assert "Workout" in result
+
+
     from cron import jobs
 
     raw = {"id": "job-1", "enabled": True, "state": "scheduled",
