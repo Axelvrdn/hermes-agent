@@ -1314,7 +1314,15 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             await asyncio.sleep(0.1)
         else:
             return False
-        if event["event_type"] == "message_deleted" or not str(payload.get("text") or "").strip():
+        if event["event_type"] == "message_deleted":
+            claim = await db.claim_discord_mutation(sid, inbound, author, "delete")
+            if not claim:
+                return False
+            runner._invalidate_session_run_generation(key, reason="discord_message_mutation")
+            for output_id in claim["output_ids"]:
+                await self.delete_message(str(source.thread_id or source.chat_id), output_id)
+            return True
+        if not str(payload.get("text") or "").strip():
             return False
         claim = await db.claim_discord_mutation(sid, inbound, author, "edit")
         if not claim:
