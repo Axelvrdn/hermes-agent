@@ -302,6 +302,7 @@ except ImportError:
 
 from gateway.config import Platform, PlatformConfig, discord_channel_id_from_link
 from plugins.platforms.discord.components_v2 import definitely_rejected, static_text_view
+from plugins.platforms.discord import adapter_events as _adapter_events
 
 from gateway.platforms.helpers import (
     MessageDeduplicator, ThreadParticipationTracker, convert_table_to_bullets, is_discord_channel_obfuscated,
@@ -1845,6 +1846,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
     def _source_for_platform_event(
         self, *, chat_id: str, user_id: Optional[str], user_name: Optional[str],
         thread_id: Optional[str], guild_id: Optional[str], message_id: Optional[str] = None,
+        role_authorized: bool = False,
     ):
         """Build the SessionSource the gateway authorizes against; missing identity raises (fail closed)."""
         if not user_id or not chat_id:
@@ -1852,6 +1854,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         return self.build_source(
             chat_id=chat_id, chat_type="thread" if thread_id else "group", user_id=user_id,
             user_name=user_name, thread_id=thread_id, guild_id=guild_id, message_id=message_id,
+            role_authorized=role_authorized,
         )
 
     async def _fire_platform_event(self, event: dict[str, Any], source) -> None:
@@ -1885,6 +1888,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             if built is None:
                 return
             payload, source_kwargs = built
+            source_kwargs.setdefault("role_authorized", bool(getattr(self, "_allowed_role_ids", set())))
             event = {"platform": "discord", "event_type": event_type, "payload": payload}
             source = self._source_for_platform_event(**source_kwargs)
         except Exception:
@@ -1894,6 +1898,9 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     def _message_event_parts(self, message, extra_payload):
         """Shared normalizer for message edit/delete: (payload, source kwargs) or None."""
+        return _adapter_events.message_event_parts(
+            message, extra_payload, thread_type=getattr(discord, "Thread", ()))
+        """Legacy inline normalizer retained below for source compatibility."""
         author = getattr(message, "author", None)
         if author is not None and getattr(author, "bot", False):
             return None  # bot's own progressive edits are noise, not user events
@@ -1910,6 +1917,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             chat_id=str(chat_id), user_id=str(getattr(author, "id", "") or "") or None,
             user_name=getattr(author, "display_name", None), thread_id=thread_id,
             guild_id=str(getattr(guild, "id", "")) if guild else None, message_id=str(message_id),
+            role_authorized=bool(getattr(self, "_allowed_role_ids", set())),
         )
 
     @staticmethod
@@ -1935,6 +1943,11 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     async def _on_platform_message_edit(self, before, after) -> None:
         """Normalize ``on_message_edit`` into event_type ``message_edited``."""
+        if before is not None and getattr(before, "content", None) == getattr(after, "content", None):
+            return
+        if any(getattr(after, attr, None) for attr in ("attachments", "message_snapshots", "reference")):
+            logger.debug("[%s] Refusing mutation sync for edited Discord message with non-text context", self.name)
+            return
         def _extra(message, author):
             text = getattr(message, "content", None)
             edited_at = getattr(message, "edited_at", None)
@@ -7368,6 +7381,16 @@ def _define_discord_view_classes() -> None:
 
 if DISCORD_AVAILABLE:
     _define_discord_view_classes()
+
+    from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
+    globals().update(_define_extracted_view_classes(discord))
+
+# The extracted event normalizer is the runtime implementation; keep the
+# facade's public names stable for adapters and tests.
+DiscordAdapter._on_platform_message_edit = _adapter_events.DiscordEventMixin._on_platform_message_edit
+DiscordAdapter._on_platform_message_delete = _adapter_events.DiscordEventMixin._on_platform_message_delete
+DiscordAdapter._on_platform_thread_create = _adapter_events.DiscordEventMixin._on_platform_thread_create
+DiscordAdapter._on_platform_thread_update = _adapter_events.DiscordEventMixin._on_platform_thread_update
 
 
 # ── Standalone (out-of-process) sender ────────────────────────────────────────

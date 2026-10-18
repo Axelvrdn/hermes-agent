@@ -81,15 +81,27 @@ class DiscordEventMixin:
         message_id = getattr(message, "id", None)
         if chat_id is None or message_id is None:
             return None
+        if any(getattr(message, attr, None) for attr in ("attachments", "message_snapshots", "reference")):
+            return None
         guild = getattr(message, "guild", None)
         payload = {
             "chat_id": str(chat_id)[:128], "message_id": str(message_id)[:128],
             "thread_id": thread_id[:128] if thread_id else None, **extra_payload(message, author),
         }
+        role_authorized = False
+        is_allowed = getattr(self, "_is_allowed_user", None)
+        if callable(is_allowed):
+            try:
+                role_authorized = bool(is_allowed(
+                    str(getattr(author, "id", "")), author,
+                    guild=guild, is_dm=guild is None, channel_ids={str(chat_id)}))
+            except Exception:
+                role_authorized = False
         return payload, dict(
             chat_id=str(chat_id), user_id=str(getattr(author, "id", "") or "") or None,
             user_name=getattr(author, "display_name", None), thread_id=thread_id,
             guild_id=str(getattr(guild, "id", "")) if guild else None, message_id=str(message_id),
+            role_authorized=role_authorized,
         )
 
     @staticmethod
@@ -114,7 +126,11 @@ class DiscordEventMixin:
         )
 
     async def _on_platform_message_edit(self, before, after) -> None:
+        if before is not None and getattr(before, "content", None) == getattr(after, "content", None):
+            return
         """Normalize ``on_message_edit`` into event_type ``message_edited``."""
+        if before is not None and getattr(before, "content", None) == getattr(after, "content", None):
+            return
         def _extra(message, author):
             text = getattr(message, "content", None)
             edited_at = getattr(message, "edited_at", None)

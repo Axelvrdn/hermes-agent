@@ -34,3 +34,15 @@ def test_final_send_records_all_acknowledged_ids_but_not_uncertain_results(tmp_p
     asyncio.run(adapter.send_final_ledgered(event, "key", "answer", {}, reply_to=None))
     assert db.claim_discord_mutation("s", "11", "7", "delete")["output_ids"] == ["90", "91"]
     db.close()
+
+
+def test_edit_rejects_non_tip_input_without_rewinding_later_turns(tmp_path):
+    db = SessionDB(db_path=tmp_path / "state.db")
+    db.create_session("s", source="discord")
+    db.append_message("s", "user", "old", platform_message_id="11")
+    db.append_message("s", "assistant", "old answer")
+    db.append_message("s", "user", "latest", platform_message_id="12")
+    db.record_discord_turn("s", "11", 1, "7")
+    assert db.claim_discord_mutation("s", "11", "7", "delete") is None
+    assert db._read_one("SELECT COUNT(*) FROM messages WHERE session_id='s' AND active=1")[0] == 3
+    db.close()

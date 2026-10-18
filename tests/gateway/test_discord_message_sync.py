@@ -113,3 +113,36 @@ def test_revoked_author_does_not_claim_or_delete(tmp_path):
     assert db.probe_discord_mutation("s", "11", "7") is True
     adapter.delete_message.assert_not_awaited()
     db.close()
+
+
+def test_mutation_waits_for_active_turn_lease(tmp_path):
+    db = SessionDB(db_path=tmp_path / "state.db")
+    db.create_session("s", source="discord")
+    db.append_message("s", "user", "ask", platform_message_id="11")
+    db.record_discord_turn("s", "11", 1, "7")
+    db.record_discord_output("s", "11", 1, "7", "90")
+    assert db.try_acquire_session_turn_lease("s", "active", ttl_seconds=30)
+    adapter = SimpleNamespace(config=SimpleNamespace(extra={"sync_message_mutations": True}),
+                              delete_message=AsyncMock(return_value=True))
+    class Runner(GatewayAdapterLifecycleMixin):
+        pass
+    runner = Runner()
+    runner.session_store = SimpleNamespace(lookup_by_session_key=lambda _: SimpleNamespace(session_id="s"))
+    runner._session_key_for_source = lambda _: "key"
+    runner._session_db = AsyncSessionDB(db)
+    runner._delivery_adapter_for = lambda _: adapter
+    runner._is_session_running = lambda _: False
+    runner._is_user_authorized_for_source = lambda _: True
+    runner._invalidate_session_run_generation = lambda *a, **k: None
+    runner._readmit_discord_edit = AsyncMock()
+    async def release():
+        await asyncio.sleep(0.12)
+        db.release_session_turn_lease("s", "active")
+    async def run():
+        await asyncio.gather(runner._sync_discord_mutation(
+            {"platform": "discord", "event_type": "message_edited",
+             "payload": {"message_id": "11", "text": "new"}},
+            SimpleNamespace(chat_id="5", thread_id=None, user_id="7")), release())
+    asyncio.run(run())
+    runner._readmit_discord_edit.assert_awaited_once()
+    db.close()

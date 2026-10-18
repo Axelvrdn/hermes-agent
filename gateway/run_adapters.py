@@ -1811,9 +1811,18 @@ class GatewayAdapterLifecycleMixin:
             return False
         if not self._is_user_authorized_for_source(source):
             return False
+        db = self._session_db
         key = self._session_key_for_source(source)
         entry = self.session_store.lookup_by_session_key(key)
-        db = self._session_db
+        if entry is None and db is not None and inbound:
+            list_sessions = getattr(self.session_store, "list_sessions", None)
+            for candidate in list_sessions() if callable(list_sessions) else ():
+                if candidate.platform.value != "discord":
+                    continue
+                if await db.has_platform_message_id(candidate.session_id, inbound):
+                    entry = candidate
+                    key = candidate.session_key
+                    break
         if entry is None or db is None:
             return False
         sid = entry.session_id

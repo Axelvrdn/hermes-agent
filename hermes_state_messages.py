@@ -1959,6 +1959,15 @@ class SessionMessagesMixin:
             if len(rows) != 1 or rows[0]["role"] != "user" or rows[0]["active"] != 1 or rows[0]["compacted"]:
                 return None
             target = dict(rows[0])
+            later_input = conn.execute(
+                "SELECT 1 FROM messages WHERE session_id=? AND active=1 AND role='user' "
+                "AND id>? AND platform_message_id IS NOT NULL LIMIT 1",
+                (session_id, target["id"]),
+            ).fetchone()
+            if later_input is not None:
+                # Replaying an older prompt would deactivate a suffix that the
+                # gateway cannot reconstruct from one edited Discord event.
+                return None
             try:
                 # Composite carriers are deliberately unsupported until their scaffold can be preserved.
                 handoff = self._split_rewind_target(target, None, False)
