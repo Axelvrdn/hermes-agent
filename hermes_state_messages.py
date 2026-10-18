@@ -1896,17 +1896,24 @@ class SessionMessagesMixin:
 
     def record_discord_turn(self, session_id: str, inbound_id: str, generation: int, author_id: str) -> bool:
         """Bind an admitted human turn before execution. A claimed generation cannot be revived."""
-        if not all((session_id, inbound_id, author_id)) or generation < 1:
+        if not all((session_id, inbound_id, author_id)):
             return False
         def _do(conn):
+            if generation < 1:
+                row = conn.execute(
+                    "SELECT COALESCE(MAX(generation), 0) + 1 FROM discord_mutation_turns "
+                    "WHERE session_id=? AND inbound_id=?", (session_id, inbound_id)).fetchone()
+                generation_value = int(row[0])
+            else:
+                generation_value = generation
             row = conn.execute("SELECT claimed, author_id FROM discord_mutation_turns "
                                "WHERE session_id=? AND inbound_id=? AND generation=?",
-                               (session_id, inbound_id, generation)).fetchone()
+                               (session_id, inbound_id, generation_value)).fetchone()
             if row:
                 return not row["claimed"] and row["author_id"] == author_id
             conn.execute("INSERT INTO discord_mutation_turns "
                          "(session_id, inbound_id, generation, author_id) VALUES (?, ?, ?, ?)",
-                         (session_id, inbound_id, generation, author_id))
+                         (session_id, inbound_id, generation_value, author_id))
             return True
         return self._execute_write(_do)
 

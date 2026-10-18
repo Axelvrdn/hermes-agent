@@ -67,3 +67,13 @@ def test_mutation_ownership_survives_compression_child_publication(db):
         compression_lock_holder="holder", watermark=None,
     )
     assert db.probe_discord_mutation("child", "11", "7") is True
+
+
+def test_discord_turn_generation_can_be_allocated_after_restart(db):
+    db.create_session("s", source="discord")
+    db.append_message("s", "user", "ask", platform_message_id="11")
+    db.record_discord_turn("s", "11", 2, "7")
+    assert db.record_discord_turn("s", "11", 0, "7") is True
+    assert db._read_one(
+        "SELECT MAX(generation) FROM discord_mutation_turns WHERE session_id='s' AND inbound_id='11'"
+    )[0] == 3
