@@ -4343,6 +4343,7 @@ class BasePlatformAdapter(ABC):
                 result = await self.send_video(chat_id=chat_id, video_path=path, metadata=metadata)
             else:
                 result = await self.send_document(chat_id=chat_id, file_path=path, metadata=metadata)
+            self.record_stream_output_correlation(result, metadata)
             if not result.success:
                 logger.warning("[%s] Failed to send %s (%s): %s", self.name,
                                "media" if media_tag else "local file", ext, result.error)
@@ -4353,6 +4354,11 @@ class BasePlatformAdapter(ABC):
             logger.info("[%s] Delivering %d non-image MEDIA attachment(s)", self.name, len(queue))
         queue += [(p, False, False) for p in local_files if not _as_image(p)]
         for path, is_voice, media_tag in queue:
+            _generation = getattr(event, "_discord_sync_generation", None)
+            _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _generation is not None and callable(_current) and not _current(event.source.chat_id, _generation):
+                logger.info("[%s] Suppressing attachment delivery for retired generation %s", self.name, _generation)
+                return
             if human_delay > 0:
                 await asyncio.sleep(human_delay)
             try:
@@ -4373,6 +4379,7 @@ class BasePlatformAdapter(ABC):
         try:
             result = await self.send_multiple_images(
                 chat_id=event.source.chat_id, images=images, metadata=metadata, human_delay=human_delay)
+            self.record_stream_output_correlation(result, metadata)
         except Exception as batch_err:
             logger.warning("[%s] Error batching images: %s", self.name, batch_err, exc_info=True)
             record_delivery(SendResult(success=False, error=str(batch_err)))
@@ -4399,6 +4406,13 @@ class BasePlatformAdapter(ABC):
             await self._release_turn_marker(event)  # the ledger now owns the crash recovery
         result = await delivery_adapter._send_with_retry(
             chat_id=event.source.chat_id, content=text_content, reply_to=reply_to, metadata=metadata)
+        _generation = getattr(event, "_discord_sync_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(session_key, _generation):
+            if getattr(result, "success", False) and getattr(result, "message_id", None):
+                with contextlib.suppress(Exception):
+                    await delivery_adapter.delete_message(event.source.chat_id, result.message_id)
+            return result, delivery_adapter
         # Only a complete, acknowledged send owns remote IDs. Unknown/partial failures never confer
         # deletion authority, even when a message_id was returned by the transport.
         extra = getattr(getattr(delivery_adapter, "config", None), "extra", None)
