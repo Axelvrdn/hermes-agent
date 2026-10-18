@@ -4314,7 +4314,7 @@ class BasePlatformAdapter(ABC):
     async def _deliver_media_attachments(
         self, event: MessageEvent, media_files: list, local_files: list, *,
         force_document_attachments: bool, human_delay: float, metadata: dict[str, Any],
-        record_delivery: Callable) -> None:
+        record_delivery: Callable, session_key: Optional[str] = None) -> None:
         """Deliver MEDIA-tag files and detected local files by type: images batched via
         ``send_multiple_images`` unless ``[[as_document]]``; otherwise audio → send_voice (MEDIA
         tags only, never bare local files), video → send_video, else send_document. Every failure is
@@ -4356,7 +4356,8 @@ class BasePlatformAdapter(ABC):
         for path, is_voice, media_tag in queue:
             _generation = getattr(event, "_discord_sync_generation", None)
             _current = getattr(self.gateway_runner, "_is_session_run_current", None)
-            if _generation is not None and callable(_current) and not _current(event.source.chat_id, _generation):
+            if _generation is not None and callable(_current) and not _current(
+                    session_key or event.source.chat_id, _generation):
                 logger.info("[%s] Suppressing attachment delivery for retired generation %s", self.name, _generation)
                 return
             if human_delay > 0:
@@ -4507,7 +4508,8 @@ class BasePlatformAdapter(ABC):
         await self._deliver_media_attachments(
             event, media_files, local_files,
             force_document_attachments=extracted.force_document_attachments,
-            human_delay=human_delay, metadata=metadata, record_delivery=record_delivery)
+            human_delay=human_delay, metadata=metadata, record_delivery=record_delivery,
+            session_key=getattr(event, "_discord_sync_session_key", None))
         if not (anything_sent or images or local_files or media_files) and extracted.pre_extract.strip():
             logger.error("[%s] response_delivery_dropped: non-empty response "
                          "(%d chars) produced no delivered message or attachment "
