@@ -2367,6 +2367,10 @@ class BasePlatformAdapter(ABC):
         closed."""
         self._platform_event_handler = handler
 
+    async def handle_platform_event_mutation(self, event: dict[str, Any], source) -> bool:
+        """Optional adapter-owned mutation policy for normalized platform events."""
+        return False
+
     def set_topic_recovery_fn(self, fn: Optional[Callable[[Any], Optional[str]]]) -> None:
         """Install a thread_id-recovery hook (Telegram DM topic mode): called with ``event.source``
         before session keying; a non-None return replaces ``source.thread_id``. ``None`` clears

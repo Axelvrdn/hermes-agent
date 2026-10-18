@@ -656,6 +656,8 @@ def check_discord_requirements() -> bool:
     commands = _commands
     DISCORD_AVAILABLE = True
     _define_discord_view_classes()
+    from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
+    globals().update(_define_extracted_view_classes(discord))
     return True
 
 
@@ -1272,6 +1274,58 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     supports_inchannel_continuable = True
 
+    async def handle_platform_event_mutation(self, event: dict, source) -> bool:
+        """Apply opt-in Discord edit synchronization at the plugin boundary."""
+        if event.get("platform") != "discord" or event.get("event_type") not in {"message_edited", "message_deleted"}:
+            return False
+        extra = getattr(self.config, "extra", {})
+        if not isinstance(extra, dict) or extra.get("sync_message_mutations") is not True:
+            return False
+        payload = event.get("payload") or {}
+        inbound, author = str(payload.get("message_id") or ""), str(source.user_id or "")
+        if not inbound or not author or (event["event_type"] == "message_deleted" and payload.get("author_id") != author):
+            return False
+        db = getattr(self.gateway_runner, "_session_db", None)
+        runner = self.gateway_runner
+        if db is None or runner is None:
+            return False
+        key = runner._session_key_for_source(source)
+        entry = runner.session_store.lookup_by_session_key(key)
+        if entry is None:
+            list_sessions = getattr(runner.session_store, "list_sessions", None)
+            for candidate in list_sessions() if callable(list_sessions) else ():
+                if await db.has_platform_message_id(candidate.session_id, inbound):
+                    entry, key = candidate, candidate.session_key
+                    break
+            if entry is None:
+                return False
+        sid = entry.session_id
+        is_running = getattr(runner, "_is_session_running", lambda _key: False)
+        if is_running(key):
+            await runner._interrupt_and_clear_session(
+                key, source, interrupt_reason="Discord message mutation",
+                invalidation_reason="discord_message_mutation", release_running_state=True)
+        for _ in range(50):
+            if await db.transcript_mutation_ready(sid):
+                break
+            await asyncio.sleep(0.1)
+        else:
+            return False
+        if event["event_type"] == "message_deleted" or not str(payload.get("text") or "").strip():
+            return False
+        if not await db.probe_discord_mutation(sid, inbound, author):
+            return False
+        claim = await db.claim_discord_mutation(sid, inbound, author, "edit")
+        if not claim:
+            return False
+        runner._invalidate_session_run_generation(key, reason="discord_message_mutation")
+        for output_id in claim["output_ids"]:
+            await self.delete_message(str(source.thread_id or source.chat_id), output_id)
+        message = MessageEvent(text=payload["text"], message_type=MessageType.TEXT,
+                               source=source, message_id=inbound)
+        await self.handle_message(message)
+        return True
+
     def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
         """Persist successful streaming output IDs for opt-in mutation synchronization."""
         if not isinstance(metadata, dict) or self.gateway_runner is None:
@@ -1287,9 +1341,13 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             return
         # Stream edits do not create new Discord messages; correlate the initial
         # acknowledged output, which is the mutation target.
-        coro = db.record_discord_output(str(sid), str(inbound), int(generation), str(author), str(result.message_id))
-        if inspect.isawaitable(coro):
-            asyncio.create_task(coro)
+        ids = [result.message_id, *(getattr(result, "continuation_message_ids", ()) or ())]
+        raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+        ids.extend(raw.get("message_ids", []) if isinstance(raw.get("message_ids"), list) else [])
+        for output_id in dict.fromkeys(str(item) for item in ids if item):
+            coro = db.record_discord_output(str(sid), str(inbound), int(generation), str(author), output_id)
+            if inspect.isawaitable(coro):
+                asyncio.create_task(coro)  # type: ignore[arg-type]
 
     MAX_MESSAGE_LENGTH = 2000
     _SPLIT_THRESHOLD = 1900  # near the 2000-char split point
