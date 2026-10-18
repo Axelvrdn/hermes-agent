@@ -1301,6 +1301,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             if entry is None:
                 return False
         sid = entry.session_id
+        if not await db.probe_discord_mutation(sid, inbound, author):
+            return False
         is_running = getattr(runner, "_is_session_running", lambda _key: False)
         if is_running(key):
             await runner._interrupt_and_clear_session(
@@ -1313,8 +1315,6 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         else:
             return False
         if event["event_type"] == "message_deleted" or not str(payload.get("text") or "").strip():
-            return False
-        if not await db.probe_discord_mutation(sid, inbound, author):
             return False
         claim = await db.claim_discord_mutation(sid, inbound, author, "edit")
         if not claim:
@@ -1905,13 +1905,14 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
     def _source_for_platform_event(
         self, *, chat_id: str, user_id: Optional[str], user_name: Optional[str],
         thread_id: Optional[str], guild_id: Optional[str], message_id: Optional[str] = None,
+        chat_type: str = "group",
         role_authorized: bool = False,
     ):
         """Build the SessionSource the gateway authorizes against; missing identity raises (fail closed)."""
         if not user_id or not chat_id:
             raise ValueError("gateway_platform_event requires actor and chat identities")
         return self.build_source(
-            chat_id=chat_id, chat_type="thread" if thread_id else "group", user_id=user_id,
+            chat_id=chat_id, chat_type=chat_type, user_id=user_id,
             user_name=user_name, thread_id=thread_id, guild_id=guild_id, message_id=message_id,
             role_authorized=role_authorized,
         )

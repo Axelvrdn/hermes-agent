@@ -100,6 +100,7 @@ class DiscordEventMixin:
         return payload, dict(
             chat_id=str(chat_id), user_id=str(getattr(author, "id", "") or "") or None,
             user_name=getattr(author, "display_name", None), thread_id=thread_id,
+            chat_type="thread" if thread_id else ("dm" if guild is None else "group"),
             guild_id=str(getattr(guild, "id", "")) if guild else None, message_id=str(message_id),
             role_authorized=role_authorized,
         )
@@ -121,8 +122,9 @@ class DiscordEventMixin:
         }
         return payload, dict(
             chat_id=str(thread_id), user_id=str(owner_id) if owner_id is not None else None,
-            user_name=None, thread_id=str(thread_id),
+            user_name=None, thread_id=str(thread_id), chat_type="thread",
             guild_id=str(getattr(guild, "id", "")) if guild else None,
+            role_authorized=False,
         )
 
     async def _on_platform_message_edit(self, before, after) -> None:
