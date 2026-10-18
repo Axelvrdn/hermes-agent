@@ -323,6 +323,22 @@ class SessionCompressionMixin:
                     self._clone_message_rows(conn, tail_ids, session_id=child_session_id)
                     total_messages += len(tail_ids)
                     total_tool_calls += tail_tool_calls
+            # Ownership follows carried Discord inputs across the physical
+            # compression boundary; otherwise the live child cannot mutate them.
+            conn.execute(
+                """INSERT OR IGNORE INTO discord_mutation_turns
+                   (session_id, inbound_id, generation, author_id, claimed)
+                   SELECT ?, inbound_id, generation, author_id, claimed
+                   FROM discord_mutation_turns WHERE session_id = ?""",
+                (child_session_id, parent_session_id),
+            )
+            conn.execute(
+                """INSERT OR IGNORE INTO discord_mutation_outputs
+                   (session_id, inbound_id, generation, message_id)
+                   SELECT ?, inbound_id, generation, message_id
+                   FROM discord_mutation_outputs WHERE session_id = ?""",
+                (child_session_id, parent_session_id),
+            )
             conn.execute(
                 "UPDATE sessions SET message_count = ?, tool_call_count = ? WHERE id = ?",
                 (total_messages, total_tool_calls, child_session_id))

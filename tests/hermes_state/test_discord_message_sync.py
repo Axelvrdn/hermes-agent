@@ -53,3 +53,17 @@ def test_mutation_readiness_rejects_active_turn_lease(db):
     assert db.transcript_mutation_ready("s") is False
     db.release_session_turn_lease("s", "other")
     assert db.transcript_mutation_ready("s") is True
+
+
+def test_mutation_ownership_survives_compression_child_publication(db):
+    db.create_session("parent", source="discord")
+    db.append_message("parent", "user", "ask", platform_message_id="11")
+    db.record_discord_turn("parent", "11", 1, "7")
+    db.record_discord_output("parent", "11", 1, "7", "90")
+    db.try_acquire_compression_lock("parent", "holder")
+    db.publish_compression_child(
+        parent_session_id="parent", child_session_id="child", source="discord",
+        messages=[{"role": "user", "content": "ask", "platform_message_id": "11"}],
+        compression_lock_holder="holder", watermark=None,
+    )
+    assert db.probe_discord_mutation("child", "11", "7") is True
