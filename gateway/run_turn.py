@@ -3953,6 +3953,23 @@ class GatewayTurnMixin:
         from gateway.run_turn_followup_ack import _followup_cancel_outcome, _run_followup_processing_hook
         _hook_adapter = self._intake_adapter_for(next_source) if pending_event is not None else None
         await _run_followup_processing_hook(_hook_adapter, pending_event, "on_processing_start")
+
+        next_discord_sync_metadata = None
+        if (pending_event is not None and getattr(next_source, "platform", None) and
+                next_source.platform.value == "discord" and getattr(pending_event, "message_id", None) and
+                getattr(next_source, "user_id", None) and not getattr(pending_event, "internal", False)):
+            _adapter = self._delivery_adapter_for(next_source)
+            _extra = getattr(getattr(_adapter, "config", None), "extra", None)
+            if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
+                if await self._session_db.record_discord_turn(
+                        session_id, str(pending_event.message_id), run_generation, str(next_source.user_id)):
+                    next_discord_sync_metadata = {
+                        "discord_sync_session_id": session_id,
+                        "discord_sync_generation": run_generation,
+                        "discord_sync_inbound_id": str(pending_event.message_id),
+                        "discord_sync_author_id": str(next_source.user_id),
+                    }
+
         # The re-baseline sits inside the try: a /stop landing on its DB await must still close the marker
         # (the helper's own ``except Exception`` does not catch cancellation).
         try:
@@ -3969,6 +3986,7 @@ class GatewayTurnMixin:
                 reply_expected=next_reply_expected,
                 persist_user_display_metadata={
                     **reply_expected_metadata(next_reply_expected), **diagnostic_metadata(pending_event)} or None,
+                discord_sync_metadata=next_discord_sync_metadata,
             )
         except asyncio.CancelledError:
             await _run_followup_processing_hook(

@@ -497,8 +497,14 @@ class GatewayNotificationsMixin:
         inbound id the ledger falls back to the event's own (empty) message id. Adapters without
         the base contract and sends without a session key keep the plain send."""
         if session_key and isinstance(adapter, BasePlatformAdapter):
+            _ev = MessageEvent(text="", source=source, ledger_message_id=inbound_message_id)
+            if isinstance(metadata, dict):
+                _ev._discord_sync_session_id = metadata.get("discord_sync_session_id")
+                _ev._discord_sync_generation = metadata.get("discord_sync_generation")
+                _ev._discord_sync_session_key = session_key
+                _ev.message_id = metadata.get("discord_sync_inbound_id") or inbound_message_id
             result, _ = await adapter.send_final_ledgered(
-                MessageEvent(text="", source=source, ledger_message_id=inbound_message_id),
+                _ev,
                 session_key, text_content, _mark_notify_metadata(metadata), reply_to=event_message_id)
         else:
             result = await adapter.send(source.chat_id, text_content, metadata=metadata)

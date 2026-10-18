@@ -4343,6 +4343,18 @@ class BasePlatformAdapter(ABC):
                 result = await self.send_video(chat_id=chat_id, video_path=path, metadata=metadata)
             else:
                 result = await self.send_document(chat_id=chat_id, file_path=path, metadata=metadata)
+            _generation = getattr(event, "_discord_sync_generation", None)
+            _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _generation is not None and callable(_current) and not _current(
+                    session_key or event.source.chat_id, _generation):
+                raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await self.delete_message(chat_id, str(mid))
+                return SendResult(success=False, error="generation retired")
             self.record_stream_output_correlation(result, metadata)
             if not result.success:
                 logger.warning("[%s] Failed to send %s (%s): %s", self.name,
@@ -4378,8 +4390,22 @@ class BasePlatformAdapter(ABC):
         The batch result feeds ``record_delivery`` so media-only turns report their real
         outcome instead of FAILURE."""
         try:
+            _generation = getattr(event, "_discord_sync_generation", None)
+            _session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
+            _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _generation is not None and callable(_current) and not _current(_session_key, _generation):
+                return
             result = await self.send_multiple_images(
                 chat_id=event.source.chat_id, images=images, metadata=metadata, human_delay=human_delay)
+            if _generation is not None and callable(_current) and not _current(_session_key, _generation):
+                raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await self.delete_message(event.source.chat_id, str(mid))
+                return
             self.record_stream_output_correlation(result, metadata)
         except Exception as batch_err:
             logger.warning("[%s] Error batching images: %s", self.name, batch_err, exc_info=True)
@@ -4410,9 +4436,16 @@ class BasePlatformAdapter(ABC):
         _generation = getattr(event, "_discord_sync_generation", None)
         _current = getattr(self.gateway_runner, "_is_session_run_current", None)
         if _generation is not None and callable(_current) and not _current(session_key, _generation):
-            if getattr(result, "success", False) and getattr(result, "message_id", None):
-                with contextlib.suppress(Exception):
-                    await delivery_adapter.delete_message(event.source.chat_id, result.message_id)
+            if getattr(result, "success", False):
+                raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await delivery_adapter.delete_message(event.source.chat_id, str(mid))
+            if obligation_id is not None:
+                await self._finalize_delivery_obligation(obligation_id, result, event, delivery_adapter)
             return result, delivery_adapter
         # Only a complete, acknowledged send owns remote IDs. Unknown/partial failures never confer
         # deletion authority, even when a message_id was returned by the transport.

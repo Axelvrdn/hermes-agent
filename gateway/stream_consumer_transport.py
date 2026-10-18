@@ -290,6 +290,10 @@ class StreamTransportMixin:
         if not getattr(result, "success", False):
             return False
         new_message_id = getattr(result, "message_id", None)
+        recorder = getattr(self.adapter, "record_stream_output_correlation", None)
+        if callable(recorder):
+            with contextlib.suppress(Exception):
+                recorder(result, self._metadata_for_send(final=True))
         # Best-effort preview cleanup; never delete the message just sent.
         await self._delete_previews(stale_ids, skip=new_message_id, label="Fresh-final")
         self._preview_message_ids = set()

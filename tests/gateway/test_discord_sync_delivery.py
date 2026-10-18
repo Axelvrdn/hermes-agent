@@ -46,3 +46,14 @@ def test_edit_rejects_non_tip_input_without_rewinding_later_turns(tmp_path):
     assert db.claim_discord_mutation("s", "11", "7", "delete") is None
     assert db._read_one("SELECT COUNT(*) FROM messages WHERE session_id='s' AND active=1")[0] == 3
     db.close()
+
+
+def test_has_platform_message_id_ignores_archived_predecessors(tmp_path):
+    db = SessionDB(db_path=tmp_path / "state.db")
+    db.create_session("s", source="discord")
+    db.append_message("s", "user", "original", platform_message_id="11")
+    db.record_discord_turn("s", "11", 1, "7")
+    assert db.claim_discord_mutation("s", "11", "7", "edit") is not None
+    # Active row is now 0 (deactivated); probe should report False so retry can persist
+    assert db.has_platform_message_id("s", "11") is False
+    db.close()
