@@ -2193,6 +2193,14 @@ class GatewayTurnMixin:
                             _run_start_session_id, str(event.message_id), run_generation, str(source.user_id)):
                         event._discord_sync_session_id = _run_start_session_id
                         event._discord_sync_generation = run_generation
+            _discord_sync_metadata = None
+            if getattr(event, "_discord_sync_session_id", None):
+                _discord_sync_metadata = {
+                    "discord_sync_session_id": event._discord_sync_session_id,
+                    "discord_sync_generation": event._discord_sync_generation,
+                    "discord_sync_inbound_id": str(event.message_id),
+                    "discord_sync_author_id": str(source.user_id),
+                }
             _turn_started_monotonic = time.monotonic()
             # Admission/typing is not execution. All routing, authorization and
             # turn preparation gates have passed when the agent runner is entered.
@@ -2216,6 +2224,7 @@ class GatewayTurnMixin:
                 persist_user_timestamp=prepared.persist_user_timestamp,
                 persist_user_display_kind=prepared.persist_user_display_kind,
                 reply_expected=event.reply_expected,
+                discord_sync_metadata=_discord_sync_metadata,
                 persist_user_display_metadata={
                     "gateway_input_owner": prepared.persistence_owner,
                     **reply_expected_metadata(event.reply_expected), **diagnostic_metadata(event)},
@@ -3142,7 +3151,8 @@ class GatewayTurnMixin:
         return metadata
 
     def _run_agent_progress_threading(
-        self, source: SessionSource, event_message_id: Optional[str], _native_slack_task_cards: bool
+        self, source: SessionSource, event_message_id: Optional[str], _native_slack_task_cards: bool,
+        sync_metadata: Optional[dict[str, Any]] = None,
     ) -> tuple[Optional[dict], Optional[str], Optional[dict]]:
         """Resolve where progress bubbles are threaded (platform-specific).
 
@@ -3206,6 +3216,8 @@ class GatewayTurnMixin:
             _status_thread_metadata = self._thread_metadata_for_progress(
                 source, event_message_id, _progress_thread_id, _relay_prospective_thread_id,
             )
+        if isinstance(sync_metadata, dict):
+            _status_thread_metadata = {**(_status_thread_metadata or {}), **sync_metadata}
         return _progress_metadata, _progress_reply_to, _status_thread_metadata
 
     async def _run_agent_write_tool_log(self, log_queue: Any) -> None:
@@ -4180,12 +4192,16 @@ class GatewayTurnMixin:
     def _run_agent_bind_turn_wiring(
         self, turn_ctx: TurnContext, turn_runner: TurnRunner, source: SessionSource,
         event_message_id: Optional[str], _native_slack_task_cards: bool,
+        sync_metadata: Optional[dict[str, Any]] = None,
     ) -> Optional[dict[str, Any]]:
         """Resolve progress threading, then publish progress metadata and the sync→async bridges onto
         ``turn_ctx`` (the one-slot holders shared with run_sync's executor thread are TurnContext
         defaults). Returns ``_status_thread_metadata``."""
         turn_ctx._progress_metadata, turn_ctx._progress_reply_to, _status_thread_metadata = (
-            self._run_agent_progress_threading(source, event_message_id, _native_slack_task_cards)
+            self._run_agent_progress_threading(
+                source, event_message_id, _native_slack_task_cards,
+                sync_metadata=sync_metadata,
+            )
         )
         # Bridges: sync step/event/status callbacks → async hooks.emit and adapter.send.
         turn_ctx._loop_for_step = asyncio.get_running_loop()
@@ -4285,6 +4301,7 @@ class GatewayTurnMixin:
         reply_expected: Optional[bool] = None,
         scheduled_heartbeat: bool = False,
         title_user_message: Optional[str] = None,
+        discord_sync_metadata: Optional[dict[str, Any]] = None,
     ) -> dict[str, Any]:
         """Run the agent; returns the full run_conversation result dict.
 
@@ -4327,6 +4344,7 @@ class GatewayTurnMixin:
         )
         _status_thread_metadata = self._run_agent_bind_turn_wiring(
             turn_ctx, turn_runner, source, event_message_id, disp._native_slack_task_cards,
+            sync_metadata=discord_sync_metadata,
         )
         # Two independent quiet reasons: a muted diagnostic wake (ours) and a scheduled heartbeat.
         if not (scheduled_heartbeat or turn_ctx.mute_notification_reply):

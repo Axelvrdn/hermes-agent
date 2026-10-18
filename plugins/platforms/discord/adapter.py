@@ -1271,6 +1271,25 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     supports_inchannel_continuable = True
 
+    def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
+        """Persist successful streaming output IDs for opt-in mutation synchronization."""
+        if not isinstance(metadata, dict) or self.gateway_runner is None:
+            return
+        sid = metadata.get("discord_sync_session_id")
+        generation = metadata.get("discord_sync_generation")
+        inbound = metadata.get("discord_sync_inbound_id")
+        author = metadata.get("discord_sync_author_id")
+        if not all((sid, generation, inbound, author, result.success)):
+            return
+        db = getattr(self.gateway_runner, "_session_db", None)
+        if db is None or not result.message_id:
+            return
+        # Stream edits do not create new Discord messages; correlate the initial
+        # acknowledged output, which is the mutation target.
+        coro = db.record_discord_output(str(sid), str(inbound), int(generation), str(author), str(result.message_id))
+        if inspect.isawaitable(coro):
+            asyncio.create_task(coro)
+
     MAX_MESSAGE_LENGTH = 2000
     _SPLIT_THRESHOLD = 1900  # near the 2000-char split point
     supports_code_blocks = True  # Discord markdown renders fenced code blocks natively
@@ -3379,7 +3398,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                     except Exception as exc:
                         if not definitely_rejected(exc):
                             raise
-                        msg = await channel.send(content=chunks[0], reference=reference, view=None)
+                        fallback_reference = None if self._is_reply_reference_rejected(exc) else reference
+                        msg = await channel.send(content=chunks[0], reference=fallback_reference, view=None)
                     message_ids.append(str(msg.id))
                 else:
                     use_v2 = False

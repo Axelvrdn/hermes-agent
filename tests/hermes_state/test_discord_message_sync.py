@@ -44,3 +44,12 @@ def test_stale_generation_cannot_add_outputs_after_claim(db):
     db.record_discord_output("s", "11", 2, "7", "90")
     assert db.claim_discord_mutation("s", "11", "7", "delete") is not None
     assert db.record_discord_output("s", "11", 2, "7", "91") is False
+
+
+def test_mutation_readiness_rejects_active_turn_lease(db):
+    db.create_session("s", source="discord")
+    db.append_message("s", "user", "ask", platform_message_id="11")
+    assert db.try_acquire_session_turn_lease("s", "other", ttl_seconds=30)
+    assert db.transcript_mutation_ready("s") is False
+    db.release_session_turn_lease("s", "other")
+    assert db.transcript_mutation_ready("s") is True

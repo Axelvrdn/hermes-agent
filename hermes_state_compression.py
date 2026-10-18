@@ -668,6 +668,18 @@ class SessionCompressionMixin:
             ).fetchone()
         return float(row[0]) if row else None
 
+    def transcript_mutation_ready(self, session_id: str) -> bool:
+        """Return whether a destructive transcript mutation may claim *session_id* now."""
+        if not session_id:
+            return False
+        with self._read_ctx() as conn:
+            conversation_id = self._session_turn_lease_key_on_conn(conn, session_id)
+            row = conn.execute(
+                "SELECT expires_at FROM session_turn_leases WHERE conversation_id = ?",
+                (conversation_id,),
+            ).fetchone()
+        return row is None or float(row[0]) <= time.time()
+
     def refresh_session_turn_lease(
         self, session_id: str, holder: str, *, ttl_seconds: float = 300.0, patience_s: Optional[float] = None,
     ) -> bool:

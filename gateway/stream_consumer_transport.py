@@ -6,6 +6,7 @@ state model and the drain loop that calls into these."""
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import inspect
 import logging
 import time
@@ -463,6 +464,10 @@ class StreamTransportMixin:
         if not result.success:
             self._edit_supported = False
             return False
+        recorder = getattr(self.adapter, "record_stream_output_correlation", None)
+        if callable(recorder):
+            with contextlib.suppress(Exception):
+                recorder(result, self._metadata_for_send(final=finalize, expect_edits=not finalize))
         self._already_sent = True
         self._last_sent_text = text
         if result.message_id:

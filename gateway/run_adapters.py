@@ -1817,6 +1817,14 @@ class GatewayAdapterLifecycleMixin:
         if entry is None or db is None:
             return False
         sid = entry.session_id
+        # A turn lease owns the transcript across routing keys. Wait before the
+        # read/claim pair so an edit cannot steal the lease from an active turn.
+        for _ in range(50):
+            if await db.transcript_mutation_ready(sid):
+                break
+            await asyncio.sleep(0.1)
+        else:
+            return False
         if not await db.probe_discord_mutation(sid, inbound, author):
             return False
         # Cached delete events carry the AUTHOR, not the actor; do not treat a deletion

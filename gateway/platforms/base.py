@@ -4420,6 +4420,10 @@ class BasePlatformAdapter(ABC):
             await self._finalize_delivery_obligation(obligation_id, result, event, delivery_adapter)
         return result, delivery_adapter
 
+    def record_stream_output_correlation(self, result: "SendResult", metadata: Optional[dict[str, Any]]) -> None:
+        """Hook for adapters that correlate acknowledged streaming outputs."""
+        return None
+
     async def _release_turn_marker(self, event: MessageEvent) -> None:
         """Clear the crash-recovery marker the runner handed to this delivery lifecycle
         (``_turn_marker_handoff``): only once the final reply is ledgered or nothing more is owed,

@@ -1945,6 +1945,7 @@ class SessionMessagesMixin:
         return self._read_one("SELECT 1 FROM discord_mutation_turns WHERE session_id=? AND inbound_id=? "
                               "AND author_id=? AND claimed=0 LIMIT 1", (session_id, inbound_id, author_id)) is not None
 
+
     def claim_discord_mutation(self, session_id: str, inbound_id: str, author_id: str,
                                kind: str) -> Optional[dict[str, Any]]:
         """CAS the input, correlations and suffix in one write transaction; no remote I/O in txn."""

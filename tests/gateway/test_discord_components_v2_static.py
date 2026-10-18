@@ -27,6 +27,11 @@ class Rejection(Exception):
     code = 50035
 
 
+class StaleReplyRejection(Rejection):
+    def __str__(self):
+        return "error code: 10008 Unknown Message"
+
+
 class AmbiguousFailure(Exception):
     status = 503
     code = 0
@@ -91,6 +96,14 @@ async def test_definite_v2_rejection_retries_legacy_once(harness):
     assert len(sent) == 2
     assert "view" in sent[0] and "content" not in sent[0]
     assert sent[1]["content"] == "Hello"
+
+
+@pytest.mark.asyncio
+async def test_stale_reply_reference_is_dropped_on_v2_fallback(harness):
+    adapter, sent = harness(error=StaleReplyRejection("stale"))
+    result = await adapter.send("555", "Hello", reply_to="old", metadata={"notify": True})
+    assert result.success
+    assert sent[1]["reference"] is None
 
 
 @pytest.mark.asyncio
