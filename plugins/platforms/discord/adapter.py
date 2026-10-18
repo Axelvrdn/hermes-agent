@@ -1355,10 +1355,9 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         ids = [result.message_id, *(getattr(result, "continuation_message_ids", ()) or ())]
         raw = result.raw_response if isinstance(result.raw_response, dict) else {}
         ids.extend(raw.get("message_ids", []) if isinstance(raw.get("message_ids"), list) else [])
+        sync_db = getattr(db, "_db", db)
         for output_id in dict.fromkeys(str(item) for item in ids if item):
-            coro = db.record_discord_output(str(sid), str(inbound), int(generation), str(author), output_id)
-            if inspect.isawaitable(coro):
-                asyncio.create_task(coro)  # type: ignore[arg-type]
+            sync_db.record_discord_output(str(sid), str(inbound), int(generation), str(author), output_id)
 
     MAX_MESSAGE_LENGTH = 2000
     _SPLIT_THRESHOLD = 1900  # near the 2000-char split point

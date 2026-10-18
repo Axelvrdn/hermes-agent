@@ -28,13 +28,15 @@ class DiscordEventMixin:
     def _source_for_platform_event(
         self, *, chat_id: str, user_id: Optional[str], user_name: Optional[str],
         thread_id: Optional[str], guild_id: Optional[str], message_id: Optional[str] = None,
+        chat_type: str = "group", role_authorized: bool = False,
     ):
         """Build the SessionSource the gateway authorizes against; missing identity raises (fail closed)."""
         if not user_id or not chat_id:
             raise ValueError("gateway_platform_event requires actor and chat identities")
         return self.build_source(
-            chat_id=chat_id, chat_type="thread" if thread_id else "group", user_id=user_id,
+            chat_id=chat_id, chat_type=chat_type, user_id=user_id,
             user_name=user_name, thread_id=thread_id, guild_id=guild_id, message_id=message_id,
+            role_authorized=role_authorized,
         )
 
     async def _fire_platform_event(self, event: dict[str, Any], source) -> None:
@@ -58,7 +60,11 @@ class DiscordEventMixin:
 
     async def _emit_platform_event(self, event_type: str, build) -> None:
         """Normalize one event via ``build()`` -> ``(payload, source_kwargs)`` (None drops) and dispatch."""
-        if not self._platform_events_subscribed():
+        mutations_enabled = (
+            event_type in {"message_edited", "message_deleted"}
+            and getattr(getattr(self, "config", None), "extra", {}).get("sync_message_mutations") is True
+        )
+        if not self._platform_events_subscribed() and not mutations_enabled:
             return
         try:
             built = build()
