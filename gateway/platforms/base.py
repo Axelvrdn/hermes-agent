@@ -4495,6 +4495,11 @@ class BasePlatformAdapter(ABC):
         then fail loudly if a non-empty response produced nothing deliverable. Attachment
         results feed ``record_delivery`` so the turn outcome reflects them."""
         human_delay = self._get_human_delay()
+        _generation = getattr(event, "_discord_sync_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(
+                getattr(event, "_discord_sync_session_key", event.source.chat_id), _generation):
+            return
         images, media_files, local_files = extracted.images, extracted.media_files, extracted.local_files
         if images:
             logger.info("[%s] Extracted %d image(s) to send as attachments", self.name, len(images))
