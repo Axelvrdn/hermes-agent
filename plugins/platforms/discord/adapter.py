@@ -303,6 +303,7 @@ except ImportError:
 from gateway.config import Platform, PlatformConfig, discord_channel_id_from_link
 from plugins.platforms.discord.components_v2 import definitely_rejected, static_text_view
 from plugins.platforms.discord import adapter_events as _adapter_events
+from plugins.platforms.discord.adapter_events import DiscordEventMixin
 
 from gateway.platforms.helpers import (
     MessageDeduplicator, ThreadParticipationTracker, convert_table_to_bullets, is_discord_channel_obfuscated,
@@ -1268,7 +1269,7 @@ from plugins.platforms.discord.adapter_thread_titles import DiscordThreadTitlesM
 from plugins.platforms.discord.adapter_voice_info import DiscordVoiceInfoMixin
 
 
-class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceInfoMixin, DiscordSlashAuthMixin,
+class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMixin, DiscordVoiceInfoMixin, DiscordSlashAuthMixin,
                      BasePlatformAdapter):
     """Discord bot adapter: guild/DM messages, threads, slash commands, button approvals, reactions."""
 
@@ -7443,12 +7444,6 @@ if DISCORD_AVAILABLE:
     from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
     globals().update(_define_extracted_view_classes(discord))
 
-# The extracted event normalizer is the runtime implementation; keep the
-# facade's public names stable for adapters and tests.
-DiscordAdapter._on_platform_message_edit = _adapter_events.DiscordEventMixin._on_platform_message_edit
-DiscordAdapter._on_platform_message_delete = _adapter_events.DiscordEventMixin._on_platform_message_delete
-DiscordAdapter._on_platform_thread_create = _adapter_events.DiscordEventMixin._on_platform_thread_create
-DiscordAdapter._on_platform_thread_update = _adapter_events.DiscordEventMixin._on_platform_thread_update
 
 
 # ── Standalone (out-of-process) sender ────────────────────────────────────────

@@ -510,6 +510,10 @@ class StreamTransportMixin:
             # changed on screen, so the visible prefix and flood state stay as they were and the
             # next tick retries with the newer text.
             return True
+        recorder = getattr(self.adapter, "record_stream_output_correlation", None)
+        if callable(recorder) and finalize:
+            with contextlib.suppress(Exception):
+                recorder(result, self._metadata_for_send(final=True))
         self._already_sent = True
         self._track_preview_ids_from_result(result)
         # Oversized edit split across continuations: message_id is now the LAST
