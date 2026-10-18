@@ -72,7 +72,7 @@ class DiscordEventMixin:
             return
         await self._fire_platform_event(event, source)
 
-    def _message_event_parts(self, message, extra_payload):
+    def _message_event_parts(self, message, extra_payload, *, allow_context: bool = False):
         """Shared normalizer for message edit/delete: (payload, source kwargs) or None."""
         author = getattr(message, "author", None)
         if author is not None and getattr(author, "bot", False):
@@ -81,7 +81,9 @@ class DiscordEventMixin:
         message_id = getattr(message, "id", None)
         if chat_id is None or message_id is None:
             return None
-        if any(getattr(message, attr, None) for attr in ("attachments", "message_snapshots", "reference")):
+        if not allow_context and any(
+            getattr(message, attr, None) for attr in ("attachments", "message_snapshots", "reference")
+        ):
             return None
         guild = getattr(message, "guild", None)
         payload = {
@@ -152,7 +154,8 @@ class DiscordEventMixin:
         deleter, so the author (the only cached identity) is the source; uncached deletions never fire."""
         def _extra(message, author):
             return {"author_id": str(getattr(author, "id", "") or "")[:128] or None}
-        await self._emit_platform_event("message_deleted", lambda: self._message_event_parts(message, _extra))
+        await self._emit_platform_event(
+            "message_deleted", lambda: self._message_event_parts(message, _extra, allow_context=True))
 
     async def _on_platform_thread_create(self, thread) -> None:
         """Normalize ``on_thread_create`` into event_type ``thread_created``."""
@@ -178,10 +181,10 @@ class DiscordEventMixin:
         await self._emit_platform_event("thread_renamed", _build)
 
 
-def message_event_parts(message, extra_payload, *, thread_type):
+def message_event_parts(message, extra_payload, *, thread_type, allow_context: bool = False):
     """Normalize a cached message without requiring discord.py at import time."""
     return DiscordEventMixin._message_event_parts(
-        _EventNormalizer(thread_type), message, extra_payload)
+        _EventNormalizer(thread_type), message, extra_payload, allow_context=allow_context)
 
 
 def thread_event_parts(thread, extra_payload):
@@ -189,7 +192,7 @@ def thread_event_parts(thread, extra_payload):
     return DiscordEventMixin._thread_event_parts(thread, extra_payload)
 
 
-class _EventNormalizer:
+class _EventNormalizer(DiscordEventMixin):
     def __init__(self, thread_type):
         self.thread_type = thread_type
 

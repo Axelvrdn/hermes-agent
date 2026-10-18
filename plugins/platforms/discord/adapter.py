@@ -1301,6 +1301,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             if entry is None:
                 return False
         sid = entry.session_id
+        readmit_source = getattr(entry, "origin", None) or source
         if not await db.probe_discord_mutation(sid, inbound, author):
             return False
         is_running = getattr(runner, "_is_session_running", lambda _key: False)
@@ -1329,9 +1330,10 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             return False
         runner._invalidate_session_run_generation(key, reason="discord_message_mutation")
         for output_id in claim["output_ids"]:
-            await self.delete_message(str(source.thread_id or source.chat_id), output_id)
+            await self.delete_message(
+                str(getattr(readmit_source, "thread_id", None) or readmit_source.chat_id), output_id)
         message = MessageEvent(text=payload["text"], message_type=MessageType.TEXT,
-                               source=source, message_id=inbound)
+                               source=readmit_source, message_id=inbound)
         await self.handle_message(message)
         return True
 
