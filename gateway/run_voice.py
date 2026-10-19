@@ -441,8 +441,13 @@ class GatewayVoiceMixin:
         guild_id = self._get_guild_id(event)
         play = getattr(adapter, "play_in_voice_channel", None)
         is_in_vc = getattr(adapter, "is_in_voice_channel", None)
+        generation = getattr(event, "_discord_execution_generation", None)
+        session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
+        is_current = getattr(self, "_is_session_run_current", None)
         if guild_id and callable(play) and callable(is_in_vc) and is_in_vc(guild_id):
             for path in audio_paths:
+                if generation is not None and callable(is_current) and not is_current(session_key, generation):
+                    return
                 await play(guild_id, path)
             return
         if not callable(send_voice := getattr(adapter, "send_voice", None)):
@@ -455,9 +460,6 @@ class GatewayVoiceMixin:
         sync_meta = getattr(event, "_discord_sync_metadata", None)
         if isinstance(sync_meta, dict):
             thread_meta.update(sync_meta)
-        generation = getattr(event, "_discord_execution_generation", None)
-        session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
-        is_current = getattr(self, "_is_session_run_current", None)
         recorder = getattr(adapter, "record_stream_output_correlation", None)
         for path in audio_paths:
             if generation is not None and callable(is_current) and not is_current(session_key, generation):

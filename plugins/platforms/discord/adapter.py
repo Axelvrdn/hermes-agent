@@ -1974,6 +1974,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             if built is None:
                 return
             payload, source_kwargs = built
+            if event_type in {"thread_created", "thread_renamed"}:
+                source_kwargs.setdefault("chat_type", "thread")
             event = {"platform": "discord", "event_type": event_type, "payload": payload}
             source = self._source_for_platform_event(**source_kwargs)
         except Exception:
