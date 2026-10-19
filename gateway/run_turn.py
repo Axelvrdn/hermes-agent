@@ -2194,7 +2194,7 @@ class GatewayTurnMixin:
                     if _sync_generation:
                         event._discord_sync_session_id = _run_start_session_id
                         event._discord_sync_generation = _sync_generation
-                        run_generation = _sync_generation
+                        event._discord_sync_session_key = session_key
             _discord_sync_metadata = None
             if getattr(event, "_discord_sync_session_id", None):
                 _discord_sync_metadata = {
@@ -2202,6 +2202,7 @@ class GatewayTurnMixin:
                     "discord_sync_generation": event._discord_sync_generation,
                     "discord_sync_inbound_id": str(event.message_id),
                     "discord_sync_author_id": str(source.user_id),
+                    "discord_sync_session_key": session_key,
                 }
             _turn_started_monotonic = time.monotonic()
             # Admission/typing is not execution. All routing, authorization and
@@ -2248,6 +2249,7 @@ class GatewayTurnMixin:
                     event._discord_sync_session_id = _terminal_sync.get("session_id")
                     event._discord_sync_generation = _terminal_sync.get("generation")
                     event._discord_sync_session_key = _terminal_sync.get("session_key")
+                    event._discord_sync_author_id = _terminal_sync.get("author_id")
                     event.message_id = _terminal_sync.get("inbound_id") or event.message_id
                 if "queued_terminal_notification_category" in agent_result:
                     event.metadata["notification_category"] = agent_result["queued_terminal_notification_category"]
@@ -2782,7 +2784,7 @@ class GatewayTurnMixin:
         self, message: str, context_prompt: str, history: list[dict[str, Any]],
         source: "SessionSource", session_id: str, session_key: str | None = None,
         run_generation: Optional[int] = None, event_message_id: Optional[str] = None,
-        scheduled_heartbeat: bool = False,
+        scheduled_heartbeat: bool = False, discord_sync_metadata: Optional[dict[str, Any]] = None,
     ) -> dict[str, Any]:
         """Forward the message to a remote Hermes API server instead of running a local AIAgent.
 
@@ -2838,6 +2840,8 @@ class GatewayTurnMixin:
         body = {"model": "hermes-agent", "messages": api_messages, "stream": True}
 
         _thread_metadata: Optional[dict[str, Any]] = self._thread_metadata_for_source(source, event_message_id)
+        if isinstance(discord_sync_metadata, dict):
+            _thread_metadata = {**(_thread_metadata or {}), **discord_sync_metadata}
         _stream_consumer = (
             None if scheduled_heartbeat
             else self._proxy_stream_consumer(source, event_message_id, _thread_metadata, _run_still_current)
@@ -4026,6 +4030,7 @@ class GatewayTurnMixin:
                         "generation": (next_discord_sync_metadata or {}).get("discord_sync_generation"),
                         "session_key": next_session_key,
                         "inbound_id": next_inbound_id,
+                        "author_id": (next_discord_sync_metadata or {}).get("discord_sync_author_id"),
                     } if next_discord_sync_metadata else None),
                 "queued_terminal_notification_category": (
                     (pending_event.metadata or {}).get("notification_category", "result")
@@ -4345,6 +4350,7 @@ class GatewayTurnMixin:
                 message=message, context_prompt=context_prompt, history=history, source=source,
                 session_id=session_id, session_key=session_key, run_generation=run_generation,
                 event_message_id=event_message_id, scheduled_heartbeat=scheduled_heartbeat,
+                discord_sync_metadata=discord_sync_metadata,
             )
 
         from run_agent import AIAgent

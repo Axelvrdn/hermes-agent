@@ -4468,7 +4468,8 @@ class BasePlatformAdapter(ABC):
                         if isinstance(output_id, str) and output_id:
                             try:
                                 await db.record_discord_output(sid, str(event.message_id), generation,
-                                                               str(event.source.user_id), output_id)
+                                                               str(getattr(event, "_discord_sync_author_id", None)
+                                                                   or event.source.user_id), output_id)
                             except Exception:
                                 logger.warning("Discord output correlation persistence failed", exc_info=True)
         stop_reply_clock(delivery_adapter, event.source.chat_id, result)

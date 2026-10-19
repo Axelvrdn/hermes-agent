@@ -502,6 +502,7 @@ class GatewayNotificationsMixin:
                 _ev._discord_sync_session_id = metadata.get("discord_sync_session_id")
                 _ev._discord_sync_generation = metadata.get("discord_sync_generation")
                 _ev._discord_sync_session_key = session_key
+                _ev._discord_sync_author_id = metadata.get("discord_sync_author_id")
                 _ev.message_id = metadata.get("discord_sync_inbound_id") or inbound_message_id
             result, _ = await adapter.send_final_ledgered(
                 _ev,

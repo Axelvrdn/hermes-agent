@@ -29,6 +29,15 @@ class StreamTransportMixin:
 
     _MIN_NEW_MSG_CHARS = 4
 
+    def _result_message_ids(self, result: Any) -> list[str]:
+        raw = getattr(result, "raw_response", None)
+        raw_ids = raw.get("message_ids") if isinstance(raw, dict) else None
+        return list(dict.fromkeys(str(mid) for mid in (
+            getattr(result, "message_id", None),
+            *(getattr(result, "continuation_message_ids", None) or ()),
+            *(raw_ids if isinstance(raw_ids, list) else ()),
+        ) if mid))
+
     async def _edit_message(self, *, message_id: str, content: str, finalize: bool = False):
         """Edit via the adapter, passing routing metadata when supported."""
         # Contract: adapters must accept finalize= even when False (test-guarded).
@@ -294,6 +303,10 @@ class StreamTransportMixin:
         if callable(recorder):
             with contextlib.suppress(Exception):
                 await recorder(result, self._metadata_for_send(final=True))
+        if not getattr(self, "_run_still_current", lambda: True)():
+            await self._delete_previews(
+                self._result_message_ids(result), skip=None, label="Stale fresh-final")
+            return False
         # Best-effort preview cleanup; never delete the message just sent.
         await self._delete_previews(stale_ids, skip=new_message_id, label="Fresh-final")
         self._preview_message_ids = set()
@@ -510,6 +523,10 @@ class StreamTransportMixin:
         if not result.success:
             return await self._on_edit_failure(result, text, finalize=finalize,
                                                is_turn_final=is_turn_final)
+        if not getattr(self, "_run_still_current", lambda: True)():
+            await self._delete_previews(
+                self._result_message_ids(result), skip=None, label="Stale stream edit")
+            return False
         raw_response = getattr(result, "raw_response", None)
         if isinstance(raw_response, dict) and raw_response.get("skipped"):
             # Adapter deferred the edit (Telegram's shared send+edit slot was busy): nothing
