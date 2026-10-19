@@ -4243,6 +4243,19 @@ class BasePlatformAdapter(ABC):
             caption = text_content
         tts_result = await self.play_tts(
             chat_id=event.source.chat_id, audio_path=tts_path, caption=caption, metadata=metadata)
+        _generation = getattr(event, "_discord_execution_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(
+                getattr(event, "_discord_sync_session_key", event.source.chat_id), _generation):
+            if getattr(tts_result, "success", False) and getattr(tts_result, "message_id", None):
+                with contextlib.suppress(Exception):
+                    await self.delete_message(event.source.chat_id, str(tts_result.message_id))
+            return False
+        _recorder = getattr(self, "record_stream_output_correlation", None)
+        if callable(_recorder):
+            _recorded = _recorder(tts_result, metadata)
+            if inspect.isawaitable(_recorded):
+                await _recorded
         record_delivery(tts_result)
         return bool(caption and getattr(tts_result, "success", False))
 
