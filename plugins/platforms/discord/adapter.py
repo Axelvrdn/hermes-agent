@@ -1392,7 +1392,10 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         if buffered is not None and str(getattr(buffered.event, "message_id", "") or "") == inbound:
             return adapter, buffered.event
         batch = getattr(adapter, "_pending_text_batches", {}).get(key) if adapter else None
-        if batch is not None and str(getattr(batch, "message_id", "") or "") == inbound:
+        if batch is not None and (
+            str(getattr(batch, "message_id", "") or "") == inbound
+            or inbound in (getattr(batch, "_batched_message_ids", None) or [])
+        ):
             return adapter, batch
         return adapter, None
 
@@ -1763,10 +1766,14 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
 
             @self._client.event
             async def on_raw_message_edit(payload: Any):
+                if getattr(payload, "cached_message", None) is not None:
+                    return
                 await adapter_self._on_platform_raw_message_edit(payload)
 
             @self._client.event
             async def on_raw_message_delete(payload: Any):
+                if getattr(payload, "cached_message", None) is not None:
+                    return
                 await adapter_self._on_platform_raw_message_delete(payload)
 
             @self._client.event
@@ -2063,25 +2070,6 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         return _adapter_events.message_event_parts(
             message, extra_payload, thread_type=getattr(discord, "Thread", ()),
             allow_context=allow_context, adapter=self)
-        """Legacy inline normalizer retained below for source compatibility."""
-        author = getattr(message, "author", None)
-        if author is not None and getattr(author, "bot", False):
-            return None  # bot's own progressive edits are noise, not user events
-        thread_id, chat_id = self._thread_id_and_chat_for_channel(getattr(message, "channel", None))
-        message_id = getattr(message, "id", None)
-        if chat_id is None or message_id is None:
-            return None
-        guild = getattr(message, "guild", None)
-        payload = {
-            "chat_id": str(chat_id)[:128], "message_id": str(message_id)[:128],
-            "thread_id": thread_id[:128] if thread_id else None, **extra_payload(message, author),
-        }
-        return payload, dict(
-            chat_id=str(chat_id), user_id=str(getattr(author, "id", "") or "") or None,
-            user_name=getattr(author, "display_name", None), thread_id=thread_id,
-            guild_id=str(getattr(guild, "id", "")) if guild else None, message_id=str(message_id),
-            role_authorized=bool(getattr(self, "_allowed_role_ids", set())),
-        )
 
     def _thread_event_parts(self, thread, extra_payload):
         """Shared normalizer for thread create/rename; the owner is the authorized actor

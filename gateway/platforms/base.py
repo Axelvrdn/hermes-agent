@@ -2582,7 +2582,14 @@ class BasePlatformAdapter(ABC):
         existing = self._pending_text_batches.get(key)
         if existing is None:
             existing = self._pending_text_batches[key] = event
+            setattr(existing, "_batched_message_ids", [str(event.message_id)] if event.message_id else [])
         else:
+            batched = getattr(existing, "_batched_message_ids", None)
+            if batched is None:
+                batched = [str(existing.message_id)] if existing.message_id else []
+                setattr(existing, "_batched_message_ids", batched)
+            if event.message_id:
+                batched.append(str(event.message_id))
             if event.text:
                 existing.text = _append_text(existing.text, event.text)
             if event.media_urls:
@@ -4552,7 +4559,28 @@ class BasePlatformAdapter(ABC):
                     logical_platform=event.source.platform, chat_id=event.source.chat_id, metadata=_thread_metadata)
             if content is None:
                 return _thread_metadata
-            await self.send(chat_id=event.source.chat_id, content=content, metadata=_thread_metadata)
+            _meta = _thread_metadata
+            sync_meta = getattr(event, "_discord_sync_metadata", None)
+            if isinstance(sync_meta, dict):
+                _meta = {**(_meta or {}), **sync_meta}
+            res = await self.send(chat_id=event.source.chat_id, content=content, metadata=_meta)
+            _gen = getattr(event, "_discord_execution_generation", None)
+            _skey = getattr(event, "_discord_sync_session_key", event.source.chat_id)
+            _curr = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _gen is not None and callable(_curr) and not _curr(_skey, _gen):
+                raw = res.raw_response if isinstance(res.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([res.message_id] if getattr(res, "message_id", None) else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await self.delete_message(event.source.chat_id, str(mid))
+                return _thread_metadata
+            _rec = getattr(self, "record_stream_output_correlation", None)
+            if callable(_rec):
+                _recorded = _rec(res, _meta)
+                if inspect.isawaitable(_recorded):
+                    await _recorded
         except Exception as notify_err:
             logger.error(
                 "[%s] Failed to send error notification to user: %s", self.name, notify_err, exc_info=True)
