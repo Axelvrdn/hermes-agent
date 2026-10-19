@@ -1391,9 +1391,13 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         buffered = debounce.get(key)
         if buffered is not None and str(getattr(buffered.event, "message_id", "") or "") == inbound:
             return adapter, buffered.event
+        batch = getattr(adapter, "_pending_text_batches", {}).get(key) if adapter else None
+        if batch is not None and str(getattr(batch, "message_id", "") or "") == inbound:
+            return adapter, batch
         return adapter, None
 
     def _remove_pending_mutation(self, source, inbound: str, adapter, event) -> None:
+        key = None
         if adapter is not None and self.gateway_runner is not None:
             key = self.gateway_runner._session_key_for_source(source)
             if getattr(adapter, "_pending_messages", {}).get(key) is event:
@@ -1403,6 +1407,19 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         queue = getattr(getattr(state, "conversation", None), "queued_events", None)
         if queue is not None:
             queue[:] = [item for item in queue if item is not event]
+        if adapter is not None and self.gateway_runner is not None:
+            key = self.gateway_runner._session_key_for_source(source)
+            batches = getattr(adapter, "_pending_text_batches", {})
+            if batches.get(key) is event:
+                batches.pop(key, None)
+                task = getattr(adapter, "_pending_text_batch_tasks", {}).pop(key, None)
+                if task is not None and not task.done():
+                    task.cancel()
+        debounce = getattr(adapter, "_text_debounce_store", lambda: {})() if adapter else {}
+        state = debounce.get(key) if adapter is not None and self.gateway_runner is not None else None
+        if state is not None and state.event is event:
+            state.cancel_timer()
+            debounce.pop(key, None)
 
     async def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
         """Persist successful streaming output IDs for opt-in mutation synchronization."""
@@ -2151,7 +2168,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         source_kwargs = {
             "chat_id": channel_id, "user_id": author_id, "user_name": None,
             "thread_id": None, "guild_id": None, "message_id": message_id,
-            "chat_type": "group", "role_authorized": bool(author_id),
+            "chat_type": "group", "role_authorized": False,
         }
         await self._emit_platform_event(event_type, lambda: (payload_data, source_kwargs))
 

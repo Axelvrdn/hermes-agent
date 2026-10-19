@@ -259,8 +259,12 @@ class DiscordMediaMixin:
                 else:
                     msg = await channel.send(content=content, files=files)
                 delivered = True
-                if msg and getattr(msg, "id", None):
-                    collected_message_ids.append(str(msg.id))
+                message_id = getattr(msg, "message_id", None) or getattr(msg, "id", None)
+                raw = getattr(msg, "raw_response", None)
+                raw_ids = raw.get("message_ids", []) if isinstance(raw, dict) else []
+                if message_id:
+                    collected_message_ids.append(str(message_id))
+                collected_message_ids.extend(str(item) for item in raw_ids if item)
             except Exception as e:
                 logger.warning(
                     "[%s] Multi-image Discord send failed (chunk %d/%d), falling back to per-image: %s",
