@@ -11,6 +11,7 @@ import asyncio
 import dataclasses
 import json
 import logging
+import inspect
 import queue
 import re
 import threading
@@ -600,6 +601,11 @@ class TurnRunner:
         result = await st.adapter.send(
             chat_id=ctx.source.chat_id, content=text, reply_to=ctx._progress_reply_to, metadata=ctx._progress_metadata,
         )
+        recorder = getattr(st.adapter, "record_stream_output_correlation", None)
+        if callable(recorder):
+            _recorded = recorder(result, ctx._progress_metadata)
+            if inspect.isawaitable(_recorded):
+                await _recorded
         self._track_progress_result(result)
         return result
 
