@@ -1917,6 +1917,24 @@ class SessionMessagesMixin:
             return True
         return self._execute_write(_do)
 
+    def allocate_discord_turn_generation(self, session_id: str, inbound_id: str,
+                                         author_id: str, requested_generation: int = 0) -> int:
+        """Reserve and return a generation greater than all durable generations for this input."""
+        if not all((session_id, inbound_id, author_id)):
+            return 0
+        def _do(conn):
+            row = conn.execute(
+                "SELECT COALESCE(MAX(generation), 0) FROM discord_mutation_turns "
+                "WHERE session_id=? AND inbound_id=?", (session_id, inbound_id)).fetchone()
+            generation_value = max(int(row[0]) + 1, int(requested_generation or 0))
+            conn.execute(
+                "INSERT OR IGNORE INTO discord_mutation_turns "
+                "(session_id, inbound_id, generation, author_id) VALUES (?, ?, ?, ?)",
+                (session_id, inbound_id, generation_value, author_id),
+            )
+            return generation_value
+        return int(self._execute_write(_do))
+
     def record_discord_output(self, session_id: str, inbound_id: str, generation: int,
                               author_id: str, message_id: str) -> bool:
         """Store only acknowledged, complete IDs. A late sender cannot attach to a claimed turn."""

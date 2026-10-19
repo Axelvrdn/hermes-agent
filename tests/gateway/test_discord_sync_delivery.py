@@ -57,3 +57,29 @@ def test_has_platform_message_id_ignores_archived_predecessors(tmp_path):
     # Active row is now 0 (deactivated); probe should report False so retry can persist
     assert db.has_platform_message_id("s", "11") is False
     db.close()
+
+
+def test_mutation_hook_failure_does_not_block_platform_hook():
+    import asyncio
+    from gateway.run_adapters import GatewayAdapterLifecycleMixin
+
+    class Runner(GatewayAdapterLifecycleMixin):
+        def _is_user_authorized_for_source(self, source): return True
+        def _delivery_adapter_for(self, source):
+            return SimpleNamespace(handle_platform_event_mutation=self._fail)
+        async def _fail(self, event, source): raise RuntimeError("mutation")
+
+    runner = Runner()
+    called = []
+    import hermes_cli.lifecycle as lifecycle
+    old_has, old_invoke = lifecycle.has_hook, lifecycle.invoke_hook
+    lifecycle.has_hook = lambda name: name == "gateway_platform_event"
+    lifecycle.invoke_hook = lambda name, **event: called.append(event)
+    try:
+        asyncio.run(runner._handle_gateway_platform_event(
+            {"platform": "discord", "event_type": "message_edited", "payload": {}},
+            SimpleNamespace(),
+        ))
+    finally:
+        lifecycle.has_hook, lifecycle.invoke_hook = old_has, old_invoke
+    assert called

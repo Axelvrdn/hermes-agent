@@ -113,8 +113,7 @@ class DiscordEventMixin:
             role_authorized=role_authorized,
         )
 
-    @staticmethod
-    def _thread_event_parts(thread, extra_payload):
+    def _thread_event_parts(self, thread, extra_payload):
         """Shared normalizer for thread create/rename; the owner is the authorized actor
         because Discord's event carries none (same trade-off as ``message_deleted``)."""
         thread_id = getattr(thread, "id", None)
@@ -128,16 +127,27 @@ class DiscordEventMixin:
             "parent_chat_id": str(parent_id)[:128] if parent_id is not None else None,
             **extra_payload(thread, owner_id),
         }
+        role_authorized = False
+        if owner_id is not None:
+            is_allowed = getattr(self, "_is_allowed_user", None)
+            if callable(is_allowed):
+                try:
+                    channel_ids = {str(thread_id)}
+                    if parent_id is not None:
+                        channel_ids.add(str(parent_id))
+                    role_authorized = bool(is_allowed(
+                        str(owner_id), None, guild=guild, is_dm=False, channel_ids=channel_ids,
+                    ))
+                except Exception:
+                    role_authorized = False
         return payload, dict(
             chat_id=str(thread_id), user_id=str(owner_id) if owner_id is not None else None,
             user_name=None, thread_id=str(thread_id), chat_type="thread",
             guild_id=str(getattr(guild, "id", "")) if guild else None,
-            role_authorized=False,
+            role_authorized=role_authorized,
         )
 
     async def _on_platform_message_edit(self, before, after) -> None:
-        if before is not None and getattr(before, "content", None) == getattr(after, "content", None):
-            return
         """Normalize ``on_message_edit`` into event_type ``message_edited``."""
         if before is not None and getattr(before, "content", None) == getattr(after, "content", None):
             return

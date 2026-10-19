@@ -1818,9 +1818,12 @@ class GatewayAdapterLifecycleMixin:
                 adapter = self._delivery_adapter_for(source)
                 handler = getattr(adapter, "handle_platform_event_mutation", None)
                 if callable(handler):
-                    result = handler(event, source)
-                    if inspect.isawaitable(result):
-                        await result
+                    try:
+                        result = handler(event, source)
+                        if inspect.isawaitable(result):
+                            await result
+                    except Exception:
+                        logger.debug("Discord mutation policy failed; continuing hook dispatch", exc_info=True)
             from hermes_cli.lifecycle import has_hook, invoke_hook
             if authorized and has_hook("gateway_platform_event"):
                 invoke_hook("gateway_platform_event", **event)

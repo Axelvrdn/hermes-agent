@@ -77,3 +77,10 @@ def test_discord_turn_generation_can_be_allocated_after_restart(db):
     assert db._read_one(
         "SELECT MAX(generation) FROM discord_mutation_turns WHERE session_id='s' AND inbound_id='11'"
     )[0] == 3
+
+
+def test_discord_turn_allocator_returns_durable_generation(db):
+    db.create_session("s", source="discord")
+    assert db.allocate_discord_turn_generation("s", "11", "7", 1) == 1
+    db.claim_discord_mutation("s", "11", "7", "edit")
+    assert db.allocate_discord_turn_generation("s", "11", "7", 1) == 2

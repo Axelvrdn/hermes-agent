@@ -2189,10 +2189,12 @@ class GatewayTurnMixin:
                 if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
                     # The persisted input's owner is established before execution or delivery.
                     # A failed claim cannot silently create an unowned, deletable response.
-                    if await self._session_db.record_discord_turn(
-                            _run_start_session_id, str(event.message_id), run_generation, str(source.user_id)):
+                    _sync_generation = await self._session_db.allocate_discord_turn_generation(
+                        _run_start_session_id, str(event.message_id), str(source.user_id), run_generation)
+                    if _sync_generation:
                         event._discord_sync_session_id = _run_start_session_id
-                        event._discord_sync_generation = run_generation
+                        event._discord_sync_generation = _sync_generation
+                        run_generation = _sync_generation
             _discord_sync_metadata = None
             if getattr(event, "_discord_sync_session_id", None):
                 _discord_sync_metadata = {
@@ -2241,6 +2243,12 @@ class GatewayTurnMixin:
                 _terminal_inbound = agent_result.get("queued_terminal_inbound_id")
                 if _terminal_inbound:
                     event.ledger_message_id = str(_terminal_inbound)
+                _terminal_sync = agent_result.get("queued_terminal_discord_sync")
+                if isinstance(_terminal_sync, dict):
+                    event._discord_sync_session_id = _terminal_sync.get("session_id")
+                    event._discord_sync_generation = _terminal_sync.get("generation")
+                    event._discord_sync_session_key = _terminal_sync.get("session_key")
+                    event.message_id = _terminal_sync.get("inbound_id") or event.message_id
                 if "queued_terminal_notification_category" in agent_result:
                     event.metadata["notification_category"] = agent_result["queued_terminal_notification_category"]
                 if isinstance(agent_result.get("_notification_reply_muted"), bool):
@@ -3961,11 +3969,12 @@ class GatewayTurnMixin:
             _adapter = self._delivery_adapter_for(next_source)
             _extra = getattr(getattr(_adapter, "config", None), "extra", None)
             if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
-                if await self._session_db.record_discord_turn(
-                        session_id, str(pending_event.message_id), run_generation, str(next_source.user_id)):
+                _sync_generation = await self._session_db.allocate_discord_turn_generation(
+                    session_id, str(pending_event.message_id), str(next_source.user_id), run_generation)
+                if _sync_generation:
                     next_discord_sync_metadata = {
                         "discord_sync_session_id": session_id,
-                        "discord_sync_generation": run_generation,
+                        "discord_sync_generation": _sync_generation,
                         "discord_sync_inbound_id": str(pending_event.message_id),
                         "discord_sync_author_id": str(next_source.user_id),
                     }
@@ -4011,6 +4020,13 @@ class GatewayTurnMixin:
                 "queued_terminal_inbound_id": next_inbound_id,
                 "queued_terminal_display_kind": next_display_kind,
                 "queued_terminal_reply_expected": next_reply_expected,
+                "queued_terminal_discord_sync": (
+                    {
+                        "session_id": session_id,
+                        "generation": (next_discord_sync_metadata or {}).get("discord_sync_generation"),
+                        "session_key": next_session_key,
+                        "inbound_id": next_inbound_id,
+                    } if next_discord_sync_metadata else None),
                 "queued_terminal_notification_category": (
                     (pending_event.metadata or {}).get("notification_category", "result")
                     if pending_event is not None and pending_event.internal else "result"),

@@ -1355,6 +1355,17 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         ids = [result.message_id, *(getattr(result, "continuation_message_ids", ()) or ())]
         raw = result.raw_response if isinstance(result.raw_response, dict) else {}
         ids.extend(raw.get("message_ids", []) if isinstance(raw.get("message_ids"), list) else [])
+        async_db = db if hasattr(db, "__getattr__") else None
+        if async_db is not None:
+            async def _persist():
+                for output_id in dict.fromkeys(str(item) for item in ids if item):
+                    await async_db.record_discord_output(
+                        str(sid), str(inbound), int(generation), str(author), output_id)
+            try:
+                asyncio.create_task(_persist())
+            except RuntimeError:
+                logger.debug("Discord output correlation skipped without running loop")
+            return
         sync_db = getattr(db, "_db", db)
         for output_id in dict.fromkeys(str(item) for item in ids if item):
             sync_db.record_discord_output(str(sid), str(inbound), int(generation), str(author), output_id)
