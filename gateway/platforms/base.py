@@ -4343,7 +4343,7 @@ class BasePlatformAdapter(ABC):
                 result = await self.send_video(chat_id=chat_id, video_path=path, metadata=metadata)
             else:
                 result = await self.send_document(chat_id=chat_id, file_path=path, metadata=metadata)
-            _generation = getattr(event, "_discord_sync_generation", None)
+            _generation = getattr(event, "_discord_execution_generation", None)
             _current = getattr(self.gateway_runner, "_is_session_run_current", None)
             if _generation is not None and callable(_current) and not _current(
                     session_key or event.source.chat_id, _generation):
@@ -4368,7 +4368,7 @@ class BasePlatformAdapter(ABC):
             logger.info("[%s] Delivering %d non-image MEDIA attachment(s)", self.name, len(queue))
         queue += [(p, False, False) for p in local_files if not _as_image(p)]
         for path, is_voice, media_tag in queue:
-            _generation = getattr(event, "_discord_sync_generation", None)
+            _generation = getattr(event, "_discord_execution_generation", None)
             _current = getattr(self.gateway_runner, "_is_session_run_current", None)
             if _generation is not None and callable(_current) and not _current(
                     session_key or event.source.chat_id, _generation):
@@ -4392,7 +4392,7 @@ class BasePlatformAdapter(ABC):
         The batch result feeds ``record_delivery`` so media-only turns report their real
         outcome instead of FAILURE."""
         try:
-            _generation = getattr(event, "_discord_sync_generation", None)
+            _generation = getattr(event, "_discord_execution_generation", None)
             _session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
             _current = getattr(self.gateway_runner, "_is_session_run_current", None)
             if _generation is not None and callable(_current) and not _current(_session_key, _generation):
@@ -4437,7 +4437,7 @@ class BasePlatformAdapter(ABC):
             await self._release_turn_marker(event)  # the ledger now owns the crash recovery
         result = await delivery_adapter._send_with_retry(
             chat_id=event.source.chat_id, content=text_content, reply_to=reply_to, metadata=metadata)
-        _generation = getattr(event, "_discord_sync_generation", None)
+        _generation = getattr(event, "_discord_execution_generation", None)
         _current = getattr(self.gateway_runner, "_is_session_run_current", None)
         if _generation is not None and callable(_current) and not _current(session_key, _generation):
             if getattr(result, "success", False):
@@ -4494,7 +4494,7 @@ class BasePlatformAdapter(ABC):
         """Normal-lane final: the ledger bracket plus the message-id owner's ephemeral delete."""
         # The adapter may still be extracting media or synthesizing TTS after the runner
         # invalidated its generation. Never deliver a retired turn's final text.
-        _generation = getattr(event, "_discord_sync_generation", None)
+        _generation = getattr(event, "_discord_execution_generation", None)
         _current = getattr(self.gateway_runner, "_is_session_run_current", None)
         if _generation is not None and callable(_current) and not _current(session_key, _generation):
             return
@@ -4534,7 +4534,7 @@ class BasePlatformAdapter(ABC):
         then fail loudly if a non-empty response produced nothing deliverable. Attachment
         results feed ``record_delivery`` so the turn outcome reflects them."""
         human_delay = self._get_human_delay()
-        _generation = getattr(event, "_discord_sync_generation", None)
+        _generation = getattr(event, "_discord_execution_generation", None)
         _current = getattr(self.gateway_runner, "_is_session_run_current", None)
         if _generation is not None and callable(_current) and not _current(
                 getattr(event, "_discord_sync_session_key", event.source.chat_id), _generation):

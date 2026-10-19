@@ -1321,7 +1321,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
                 return False
             runner._invalidate_session_run_generation(key, reason="discord_message_mutation")
             for output_id in claim["output_ids"]:
-                await self.delete_message(str(source.thread_id or source.chat_id), output_id)
+                await self.delete_message(
+                    str(getattr(readmit_source, "thread_id", None) or readmit_source.chat_id), output_id)
             return True
         if not str(payload.get("text") or "").strip():
             return False

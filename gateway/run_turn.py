@@ -2175,6 +2175,7 @@ class GatewayTurnMixin:
                 if _sync_generation:
                     event._discord_sync_session_id = session_entry.session_id
                     event._discord_sync_generation = _sync_generation
+                    event._discord_execution_generation = run_generation
                     event._discord_sync_session_key = session_key
         prepared, _session_env_tokens = await self._hmwa_prepare_turn(
             event, source, session_entry, session_key, _quick_key, run_generation,
@@ -2209,6 +2210,7 @@ class GatewayTurnMixin:
                     "discord_sync_inbound_id": str(event.message_id),
                     "discord_sync_author_id": str(source.user_id),
                     "discord_sync_session_key": session_key,
+                    "discord_execution_generation": run_generation,
                 }
                 event._discord_sync_metadata = _discord_sync_metadata
             _turn_started_monotonic = time.monotonic()
@@ -2257,7 +2259,16 @@ class GatewayTurnMixin:
                     event._discord_sync_generation = _terminal_sync.get("generation")
                     event._discord_sync_session_key = _terminal_sync.get("session_key")
                     event._discord_sync_author_id = _terminal_sync.get("author_id")
+                    event._discord_execution_generation = _terminal_sync.get("execution_generation", run_generation)
                     event.message_id = _terminal_sync.get("inbound_id") or event.message_id
+                    event._discord_sync_metadata = {
+                        "discord_sync_session_id": event._discord_sync_session_id,
+                        "discord_sync_generation": event._discord_sync_generation,
+                        "discord_sync_inbound_id": event.message_id,
+                        "discord_sync_author_id": event._discord_sync_author_id,
+                        "discord_sync_session_key": event._discord_sync_session_key,
+                        "discord_execution_generation": event._discord_execution_generation,
+                    }
                 if "queued_terminal_notification_category" in agent_result:
                     event.metadata["notification_category"] = agent_result["queued_terminal_notification_category"]
                 if isinstance(agent_result.get("_notification_reply_muted"), bool):
@@ -4038,6 +4049,7 @@ class GatewayTurnMixin:
                         "session_key": next_session_key,
                         "inbound_id": next_inbound_id,
                         "author_id": (next_discord_sync_metadata or {}).get("discord_sync_author_id"),
+                        "execution_generation": run_generation,
                     } if next_discord_sync_metadata else None),
                 "queued_terminal_notification_category": (
                     (pending_event.metadata or {}).get("notification_category", "result")

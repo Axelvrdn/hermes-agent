@@ -11,6 +11,7 @@ import asyncio
 import contextlib
 import dataclasses
 import json
+import inspect
 import logging
 import time
 from contextlib import suppress
@@ -380,6 +381,9 @@ class GatewayNotificationsMixin:
                 else self._thread_metadata_for_source(event.source, self._reply_anchor_for_event(event))
             )
             chat_id = event.source.chat_id
+            _generation = getattr(event, "_discord_execution_generation", None)
+            _current = getattr(self, "_is_session_run_current", None)
+            _recorder = getattr(adapter, "record_stream_output_correlation", None)
             # Images go out as one batch (e.g. Signal's multi-attachment RPC) unless [[as_document]].
             def _is_photo(media_path: str, is_voice: bool) -> bool:
                 ext = Path(media_path).suffix.lower()
@@ -390,20 +394,28 @@ class GatewayNotificationsMixin:
             if image_paths:
                 try:
                     images = [(f"file://{_quote(p)}", "") for p in image_paths]
-                    await adapter.send_multiple_images(chat_id=chat_id, images=images, metadata=_thread_meta)
+                    result = await adapter.send_multiple_images(chat_id=chat_id, images=images, metadata=_thread_meta)
+                    if callable(_recorder):
+                        _recorded = _recorder(result, _thread_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                 except Exception as e:
                     logger.warning("[%s] Post-stream image batch delivery failed: %s", adapter.name, e)
             for media_path, is_voice in non_image_media:
                 try:
                     ext = Path(media_path).suffix.lower()
                     if should_send_media_as_audio(event.source.platform, ext, is_voice=is_voice):
-                        await adapter.send_voice(
+                        result = await adapter.send_voice(
                             chat_id=chat_id, audio_path=media_path, metadata=_thread_meta, is_voice=is_voice,
                         )
                     elif ext in _VIDEO_EXTS:
-                        await adapter.send_video(chat_id=chat_id, video_path=media_path, metadata=_thread_meta)
+                        result = await adapter.send_video(chat_id=chat_id, video_path=media_path, metadata=_thread_meta)
                     else:
-                        await adapter.send_document(chat_id=chat_id, file_path=media_path, metadata=_thread_meta)
+                        result = await adapter.send_document(chat_id=chat_id, file_path=media_path, metadata=_thread_meta)
+                    if callable(_recorder):
+                        _recorded = _recorder(result, _thread_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                 except Exception as e:
                     logger.warning("[%s] Post-stream media delivery failed: %s", adapter.name, e)
 
