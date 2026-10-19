@@ -1987,6 +1987,12 @@ class SessionMessagesMixin:
                 return False
         except (ValueError, RuntimeError):
             return False
+        later_input = self._read_one(
+            "SELECT 1 FROM messages WHERE session_id=? AND active=1 AND role='user' AND id>? LIMIT 1",
+            (session_id, rows[0]["id"]),
+        )
+        if later_input is not None:
+            return False
         return self._read_one("SELECT 1 FROM discord_mutation_turns WHERE session_id=? AND inbound_id=? "
                               "AND author_id=? AND claimed=0 LIMIT 1", (session_id, inbound_id, author_id)) is not None
 

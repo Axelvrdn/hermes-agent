@@ -380,6 +380,8 @@ class GatewayNotificationsMixin:
                 if thread_metadata is not None
                 else self._thread_metadata_for_source(event.source, self._reply_anchor_for_event(event))
             )
+            if isinstance(getattr(event, "_discord_sync_metadata", None), dict):
+                _thread_meta.update(event._discord_sync_metadata)
             chat_id = event.source.chat_id
             _generation = getattr(event, "_discord_execution_generation", None)
             _current = getattr(self, "_is_session_run_current", None)
@@ -491,7 +493,7 @@ class GatewayNotificationsMixin:
             return True
         await self._deliver_media_from_response(
             response, MessageEvent(text="", source=source, message_id=event_message_id), adapter,
-            thread_metadata=metadata,
+            thread_metadata={**(metadata or {})},
         )
         return True
 
@@ -515,6 +517,7 @@ class GatewayNotificationsMixin:
                 _ev._discord_sync_generation = metadata.get("discord_sync_generation")
                 _ev._discord_sync_session_key = session_key
                 _ev._discord_sync_author_id = metadata.get("discord_sync_author_id")
+                _ev._discord_execution_generation = metadata.get("discord_execution_generation")
                 _ev.message_id = metadata.get("discord_sync_inbound_id") or inbound_message_id
             result, _ = await adapter.send_final_ledgered(
                 _ev,
