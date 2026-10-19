@@ -601,6 +601,15 @@ class TurnRunner:
         result = await st.adapter.send(
             chat_id=ctx.source.chat_id, content=text, reply_to=ctx._progress_reply_to, metadata=ctx._progress_metadata,
         )
+        if not ctx._run_still_current():
+            raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+            raw_ids = raw.get("message_ids")
+            ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+            for mid in ids:
+                if mid:
+                    with suppress(Exception):
+                        await st.adapter.delete_message(ctx.source.chat_id, str(mid))
+            return result
         recorder = getattr(st.adapter, "record_stream_output_correlation", None)
         if callable(recorder):
             _recorded = recorder(result, ctx._progress_metadata)
