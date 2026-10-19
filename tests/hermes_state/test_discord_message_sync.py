@@ -67,6 +67,9 @@ def test_mutation_ownership_survives_compression_child_publication(db):
         compression_lock_holder="holder", watermark=None,
     )
     assert db.probe_discord_mutation("child", "11", "7") is True
+    # Late output recorded on parent after compression publishes should mirror to child
+    db.record_discord_output("parent", "11", 1, "7", "91")
+    assert "91" in db.claim_discord_mutation("child", "11", "7", "delete")["output_ids"]
 
 
 def test_discord_turn_generation_can_be_allocated_after_restart(db):

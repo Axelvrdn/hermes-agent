@@ -1958,6 +1958,19 @@ class SessionMessagesMixin:
             conn.execute("INSERT OR IGNORE INTO discord_mutation_outputs "
                          "(session_id, inbound_id, generation, message_id) VALUES (?, ?, ?, ?)",
                          (session_id, inbound_id, generation, message_id))
+            # Mirror to live compression children that carried this input
+            child_sessions = conn.execute(
+                "SELECT id FROM sessions WHERE parent_session_id = ? AND end_reason IS NULL",
+                (session_id,)).fetchall()
+            for child in child_sessions:
+                child_id = str(child[0])
+                has_turn = conn.execute(
+                    "SELECT 1 FROM discord_mutation_turns WHERE session_id=? AND inbound_id=? AND generation=?",
+                    (child_id, inbound_id, generation)).fetchone()
+                if has_turn:
+                    conn.execute("INSERT OR IGNORE INTO discord_mutation_outputs "
+                                 "(session_id, inbound_id, generation, message_id) VALUES (?, ?, ?, ?)",
+                                 (child_id, inbound_id, generation, message_id))
             return True
         return self._execute_write(_do)
 

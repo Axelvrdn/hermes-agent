@@ -1946,13 +1946,13 @@ class GatewayTurnMixin:
             # Streaming delivered the body, but the footer was held back (`not already_sent` gate).
             if _footer_line and adapter:
                 try:
+                    _footer_meta = {**(self._event_thread_metadata(event, source) or {}),
+                                    **(getattr(event, "_discord_sync_metadata", None) or {})}
                     _footer_result = await adapter.send(
-                        source.chat_id, _footer_line,
-                        metadata={**(self._event_thread_metadata(event, source) or {}),
-                                  **(getattr(event, "_discord_sync_metadata", None) or {})})
+                        source.chat_id, _footer_line, metadata=_footer_meta)
                     recorder = getattr(adapter, "record_stream_output_correlation", None)
                     if callable(recorder):
-                        _recorded = recorder(_footer_result, self._event_thread_metadata(event, source))
+                        _recorded = recorder(_footer_result, _footer_meta)
                         if inspect.isawaitable(_recorded):
                             await _recorded
                 except Exception as _e:
@@ -2165,6 +2165,17 @@ class GatewayTurnMixin:
         if resolved is None:
             return
         source, session_entry, session_key = resolved
+        if (source.platform.value == "discord" and event.message_id and source.user_id
+                and not event.internal):
+            _adapter = self._delivery_adapter_for(source)
+            _extra = getattr(getattr(_adapter, "config", None), "extra", None)
+            if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
+                _sync_generation = await self._session_db.allocate_discord_turn_generation(
+                    session_entry.session_id, str(event.message_id), str(source.user_id), run_generation)
+                if _sync_generation:
+                    event._discord_sync_session_id = session_entry.session_id
+                    event._discord_sync_generation = _sync_generation
+                    event._discord_sync_session_key = session_key
         prepared, _session_env_tokens = await self._hmwa_prepare_turn(
             event, source, session_entry, session_key, _quick_key, run_generation,
         )
@@ -2190,19 +2201,6 @@ class GatewayTurnMixin:
             if not heartbeat_owner_is_current(self, event, session_key):
                 return
             _run_start_session_id = session_entry.session_id
-            if (source.platform.value == "discord" and event.message_id and source.user_id
-                    and not event.internal):
-                _adapter = self._delivery_adapter_for(source)
-                _extra = getattr(getattr(_adapter, "config", None), "extra", None)
-                if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
-                    # The persisted input's owner is established before execution or delivery.
-                    # A failed claim cannot silently create an unowned, deletable response.
-                    _sync_generation = await self._session_db.allocate_discord_turn_generation(
-                        _run_start_session_id, str(event.message_id), str(source.user_id), run_generation)
-                    if _sync_generation:
-                        event._discord_sync_session_id = _run_start_session_id
-                        event._discord_sync_generation = _sync_generation
-                        event._discord_sync_session_key = session_key
             _discord_sync_metadata = None
             if getattr(event, "_discord_sync_session_id", None):
                 _discord_sync_metadata = {

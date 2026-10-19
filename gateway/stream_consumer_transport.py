@@ -303,10 +303,12 @@ class StreamTransportMixin:
         if callable(recorder):
             with contextlib.suppress(Exception):
                 await recorder(result, self._metadata_for_send(final=True))
-        if not getattr(self, "_run_still_current", lambda: True)():
-            await self._delete_previews(
-                self._result_message_ids(result), skip=None, label="Stale fresh-final")
+
+        if (isinstance(self.metadata, dict) and self.metadata.get("discord_sync_generation") is not None
+                and not self._run_still_current()):
+            await self._delete_previews(self._result_message_ids(result), skip=None, label="Stale fresh-final")
             return False
+
         # Best-effort preview cleanup; never delete the message just sent.
         await self._delete_previews(stale_ids, skip=new_message_id, label="Fresh-final")
         self._preview_message_ids = set()
@@ -487,6 +489,12 @@ class StreamTransportMixin:
                 _recorded = recorder(result, self._metadata_for_send(final=finalize, expect_edits=not finalize))
                 if inspect.isawaitable(_recorded):
                     await _recorded
+
+        if (isinstance(self.metadata, dict) and self.metadata.get("discord_sync_generation") is not None
+                and not self._run_still_current()):
+            await self._delete_previews(self._result_message_ids(result), skip=None, label="Stale first-send")
+            return False
+
         self._already_sent = True
         self._last_sent_text = text
         if result.message_id:
@@ -523,10 +531,7 @@ class StreamTransportMixin:
         if not result.success:
             return await self._on_edit_failure(result, text, finalize=finalize,
                                                is_turn_final=is_turn_final)
-        if not getattr(self, "_run_still_current", lambda: True)():
-            await self._delete_previews(
-                self._result_message_ids(result), skip=None, label="Stale stream edit")
-            return False
+
         raw_response = getattr(result, "raw_response", None)
         if isinstance(raw_response, dict) and raw_response.get("skipped"):
             # Adapter deferred the edit (Telegram's shared send+edit slot was busy): nothing
@@ -539,6 +544,12 @@ class StreamTransportMixin:
                 _recorded = recorder(result, self._metadata_for_send(final=True))
                 if inspect.isawaitable(_recorded):
                     await _recorded
+
+        if (isinstance(self.metadata, dict) and self.metadata.get("discord_sync_generation") is not None
+                and not self._run_still_current()):
+            await self._delete_previews(self._result_message_ids(result), skip=None, label="Stale stream edit")
+            return False
+
         self._already_sent = True
         self._track_preview_ids_from_result(result)
         # Oversized edit split across continuations: message_id is now the LAST
