@@ -1289,11 +1289,11 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         runner = self.gateway_runner
         if db is None or runner is None:
             return False
-        pending = self._pending_event_for_source(source)
-        if pending is not None and str(getattr(pending, "message_id", "") or "") == inbound:
+        pending_adapter, pending = self._find_pending_mutation(source, inbound)
+        if pending is not None:
             pending_text = str(payload.get("text") or "")
             if event["event_type"] == "message_deleted":
-                self._remove_pending_event_for_source(source)
+                self._remove_pending_mutation(source, inbound, pending_adapter, pending)
                 return True
             if pending_text.strip():
                 pending.text = pending_text
@@ -1373,6 +1373,36 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         adapter = runner._delivery_adapter_for(source)
         if adapter:
             getattr(adapter, "_pending_messages", {}).pop(key, None)
+
+    def _find_pending_mutation(self, source, inbound: str):
+        runner = self.gateway_runner
+        if runner is None:
+            return None, None
+        adapter = runner._delivery_adapter_for(source)
+        key = runner._session_key_for_source(source)
+        pending = getattr(adapter, "_pending_messages", {}).get(key) if adapter else None
+        if pending is not None and str(getattr(pending, "message_id", "") or "") == inbound:
+            return adapter, pending
+        state = runner._peek_session_state(key)
+        for event in list(getattr(getattr(state, "conversation", None), "queued_events", ()) or ()):
+            if str(getattr(event, "message_id", "") or "") == inbound:
+                return adapter, event
+        debounce = getattr(adapter, "_text_debounce_store", lambda: {})() if adapter else {}
+        buffered = debounce.get(key)
+        if buffered is not None and str(getattr(buffered.event, "message_id", "") or "") == inbound:
+            return adapter, buffered.event
+        return adapter, None
+
+    def _remove_pending_mutation(self, source, inbound: str, adapter, event) -> None:
+        if adapter is not None and self.gateway_runner is not None:
+            key = self.gateway_runner._session_key_for_source(source)
+            if getattr(adapter, "_pending_messages", {}).get(key) is event:
+                getattr(adapter, "_pending_messages", {}).pop(key, None)
+        runner = self.gateway_runner
+        state = runner._peek_session_state(runner._session_key_for_source(source)) if runner else None
+        queue = getattr(getattr(state, "conversation", None), "queued_events", None)
+        if queue is not None:
+            queue[:] = [item for item in queue if item is not event]
 
     async def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
         """Persist successful streaming output IDs for opt-in mutation synchronization."""
@@ -2109,6 +2139,10 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             return
         data = dict(getattr(payload, "data", {}) or {})
         author_id = str((data.get("author") or {}).get("id") or "") or None
+        if not author_id:
+            db = getattr(self.gateway_runner, "_session_db", None)
+            if db is not None:
+                author_id = await db.discord_mutation_author(message_id)
         content = data.get("content") if event_type == "message_edited" else None
         if event_type == "message_edited" and content is None:
             return
@@ -2117,7 +2151,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         source_kwargs = {
             "chat_id": channel_id, "user_id": author_id, "user_name": None,
             "thread_id": None, "guild_id": None, "message_id": message_id,
-            "chat_type": "group", "role_authorized": False,
+            "chat_type": "group", "role_authorized": bool(author_id),
         }
         await self._emit_platform_event(event_type, lambda: (payload_data, source_kwargs))
 
