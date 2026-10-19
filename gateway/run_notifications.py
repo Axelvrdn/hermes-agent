@@ -397,6 +397,14 @@ class GatewayNotificationsMixin:
                 try:
                     images = [(f"file://{_quote(p)}", "") for p in image_paths]
                     result = await adapter.send_multiple_images(chat_id=chat_id, images=images, metadata=_thread_meta)
+                    if (_generation is not None and callable(_current)
+                            and not _current(getattr(event, "_discord_sync_session_key", chat_id), _generation)):
+                        for mid in ([getattr(result, "message_id", None)]
+                                    + list((getattr(result, "raw_response", {}) or {}).get("message_ids", []))):
+                            if mid:
+                                with suppress(Exception):
+                                    await adapter.delete_message(chat_id, str(mid))
+                        return
                     if callable(_recorder):
                         _recorded = _recorder(result, _thread_meta)
                         if inspect.isawaitable(_recorded):
@@ -414,6 +422,12 @@ class GatewayNotificationsMixin:
                         result = await adapter.send_video(chat_id=chat_id, video_path=media_path, metadata=_thread_meta)
                     else:
                         result = await adapter.send_document(chat_id=chat_id, file_path=media_path, metadata=_thread_meta)
+                    if (_generation is not None and callable(_current)
+                            and not _current(getattr(event, "_discord_sync_session_key", chat_id), _generation)):
+                        if getattr(result, "success", False) and getattr(result, "message_id", None):
+                            with suppress(Exception):
+                                await adapter.delete_message(chat_id, str(result.message_id))
+                        return
                     if callable(_recorder):
                         _recorded = _recorder(result, _thread_meta)
                         if inspect.isawaitable(_recorded):
