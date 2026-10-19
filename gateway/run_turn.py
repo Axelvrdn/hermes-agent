@@ -1946,7 +1946,15 @@ class GatewayTurnMixin:
             # Streaming delivered the body, but the footer was held back (`not already_sent` gate).
             if _footer_line and adapter:
                 try:
-                    await adapter.send(source.chat_id, _footer_line, metadata=self._event_thread_metadata(event, source))
+                    _footer_result = await adapter.send(
+                        source.chat_id, _footer_line,
+                        metadata={**(self._event_thread_metadata(event, source) or {}),
+                                  **(getattr(event, "_discord_sync_metadata", None) or {})})
+                    recorder = getattr(adapter, "record_stream_output_correlation", None)
+                    if callable(recorder):
+                        _recorded = recorder(_footer_result, self._event_thread_metadata(event, source))
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                 except Exception as _e:
                     logger.debug("trailing footer send failed: %s", _e)
             # Return None so the body isn't sent twice; stash the delivered text on the event for the
@@ -2204,6 +2212,7 @@ class GatewayTurnMixin:
                     "discord_sync_author_id": str(source.user_id),
                     "discord_sync_session_key": session_key,
                 }
+                event._discord_sync_metadata = _discord_sync_metadata
             _turn_started_monotonic = time.monotonic()
             # Admission/typing is not execution. All routing, authorization and
             # turn preparation gates have passed when the agent runner is entered.

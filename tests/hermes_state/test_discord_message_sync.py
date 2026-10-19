@@ -81,6 +81,7 @@ def test_discord_turn_generation_can_be_allocated_after_restart(db):
 
 def test_discord_turn_allocator_returns_durable_generation(db):
     db.create_session("s", source="discord")
+    db.append_message("s", "user", "ask", platform_message_id="11")
     assert db.allocate_discord_turn_generation("s", "11", "7", 1) == 1
     db.claim_discord_mutation("s", "11", "7", "edit")
     assert db.allocate_discord_turn_generation("s", "11", "7", 1) == 2
