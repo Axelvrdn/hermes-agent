@@ -3118,7 +3118,13 @@ class BasePlatformAdapter(ABC):
         """
         if not self.warning_notifications_enabled(logical_platform, chat_id=chat_id, metadata=metadata):
             return None
-        return await self.send(chat_id, content, reply_to=reply_to, metadata=metadata)
+        res = await self.send(chat_id, content, reply_to=reply_to, metadata=metadata)
+        _recorder = getattr(self, "record_stream_output_correlation", None)
+        if callable(_recorder):
+            _recorded = _recorder(res, metadata)
+            if inspect.isawaitable(_recorded):
+                await _recorded
+        return res
 
     async def emit_media_warning(
         self, chat_id: str, notice: str, *, caption=None, reply_to=None, metadata=None,

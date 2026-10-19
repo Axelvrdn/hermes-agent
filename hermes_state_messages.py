@@ -1928,7 +1928,7 @@ class SessionMessagesMixin:
                 "WHERE session_id=? AND inbound_id=? AND author_id=? AND claimed=0 "
                 "ORDER BY generation DESC LIMIT 1", (session_id, inbound_id, author_id),
             ).fetchone()
-            if existing is not None and int(existing[0]) >= int(requested_generation or 0):
+            if existing is not None:
                 return int(existing[0])
             row = conn.execute(
                 "SELECT COALESCE(MAX(generation), 0) FROM discord_mutation_turns "

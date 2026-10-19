@@ -4346,14 +4346,34 @@ class GatewayTurnMixin:
                         session_key, agent_holder[0], _executor_task_holder[0]
                     ):
                         break
+                    _hb_meta = _interim_metadata(_non_conversational_metadata(_status_thread_metadata, platform=source.platform))
                     _notify_res = await _notify_adapter.send(
                         source.chat_id, _heartbeat_text,
-                        metadata=_interim_metadata(_non_conversational_metadata(_status_thread_metadata, platform=source.platform)),
+                        metadata=_hb_meta,
                     )
+                    if not turn_ctx._run_still_current():
+                        raw = _notify_res.raw_response if isinstance(getattr(_notify_res, "raw_response", None), dict) else {}
+                        raw_ids = raw.get("message_ids")
+                        ids = raw_ids if isinstance(raw_ids, list) else ([_notify_res.message_id] if getattr(_notify_res, "message_id", None) else [])
+                        for mid in ids:
+                            if mid:
+                                with suppress(Exception):
+                                    await _notify_adapter.delete_message(source.chat_id, str(mid))
+                        break
+                    recorder = getattr(_notify_adapter, "record_stream_output_correlation", None)
+                    if callable(recorder):
+                        _recorded = recorder(_notify_res, _hb_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                     if getattr(_notify_res, "success", False) and getattr(_notify_res, "message_id", None):
                         _heartbeat_msg_id = str(_notify_res.message_id)
                         if turn_ctx._cleanup_progress:
                             turn_ctx._cleanup_msg_ids.append(_heartbeat_msg_id)
+                else:
+                    if not turn_ctx._run_still_current():
+                        with suppress(Exception):
+                            await _notify_adapter.delete_message(source.chat_id, _heartbeat_msg_id)
+                        break
             except Exception as _ne:
                 logger.debug("Long-running notification error: %s", _ne)
 

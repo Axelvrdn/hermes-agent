@@ -868,9 +868,46 @@ class TurnRunner:
         """Status adapter present and this run is still the current generation."""
         return bool(self._ctx._status_adapter) and self._ctx._run_still_current()
 
-    def _send_status_text(self, text: str, metadata, log_message: str) -> None:
+    async def _send_or_update_status_guarded(self, event_type: str, prepared: str):
         ctx = self._ctx
-        self._schedule(ctx._status_adapter.send(ctx._status_chat_id, text, metadata=metadata), log_message)
+        from gateway.run import _send_or_update_status_coro
+        result = await _send_or_update_status_coro(
+            ctx._status_adapter, ctx._status_chat_id, event_type, prepared, ctx._status_thread_metadata
+        )
+        if not ctx._run_still_current():
+            raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+            raw_ids = raw.get("message_ids")
+            ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if getattr(result, "message_id", None) else [])
+            for mid in ids:
+                if mid:
+                    with suppress(Exception):
+                        await ctx._status_adapter.delete_message(ctx._status_chat_id, str(mid))
+            return result
+        self._track_progress_result(result)
+        return result
+
+    async def _send_status_text_guarded(self, text: str, metadata: Any):
+        ctx = self._ctx
+        result = await ctx._status_adapter.send(ctx._status_chat_id, text, metadata=metadata)
+        if not ctx._run_still_current():
+            raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+            raw_ids = raw.get("message_ids")
+            ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if getattr(result, "message_id", None) else [])
+            for mid in ids:
+                if mid:
+                    with suppress(Exception):
+                        await ctx._status_adapter.delete_message(ctx._status_chat_id, str(mid))
+            return result
+        recorder = getattr(ctx._status_adapter, "record_stream_output_correlation", None)
+        if callable(recorder):
+            _recorded = recorder(result, metadata)
+            if inspect.isawaitable(_recorded):
+                await _recorded
+        self._track_progress_result(result)
+        return result
+
+    def _send_status_text(self, text: str, metadata, log_message: str) -> None:
+        self._schedule(self._send_status_text_guarded(text, metadata), log_message)
 
     def _attach_session_title_callback(self, agent, ctx) -> None:
         """Wire the platform thread-rename lane onto the agent as `_on_session_title`.
@@ -919,7 +956,7 @@ class TurnRunner:
             return
         def present():
             fut = self._schedule(
-                _send_or_update_status_coro(ctx._status_adapter, ctx._status_chat_id, event_type, prepared, ctx._status_thread_metadata),
+                self._send_or_update_status_guarded(event_type, prepared),
                 f"status_callback ({event_type}) scheduling error",
             )
             if fut is not None and ctx._cleanup_progress:
