@@ -293,7 +293,7 @@ class StreamTransportMixin:
         recorder = getattr(self.adapter, "record_stream_output_correlation", None)
         if callable(recorder):
             with contextlib.suppress(Exception):
-                recorder(result, self._metadata_for_send(final=True))
+                await recorder(result, self._metadata_for_send(final=True))
         # Best-effort preview cleanup; never delete the message just sent.
         await self._delete_previews(stale_ids, skip=new_message_id, label="Fresh-final")
         self._preview_message_ids = set()
@@ -471,7 +471,9 @@ class StreamTransportMixin:
         recorder = getattr(self.adapter, "record_stream_output_correlation", None)
         if callable(recorder):
             with contextlib.suppress(Exception):
-                recorder(result, self._metadata_for_send(final=finalize, expect_edits=not finalize))
+                _recorded = recorder(result, self._metadata_for_send(final=finalize, expect_edits=not finalize))
+                if inspect.isawaitable(_recorded):
+                    await _recorded
         self._already_sent = True
         self._last_sent_text = text
         if result.message_id:
@@ -517,7 +519,9 @@ class StreamTransportMixin:
         recorder = getattr(self.adapter, "record_stream_output_correlation", None)
         if callable(recorder) and finalize:
             with contextlib.suppress(Exception):
-                recorder(result, self._metadata_for_send(final=True))
+                _recorded = recorder(result, self._metadata_for_send(final=True))
+                if inspect.isawaitable(_recorded):
+                    await _recorded
         self._already_sent = True
         self._track_preview_ids_from_result(result)
         # Oversized edit split across continuations: message_id is now the LAST

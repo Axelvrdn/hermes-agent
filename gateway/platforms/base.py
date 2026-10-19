@@ -4355,7 +4355,9 @@ class BasePlatformAdapter(ABC):
                         with contextlib.suppress(Exception):
                             await self.delete_message(chat_id, str(mid))
                 return SendResult(success=False, error="generation retired")
-            self.record_stream_output_correlation(result, metadata)
+            _correlation = self.record_stream_output_correlation(result, metadata)
+            if inspect.isawaitable(_correlation):
+                await _correlation
             if not result.success:
                 logger.warning("[%s] Failed to send %s (%s): %s", self.name,
                                "media" if media_tag else "local file", ext, result.error)
@@ -4406,7 +4408,9 @@ class BasePlatformAdapter(ABC):
                         with contextlib.suppress(Exception):
                             await self.delete_message(event.source.chat_id, str(mid))
                 return
-            self.record_stream_output_correlation(result, metadata)
+            _correlation = self.record_stream_output_correlation(result, metadata)
+            if inspect.isawaitable(_correlation):
+                await _correlation
         except Exception as batch_err:
             logger.warning("[%s] Error batching images: %s", self.name, batch_err, exc_info=True)
             record_delivery(SendResult(success=False, error=str(batch_err)))
@@ -4472,7 +4476,7 @@ class BasePlatformAdapter(ABC):
             await self._finalize_delivery_obligation(obligation_id, result, event, delivery_adapter)
         return result, delivery_adapter
 
-    def record_stream_output_correlation(self, result: "SendResult", metadata: Optional[dict[str, Any]]) -> None:
+    def record_stream_output_correlation(self, result: "SendResult", metadata: Optional[dict[str, Any]]) -> Any:
         """Hook for adapters that correlate acknowledged streaming outputs."""
         return None
 

@@ -1337,7 +1337,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         await self.handle_message(message)
         return True
 
-    def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
+    async def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
         """Persist successful streaming output IDs for opt-in mutation synchronization."""
         if not isinstance(metadata, dict) or self.gateway_runner is None:
             return
@@ -1357,14 +1357,9 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         ids.extend(raw.get("message_ids", []) if isinstance(raw.get("message_ids"), list) else [])
         async_db = db if hasattr(db, "__getattr__") else None
         if async_db is not None:
-            async def _persist():
-                for output_id in dict.fromkeys(str(item) for item in ids if item):
-                    await async_db.record_discord_output(
-                        str(sid), str(inbound), int(generation), str(author), output_id)
-            try:
-                asyncio.create_task(_persist())
-            except RuntimeError:
-                logger.debug("Discord output correlation skipped without running loop")
+            for output_id in dict.fromkeys(str(item) for item in ids if item):
+                await async_db.record_discord_output(
+                    str(sid), str(inbound), int(generation), str(author), output_id)
             return
         sync_db = getattr(db, "_db", db)
         for output_id in dict.fromkeys(str(item) for item in ids if item):

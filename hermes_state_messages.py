@@ -1986,7 +1986,7 @@ class SessionMessagesMixin:
             target = dict(rows[0])
             later_input = conn.execute(
                 "SELECT 1 FROM messages WHERE session_id=? AND active=1 AND role='user' "
-                "AND id>? AND platform_message_id IS NOT NULL LIMIT 1",
+                "AND id>? LIMIT 1",
                 (session_id, target["id"]),
             ).fetchone()
             if later_input is not None:
