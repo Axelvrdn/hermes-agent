@@ -2058,7 +2058,8 @@ class SessionMessagesMixin:
         on a prior retry of the same inbound platform message.
         """
         return self._read_one(
-            "SELECT 1 FROM messages WHERE session_id = ? AND platform_message_id = ? AND active = 1 LIMIT 1",
+            "SELECT 1 FROM messages WHERE session_id = ? AND platform_message_id = ? "
+            "AND (active = 1 OR compacted = 1) LIMIT 1",
             (session_id, platform_message_id)) is not None
 
     def _is_explicit_fork_child_row(self, session: dict[str, Any], *, include_reset: bool = False) -> bool:

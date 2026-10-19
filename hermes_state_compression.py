@@ -702,7 +702,13 @@ class SessionCompressionMixin:
                 "SELECT expires_at FROM session_turn_leases WHERE conversation_id = ?",
                 (conversation_id,),
             ).fetchone()
-        return row is None or float(row[0]) <= time.time()
+            lock = conn.execute(
+                "SELECT expires_at FROM compression_locks WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+        now = time.time()
+        return ((row is None or float(row[0]) <= now)
+                and (lock is None or float(lock[0]) <= now))
 
     def refresh_session_turn_lease(
         self, session_id: str, holder: str, *, ttl_seconds: float = 300.0, patience_s: Optional[float] = None,
