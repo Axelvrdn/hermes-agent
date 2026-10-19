@@ -1301,7 +1301,17 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             if entry is None:
                 return False
         sid = entry.session_id
-        readmit_source = getattr(entry, "origin", None) or source
+        origin = getattr(entry, "origin", None)
+        if origin is not None:
+            readmit_source = self.build_source(
+                chat_id=origin.chat_id, chat_type=origin.chat_type,
+                user_id=source.user_id, user_name=source.user_name,
+                thread_id=origin.thread_id, guild_id=origin.guild_id,
+                parent_chat_id=origin.parent_chat_id, message_id=inbound,
+                role_authorized=getattr(source, "role_authorized", False),
+            )
+        else:
+            readmit_source = source
         if not await db.probe_discord_mutation(sid, inbound, author):
             return False
         is_running = getattr(runner, "_is_session_running", lambda _key: False)

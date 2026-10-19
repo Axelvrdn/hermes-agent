@@ -455,7 +455,7 @@ class GatewayVoiceMixin:
         sync_meta = getattr(event, "_discord_sync_metadata", None)
         if isinstance(sync_meta, dict):
             thread_meta.update(sync_meta)
-        generation = getattr(event, "_discord_sync_generation", None)
+        generation = getattr(event, "_discord_execution_generation", None)
         session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
         is_current = getattr(self, "_is_session_run_current", None)
         recorder = getattr(adapter, "record_stream_output_correlation", None)
