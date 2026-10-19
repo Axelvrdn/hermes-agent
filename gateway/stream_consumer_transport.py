@@ -480,6 +480,10 @@ class StreamTransportMixin:
         result = await self.adapter.send(
             chat_id=self.chat_id, content=text, reply_to=self._initial_reply_to_id,
             metadata=self._metadata_for_send(final=finalize, expect_edits=not finalize))
+        if (isinstance(self.metadata, dict) and self.metadata.get("discord_sync_generation") is not None
+                and not self._run_still_current()):
+            await self._delete_previews(self._result_message_ids(result), skip=None, label="Stale first-send")
+            return False
         if not result.success:
             self._edit_supported = False
             return False
@@ -489,11 +493,6 @@ class StreamTransportMixin:
                 _recorded = recorder(result, self._metadata_for_send(final=finalize, expect_edits=not finalize))
                 if inspect.isawaitable(_recorded):
                     await _recorded
-
-        if (isinstance(self.metadata, dict) and self.metadata.get("discord_sync_generation") is not None
-                and not self._run_still_current()):
-            await self._delete_previews(self._result_message_ids(result), skip=None, label="Stale first-send")
-            return False
 
         self._already_sent = True
         self._last_sent_text = text

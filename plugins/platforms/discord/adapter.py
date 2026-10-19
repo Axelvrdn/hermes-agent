@@ -656,7 +656,6 @@ def check_discord_requirements() -> bool:
     Intents = _Intents
     commands = _commands
     DISCORD_AVAILABLE = True
-    _define_discord_view_classes()
     from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
     globals().update(_define_extracted_view_classes(discord))
     return True
@@ -1366,15 +1365,9 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         ids = [result.message_id, *(getattr(result, "continuation_message_ids", ()) or ())]
         raw = result.raw_response if isinstance(result.raw_response, dict) else {}
         ids.extend(raw.get("message_ids", []) if isinstance(raw.get("message_ids"), list) else [])
-        async_db = db if hasattr(db, "__getattr__") else None
-        if async_db is not None:
-            for output_id in dict.fromkeys(str(item) for item in ids if item):
-                await async_db.record_discord_output(
-                    str(sid), str(inbound), int(generation), str(author), output_id)
-            return
-        sync_db = getattr(db, "_db", db)
         for output_id in dict.fromkeys(str(item) for item in ids if item):
-            sync_db.record_discord_output(str(sid), str(inbound), int(generation), str(author), output_id)
+            await db.record_discord_output(
+                str(sid), str(inbound), int(generation), str(author), output_id)
 
     MAX_MESSAGE_LENGTH = 2000
     _SPLIT_THRESHOLD = 1900  # near the 2000-char split point
@@ -2036,7 +2029,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             chat_id=str(thread_id), user_id=str(owner_id) if owner_id is not None else None,
             user_name=None, thread_id=str(thread_id),
             guild_id=str(getattr(guild, "id", "")) if guild else None,
-            role_authorized=owner_authorized,
+            role_authorized=owner_authorized, chat_type="thread",
         )
 
     async def _on_platform_message_edit(self, before, after) -> None:
@@ -7479,8 +7472,6 @@ def _define_discord_view_classes() -> None:
                 t("platform.discord.prompt.awaiting_typed", user=display_name), log_edit_failure=False)
 
 if DISCORD_AVAILABLE:
-    _define_discord_view_classes()
-
     from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
     globals().update(_define_extracted_view_classes(discord))
 

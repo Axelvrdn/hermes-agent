@@ -3119,6 +3119,18 @@ class BasePlatformAdapter(ABC):
         if not self.warning_notifications_enabled(logical_platform, chat_id=chat_id, metadata=metadata):
             return None
         res = await self.send(chat_id, content, reply_to=reply_to, metadata=metadata)
+        _generation = (metadata or {}).get("discord_execution_generation") if isinstance(metadata, dict) else None
+        _session_key = (metadata or {}).get("discord_sync_session_key", chat_id) if isinstance(metadata, dict) else chat_id
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(_session_key, _generation):
+            raw = res.raw_response if isinstance(res.raw_response, dict) else {}
+            raw_ids = raw.get("message_ids")
+            ids = raw_ids if isinstance(raw_ids, list) else ([res.message_id] if getattr(res, "message_id", None) else [])
+            for mid in ids:
+                if mid:
+                    with contextlib.suppress(Exception):
+                        await self.delete_message(chat_id, str(mid))
+            return SendResult(success=False, error="generation retired")
         _recorder = getattr(self, "record_stream_output_correlation", None)
         if callable(_recorder):
             _recorded = _recorder(res, metadata)

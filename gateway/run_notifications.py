@@ -505,8 +505,18 @@ class GatewayNotificationsMixin:
         # they succeeded — mirrors the ``not agent_result.get("failed")`` completed-turn guard.
         if not deliver_media:
             return True
+        _media_event = MessageEvent(text="", source=source, message_id=event_message_id)
+        if isinstance(metadata, dict):
+            for _name, _value in {
+                "_discord_execution_generation": metadata.get("discord_execution_generation"),
+                "_discord_sync_session_key": session_key,
+                "_discord_sync_session_id": metadata.get("discord_sync_session_id"),
+                "_discord_sync_generation": metadata.get("discord_sync_generation"),
+                "_discord_sync_author_id": metadata.get("discord_sync_author_id"),
+            }.items():
+                setattr(_media_event, _name, _value)
         await self._deliver_media_from_response(
-            response, MessageEvent(text="", source=source, message_id=event_message_id), adapter,
+            response, _media_event, adapter,
             thread_metadata={**(metadata or {})},
         )
         return True
