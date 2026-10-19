@@ -1289,6 +1289,16 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         runner = self.gateway_runner
         if db is None or runner is None:
             return False
+        pending = self._pending_event_for_source(source)
+        if pending is not None and str(getattr(pending, "message_id", "") or "") == inbound:
+            pending_text = str(payload.get("text") or "")
+            if event["event_type"] == "message_deleted":
+                self._remove_pending_event_for_source(source)
+                return True
+            if pending_text.strip():
+                pending.text = pending_text
+                return True
+            return False
         key = runner._session_key_for_source(source)
         entry = runner.session_store.lookup_by_session_key(key)
         list_sessions = getattr(runner.session_store, "list_sessions", None)
@@ -1346,6 +1356,23 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
                                source=readmit_source, message_id=inbound)
         await self.handle_message(message)
         return True
+
+    def _pending_event_for_source(self, source):
+        runner = self.gateway_runner
+        if runner is None:
+            return None
+        key = runner._session_key_for_source(source)
+        adapter = runner._delivery_adapter_for(source)
+        return getattr(adapter, "_pending_messages", {}).get(key) if adapter else None
+
+    def _remove_pending_event_for_source(self, source) -> None:
+        runner = self.gateway_runner
+        if runner is None:
+            return
+        key = runner._session_key_for_source(source)
+        adapter = runner._delivery_adapter_for(source)
+        if adapter:
+            getattr(adapter, "_pending_messages", {}).pop(key, None)
 
     async def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
         """Persist successful streaming output IDs for opt-in mutation synchronization."""
@@ -1686,6 +1713,14 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             @self._client.event
             async def on_message_delete(message: DiscordMessage):
                 await adapter_self._on_platform_message_delete(message)
+
+            @self._client.event
+            async def on_raw_message_edit(payload: Any):
+                await adapter_self._on_platform_raw_message_edit(payload)
+
+            @self._client.event
+            async def on_raw_message_delete(payload: Any):
+                await adapter_self._on_platform_raw_message_delete(payload)
 
             @self._client.event
             async def on_thread_create(thread):
@@ -2060,6 +2095,31 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             return {"author_id": str(getattr(author, "id", "") or "")[:128] or None}
         await self._emit_platform_event("message_deleted", lambda: self._message_event_parts(
             message, _extra, allow_context=True))
+
+    async def _on_platform_raw_message_edit(self, payload: Any) -> None:
+        await self._on_platform_raw_message_mutation(payload, "message_edited")
+
+    async def _on_platform_raw_message_delete(self, payload: Any) -> None:
+        await self._on_platform_raw_message_mutation(payload, "message_deleted")
+
+    async def _on_platform_raw_message_mutation(self, payload: Any, event_type: str) -> None:
+        message_id = str(getattr(payload, "message_id", None) or "")
+        channel_id = str(getattr(payload, "channel_id", None) or "")
+        if not message_id or not channel_id:
+            return
+        data = dict(getattr(payload, "data", {}) or {})
+        author_id = str((data.get("author") or {}).get("id") or "") or None
+        content = data.get("content") if event_type == "message_edited" else None
+        if event_type == "message_edited" and content is None:
+            return
+        payload_data = {"chat_id": channel_id, "message_id": message_id, "text": content,
+                        "author_id": author_id}
+        source_kwargs = {
+            "chat_id": channel_id, "user_id": author_id, "user_name": None,
+            "thread_id": None, "guild_id": None, "message_id": message_id,
+            "chat_type": "group", "role_authorized": False,
+        }
+        await self._emit_platform_event(event_type, lambda: (payload_data, source_kwargs))
 
     async def _on_platform_thread_create(self, thread) -> None:
         """Normalize ``on_thread_create`` into event_type ``thread_created``."""
