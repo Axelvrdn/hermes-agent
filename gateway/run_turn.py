@@ -1950,6 +1950,14 @@ class GatewayTurnMixin:
                                     **(getattr(event, "_discord_sync_metadata", None) or {})}
                     _footer_result = await adapter.send(
                         source.chat_id, _footer_line, metadata=_footer_meta)
+                    _exec_gen = getattr(event, "_discord_execution_generation", None)
+                    _cur_fn = getattr(self, "_is_session_run_current", None)
+                    _sess_k = getattr(event, "_discord_sync_session_key", source.chat_id)
+                    if _exec_gen is not None and callable(_cur_fn) and not _cur_fn(_sess_k, _exec_gen):
+                        if getattr(_footer_result, "success", False) and getattr(_footer_result, "message_id", None):
+                            with suppress(Exception):
+                                await adapter.delete_message(source.chat_id, str(_footer_result.message_id))
+                        return None
                     recorder = getattr(adapter, "record_stream_output_correlation", None)
                     if callable(recorder):
                         _recorded = recorder(_footer_result, _footer_meta)

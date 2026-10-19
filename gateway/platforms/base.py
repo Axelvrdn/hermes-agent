@@ -4691,6 +4691,9 @@ class BasePlatformAdapter(ABC):
                 text_content, media_files = extracted.text_content, extracted.media_files
                 # Final content gets notify=True; typing metadata stays unmarked (thread-strict).
                 _final_thread_metadata = _mark_notify_metadata(_thread_metadata)
+                _sync_meta = getattr(event, "_discord_sync_metadata", None)
+                if isinstance(_sync_meta, dict):
+                    _final_thread_metadata = {**(_final_thread_metadata or {}), **_sync_meta}
                 _tts_paths, _tts_requested_path = [], None
                 if self._wants_auto_tts(
                         event, session_key, interrupt_event, text_content, media_files):

@@ -72,6 +72,26 @@ def test_mutation_ownership_survives_compression_child_publication(db):
     assert "91" in db.claim_discord_mutation("child", "11", "7", "delete")["output_ids"]
 
 
+def test_mirror_output_correlations_across_multi_hop_compression(db):
+    db.create_session("p", source="discord")
+    db.append_message("p", "user", "ask", platform_message_id="11")
+    db.record_discord_turn("p", "11", 1, "7")
+    db.try_acquire_compression_lock("p", "h1")
+    db.publish_compression_child(
+        parent_session_id="p", child_session_id="c1", source="discord",
+        messages=[{"role": "user", "content": "ask", "platform_message_id": "11"}],
+        compression_lock_holder="h1", watermark=None,
+    )
+    db.try_acquire_compression_lock("c1", "h2")
+    db.publish_compression_child(
+        parent_session_id="c1", child_session_id="c2", source="discord",
+        messages=[{"role": "user", "content": "ask", "platform_message_id": "11"}],
+        compression_lock_holder="h2", watermark=None,
+    )
+    db.record_discord_output("p", "11", 1, "7", "99")
+    assert "99" in db.claim_discord_mutation("c2", "11", "7", "delete")["output_ids"]
+
+
 def test_discord_turn_generation_can_be_allocated_after_restart(db):
     db.create_session("s", source="discord")
     db.append_message("s", "user", "ask", platform_message_id="11")
