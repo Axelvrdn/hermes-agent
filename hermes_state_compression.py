@@ -339,6 +339,14 @@ class SessionCompressionMixin:
                    FROM discord_mutation_outputs WHERE session_id = ?""",
                 (child_session_id, parent_session_id),
             )
+            # Future output correlations may still arrive against the parent while this
+            # compression is publishing; the child lookup can resolve the copied ownership.
+            conn.execute(
+                """UPDATE discord_mutation_turns SET claimed=claimed
+                   WHERE session_id=? AND inbound_id IN
+                     (SELECT inbound_id FROM discord_mutation_turns WHERE session_id=?)""",
+                (child_session_id, parent_session_id),
+            )
             conn.execute(
                 "UPDATE sessions SET message_count = ?, tool_call_count = ? WHERE id = ?",
                 (total_messages, total_tool_calls, child_session_id))

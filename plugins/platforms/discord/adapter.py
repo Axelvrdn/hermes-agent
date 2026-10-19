@@ -1292,8 +1292,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             return False
         key = runner._session_key_for_source(source)
         entry = runner.session_store.lookup_by_session_key(key)
-        if entry is None:
-            list_sessions = getattr(runner.session_store, "list_sessions", None)
+        list_sessions = getattr(runner.session_store, "list_sessions", None)
+        if entry is None or not await db.has_platform_message_id(entry.session_id, inbound):
             for candidate in list_sessions() if callable(list_sessions) else ():
                 if await db.has_platform_message_id(candidate.session_id, inbound):
                     entry, key = candidate, candidate.session_key
