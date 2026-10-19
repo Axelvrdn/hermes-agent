@@ -197,10 +197,13 @@ class DiscordEventMixin:
         await self._emit_platform_event("thread_renamed", _build)
 
 
-def message_event_parts(message, extra_payload, *, thread_type, allow_context: bool = False):
+def message_event_parts(message, extra_payload, *, thread_type, allow_context: bool = False, adapter=None):
     """Normalize a cached message without requiring discord.py at import time."""
+    normalizer = _EventNormalizer(thread_type)
+    if adapter is not None:
+        normalizer._adapter = adapter
     return DiscordEventMixin._message_event_parts(
-        _EventNormalizer(thread_type), message, extra_payload, allow_context=allow_context)
+        normalizer, message, extra_payload, allow_context=allow_context)
 
 
 def thread_event_parts(thread, extra_payload):
@@ -217,3 +220,7 @@ class _EventNormalizer(DiscordEventMixin):
             return None, None
         channel_id = str(channel.id)
         return (channel_id if isinstance(channel, self.thread_type) else None), channel_id
+
+    def _is_allowed_user(self, *args, **kwargs):
+        adapter = getattr(self, "_adapter", None)
+        return bool(adapter and adapter._is_allowed_user(*args, **kwargs))

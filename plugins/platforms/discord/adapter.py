@@ -1963,7 +1963,6 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             if built is None:
                 return
             payload, source_kwargs = built
-            source_kwargs.setdefault("role_authorized", bool(getattr(self, "_allowed_role_ids", set())))
             event = {"platform": "discord", "event_type": event_type, "payload": payload}
             source = self._source_for_platform_event(**source_kwargs)
         except Exception:
@@ -1971,10 +1970,11 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             return
         await self._fire_platform_event(event, source)
 
-    def _message_event_parts(self, message, extra_payload):
+    def _message_event_parts(self, message, extra_payload, *, allow_context: bool = False):
         """Shared normalizer for message edit/delete: (payload, source kwargs) or None."""
         return _adapter_events.message_event_parts(
-            message, extra_payload, thread_type=getattr(discord, "Thread", ()))
+            message, extra_payload, thread_type=getattr(discord, "Thread", ()),
+            allow_context=allow_context, adapter=self)
         """Legacy inline normalizer retained below for source compatibility."""
         author = getattr(message, "author", None)
         if author is not None and getattr(author, "bot", False):
@@ -1995,8 +1995,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             role_authorized=bool(getattr(self, "_allowed_role_ids", set())),
         )
 
-    @staticmethod
-    def _thread_event_parts(thread, extra_payload):
+    def _thread_event_parts(self, thread, extra_payload):
         """Shared normalizer for thread create/rename; the owner is the authorized actor
         because Discord's event carries none (same trade-off as ``message_deleted``)."""
         thread_id = getattr(thread, "id", None)
@@ -2010,10 +2009,21 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             "parent_chat_id": str(parent_id)[:128] if parent_id is not None else None,
             **extra_payload(thread, owner_id),
         }
+        owner_authorized = False
+        if owner_id is not None:
+            try:
+                channel_ids = {str(thread_id)}
+                if parent_id is not None:
+                    channel_ids.add(str(parent_id))
+                owner_authorized = bool(self._is_allowed_user(
+                    str(owner_id), None, guild=guild, is_dm=False, channel_ids=channel_ids))
+            except Exception:
+                owner_authorized = False
         return payload, dict(
             chat_id=str(thread_id), user_id=str(owner_id) if owner_id is not None else None,
             user_name=None, thread_id=str(thread_id),
             guild_id=str(getattr(guild, "id", "")) if guild else None,
+            role_authorized=owner_authorized,
         )
 
     async def _on_platform_message_edit(self, before, after) -> None:
@@ -2042,7 +2052,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         deleter, so the author (the only cached identity) is the source; uncached deletions never fire."""
         def _extra(message, author):
             return {"author_id": str(getattr(author, "id", "") or "")[:128] or None}
-        await self._emit_platform_event("message_deleted", lambda: self._message_event_parts(message, _extra))
+        await self._emit_platform_event("message_deleted", lambda: self._message_event_parts(
+            message, _extra, allow_context=True))
 
     async def _on_platform_thread_create(self, thread) -> None:
         """Normalize ``on_thread_create`` into event_type ``thread_created``."""
