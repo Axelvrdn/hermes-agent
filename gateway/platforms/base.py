@@ -2578,6 +2578,10 @@ class BasePlatformAdapter(ABC):
         """Buffer a text event (merging into a pending one) and restart the flush timer."""
         if self._drop_unresolved(event):
             return
+        extra = getattr(self.config, "extra", None)
+        if isinstance(extra, dict) and extra.get("sync_message_mutations") is True:
+            asyncio.create_task(self.handle_message(event))
+            return
         key = self._text_batch_key(event)
         existing = self._pending_text_batches.get(key)
         if existing is None:
