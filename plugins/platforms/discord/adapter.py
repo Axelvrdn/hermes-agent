@@ -3604,6 +3604,27 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             cron_actions = (metadata or {}).get("discord_cron_actions") or {}
             approval = (metadata or {}).get("discord_cron_authorization") or {}
             approval_id = str(cron_actions.get("approval_id") or approval.get("approval_id") or "")
+            conversation = (metadata or {}).get("discord_conversation") or {}
+            if not isinstance(conversation, dict):
+                conversation = {}
+            conversation_actions = list(conversation.get("actions") or [])
+            conversation_view = None
+            if (
+                final_delivery
+                and conversation_actions
+                and conversation.get("session_key")
+                and conversation.get("expected_user_id")
+            ):
+                conversation_view = DiscordConversationActionsView(
+                    adapter=self,
+                    session_key=str(conversation["session_key"]),
+                    expected_user_id=str(conversation["expected_user_id"]),
+                    actions=conversation_actions,
+                    allowed_user_ids=self._allowed_user_ids,
+                    allowed_role_ids=self._allowed_role_ids,
+                    response_message_id=str(conversation.get("response_message_id") or ""),
+                    inbound_message_id=str(conversation.get("inbound_message_id") or ""),
+                )
             expected_user_id = str(
                 cron_actions.get("expected_user_id") or approval.get("expected_user_id") or "")
             job_id = str(cron_actions.get("job_id") or approval.get("job_id") or "")
@@ -3624,6 +3645,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
                     adapter=self, approval_id=approval_id, expected_user_id=expected_user_id,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids)
+            if conversation_view is not None:
+                approval_view = conversation_view
             use_v2 = bool(
                 final_delivery
                 and (metadata or {}).get("components_v2_static", self.config.extra.get("components_v2_static", False))
@@ -3668,7 +3691,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
                         raise
                 message_ids.append(str(msg.id))
                 if chunk_view is not None:
-                    approval_view._message = msg
+                    chunk_view._message = msg
             # Track the last sent message for history backfill (skips the full history scan).
             if message_ids:
                 _target_id = thread_id or chat_id
@@ -5283,6 +5306,110 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         updated = await asyncio.to_thread(_trigger)
         name = str(updated.get("name") or job_id)
         return f"🔄 Relance programmée pour **{name}**."
+
+    def conversation_action_metadata(self, event: Any, session_key: str) -> dict:
+        """Metadata for controls on ordinary final conversation replies."""
+        source = getattr(event, "source", None)
+        user_id = str(getattr(source, "user_id", "") or "")
+        message_id = str(getattr(event, "message_id", "") or "")
+        if not user_id or not message_id or not session_key:
+            return {}
+        return {
+            "discord_conversation": {
+                "version": 1,
+                "session_key": str(session_key),
+                "expected_user_id": user_id,
+                "inbound_message_id": message_id,
+                "actions": ["regenerate", "edit", "tts", "obsidian", "continue"],
+            }
+        }
+
+    async def _dispatch_conversation_action(
+        self, interaction: discord.Interaction, action: str, session_key: str,
+        response_message_id: str, inbound_message_id: str,
+    ) -> str:
+        """Dispatch deterministic conversation controls through the gateway's normal event path."""
+        if action == "tts":
+            response_text = str(getattr(getattr(interaction, "message", None), "content", "") or "").strip()
+            if not response_text:
+                return "La réponse ne contient aucun texte lisible."
+            from tools.tts_tool import text_to_speech_tool
+            raw = await asyncio.to_thread(text_to_speech_tool, text=response_text)
+            try:
+                payload = json.loads(raw or "{}")
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise RuntimeError("Réponse TTS invalide") from exc
+            paths = payload.get("file_paths") or ([payload.get("file_path")] if payload.get("file_path") else [])
+            paths = [str(path) for path in paths if path and os.path.exists(path)]
+            if not payload.get("success", False) or not paths:
+                return str(payload.get("error") or "La synthèse TTS a échoué.")
+            try:
+                for path in paths:
+                    result = await self.send_voice(
+                        chat_id=str(getattr(interaction.channel, "id", "") or ""),
+                        audio_path=path,
+                        reply_to=response_message_id or None,
+                        metadata={"discord_conversation_action": "tts", "session_key": session_key},
+                    )
+                    if not getattr(result, "success", False):
+                        return "La lecture TTS n'a pas pu être envoyée."
+            finally:
+                for path in paths:
+                    with suppress(OSError):
+                        os.remove(path)
+            return "Lecture TTS envoyée."
+        if action == "obsidian":
+            content = str(getattr(getattr(interaction, "message", None), "content", "") or "").strip()
+            if not content:
+                return "La réponse est vide."
+            from pathlib import Path
+            from urllib.parse import quote
+            vault = Path(os.environ.get("HERMES_OBSIDIAN_VAULT", str(Path.home() / "Documents/Obsidian Vault"))).resolve()
+            folder = (vault / "01 - Life OS" / "Captures").resolve()
+            folder.mkdir(parents=True, exist_ok=True)
+            slug = re.sub(r"[^a-zA-Z0-9à-ÿ_-]+", "-", content[:48]).strip("-") or "reponse-discord"
+            path = folder / f"{slug}-{inbound_message_id or response_message_id}.md"
+            path.write_text(f"# Réponse Discord\n\n{content}\n", encoding="utf-8")
+            relative = path.relative_to(vault).as_posix()
+            return f"Réponse sauvegardée dans Obsidian : http://100.100.0.5:7777/?file={quote(relative)}"
+        if action == "regenerate":
+            text = ""
+        elif action == "continue":
+            text = "Continue la dernière réponse en apportant les éléments utiles qui manquent."
+        elif action == "edit":
+            return "Le bouton Modifier ouvrira une modale dans la prochaine étape."
+        else:
+            raise ValueError(f"Unsupported conversation action: {action}")
+        if not self.gateway_runner:
+            return "Le gateway n'est pas disponible pour cette action."
+        channel = getattr(interaction, "channel", None)
+        source = self.build_source(
+            chat_id=str(getattr(channel, "id", "") or ""),
+            chat_name=getattr(channel, "name", "Discord"),
+            chat_type="thread" if isinstance(channel, discord.Thread) else "group",
+            user_id=str(getattr(getattr(interaction, "user", None), "id", "") or ""),
+            user_name=getattr(getattr(interaction, "user", None), "display_name", "user"),
+            thread_id=str(getattr(channel, "id", "") or "") if isinstance(channel, discord.Thread) else None,
+            message_id=str(getattr(getattr(interaction, "message", None), "id", "") or ""),
+        )
+        event = MessageEvent(text=text, message_type=MessageType.TEXT, source=source, raw_message=interaction)
+        await self.handle_message(event)
+        return "Nouvelle réponse demandée."
+
+    async def _dispatch_conversation_edit(
+        self, interaction: discord.Interaction, session_key: str,
+        inbound_message_id: str, replacement: str,
+    ) -> str:
+        """Edit the inbound prompt through the same mutation event path as Discord edits."""
+        replacement = str(replacement or "").strip()
+        if not replacement:
+            return "Le nouveau message est vide."
+        channel = getattr(interaction, "channel", None)
+        if channel is None or not inbound_message_id:
+            return "Le message d'origine est introuvable."
+        message = await channel.fetch_message(int(inbound_message_id))
+        await message.edit(content=replacement)
+        return "Message modifié ; nouvelle réponse demandée."
 
     # --- Thread creation helpers ---
 

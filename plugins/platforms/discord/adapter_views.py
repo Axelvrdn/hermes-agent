@@ -839,8 +839,109 @@ def define_view_classes(discord) -> dict[str, type]:
                 interaction, discord.Color.blue(),
                 t("platform.discord.prompt.awaiting_typed", user=display_name), log_edit_failure=False)
 
+    class DiscordConversationActionsView(_HermesView):
+        """Owner-scoped controls attached to ordinary Discord conversation replies."""
+
+        _LABELS = {
+            "regenerate": "Régénérer",
+            "edit": "Modifier",
+            "tts": "Lire / TTS",
+            "obsidian": "Sauvegarder dans Obsidian",
+            "continue": "Continuer",
+        }
+
+        def __init__(
+            self, adapter, session_key: str, expected_user_id: str, actions: list[str],
+            allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
+            response_message_id: str = "", inbound_message_id: str = "",
+        ):
+            super().__init__(allowed_user_ids, allowed_role_ids, timeout=86400)
+            self.adapter = adapter
+            self.session_key = str(session_key or "")
+            self.expected_user_id = str(expected_user_id or "")
+            self.response_message_id = str(response_message_id or "")
+            self.inbound_message_id = str(inbound_message_id or "")
+            self.actions = tuple(dict.fromkeys(str(action) for action in actions))
+            for action in self.actions:
+                label = self._LABELS.get(action)
+                if not label:
+                    continue
+                button = discord.ui.Button(
+                    label=label,
+                    style=discord.ButtonStyle.secondary,
+                    custom_id=f"hermes:conversation:{action}",
+                )
+                button.callback = self._make_callback(action)
+                self.add_item(button)
+
+        def _check_auth(self, interaction: discord.Interaction) -> bool:
+            user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")
+            return user_id == self.expected_user_id and super()._check_auth(interaction)
+
+        def _make_callback(self, action: str):
+            async def _callback(interaction: discord.Interaction):
+                if not await self._gate(
+                    interaction,
+                    resolved_msg="Ce contrôle a déjà été traité.",
+                    unauth_msg=_unauthorized(),
+                ):
+                    return
+                handler = getattr(self.adapter, "_dispatch_conversation_action", None)
+                if not callable(handler):
+                    await interaction.response.send_message(
+                        "Cette action n'est pas encore disponible.", ephemeral=True)
+                    return
+                if action == "edit":
+                    modal_cls = globals().get("DiscordConversationEditModal")
+                    if modal_cls is not None:
+                        await interaction.response.send_modal(
+                            modal_cls(self.adapter, self.session_key, self.inbound_message_id))
+                        return
+                await interaction.response.defer(ephemeral=True)
+                try:
+                    message = await handler(
+                        interaction, action, self.session_key, self.response_message_id,
+                        self.inbound_message_id,
+                    )
+                except Exception:
+                    logger.exception("Discord conversation action failed: %s", action)
+                    message = "L'action a échoué."
+                await interaction.followup.send(str(message), ephemeral=True)
+            return _callback
+
+    if hasattr(getattr(discord, "ui", None), "Modal") and hasattr(discord, "ui", "TextInput"):
+        class DiscordConversationEditModal(discord.ui.Modal, title="Modifier le message"):
+            """Owner-scoped modal carrying replacement prompt text."""
+
+            replacement = discord.ui.TextInput(
+                label="Nouveau message",
+                style=discord.TextStyle.paragraph,
+                required=True,
+                max_length=4000,
+            )
+
+            def __init__(self, adapter, session_key: str, inbound_message_id: str):
+                super().__init__()
+                self.adapter = adapter
+                self.session_key = session_key
+                self.inbound_message_id = inbound_message_id
+
+            async def on_submit(self, interaction: discord.Interaction) -> None:
+                handler = getattr(self.adapter, "_dispatch_conversation_edit", None)
+                if not callable(handler):
+                    await interaction.response.send_message(
+                        "La modification n'est pas disponible.", ephemeral=True)
+                    return
+                await interaction.response.defer(ephemeral=True)
+                message = await handler(
+                    interaction, self.session_key, self.inbound_message_id,
+                    str(self.replacement.value))
+                await interaction.followup.send(str(message), ephemeral=True)
+    else:
+        DiscordConversationEditModal = None
+
     return {cls.__name__: cls for cls in (
-        CronActionsView, CronCalendarApprovalView, ExecApprovalView,
-        SlashConfirmView, UpdatePromptView, ModelPickerView,
+        CronActionsView, CronCalendarApprovalView, DiscordConversationActionsView,
+        ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView,
         ChoicePickerView, ClarifyChoiceView,
     )}

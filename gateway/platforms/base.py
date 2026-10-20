@@ -147,6 +147,19 @@ def _thread_metadata_for_event(event) -> dict | None:
     return _thread_metadata_for_source(event.source, _reply_anchor_for_event(event))
 
 
+def _conversation_action_metadata(adapter, event, session_key: str) -> dict | None:
+    """Ask a platform adapter for ordinary-reply controls without coupling the gateway to Discord."""
+    builder = getattr(adapter, "conversation_action_metadata", None)
+    if not callable(builder):
+        return None
+    try:
+        value = builder(event, session_key)
+    except Exception:
+        logger.debug("Conversation action metadata builder failed", exc_info=True)
+        return None
+    return value if isinstance(value, dict) else None
+
+
 def _mark_notify_metadata(metadata: dict | None) -> dict:
     """Clone metadata and mark a user-visible reply as notify-worthy."""
     notify_metadata = dict(metadata) if metadata else {}
@@ -4762,6 +4775,13 @@ class BasePlatformAdapter(ABC):
                 text_content, media_files = extracted.text_content, extracted.media_files
                 # Final content gets notify=True; typing metadata stays unmarked (thread-strict).
                 _final_thread_metadata = _mark_notify_metadata(_thread_metadata)
+                _action_metadata = _conversation_action_metadata(
+                    self, event, session_key)
+                if isinstance(_action_metadata, dict):
+                    _final_thread_metadata = {
+                        **(_final_thread_metadata or {}),
+                        **_action_metadata,
+                    }
                 _sync_meta = getattr(event, "_discord_sync_metadata", None)
                 if isinstance(_sync_meta, dict):
                     _final_thread_metadata = {**(_final_thread_metadata or {}), **_sync_meta}
