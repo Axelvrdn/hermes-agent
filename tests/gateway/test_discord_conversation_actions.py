@@ -48,6 +48,9 @@ async def test_normal_final_response_attaches_conversation_controls_to_last_frag
     assert [child.label for child in view.children] == [
         "Régénérer", "Modifier", "Lire / TTS", "Sauvegarder dans Obsidian", "Continuer",
     ]
+    assert [child.style for child in view.children] == [
+        2, 2, 1, 1, 2,
+    ]
 
 
 @pytest.mark.asyncio

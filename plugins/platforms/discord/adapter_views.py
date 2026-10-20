@@ -868,7 +868,13 @@ def define_view_classes(discord) -> dict[str, type]:
                     continue
                 button = discord.ui.Button(
                     label=label,
-                    style=discord.ButtonStyle.secondary,
+                    style={
+                        "regenerate": discord.ButtonStyle.primary,
+                        "edit": discord.ButtonStyle.secondary,
+                        "tts": discord.ButtonStyle.success,
+                        "obsidian": discord.ButtonStyle.success,
+                        "continue": discord.ButtonStyle.secondary,
+                    }.get(action, discord.ButtonStyle.secondary),
                     custom_id=f"hermes:conversation:{action}",
                 )
                 button.callback = self._make_callback(action)
