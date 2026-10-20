@@ -845,8 +845,7 @@ def define_view_classes(discord) -> dict[str, type]:
         _LABELS = {
             "regenerate": "Régénérer",
             "edit": "Modifier",
-            "tts": "Lire / TTS",
-            "obsidian": "Sauvegarder dans Obsidian",
+            "obsidian": "Obsidian",
             "continue": "Continuer",
         }
 
@@ -873,7 +872,7 @@ def define_view_classes(discord) -> dict[str, type]:
                         "edit": discord.ButtonStyle.secondary,
                         "tts": discord.ButtonStyle.success,
                         "obsidian": discord.ButtonStyle.success,
-                        "continue": discord.ButtonStyle.secondary,
+                        "continue": discord.ButtonStyle.success,
                     }.get(action, discord.ButtonStyle.secondary),
                     custom_id=f"hermes:conversation:{action}",
                 )

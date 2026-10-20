@@ -35,7 +35,7 @@ async def test_normal_final_response_attaches_conversation_controls_to_last_frag
                 "response_message_id": "2",
                 "expected_user_id": "42",
                 "inbound_message_id": "11",
-                "actions": ["regenerate", "edit", "tts", "obsidian", "continue"],
+                "actions": ["regenerate", "edit", "obsidian", "continue"],
             },
         },
     )
@@ -46,34 +46,11 @@ async def test_normal_final_response_attaches_conversation_controls_to_last_frag
     view = channel.send.await_args_list[1].kwargs["view"]
     assert isinstance(view, DiscordConversationActionsView)
     assert [child.label for child in view.children] == [
-        "Régénérer", "Modifier", "Lire / TTS", "Sauvegarder dans Obsidian", "Continuer",
+        "Régénérer", "Modifier", "Obsidian", "Continuer",
     ]
     assert [child.style for child in view.children] == [
-        2, 2, 1, 1, 2,
+        2, 2, 1, 1,
     ]
-
-
-@pytest.mark.asyncio
-async def test_tts_action_sends_the_clicked_response_without_an_agent_turn(monkeypatch):
-    adapter = _adapter()
-    adapter.send_voice = AsyncMock(return_value=SimpleNamespace(success=True))
-    interaction = SimpleNamespace(
-        channel=SimpleNamespace(id="9001"),
-        message=SimpleNamespace(content="Réponse à lire"),
-    )
-
-    Path("/tmp/response.ogg").touch()
-    monkeypatch.setattr(
-        "tools.tts_tool.text_to_speech_tool",
-        lambda **kwargs: '{"success": true, "file_path": "/tmp/response.ogg"}',
-    )
-
-    result = await adapter._dispatch_conversation_action(
-        interaction, "tts", "discord:9001", "2", "11")
-
-    assert "envoyée" in result.lower()
-    adapter.send_voice.assert_awaited_once()
-    assert adapter.send_voice.await_args.kwargs["audio_path"] == "/tmp/response.ogg"
 
 
 @pytest.mark.asyncio

@@ -5320,7 +5320,7 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
                 "session_key": str(session_key),
                 "expected_user_id": user_id,
                 "inbound_message_id": message_id,
-                "actions": ["regenerate", "edit", "tts", "obsidian", "continue"],
+                "actions": ["regenerate", "edit", "obsidian", "continue"],
             }
         }
 
@@ -5329,35 +5329,6 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         response_message_id: str, inbound_message_id: str,
     ) -> str:
         """Dispatch deterministic conversation controls through the gateway's normal event path."""
-        if action == "tts":
-            response_text = str(getattr(getattr(interaction, "message", None), "content", "") or "").strip()
-            if not response_text:
-                return "La réponse ne contient aucun texte lisible."
-            from tools.tts_tool import text_to_speech_tool
-            raw = await asyncio.to_thread(text_to_speech_tool, text=response_text)
-            try:
-                payload = json.loads(raw or "{}")
-            except (TypeError, json.JSONDecodeError) as exc:
-                raise RuntimeError("Réponse TTS invalide") from exc
-            paths = payload.get("file_paths") or ([payload.get("file_path")] if payload.get("file_path") else [])
-            paths = [str(path) for path in paths if path and os.path.exists(path)]
-            if not payload.get("success", False) or not paths:
-                return str(payload.get("error") or "La synthèse TTS a échoué.")
-            try:
-                for path in paths:
-                    result = await self.send_voice(
-                        chat_id=str(getattr(interaction.channel, "id", "") or ""),
-                        audio_path=path,
-                        reply_to=response_message_id or None,
-                        metadata={"discord_conversation_action": "tts", "session_key": session_key},
-                    )
-                    if not getattr(result, "success", False):
-                        return "La lecture TTS n'a pas pu être envoyée."
-            finally:
-                for path in paths:
-                    with suppress(OSError):
-                        os.remove(path)
-            return "Lecture TTS envoyée."
         if action == "obsidian":
             content = str(getattr(getattr(interaction, "message", None), "content", "") or "").strip()
             if not content:
