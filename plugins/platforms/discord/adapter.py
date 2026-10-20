@@ -2134,6 +2134,9 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
     async def _on_platform_raw_message_edit(self, payload: Any) -> None:
         if getattr(payload, "cached_message", None) is not None:
             return
+        data = getattr(payload, "data", None)
+        if isinstance(data, dict) and "content" not in data:
+            return
         channel_id = getattr(payload, "channel_id", None)
         message_id = getattr(payload, "message_id", None)
         if not channel_id or not message_id or not self._client:
