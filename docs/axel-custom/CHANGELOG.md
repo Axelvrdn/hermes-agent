@@ -2,6 +2,26 @@
 
 All notable changes carried by Axel's Hermes fork are documented here. Dates use UTC.
 
+### 2026-10-20
+
+### Discord mutation synchronization & modular architecture (PR #9)
+
+- Merged PR #9 (`Axelvrdn/hermes-agent#9`, commit `3ab44a91dc`) from `axel/frflo-discord-port` into `axel-custom`.
+- Full Codex validation completed with zero unresolved findings after rigorous review cycles.
+- **Discord Message Mutations Sync**:
+  - Live editing or deleting an inbound Discord prompt updates or cancels the session turn safely.
+  - Turn lease acquisition and generation invalidation: in-flight LLM generations are retired immediately.
+  - Output correlation: all stream chunks, post-stream media attachments, automatic TTS audio, status updates, tool progress notices, warnings, and error notifications are correlated with the mutation generation; obsolete outputs are deleted from Discord automatically.
+  - Restored raw event listeners (`raw_message_edit`, `raw_message_delete`) with canonical `fetch_message()` fallback for uncached messages and multi-profile session store resolution.
+  - Isolated text batching under mutation sync: avoids coalescing multiple prompts into a single entry to prevent cross-message cancellation collisions.
+- **Architecture Modularization**:
+  - Extracted lazy Discord UI view classes into `plugins/platforms/discord/adapter_views.py` and eliminated ~820 lines of redundant code in `adapter.py`.
+  - Extracted platform event handling into `plugins/platforms/discord/adapter_events.py`.
+  - Aggregated multi-image fallback message IDs in `BasePlatformAdapter.send_multiple_images()`.
+  - Added opt-in safe static Components V2 text slice (`plugins/platforms/discord/components_v2.py`).
+- **Verification**:
+  - 117 tests passing clean across `tests/gateway/` and `tests/hermes_state/`.
+
 ### 2026-10-09
 
 ### Planned: Contextual conversation initialization (Turn 1)
