@@ -2132,19 +2132,31 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
             message, _extra, allow_context=True))
 
     async def _on_platform_raw_message_edit(self, payload: Any) -> None:
-        await self._on_platform_raw_message_mutation(payload, "message_edited")
+        if getattr(payload, "cached_message", None) is not None:
+            return
+        channel_id = getattr(payload, "channel_id", None)
+        message_id = getattr(payload, "message_id", None)
+        if not channel_id or not message_id or not self._client:
+            return
+        try:
+            channel = await self._resolve_channel(channel_id)
+            if not channel:
+                return
+            message = await channel.fetch_message(int(message_id))
+            if message:
+                await self._on_platform_message_edit(None, message)
+        except Exception as e:
+            logger.debug("[%s] Failed to fetch uncached edited message %s: %s", self.name, message_id, e)
 
     async def _on_platform_raw_message_delete(self, payload: Any) -> None:
-        await self._on_platform_raw_message_mutation(payload, "message_deleted")
-
-    async def _on_platform_raw_message_mutation(self, payload: Any, event_type: str) -> None:
+        if getattr(payload, "cached_message", None) is not None:
+            return
         message_id = str(getattr(payload, "message_id", None) or "")
         channel_id = str(getattr(payload, "channel_id", None) or "")
         if not message_id or not channel_id:
             return
-        data = dict(getattr(payload, "data", {}) or {})
-        author_id = str((data.get("author") or {}).get("id") or "") or None
-        if not author_id and self.gateway_runner is not None:
+        author_id = None
+        if self.gateway_runner is not None:
             runner = self.gateway_runner
             db = getattr(runner, "_session_db", None)
             if db is not None:
@@ -2161,31 +2173,27 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
                             author_id = (await res) if inspect.isawaitable(res) else res
                             if author_id:
                                 break
-        content = data.get("content") if event_type == "message_edited" else None
-        if event_type == "message_edited" and content is None:
+        if not author_id:
             return
-        if event_type == "message_edited" and any(data.get(k) for k in ("attachments", "message_snapshots", "referenced_message", "message_reference")):
-            return
-        guild_id = str(getattr(payload, "guild_id", None) or data.get("guild_id") or "") or None
+        guild_id = str(getattr(payload, "guild_id", None) or "") or None
         role_authorized = False
-        if guild_id and author_id and self._client:
+        if author_id and self._client:
             with suppress(Exception):
-                guild = self._client.get_guild(int(guild_id))
-                member = guild.get_member(int(author_id)) if guild else None
-                if member:
-                    is_allowed = getattr(self, "_is_allowed_user", None)
-                    if callable(is_allowed):
-                        role_authorized = bool(is_allowed(
-                            str(author_id), member, guild=guild, is_dm=False, channel_ids={str(channel_id)}
-                        ))
-        payload_data = {"chat_id": channel_id, "message_id": message_id, "text": content,
-                        "author_id": author_id}
+                guild = self._client.get_guild(int(guild_id)) if guild_id and str(guild_id).isdigit() else None
+                member = guild.get_member(int(author_id)) if guild and str(author_id).isdigit() else None
+                is_allowed = getattr(self, "_is_allowed_user", None)
+                if callable(is_allowed):
+                    role_authorized = bool(is_allowed(
+                        str(author_id), member, guild=guild, is_dm=guild is None, channel_ids={str(channel_id)}
+                    ))
+        payload_data = {"chat_id": channel_id, "message_id": message_id, "author_id": author_id}
         source_kwargs = {
             "chat_id": channel_id, "user_id": author_id, "user_name": None,
             "thread_id": None, "guild_id": guild_id, "message_id": message_id,
-            "chat_type": "group", "role_authorized": role_authorized,
+            "chat_type": "dm" if guild_id is None else "group",
+            "role_authorized": role_authorized,
         }
-        await self._emit_platform_event(event_type, lambda: (payload_data, source_kwargs))
+        await self._emit_platform_event("message_deleted", lambda: (payload_data, source_kwargs))
 
     async def _on_platform_thread_create(self, thread) -> None:
         """Normalize ``on_thread_create`` into event_type ``thread_created``."""
