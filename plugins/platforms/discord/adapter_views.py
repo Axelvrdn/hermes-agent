@@ -915,7 +915,7 @@ def define_view_classes(discord) -> dict[str, type]:
                 await interaction.followup.send(str(message), ephemeral=True)
             return _callback
 
-    if hasattr(getattr(discord, "ui", None), "Modal") and hasattr(discord, "ui", "TextInput"):
+    if hasattr(getattr(discord, "ui", None), "Modal") and hasattr(getattr(discord, "ui", None), "TextInput"):
         class DiscordConversationEditModal(discord.ui.Modal, title="Modifier le message"):
             """Owner-scoped modal carrying replacement prompt text."""
 
