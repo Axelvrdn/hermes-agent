@@ -2164,12 +2164,26 @@ class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMi
         content = data.get("content") if event_type == "message_edited" else None
         if event_type == "message_edited" and content is None:
             return
+        if event_type == "message_edited" and any(data.get(k) for k in ("attachments", "message_snapshots", "referenced_message", "message_reference")):
+            return
+        guild_id = str(getattr(payload, "guild_id", None) or data.get("guild_id") or "") or None
+        role_authorized = False
+        if guild_id and author_id and self._client:
+            with suppress(Exception):
+                guild = self._client.get_guild(int(guild_id))
+                member = guild.get_member(int(author_id)) if guild else None
+                if member:
+                    is_allowed = getattr(self, "_is_allowed_user", None)
+                    if callable(is_allowed):
+                        role_authorized = bool(is_allowed(
+                            str(author_id), member, guild=guild, is_dm=False, channel_ids={str(channel_id)}
+                        ))
         payload_data = {"chat_id": channel_id, "message_id": message_id, "text": content,
                         "author_id": author_id}
         source_kwargs = {
             "chat_id": channel_id, "user_id": author_id, "user_name": None,
-            "thread_id": None, "guild_id": None, "message_id": message_id,
-            "chat_type": "group", "role_authorized": False,
+            "thread_id": None, "guild_id": guild_id, "message_id": message_id,
+            "chat_type": "group", "role_authorized": role_authorized,
         }
         await self._emit_platform_event(event_type, lambda: (payload_data, source_kwargs))
 

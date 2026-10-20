@@ -272,6 +272,12 @@ class DiscordMediaMixin:
                 )
                 fallback = await super().send_multiple_images(chat_id, chunk, metadata, human_delay=human_delay)
                 delivered = delivered or fallback.success
+                if fallback.success:
+                    if fallback.message_id:
+                        collected_message_ids.append(str(fallback.message_id))
+                    raw_fb = getattr(fallback, "raw_response", None)
+                    if isinstance(raw_fb, dict) and isinstance(raw_fb.get("message_ids"), list):
+                        collected_message_ids.extend(str(mid) for mid in raw_fb["message_ids"] if mid)
             finally:
                 if aiohttp_session is not None:
                     try:
