@@ -940,8 +940,13 @@ def define_view_classes(discord) -> dict[str, type]:
     else:
         DiscordConversationEditModal = None
 
-    return {cls.__name__: cls for cls in (
-        CronActionsView, CronCalendarApprovalView, DiscordConversationActionsView,
-        ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView,
-        ChoicePickerView, ClarifyChoiceView,
-    )}
+    classes = {
+        cls.__name__: cls for cls in (
+            CronActionsView, CronCalendarApprovalView, DiscordConversationActionsView,
+            ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView,
+            ChoicePickerView, ClarifyChoiceView,
+        )
+    }
+    if DiscordConversationEditModal is not None:
+        classes["DiscordConversationEditModal"] = DiscordConversationEditModal
+    return classes
