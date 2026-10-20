@@ -11,6 +11,7 @@ import asyncio
 import contextlib
 import dataclasses
 import json
+import inspect
 import logging
 import time
 from contextlib import suppress
@@ -379,7 +380,12 @@ class GatewayNotificationsMixin:
                 if thread_metadata is not None
                 else self._thread_metadata_for_source(event.source, self._reply_anchor_for_event(event))
             )
+            if isinstance(getattr(event, "_discord_sync_metadata", None), dict):
+                _thread_meta.update(event._discord_sync_metadata)
             chat_id = event.source.chat_id
+            _generation = getattr(event, "_discord_execution_generation", None)
+            _current = getattr(self, "_is_session_run_current", None)
+            _recorder = getattr(adapter, "record_stream_output_correlation", None)
             # Images go out as one batch (e.g. Signal's multi-attachment RPC) unless [[as_document]].
             def _is_photo(media_path: str, is_voice: bool) -> bool:
                 ext = Path(media_path).suffix.lower()
@@ -390,20 +396,42 @@ class GatewayNotificationsMixin:
             if image_paths:
                 try:
                     images = [(f"file://{_quote(p)}", "") for p in image_paths]
-                    await adapter.send_multiple_images(chat_id=chat_id, images=images, metadata=_thread_meta)
+                    result = await adapter.send_multiple_images(chat_id=chat_id, images=images, metadata=_thread_meta)
+                    if (_generation is not None and callable(_current)
+                            and not _current(getattr(event, "_discord_sync_session_key", chat_id), _generation)):
+                        for mid in ([getattr(result, "message_id", None)]
+                                    + list((getattr(result, "raw_response", {}) or {}).get("message_ids", []))):
+                            if mid:
+                                with suppress(Exception):
+                                    await adapter.delete_message(chat_id, str(mid))
+                        return
+                    if callable(_recorder):
+                        _recorded = _recorder(result, _thread_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                 except Exception as e:
                     logger.warning("[%s] Post-stream image batch delivery failed: %s", adapter.name, e)
             for media_path, is_voice in non_image_media:
                 try:
                     ext = Path(media_path).suffix.lower()
                     if should_send_media_as_audio(event.source.platform, ext, is_voice=is_voice):
-                        await adapter.send_voice(
+                        result = await adapter.send_voice(
                             chat_id=chat_id, audio_path=media_path, metadata=_thread_meta, is_voice=is_voice,
                         )
                     elif ext in _VIDEO_EXTS:
-                        await adapter.send_video(chat_id=chat_id, video_path=media_path, metadata=_thread_meta)
+                        result = await adapter.send_video(chat_id=chat_id, video_path=media_path, metadata=_thread_meta)
                     else:
-                        await adapter.send_document(chat_id=chat_id, file_path=media_path, metadata=_thread_meta)
+                        result = await adapter.send_document(chat_id=chat_id, file_path=media_path, metadata=_thread_meta)
+                    if (_generation is not None and callable(_current)
+                            and not _current(getattr(event, "_discord_sync_session_key", chat_id), _generation)):
+                        if getattr(result, "success", False) and getattr(result, "message_id", None):
+                            with suppress(Exception):
+                                await adapter.delete_message(chat_id, str(result.message_id))
+                        return
+                    if callable(_recorder):
+                        _recorded = _recorder(result, _thread_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                 except Exception as e:
                     logger.warning("[%s] Post-stream media delivery failed: %s", adapter.name, e)
 
@@ -477,9 +505,19 @@ class GatewayNotificationsMixin:
         # they succeeded — mirrors the ``not agent_result.get("failed")`` completed-turn guard.
         if not deliver_media:
             return True
+        _media_event = MessageEvent(text="", source=source, message_id=event_message_id)
+        if isinstance(metadata, dict):
+            for _name, _value in {
+                "_discord_execution_generation": metadata.get("discord_execution_generation"),
+                "_discord_sync_session_key": session_key,
+                "_discord_sync_session_id": metadata.get("discord_sync_session_id"),
+                "_discord_sync_generation": metadata.get("discord_sync_generation"),
+                "_discord_sync_author_id": metadata.get("discord_sync_author_id"),
+            }.items():
+                setattr(_media_event, _name, _value)
         await self._deliver_media_from_response(
-            response, MessageEvent(text="", source=source, message_id=event_message_id), adapter,
-            thread_metadata=metadata,
+            response, _media_event, adapter,
+            thread_metadata={**(metadata or {})},
         )
         return True
 
@@ -497,8 +535,16 @@ class GatewayNotificationsMixin:
         inbound id the ledger falls back to the event's own (empty) message id. Adapters without
         the base contract and sends without a session key keep the plain send."""
         if session_key and isinstance(adapter, BasePlatformAdapter):
+            _ev = MessageEvent(text="", source=source, ledger_message_id=inbound_message_id)
+            if isinstance(metadata, dict):
+                _ev._discord_sync_session_id = metadata.get("discord_sync_session_id")
+                _ev._discord_sync_generation = metadata.get("discord_sync_generation")
+                _ev._discord_sync_session_key = session_key
+                _ev._discord_sync_author_id = metadata.get("discord_sync_author_id")
+                _ev._discord_execution_generation = metadata.get("discord_execution_generation")
+                _ev.message_id = metadata.get("discord_sync_inbound_id") or inbound_message_id
             result, _ = await adapter.send_final_ledgered(
-                MessageEvent(text="", source=source, ledger_message_id=inbound_message_id),
+                _ev,
                 session_key, text_content, _mark_notify_metadata(metadata), reply_to=event_message_id)
         else:
             result = await adapter.send(source.chat_id, text_content, metadata=metadata)

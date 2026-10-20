@@ -7,6 +7,7 @@ adapters for GatewayRunner (mixin bound via the MRO).
 
 from __future__ import annotations
 
+import inspect
 import logging
 from typing import TYPE_CHECKING
 import asyncio
@@ -1796,12 +1797,35 @@ class GatewayAdapterLifecycleMixin:
     def _multiplex_on(self) -> bool:
         return bool(getattr(self.config, "multiplex_profiles", False))
 
+    async def _sync_discord_mutation(self, event: dict, source) -> bool:
+        """Compatibility seam: mutation policy remains owned by the delivery adapter."""
+        adapter = self._delivery_adapter_for(source)
+        handler = getattr(adapter, "handle_platform_event_mutation", None)
+        if not callable(handler):
+            return False
+        result = handler(event, source)
+        if inspect.isawaitable(result):
+            return bool(await result)
+        return bool(result)
+
+
     async def _handle_gateway_platform_event(self, event: dict, source) -> None:
         """Authorize and publish one normalized adapter event to plugin hooks."""
         # Observer failures must never break the adapter's update loop.
         with _log_suppressed(logging.DEBUG, "gateway_platform_event hook dispatch failed", exc_info=True):
+            authorized = self._is_user_authorized_for_source(source)
+            if authorized:
+                adapter = self._delivery_adapter_for(source)
+                handler = getattr(adapter, "handle_platform_event_mutation", None)
+                if callable(handler):
+                    try:
+                        result = handler(event, source)
+                        if inspect.isawaitable(result):
+                            await result
+                    except Exception:
+                        logger.debug("Discord mutation policy failed; continuing hook dispatch", exc_info=True)
             from hermes_cli.lifecycle import has_hook, invoke_hook
-            if has_hook("gateway_platform_event") and self._is_user_authorized_for_source(source):
+            if authorized and has_hook("gateway_platform_event"):
                 invoke_hook("gateway_platform_event", **event)
 
     def _make_profile_platform_event_handler(self, profile_name: str):

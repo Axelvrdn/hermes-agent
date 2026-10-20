@@ -11,6 +11,7 @@ except ModuleNotFoundError as exc:  # a partial ``hermes update`` can leave the 
         raise  # the bootstrap exists but cannot load: skipping it would skip PM activation
 
 import asyncio
+import inspect
 import concurrent.futures
 import dataclasses
 import json
@@ -756,8 +757,15 @@ async def _send_or_update_status_coro(adapter, chat_id, status_key, content, met
     """
     sender = getattr(adapter, "send_or_update_status", None)
     if callable(sender):
-        return await sender(chat_id, status_key, content, metadata=metadata)
-    return await adapter.send(chat_id, content, metadata=metadata)
+        result = await sender(chat_id, status_key, content, metadata=metadata)
+    else:
+        result = await adapter.send(chat_id, content, metadata=metadata)
+    recorder = getattr(adapter, "record_stream_output_correlation", None)
+    if callable(recorder):
+        _recorded = recorder(result, metadata)
+        if inspect.isawaitable(_recorded):
+            await _recorded
+    return result
 
 
 def _approval_send_outcome(future, timeout: float) -> str:

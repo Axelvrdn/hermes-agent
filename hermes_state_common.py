@@ -479,6 +479,25 @@ CREATE TABLE IF NOT EXISTS messages (
     tool_call_uid TEXT
 );
 
+-- Explicit Discord ownership: no heuristic reply-reference or text matching.
+CREATE TABLE IF NOT EXISTS discord_mutation_turns (
+    session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+    inbound_id TEXT NOT NULL,
+    generation INTEGER NOT NULL,
+    author_id TEXT NOT NULL,
+    claimed INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (session_id, inbound_id, generation)
+);
+CREATE TABLE IF NOT EXISTS discord_mutation_outputs (
+    session_id TEXT NOT NULL,
+    inbound_id TEXT NOT NULL,
+    generation INTEGER NOT NULL,
+    message_id TEXT NOT NULL,
+    PRIMARY KEY (session_id, inbound_id, generation, message_id),
+    FOREIGN KEY (session_id, inbound_id, generation)
+        REFERENCES discord_mutation_turns(session_id, inbound_id, generation) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS session_model_usage (
     session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
     model TEXT NOT NULL,

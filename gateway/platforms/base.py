@@ -2367,6 +2367,10 @@ class BasePlatformAdapter(ABC):
         closed."""
         self._platform_event_handler = handler
 
+    async def handle_platform_event_mutation(self, event: dict[str, Any], source) -> bool:
+        """Optional adapter-owned mutation policy for normalized platform events."""
+        return False
+
     def set_topic_recovery_fn(self, fn: Optional[Callable[[Any], Optional[str]]]) -> None:
         """Install a thread_id-recovery hook (Telegram DM topic mode): called with ``event.source``
         before session keying; a non-None return replaces ``source.thread_id``. ``None`` clears
@@ -2574,11 +2578,22 @@ class BasePlatformAdapter(ABC):
         """Buffer a text event (merging into a pending one) and restart the flush timer."""
         if self._drop_unresolved(event):
             return
+        extra = getattr(self.config, "extra", None)
+        if isinstance(extra, dict) and extra.get("sync_message_mutations") is True:
+            asyncio.create_task(self.handle_message(event))
+            return
         key = self._text_batch_key(event)
         existing = self._pending_text_batches.get(key)
         if existing is None:
             existing = self._pending_text_batches[key] = event
+            setattr(existing, "_batched_message_ids", [str(event.message_id)] if event.message_id else [])
         else:
+            batched = getattr(existing, "_batched_message_ids", None)
+            if batched is None:
+                batched = [str(existing.message_id)] if existing.message_id else []
+                setattr(existing, "_batched_message_ids", batched)
+            if event.message_id:
+                batched.append(str(event.message_id))
             if event.text:
                 existing.text = _append_text(existing.text, event.text)
             if event.media_urls:
@@ -3009,6 +3024,7 @@ class BasePlatformAdapter(ABC):
         the turn-level delivery tracker records; every override must return the same
         aggregate, or a media-only turn on that platform reports FAILURE (#106153)."""
         delivered = False
+        message_ids = []
         for image_url, alt_text in images:
             if human_delay > 0:
                 await asyncio.sleep(human_delay)
@@ -3028,12 +3044,19 @@ class BasePlatformAdapter(ABC):
                     logger.error("[%s] Failed to send image: %s", self.name, img_result.error)
                 else:
                     delivered = True
+                    if getattr(img_result, "message_id", None):
+                        message_ids.append(str(img_result.message_id))
+                    raw_ids = (getattr(img_result, "raw_response", None) or {}).get("message_ids", [])
+                    if isinstance(raw_ids, list):
+                        message_ids.extend(str(mid) for mid in raw_ids if mid)
             except Exception as img_err:
                 logger.error("[%s] Error sending image: %s", self.name, img_err, exc_info=True)
         if not images:
             return SendResult(success=False, error="no images to send")
         return SendResult(
             success=delivered,
+            message_id=message_ids[0] if message_ids else None,
+            raw_response={"message_ids": message_ids} if message_ids else None,
             error=None if delivered else "all images failed to send")
 
     async def send_image(
@@ -3114,7 +3137,25 @@ class BasePlatformAdapter(ABC):
         """
         if not self.warning_notifications_enabled(logical_platform, chat_id=chat_id, metadata=metadata):
             return None
-        return await self.send(chat_id, content, reply_to=reply_to, metadata=metadata)
+        res = await self.send(chat_id, content, reply_to=reply_to, metadata=metadata)
+        _generation = (metadata or {}).get("discord_execution_generation") if isinstance(metadata, dict) else None
+        _session_key = (metadata or {}).get("discord_sync_session_key", chat_id) if isinstance(metadata, dict) else chat_id
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(_session_key, _generation):
+            raw = res.raw_response if isinstance(res.raw_response, dict) else {}
+            raw_ids = raw.get("message_ids")
+            ids = raw_ids if isinstance(raw_ids, list) else ([res.message_id] if getattr(res, "message_id", None) else [])
+            for mid in ids:
+                if mid:
+                    with contextlib.suppress(Exception):
+                        await self.delete_message(chat_id, str(mid))
+            return SendResult(success=False, error="generation retired")
+        _recorder = getattr(self, "record_stream_output_correlation", None)
+        if callable(_recorder):
+            _recorded = _recorder(res, metadata)
+            if inspect.isawaitable(_recorded):
+                await _recorded
+        return res
 
     async def emit_media_warning(
         self, chat_id: str, notice: str, *, caption=None, reply_to=None, metadata=None,
@@ -4239,6 +4280,19 @@ class BasePlatformAdapter(ABC):
             caption = text_content
         tts_result = await self.play_tts(
             chat_id=event.source.chat_id, audio_path=tts_path, caption=caption, metadata=metadata)
+        _generation = getattr(event, "_discord_execution_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(
+                getattr(event, "_discord_sync_session_key", event.source.chat_id), _generation):
+            if getattr(tts_result, "success", False) and getattr(tts_result, "message_id", None):
+                with contextlib.suppress(Exception):
+                    await self.delete_message(event.source.chat_id, str(tts_result.message_id))
+            return False
+        _recorder = getattr(self, "record_stream_output_correlation", None)
+        if callable(_recorder):
+            _recorded = _recorder(tts_result, metadata)
+            if inspect.isawaitable(_recorded):
+                await _recorded
         record_delivery(tts_result)
         return bool(caption and getattr(tts_result, "success", False))
 
@@ -4310,7 +4364,7 @@ class BasePlatformAdapter(ABC):
     async def _deliver_media_attachments(
         self, event: MessageEvent, media_files: list, local_files: list, *,
         force_document_attachments: bool, human_delay: float, metadata: dict[str, Any],
-        record_delivery: Callable) -> None:
+        record_delivery: Callable, session_key: Optional[str] = None) -> None:
         """Deliver MEDIA-tag files and detected local files by type: images batched via
         ``send_multiple_images`` unless ``[[as_document]]``; otherwise audio → send_voice (MEDIA
         tags only, never bare local files), video → send_video, else send_document. Every failure is
@@ -4339,6 +4393,21 @@ class BasePlatformAdapter(ABC):
                 result = await self.send_video(chat_id=chat_id, video_path=path, metadata=metadata)
             else:
                 result = await self.send_document(chat_id=chat_id, file_path=path, metadata=metadata)
+            _generation = getattr(event, "_discord_execution_generation", None)
+            _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _generation is not None and callable(_current) and not _current(
+                    session_key or event.source.chat_id, _generation):
+                raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await self.delete_message(chat_id, str(mid))
+                return SendResult(success=False, error="generation retired")
+            _correlation = self.record_stream_output_correlation(result, metadata)
+            if inspect.isawaitable(_correlation):
+                await _correlation
             if not result.success:
                 logger.warning("[%s] Failed to send %s (%s): %s", self.name,
                                "media" if media_tag else "local file", ext, result.error)
@@ -4349,6 +4418,12 @@ class BasePlatformAdapter(ABC):
             logger.info("[%s] Delivering %d non-image MEDIA attachment(s)", self.name, len(queue))
         queue += [(p, False, False) for p in local_files if not _as_image(p)]
         for path, is_voice, media_tag in queue:
+            _generation = getattr(event, "_discord_execution_generation", None)
+            _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _generation is not None and callable(_current) and not _current(
+                    session_key or event.source.chat_id, _generation):
+                logger.info("[%s] Suppressing attachment delivery for retired generation %s", self.name, _generation)
+                return
             if human_delay > 0:
                 await asyncio.sleep(human_delay)
             try:
@@ -4367,8 +4442,25 @@ class BasePlatformAdapter(ABC):
         The batch result feeds ``record_delivery`` so media-only turns report their real
         outcome instead of FAILURE."""
         try:
+            _generation = getattr(event, "_discord_execution_generation", None)
+            _session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
+            _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _generation is not None and callable(_current) and not _current(_session_key, _generation):
+                return
             result = await self.send_multiple_images(
                 chat_id=event.source.chat_id, images=images, metadata=metadata, human_delay=human_delay)
+            if _generation is not None and callable(_current) and not _current(_session_key, _generation):
+                raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await self.delete_message(event.source.chat_id, str(mid))
+                return
+            _correlation = self.record_stream_output_correlation(result, metadata)
+            if inspect.isawaitable(_correlation):
+                await _correlation
         except Exception as batch_err:
             logger.warning("[%s] Error batching images: %s", self.name, batch_err, exc_info=True)
             record_delivery(SendResult(success=False, error=str(batch_err)))
@@ -4395,10 +4487,49 @@ class BasePlatformAdapter(ABC):
             await self._release_turn_marker(event)  # the ledger now owns the crash recovery
         result = await delivery_adapter._send_with_retry(
             chat_id=event.source.chat_id, content=text_content, reply_to=reply_to, metadata=metadata)
+        _generation = getattr(event, "_discord_execution_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(session_key, _generation):
+            if getattr(result, "success", False):
+                raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([result.message_id] if result.message_id else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await delivery_adapter.delete_message(event.source.chat_id, str(mid))
+            if obligation_id is not None:
+                await self._finalize_delivery_obligation(obligation_id, result, event, delivery_adapter)
+            return result, delivery_adapter
+        # Only a complete, acknowledged send owns remote IDs. Unknown/partial failures never confer
+        # deletion authority, even when a message_id was returned by the transport.
+        extra = getattr(getattr(delivery_adapter, "config", None), "extra", None)
+        sid = getattr(event, "_discord_sync_session_id", None)
+        generation = getattr(event, "_discord_sync_generation", None)
+        if (delivery_adapter.platform.value == "discord" and isinstance(extra, dict)
+                and extra.get("sync_message_mutations") is True and sid and generation
+                and getattr(result, "success", False)):
+            raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+            ids = raw.get("message_ids") if isinstance(raw.get("message_ids"), list) else [result.message_id]
+            if not raw.get("partial_overflow") and ids:
+                db = getattr(self.gateway_runner, "_session_db", None)
+                if db is not None:
+                    for output_id in ids:
+                        if isinstance(output_id, str) and output_id:
+                            try:
+                                await db.record_discord_output(sid, str(event.message_id), generation,
+                                                               str(getattr(event, "_discord_sync_author_id", None)
+                                                                   or event.source.user_id), output_id)
+                            except Exception:
+                                logger.warning("Discord output correlation persistence failed", exc_info=True)
         stop_reply_clock(delivery_adapter, event.source.chat_id, result)
         if obligation_id is not None:
             await self._finalize_delivery_obligation(obligation_id, result, event, delivery_adapter)
         return result, delivery_adapter
+
+    def record_stream_output_correlation(self, result: "SendResult", metadata: Optional[dict[str, Any]]) -> Any:
+        """Hook for adapters that correlate acknowledged streaming outputs."""
+        return None
 
     async def _release_turn_marker(self, event: MessageEvent) -> None:
         """Clear the crash-recovery marker the runner handed to this delivery lifecycle
@@ -4411,6 +4542,12 @@ class BasePlatformAdapter(ABC):
         self, event: MessageEvent, session_key: str, text_content: str, metadata: dict[str, Any],
         is_ephemeral_response: bool, ephemeral_ttl: int, record_delivery: Callable) -> None:
         """Normal-lane final: the ledger bracket plus the message-id owner's ephemeral delete."""
+        # The adapter may still be extracting media or synthesizing TTS after the runner
+        # invalidated its generation. Never deliver a retired turn's final text.
+        _generation = getattr(event, "_discord_execution_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(session_key, _generation):
+            return
         result, delivery_adapter = await self.send_final_ledgered(
             event, session_key, text_content, metadata,
             reply_to=_reply_anchor_for_event(event), is_ephemeral_response=is_ephemeral_response)
@@ -4434,7 +4571,28 @@ class BasePlatformAdapter(ABC):
                     logical_platform=event.source.platform, chat_id=event.source.chat_id, metadata=_thread_metadata)
             if content is None:
                 return _thread_metadata
-            await self.send(chat_id=event.source.chat_id, content=content, metadata=_thread_metadata)
+            _meta = _thread_metadata
+            sync_meta = getattr(event, "_discord_sync_metadata", None)
+            if isinstance(sync_meta, dict):
+                _meta = {**(_meta or {}), **sync_meta}
+            res = await self.send(chat_id=event.source.chat_id, content=content, metadata=_meta)
+            _gen = getattr(event, "_discord_execution_generation", None)
+            _skey = getattr(event, "_discord_sync_session_key", event.source.chat_id)
+            _curr = getattr(self.gateway_runner, "_is_session_run_current", None)
+            if _gen is not None and callable(_curr) and not _curr(_skey, _gen):
+                raw = res.raw_response if isinstance(res.raw_response, dict) else {}
+                raw_ids = raw.get("message_ids")
+                ids = raw_ids if isinstance(raw_ids, list) else ([res.message_id] if getattr(res, "message_id", None) else [])
+                for mid in ids:
+                    if mid:
+                        with contextlib.suppress(Exception):
+                            await self.delete_message(event.source.chat_id, str(mid))
+                return _thread_metadata
+            _rec = getattr(self, "record_stream_output_correlation", None)
+            if callable(_rec):
+                _recorded = _rec(res, _meta)
+                if inspect.isawaitable(_recorded):
+                    await _recorded
         except Exception as notify_err:
             logger.error(
                 "[%s] Failed to send error notification to user: %s", self.name, notify_err, exc_info=True)
@@ -4447,6 +4605,11 @@ class BasePlatformAdapter(ABC):
         then fail loudly if a non-empty response produced nothing deliverable. Attachment
         results feed ``record_delivery`` so the turn outcome reflects them."""
         human_delay = self._get_human_delay()
+        _generation = getattr(event, "_discord_execution_generation", None)
+        _current = getattr(self.gateway_runner, "_is_session_run_current", None)
+        if _generation is not None and callable(_current) and not _current(
+                getattr(event, "_discord_sync_session_key", event.source.chat_id), _generation):
+            return
         images, media_files, local_files = extracted.images, extracted.media_files, extracted.local_files
         if images:
             logger.info("[%s] Extracted %d image(s) to send as attachments", self.name, len(images))
@@ -4454,7 +4617,8 @@ class BasePlatformAdapter(ABC):
         await self._deliver_media_attachments(
             event, media_files, local_files,
             force_document_attachments=extracted.force_document_attachments,
-            human_delay=human_delay, metadata=metadata, record_delivery=record_delivery)
+            human_delay=human_delay, metadata=metadata, record_delivery=record_delivery,
+            session_key=getattr(event, "_discord_sync_session_key", None))
         if not (anything_sent or images or local_files or media_files) and extracted.pre_extract.strip():
             logger.error("[%s] response_delivery_dropped: non-empty response "
                          "(%d chars) produced no delivered message or attachment "
@@ -4598,6 +4762,9 @@ class BasePlatformAdapter(ABC):
                 text_content, media_files = extracted.text_content, extracted.media_files
                 # Final content gets notify=True; typing metadata stays unmarked (thread-strict).
                 _final_thread_metadata = _mark_notify_metadata(_thread_metadata)
+                _sync_meta = getattr(event, "_discord_sync_metadata", None)
+                if isinstance(_sync_meta, dict):
+                    _final_thread_metadata = {**(_final_thread_metadata or {}), **_sync_meta}
                 _tts_paths, _tts_requested_path = [], None
                 if self._wants_auto_tts(
                         event, session_key, interrupt_event, text_content, media_files):

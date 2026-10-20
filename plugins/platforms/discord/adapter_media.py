@@ -157,6 +157,7 @@ class DiscordMediaMixin:
         CHUNK = 10
         chunks = [images[i:i + CHUNK] for i in range(0, len(images), CHUNK)]
         delivered = False
+        collected_message_ids: list[str] = []
         for chunk_idx, chunk in enumerate(chunks):
             if human_delay > 0 and chunk_idx > 0:
                 await asyncio.sleep(human_delay)
@@ -252,12 +253,18 @@ class DiscordMediaMixin:
                     self.name, len(files), chunk_idx + 1, len(chunks),
                 )
                 if self._is_forum_parent(channel):
-                    await self._forum_post_file(
+                    msg = await self._forum_post_file(
                         channel, content=(content or "").strip(), files=files,
                     )
                 else:
-                    await channel.send(content=content, files=files)
+                    msg = await channel.send(content=content, files=files)
                 delivered = True
+                message_id = getattr(msg, "message_id", None) or getattr(msg, "id", None)
+                raw = getattr(msg, "raw_response", None)
+                raw_ids = raw.get("message_ids", []) if isinstance(raw, dict) else []
+                if message_id:
+                    collected_message_ids.append(str(message_id))
+                collected_message_ids.extend(str(item) for item in raw_ids if item)
             except Exception as e:
                 logger.warning(
                     "[%s] Multi-image Discord send failed (chunk %d/%d), falling back to per-image: %s",
@@ -265,13 +272,24 @@ class DiscordMediaMixin:
                 )
                 fallback = await super().send_multiple_images(chat_id, chunk, metadata, human_delay=human_delay)
                 delivered = delivered or fallback.success
+                if fallback.success:
+                    if fallback.message_id:
+                        collected_message_ids.append(str(fallback.message_id))
+                    raw_fb = getattr(fallback, "raw_response", None)
+                    if isinstance(raw_fb, dict) and isinstance(raw_fb.get("message_ids"), list):
+                        collected_message_ids.extend(str(mid) for mid in raw_fb["message_ids"] if mid)
             finally:
                 if aiohttp_session is not None:
                     try:
                         await aiohttp_session.close()
                     except Exception:
                         pass
-        return SendResult(success=delivered, error=None if delivered else "all images failed to send")
+        return SendResult(
+            success=delivered,
+            message_id=collected_message_ids[0] if collected_message_ids else None,
+            raw_response={"message_ids": collected_message_ids} if collected_message_ids else None,
+            error=None if delivered else "all images failed to send",
+        )
 
 
     async def send_voice(

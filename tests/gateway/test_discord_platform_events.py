@@ -163,6 +163,13 @@ class TestMessageEdited:
         assert source.user_id == "777"
         assert source.chat_id == "555"
 
+    def test_unchanged_edit_is_not_a_mutation_event(self):
+        a = _adapter()
+        seen = _capture(a)
+        original = _message(content="same")
+        asyncio.run(a._on_platform_message_edit(original, _message(content="same")))
+        assert seen == []
+
     def test_edit_in_thread_carries_thread_id(self):
         a = _adapter()
         seen = _capture(a)

@@ -13,7 +13,7 @@
 
 - [x] Produce a current-upstream porting matrix for the FRFlo Discord commits.
 - [ ] Port only missing user-visible behavior; avoid importing obsolete architecture wholesale.
-- [ ] Add Components V2 progressively behind compatibility fallbacks.
+- [ ] Add Components V2 progressively behind compatibility fallbacks (issue #3: opt-in single static text final replies implemented; media/forum and controls remain).
 - [ ] Validate message edit/delete synchronization without breaking session role alternation or prompt caching.
 - [x] Extend interactive cron controls beyond the calendar-specific protocol through a generic, typed action contract.
 - [x] Add deterministic `Relancer` actions to continuable Discord cron deliveries.

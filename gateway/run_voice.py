@@ -16,7 +16,8 @@ import weakref
 from contextlib import suppress
 from difflib import SequenceMatcher
 from types import SimpleNamespace
-from typing import Dict, List, Optional
+from typing import Any, Optional
+import inspect
 
 from agent.i18n import t
 from gateway.config import Platform
@@ -440,8 +441,13 @@ class GatewayVoiceMixin:
         guild_id = self._get_guild_id(event)
         play = getattr(adapter, "play_in_voice_channel", None)
         is_in_vc = getattr(adapter, "is_in_voice_channel", None)
+        generation = getattr(event, "_discord_execution_generation", None)
+        session_key = getattr(event, "_discord_sync_session_key", event.source.chat_id)
+        is_current = getattr(self, "_is_session_run_current", None)
         if guild_id and callable(play) and callable(is_in_vc) and is_in_vc(guild_id):
             for path in audio_paths:
+                if generation is not None and callable(is_current) and not is_current(session_key, generation):
+                    return
                 await play(guild_id, path)
             return
         if not callable(send_voice := getattr(adapter, "send_voice", None)):
@@ -451,6 +457,21 @@ class GatewayVoiceMixin:
         # adapters (Telegram "important" mode) deliver it. Clone: shared w/ typing-indicator state.
         thread_meta = dict(self._thread_metadata_for_source(event.source, reply_anchor) or {})
         thread_meta["notify"] = True
+        sync_meta = getattr(event, "_discord_sync_metadata", None)
+        if isinstance(sync_meta, dict):
+            thread_meta.update(sync_meta)
+        recorder = getattr(adapter, "record_stream_output_correlation", None)
         for path in audio_paths:
-            await send_voice(chat_id=event.source.chat_id, audio_path=path, reply_to=reply_anchor,
-                             metadata=thread_meta)
+            if generation is not None and callable(is_current) and not is_current(session_key, generation):
+                return
+            result = await send_voice(chat_id=event.source.chat_id, audio_path=path, reply_to=reply_anchor,
+                                      metadata=thread_meta)
+            if generation is not None and callable(is_current) and not is_current(session_key, generation):
+                if getattr(result, "success", False) and getattr(result, "message_id", None):
+                    with suppress(Exception):
+                        await adapter.delete_message(event.source.chat_id, str(result.message_id))
+                return
+            if callable(recorder):
+                _recorded = recorder(result, thread_meta)
+                if inspect.isawaitable(_recorded):
+                    await _recorded

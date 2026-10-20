@@ -323,6 +323,30 @@ class SessionCompressionMixin:
                     self._clone_message_rows(conn, tail_ids, session_id=child_session_id)
                     total_messages += len(tail_ids)
                     total_tool_calls += tail_tool_calls
+            # Ownership follows carried Discord inputs across the physical
+            # compression boundary; otherwise the live child cannot mutate them.
+            conn.execute(
+                """INSERT OR IGNORE INTO discord_mutation_turns
+                   (session_id, inbound_id, generation, author_id, claimed)
+                   SELECT ?, inbound_id, generation, author_id, claimed
+                   FROM discord_mutation_turns WHERE session_id = ?""",
+                (child_session_id, parent_session_id),
+            )
+            conn.execute(
+                """INSERT OR IGNORE INTO discord_mutation_outputs
+                   (session_id, inbound_id, generation, message_id)
+                   SELECT ?, inbound_id, generation, message_id
+                   FROM discord_mutation_outputs WHERE session_id = ?""",
+                (child_session_id, parent_session_id),
+            )
+            # Future output correlations may still arrive against the parent while this
+            # compression is publishing; the child lookup can resolve the copied ownership.
+            conn.execute(
+                """UPDATE discord_mutation_turns SET claimed=claimed
+                   WHERE session_id=? AND inbound_id IN
+                     (SELECT inbound_id FROM discord_mutation_turns WHERE session_id=?)""",
+                (child_session_id, parent_session_id),
+            )
             conn.execute(
                 "UPDATE sessions SET message_count = ?, tool_call_count = ? WHERE id = ?",
                 (total_messages, total_tool_calls, child_session_id))
@@ -667,6 +691,24 @@ class SessionCompressionMixin:
                 (self._session_turn_lease_key_on_conn(conn, session_id), holder),
             ).fetchone()
         return float(row[0]) if row else None
+
+    def transcript_mutation_ready(self, session_id: str) -> bool:
+        """Return whether a destructive transcript mutation may claim *session_id* now."""
+        if not session_id:
+            return False
+        with self._read_ctx() as conn:
+            conversation_id = self._session_turn_lease_key_on_conn(conn, session_id)
+            row = conn.execute(
+                "SELECT expires_at FROM session_turn_leases WHERE conversation_id = ?",
+                (conversation_id,),
+            ).fetchone()
+            lock = conn.execute(
+                "SELECT expires_at FROM compression_locks WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+        now = time.time()
+        return ((row is None or float(row[0]) <= now)
+                and (lock is None or float(lock[0]) <= now))
 
     def refresh_session_turn_lease(
         self, session_id: str, holder: str, *, ttl_seconds: float = 300.0, patience_s: Optional[float] = None,

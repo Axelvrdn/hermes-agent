@@ -301,6 +301,9 @@ except ImportError:
     from ffmpeg_utils import resolve_ffmpeg_executable
 
 from gateway.config import Platform, PlatformConfig, discord_channel_id_from_link
+from plugins.platforms.discord.components_v2 import definitely_rejected, static_text_view
+from plugins.platforms.discord import adapter_events as _adapter_events
+from plugins.platforms.discord.adapter_events import DiscordEventMixin
 
 from gateway.platforms.helpers import (
     MessageDeduplicator, ThreadParticipationTracker, convert_table_to_bullets, is_discord_channel_obfuscated,
@@ -653,7 +656,8 @@ def check_discord_requirements() -> bool:
     Intents = _Intents
     commands = _commands
     DISCORD_AVAILABLE = True
-    _define_discord_view_classes()
+    from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
+    globals().update(_define_extracted_view_classes(discord))
     return True
 
 
@@ -1264,11 +1268,183 @@ from plugins.platforms.discord.adapter_thread_titles import DiscordThreadTitlesM
 from plugins.platforms.discord.adapter_voice_info import DiscordVoiceInfoMixin
 
 
-class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceInfoMixin, DiscordSlashAuthMixin,
+class DiscordAdapter(DiscordMediaMixin, DiscordEventMixin, DiscordThreadTitlesMixin, DiscordVoiceInfoMixin, DiscordSlashAuthMixin,
                      BasePlatformAdapter):
     """Discord bot adapter: guild/DM messages, threads, slash commands, button approvals, reactions."""
 
     supports_inchannel_continuable = True
+
+    async def handle_platform_event_mutation(self, event: dict, source) -> bool:
+        """Apply opt-in Discord edit synchronization at the plugin boundary."""
+        if event.get("platform") != "discord" or event.get("event_type") not in {"message_edited", "message_deleted"}:
+            return False
+        extra = getattr(self.config, "extra", {})
+        if not isinstance(extra, dict) or extra.get("sync_message_mutations") is not True:
+            return False
+        payload = event.get("payload") or {}
+        inbound, author = str(payload.get("message_id") or ""), str(source.user_id or "")
+        if not inbound or not author or (event["event_type"] == "message_deleted" and payload.get("author_id") != author):
+            return False
+        db = getattr(self.gateway_runner, "_session_db", None)
+        runner = self.gateway_runner
+        if db is None or runner is None:
+            return False
+        pending_adapter, pending = self._find_pending_mutation(source, inbound)
+        if pending is not None:
+            pending_text = str(payload.get("text") or "")
+            if event["event_type"] == "message_deleted":
+                self._remove_pending_mutation(source, inbound, pending_adapter, pending)
+                return True
+            if pending_text.strip():
+                pending.text = pending_text
+                return True
+            return False
+        key = runner._session_key_for_source(source)
+        entry = runner.session_store.lookup_by_session_key(key)
+        list_sessions = getattr(runner.session_store, "list_sessions", None)
+        if entry is None or not await db.has_platform_message_id(entry.session_id, inbound):
+            for candidate in list_sessions() if callable(list_sessions) else ():
+                if await db.has_platform_message_id(candidate.session_id, inbound):
+                    entry, key = candidate, candidate.session_key
+                    break
+            if entry is None:
+                return False
+        sid = entry.session_id
+        origin = getattr(entry, "origin", None)
+        if origin is not None:
+            readmit_source = self.build_source(
+                chat_id=origin.chat_id, chat_type=origin.chat_type,
+                user_id=source.user_id, user_name=source.user_name,
+                thread_id=origin.thread_id, guild_id=origin.guild_id,
+                parent_chat_id=origin.parent_chat_id, message_id=inbound,
+                role_authorized=getattr(source, "role_authorized", False),
+            )
+        else:
+            readmit_source = source
+        if not await db.probe_discord_mutation(sid, inbound, author):
+            return False
+        is_running = getattr(runner, "_is_session_running", lambda _key: False)
+        if is_running(key):
+            await runner._interrupt_and_clear_session(
+                key, source, interrupt_reason="Discord message mutation",
+                invalidation_reason="discord_message_mutation", release_running_state=True)
+        for _ in range(50):
+            if await db.transcript_mutation_ready(sid):
+                break
+            await asyncio.sleep(0.1)
+        else:
+            return False
+        if event["event_type"] == "message_deleted":
+            claim = await db.claim_discord_mutation(sid, inbound, author, "delete")
+            if not claim:
+                return False
+            runner._invalidate_session_run_generation(key, reason="discord_message_mutation")
+            for output_id in claim["output_ids"]:
+                await self.delete_message(
+                    str(getattr(readmit_source, "thread_id", None) or readmit_source.chat_id), output_id)
+            return True
+        if not str(payload.get("text") or "").strip():
+            return False
+        claim = await db.claim_discord_mutation(sid, inbound, author, "edit")
+        if not claim:
+            return False
+        runner._invalidate_session_run_generation(key, reason="discord_message_mutation")
+        for output_id in claim["output_ids"]:
+            await self.delete_message(
+                str(getattr(readmit_source, "thread_id", None) or readmit_source.chat_id), output_id)
+        message = MessageEvent(text=payload["text"], message_type=MessageType.TEXT,
+                               source=readmit_source, message_id=inbound)
+        await self.handle_message(message)
+        return True
+
+    def _pending_event_for_source(self, source):
+        runner = self.gateway_runner
+        if runner is None:
+            return None
+        key = runner._session_key_for_source(source)
+        adapter = runner._delivery_adapter_for(source)
+        return getattr(adapter, "_pending_messages", {}).get(key) if adapter else None
+
+    def _remove_pending_event_for_source(self, source) -> None:
+        runner = self.gateway_runner
+        if runner is None:
+            return
+        key = runner._session_key_for_source(source)
+        adapter = runner._delivery_adapter_for(source)
+        if adapter:
+            getattr(adapter, "_pending_messages", {}).pop(key, None)
+
+    def _find_pending_mutation(self, source, inbound: str):
+        runner = self.gateway_runner
+        if runner is None:
+            return None, None
+        adapter = runner._delivery_adapter_for(source)
+        key = runner._session_key_for_source(source)
+        pending = getattr(adapter, "_pending_messages", {}).get(key) if adapter else None
+        if pending is not None and str(getattr(pending, "message_id", "") or "") == inbound:
+            return adapter, pending
+        state = runner._peek_session_state(key)
+        for event in list(getattr(getattr(state, "conversation", None), "queued_events", ()) or ()):
+            if str(getattr(event, "message_id", "") or "") == inbound:
+                return adapter, event
+        debounce = getattr(adapter, "_text_debounce_store", lambda: {})() if adapter else {}
+        buffered = debounce.get(key)
+        if buffered is not None and str(getattr(buffered.event, "message_id", "") or "") == inbound:
+            return adapter, buffered.event
+        batch = getattr(adapter, "_pending_text_batches", {}).get(key) if adapter else None
+        if batch is not None and (
+            str(getattr(batch, "message_id", "") or "") == inbound
+            or inbound in (getattr(batch, "_batched_message_ids", None) or [])
+        ):
+            return adapter, batch
+        return adapter, None
+
+    def _remove_pending_mutation(self, source, inbound: str, adapter, event) -> None:
+        key = None
+        if adapter is not None and self.gateway_runner is not None:
+            key = self.gateway_runner._session_key_for_source(source)
+            if getattr(adapter, "_pending_messages", {}).get(key) is event:
+                getattr(adapter, "_pending_messages", {}).pop(key, None)
+        runner = self.gateway_runner
+        state = runner._peek_session_state(runner._session_key_for_source(source)) if runner else None
+        queue = getattr(getattr(state, "conversation", None), "queued_events", None)
+        if queue is not None:
+            queue[:] = [item for item in queue if item is not event]
+        if adapter is not None and self.gateway_runner is not None:
+            key = self.gateway_runner._session_key_for_source(source)
+            batches = getattr(adapter, "_pending_text_batches", {})
+            if batches.get(key) is event:
+                batches.pop(key, None)
+                task = getattr(adapter, "_pending_text_batch_tasks", {}).pop(key, None)
+                if task is not None and not task.done():
+                    task.cancel()
+        debounce = getattr(adapter, "_text_debounce_store", lambda: {})() if adapter else {}
+        state = debounce.get(key) if adapter is not None and self.gateway_runner is not None else None
+        if state is not None and state.event is event:
+            state.cancel_timer()
+            debounce.pop(key, None)
+
+    async def record_stream_output_correlation(self, result: SendResult, metadata: Optional[dict[str, Any]]) -> None:
+        """Persist successful streaming output IDs for opt-in mutation synchronization."""
+        if not isinstance(metadata, dict) or self.gateway_runner is None:
+            return
+        sid = metadata.get("discord_sync_session_id")
+        generation = metadata.get("discord_sync_generation")
+        inbound = metadata.get("discord_sync_inbound_id")
+        author = metadata.get("discord_sync_author_id")
+        if not all((sid, generation, inbound, author, result.success)):
+            return
+        db = getattr(self.gateway_runner, "_session_db", None)
+        if db is None or not result.message_id:
+            return
+        # Stream edits do not create new Discord messages; correlate the initial
+        # acknowledged output, which is the mutation target.
+        ids = [result.message_id, *(getattr(result, "continuation_message_ids", ()) or ())]
+        raw = result.raw_response if isinstance(result.raw_response, dict) else {}
+        ids.extend(raw.get("message_ids", []) if isinstance(raw.get("message_ids"), list) else [])
+        for output_id in dict.fromkeys(str(item) for item in ids if item):
+            await db.record_discord_output(
+                str(sid), str(inbound), int(generation), str(author), output_id)
 
     MAX_MESSAGE_LENGTH = 2000
     _SPLIT_THRESHOLD = 1900  # near the 2000-char split point
@@ -1589,6 +1765,18 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                 await adapter_self._on_platform_message_delete(message)
 
             @self._client.event
+            async def on_raw_message_edit(payload: Any):
+                if getattr(payload, "cached_message", None) is not None:
+                    return
+                await adapter_self._on_platform_raw_message_edit(payload)
+
+            @self._client.event
+            async def on_raw_message_delete(payload: Any):
+                if getattr(payload, "cached_message", None) is not None:
+                    return
+                await adapter_self._on_platform_raw_message_delete(payload)
+
+            @self._client.event
             async def on_thread_create(thread):
                 await adapter_self._on_platform_thread_create(thread)
 
@@ -1825,13 +2013,16 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
     def _source_for_platform_event(
         self, *, chat_id: str, user_id: Optional[str], user_name: Optional[str],
         thread_id: Optional[str], guild_id: Optional[str], message_id: Optional[str] = None,
+        chat_type: str = "group",
+        role_authorized: bool = False,
     ):
         """Build the SessionSource the gateway authorizes against; missing identity raises (fail closed)."""
         if not user_id or not chat_id:
             raise ValueError("gateway_platform_event requires actor and chat identities")
         return self.build_source(
-            chat_id=chat_id, chat_type="thread" if thread_id else "group", user_id=user_id,
+            chat_id=chat_id, chat_type=chat_type, user_id=user_id,
             user_name=user_name, thread_id=thread_id, guild_id=guild_id, message_id=message_id,
+            role_authorized=role_authorized,
         )
 
     async def _fire_platform_event(self, event: dict[str, Any], source) -> None:
@@ -1855,13 +2046,18 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
 
     async def _emit_platform_event(self, event_type: str, build) -> None:
         """Normalize one event via ``build()`` -> ``(payload, source_kwargs)`` (None drops) and dispatch."""
-        if not self._platform_events_subscribed():
+        if not self._platform_events_subscribed() and not (
+            event_type in {"message_edited", "message_deleted"}
+            and getattr(getattr(self, "config", None), "extra", {}).get("sync_message_mutations") is True
+        ):
             return
         try:
             built = build()
             if built is None:
                 return
             payload, source_kwargs = built
+            if event_type in {"thread_created", "thread_renamed"}:
+                source_kwargs.setdefault("chat_type", "thread")
             event = {"platform": "discord", "event_type": event_type, "payload": payload}
             source = self._source_for_platform_event(**source_kwargs)
         except Exception:
@@ -1869,28 +2065,13 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             return
         await self._fire_platform_event(event, source)
 
-    def _message_event_parts(self, message, extra_payload):
+    def _message_event_parts(self, message, extra_payload, *, allow_context: bool = False):
         """Shared normalizer for message edit/delete: (payload, source kwargs) or None."""
-        author = getattr(message, "author", None)
-        if author is not None and getattr(author, "bot", False):
-            return None  # bot's own progressive edits are noise, not user events
-        thread_id, chat_id = self._thread_id_and_chat_for_channel(getattr(message, "channel", None))
-        message_id = getattr(message, "id", None)
-        if chat_id is None or message_id is None:
-            return None
-        guild = getattr(message, "guild", None)
-        payload = {
-            "chat_id": str(chat_id)[:128], "message_id": str(message_id)[:128],
-            "thread_id": thread_id[:128] if thread_id else None, **extra_payload(message, author),
-        }
-        return payload, dict(
-            chat_id=str(chat_id), user_id=str(getattr(author, "id", "") or "") or None,
-            user_name=getattr(author, "display_name", None), thread_id=thread_id,
-            guild_id=str(getattr(guild, "id", "")) if guild else None, message_id=str(message_id),
-        )
+        return _adapter_events.message_event_parts(
+            message, extra_payload, thread_type=getattr(discord, "Thread", ()),
+            allow_context=allow_context, adapter=self)
 
-    @staticmethod
-    def _thread_event_parts(thread, extra_payload):
+    def _thread_event_parts(self, thread, extra_payload):
         """Shared normalizer for thread create/rename; the owner is the authorized actor
         because Discord's event carries none (same trade-off as ``message_deleted``)."""
         thread_id = getattr(thread, "id", None)
@@ -1904,14 +2085,30 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
             "parent_chat_id": str(parent_id)[:128] if parent_id is not None else None,
             **extra_payload(thread, owner_id),
         }
+        owner_authorized = False
+        if owner_id is not None:
+            try:
+                channel_ids = {str(thread_id)}
+                if parent_id is not None:
+                    channel_ids.add(str(parent_id))
+                owner_authorized = bool(self._is_allowed_user(
+                    str(owner_id), None, guild=guild, is_dm=False, channel_ids=channel_ids))
+            except Exception:
+                owner_authorized = False
         return payload, dict(
             chat_id=str(thread_id), user_id=str(owner_id) if owner_id is not None else None,
             user_name=None, thread_id=str(thread_id),
             guild_id=str(getattr(guild, "id", "")) if guild else None,
+            role_authorized=owner_authorized, chat_type="thread",
         )
 
     async def _on_platform_message_edit(self, before, after) -> None:
         """Normalize ``on_message_edit`` into event_type ``message_edited``."""
+        if before is not None and getattr(before, "content", None) == getattr(after, "content", None):
+            return
+        if any(getattr(after, attr, None) for attr in ("attachments", "message_snapshots", "reference")):
+            logger.debug("[%s] Refusing mutation sync for edited Discord message with non-text context", self.name)
+            return
         def _extra(message, author):
             text = getattr(message, "content", None)
             edited_at = getattr(message, "edited_at", None)
@@ -1931,7 +2128,75 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         deleter, so the author (the only cached identity) is the source; uncached deletions never fire."""
         def _extra(message, author):
             return {"author_id": str(getattr(author, "id", "") or "")[:128] or None}
-        await self._emit_platform_event("message_deleted", lambda: self._message_event_parts(message, _extra))
+        await self._emit_platform_event("message_deleted", lambda: self._message_event_parts(
+            message, _extra, allow_context=True))
+
+    async def _on_platform_raw_message_edit(self, payload: Any) -> None:
+        if getattr(payload, "cached_message", None) is not None:
+            return
+        data = getattr(payload, "data", None)
+        if isinstance(data, dict) and "content" not in data:
+            return
+        channel_id = getattr(payload, "channel_id", None)
+        message_id = getattr(payload, "message_id", None)
+        if not channel_id or not message_id or not self._client:
+            return
+        try:
+            channel = await self._resolve_channel(channel_id)
+            if not channel:
+                return
+            message = await channel.fetch_message(int(message_id))
+            if message:
+                await self._on_platform_message_edit(None, message)
+        except Exception as e:
+            logger.debug("[%s] Failed to fetch uncached edited message %s: %s", self.name, message_id, e)
+
+    async def _on_platform_raw_message_delete(self, payload: Any) -> None:
+        if getattr(payload, "cached_message", None) is not None:
+            return
+        message_id = str(getattr(payload, "message_id", None) or "")
+        channel_id = str(getattr(payload, "channel_id", None) or "")
+        if not message_id or not channel_id:
+            return
+        author_id = None
+        if self.gateway_runner is not None:
+            runner = self.gateway_runner
+            db = getattr(runner, "_session_db", None)
+            if db is not None:
+                author_id = await db.discord_mutation_author(message_id)
+            if not author_id and getattr(getattr(runner, "config", None), "multiplex_profiles", False):
+                from pathlib import Path
+                from gateway.run import _multiplex_profile_homes, _profile_runtime_scope
+                for _pname, phome in _multiplex_profile_homes(runner.config):
+                    with _profile_runtime_scope(Path(phome), hydrate_secrets=False):
+                        pdb = runner._open_session_db_for_active_scope()
+                        func = getattr(pdb, "discord_mutation_author", None) if pdb else None
+                        if callable(func):
+                            res = func(message_id)
+                            author_id = (await res) if inspect.isawaitable(res) else res
+                            if author_id:
+                                break
+        if not author_id:
+            return
+        guild_id = str(getattr(payload, "guild_id", None) or "") or None
+        role_authorized = False
+        if author_id and self._client:
+            with suppress(Exception):
+                guild = self._client.get_guild(int(guild_id)) if guild_id and str(guild_id).isdigit() else None
+                member = guild.get_member(int(author_id)) if guild and str(author_id).isdigit() else None
+                is_allowed = getattr(self, "_is_allowed_user", None)
+                if callable(is_allowed):
+                    role_authorized = bool(is_allowed(
+                        str(author_id), member, guild=guild, is_dm=guild is None, channel_ids={str(channel_id)}
+                    ))
+        payload_data = {"chat_id": channel_id, "message_id": message_id, "author_id": author_id}
+        source_kwargs = {
+            "chat_id": channel_id, "user_id": author_id, "user_name": None,
+            "thread_id": None, "guild_id": guild_id, "message_id": message_id,
+            "chat_type": "dm" if guild_id is None else "group",
+            "role_authorized": role_authorized,
+        }
+        await self._emit_platform_event("message_deleted", lambda: (payload_data, source_kwargs))
 
     async def _on_platform_thread_create(self, thread) -> None:
         """Normalize ``on_thread_create`` into event_type ``thread_created``."""
@@ -3359,6 +3624,29 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
                     adapter=self, approval_id=approval_id, expected_user_id=expected_user_id,
                     allowed_user_ids=self._allowed_user_ids,
                     allowed_role_ids=self._allowed_role_ids)
+            use_v2 = bool(
+                final_delivery
+                and (metadata or {}).get("components_v2_static", self.config.extra.get("components_v2_static", False))
+                and len(chunks) == 1
+                and approval_view is None
+                and not (metadata or {}).get("streaming")
+                and not (metadata or {}).get("expect_edits")
+            )
+            if use_v2:
+                v2_view = static_text_view(discord, chunks[0])
+                if v2_view is not None:
+                    try:
+                        msg = await channel.send(view=v2_view, reference=reference)
+                    except Exception as exc:
+                        if not definitely_rejected(exc):
+                            raise
+                        fallback_reference = None if self._is_reply_reference_rejected(exc) else reference
+                        msg = await channel.send(content=chunks[0], reference=fallback_reference, view=None)
+                    message_ids.append(str(msg.id))
+                else:
+                    use_v2 = False
+            if use_v2:
+                chunks = []
             for i, chunk in enumerate(chunks):
                 if self._reply_to_mode == "all":
                     chunk_reference = reference
@@ -3497,6 +3785,21 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         return SendResult(
             success=True, message_id=message_id, raw_response={"thread_id": thread_id},
         )
+
+    async def delete_message(self, chat_id: str, message_id: str) -> bool:
+        """Delete an explicitly correlated Discord output; never guess after an API failure."""
+        if not self._client:
+            return False
+        try:
+            channel = await self._resolve_channel(chat_id)
+            if channel is None:
+                return False
+            await channel.get_partial_message(int(message_id)).delete()
+            return True
+        except Exception:
+            logger.warning("[%s] Failed to delete Discord message %s in %s", self.name,
+                           message_id, chat_id, exc_info=True)
+            return False
 
     async def edit_message(
         self, chat_id: str, message_id: str, content: str, *, finalize: bool = False,
@@ -6447,7 +6750,8 @@ class DiscordAdapter(DiscordMediaMixin, DiscordThreadTitlesMixin, DiscordVoiceIn
         if thread_id:
             await self._threads.mark_async(thread_id)
         # Only live plain text is batched: recovery candidates are complete; coalescing would replay IDs.
-        if (not recovered and msg_type == MessageType.TEXT and self._text_batch_delay_seconds > 0):
+        sync_mutations = bool(isinstance(getattr(self.config, "extra", {}), dict) and self.config.extra.get("sync_message_mutations") is True)
+        if (not recovered and msg_type == MessageType.TEXT and self._text_batch_delay_seconds > 0 and not sync_mutations):
             self._enqueue_text_event(event)
         else:
             await self.handle_message(event)
@@ -6484,833 +6788,10 @@ def _resolve_exec_approval_admin_gate(config_extra: Optional[dict]) -> tuple[boo
     return (True, admin_ids)
 
 
-def _define_discord_view_classes() -> None:
-    """Register Discord UI view classes as module globals.
-    Called at module load and after a lazy install so the classes exist whenever DISCORD_AVAILABLE."""
-    global ExecApprovalView, SlashConfirmView, UpdatePromptView, ModelPickerView, ClarifyChoiceView, ChoicePickerView, CronActionsView, CronCalendarApprovalView
-
-    class _HermesView(discord.ui.View):
-        """Shared plumbing for Hermes component views: allowlist auth, single-use
-        ``resolved`` flag, ``_message`` handle for timeout edits."""
-
-        def __init__(self, allowed_user_ids: set, allowed_role_ids: Optional[set], *, timeout):
-            super().__init__(timeout=timeout)
-            self.allowed_user_ids = allowed_user_ids
-            self.allowed_role_ids = allowed_role_ids or set()
-            # The adapter's live allowlist check, bound in ``_send_prompt``.
-            self.live_auth = None
-            self.resolved = False
-            self._message = None
-
-        def _check_auth(self, interaction: discord.Interaction) -> bool:
-            from plugins.platforms.discord.adapter_component_auth import _component_check_auth
-            return _component_check_auth(
-                interaction, self.allowed_user_ids, self.allowed_role_ids, live_auth=self.live_auth)
-
-        async def _gate(self, interaction: discord.Interaction, *, resolved_msg: Optional[str], unauth_msg: str) -> bool:
-            """Reject (ephemerally) an already-resolved or unauthorized click; True when it may proceed."""
-            if resolved_msg is not None and self.resolved:
-                await interaction.response.send_message(resolved_msg, ephemeral=True)
-                return False
-            if not self._check_auth(interaction):
-                await interaction.response.send_message(unauth_msg, ephemeral=True)
-                return False
-            return True
-
-        def _disable_all(self) -> None:
-            for child in self.children:
-                child.disabled = True
-
-        @staticmethod
-        def _first_embed(message):
-            return message.embeds[0] if message.embeds else None
-
-        async def _expire_embed(self, footer: str) -> None:
-            """Grey out the original message's embed after a timeout (best effort)."""
-            msg = self._message
-            if msg:
-                try:
-                    embed = self._first_embed(msg)
-                    if embed:
-                        embed.color = discord.Color.greyple()
-                        embed.set_footer(text=footer)
-                    await msg.edit(embed=embed, view=self)
-                except Exception:
-                    pass  # message deleted or too old to edit
-
-        async def _finalize_embed(self, interaction: discord.Interaction, color, footer: str) -> None:
-            """Mark resolved, stamp the embed (color + footer), disable buttons, edit in place."""
-            self.resolved = True
-            embed = self._first_embed(interaction.message)
-            if embed:
-                embed.color = color
-                embed.set_footer(text=footer)
-            self._disable_all()
-            await interaction.response.edit_message(embed=embed, view=self)
-
-        def _localize_buttons(self, **keys_by_attr: str) -> None:
-            """Relabel decorator-declared buttons from the catalog (decorators run at import, before
-            the language is known). Button labels cap at 80 UTF-16 units."""
-            for attr, key in keys_by_attr.items():
-                item = getattr(self, attr, None)
-                if not hasattr(item, "label"):
-                    # Not materialised as an item on the instance (stubbed discord in tests / other
-                    # discord.py builds): locate the child whose callback is the decorated method.
-                    item = next(
-                        (child for child in (getattr(self, "children", None) or [])
-                         if getattr(getattr(child, "callback", None), "__name__", None) == attr
-                         or getattr(getattr(getattr(child, "callback", None), "callback", None), "__name__", None) == attr),
-                        None)
-                if hasattr(item, "label"):
-                    item.label = _t_discord(key, _DISCORD_BUTTON_LABEL_LIMIT)
-
-        async def on_timeout(self):
-            self.resolved = True
-            self._disable_all()
-            await self._expire_embed(t("platform.discord.prompt.expired_footer"))
-
-    class CronActionsView(_HermesView):
-        """Typed controls for a cron delivery; deterministic actions never enter the agent loop."""
-
-        def __init__(
-            self, adapter, job_id: str, expected_user_id: str, actions: list[str],
-            allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
-            approval_id: str = "",
-        ):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=7 * 24 * 60 * 60)
-            self.adapter = adapter
-            self.job_id = str(job_id)
-            self.approval_id = str(approval_id or "")
-            self.expected_user_id = str(expected_user_id)
-            self.actions = tuple(dict.fromkeys(str(a) for a in actions))
-            self._action_lock = asyncio.Lock()
-            self._calendar_resolved = False
-            # This view is fully dynamic: clear any decorator-materialized children inherited from
-            # discord.py and add exactly the actions declared by the scheduler contract.
-            for child in list(getattr(self, "children", None) or []):
-                self.remove_item(child)
-            button_cls = discord.ui.Button
-            if "rerun" in self.actions:
-                button = button_cls(
-                    label="Relancer", style=discord.ButtonStyle.blurple,
-                    custom_id="hermes:cron:rerun")
-                button.callback = self._resolve_rerun
-                self.add_item(button)
-            if "pause" in self.actions:
-                button = button_cls(
-                    label="Arrêter le cron", style=discord.ButtonStyle.red,
-                    custom_id="hermes:cron:pause")
-                button.callback = self._resolve_pause
-                self.add_item(button)
-            if self.approval_id and "calendar_authorize" in self.actions:
-                button = button_cls(
-                    label="Autoriser", style=discord.ButtonStyle.green,
-                    custom_id="hermes:cron-calendar:authorize")
-                button.callback = self._authorize_calendar
-                self.add_item(button)
-            if self.approval_id and "calendar_refuse" in self.actions:
-                button = button_cls(
-                    label="Refuser", style=discord.ButtonStyle.red,
-                    custom_id="hermes:cron-calendar:refuse")
-                button.callback = self._refuse_calendar
-                self.add_item(button)
-
-        def _check_auth(self, interaction: discord.Interaction) -> bool:
-            user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")
-            return user_id == self.expected_user_id and super()._check_auth(interaction)
-
-        async def _resolve_rerun(self, interaction: discord.Interaction) -> None:
-            if not self._check_auth(interaction):
-                await interaction.response.send_message(_unauthorized(), ephemeral=True)
-                return
-            async with self._action_lock:
-                await interaction.response.defer(ephemeral=True)
-                try:
-                    message = await self.adapter._dispatch_cron_action(
-                        interaction, self.job_id, "rerun")
-                except Exception as exc:
-                    logger.exception("Failed to rerun cron job %s from Discord", self.job_id)
-                    message = f"La relance a échoué : {exc}"
-                await interaction.followup.send(message, ephemeral=True)
-
-        async def _resolve_pause(self, interaction: discord.Interaction) -> None:
-            if not self._check_auth(interaction):
-                await interaction.response.send_message(_unauthorized(), ephemeral=True)
-                return
-            async with self._action_lock:
-                button = next(
-                    (child for child in getattr(self, "children", None) or []
-                     if getattr(child, "custom_id", "") in {
-                         "hermes:cron:pause", "hermes:cron:pause_confirm"
-                     }),
-                    None)
-                if button is None:
-                    await interaction.response.send_message("Ce contrôle n'est plus disponible.", ephemeral=True)
-                    return
-                if getattr(button, "custom_id", "") == "hermes:cron:pause_confirm":
-                    await interaction.response.defer(ephemeral=True)
-                    try:
-                        message = await self.adapter._dispatch_cron_action(
-                            interaction, self.job_id, "pause")
-                    except Exception as exc:
-                        logger.exception("Failed to pause cron job %s from Discord", self.job_id)
-                        message = f"La mise en pause a échoué : {exc}"
-                    button.disabled = True
-                    with suppress(Exception):
-                        await interaction.message.edit(view=self)
-                    await interaction.followup.send(message, ephemeral=True)
-                    return
-                button.label = "Confirmer l'arrêt"
-                button.custom_id = "hermes:cron:pause_confirm"
-                await interaction.response.send_message(
-                    "⚠️ Confirme l'arrêt de ce cron en cliquant à nouveau sur le bouton.",
-                    ephemeral=True)
-                with suppress(Exception):
-                    await interaction.message.edit(view=self)
-
-        async def _resolve_calendar(self, interaction: discord.Interaction, decision: str) -> None:
-            async with self._action_lock:
-                if self._calendar_resolved:
-                    await interaction.response.send_message(
-                        "Cette demande a déjà été traitée.", ephemeral=True)
-                    return
-                if not self._check_auth(interaction):
-                    await interaction.response.send_message(_unauthorized(), ephemeral=True)
-                    return
-                self._calendar_resolved = True
-                await interaction.response.defer(ephemeral=True)
-                try:
-                    message = await self.adapter._dispatch_cron_calendar_authorization(
-                        interaction, self.approval_id, decision)
-                except Exception:
-                    self._calendar_resolved = False
-                    logger.exception(
-                        "Failed to dispatch Discord cron calendar decision %s", self.approval_id)
-                    await interaction.followup.send(
-                        "La décision n'a pas pu être transmise. Réessaie.", ephemeral=True)
-                    return
-                for child in getattr(self, "children", None) or []:
-                    if str(getattr(child, "custom_id", "")).startswith("hermes:cron-calendar:"):
-                        child.disabled = True
-                with suppress(Exception):
-                    await interaction.message.edit(view=self)
-                await interaction.followup.send(message, ephemeral=True)
-
-        async def _authorize_calendar(self, interaction: discord.Interaction) -> None:
-            await self._resolve_calendar(interaction, "authorize")
-
-        async def _refuse_calendar(self, interaction: discord.Interaction) -> None:
-            await self._resolve_calendar(interaction, "refuse")
-
-    class CronCalendarApprovalView(_HermesView):
-        """Non-blocking Authorize/Refuse controls for a continuable Discord cron brief."""
-
-        def __init__(
-            self, adapter, approval_id: str, expected_user_id: str,
-            allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
-        ):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=7 * 24 * 60 * 60)
-            self.adapter = adapter
-            self.approval_id = approval_id
-            self.expected_user_id = str(expected_user_id)
-            self._decision_lock = asyncio.Lock()
-            btn_cls = getattr(getattr(discord, "ui", None), "Button", None)
-            style_cls = getattr(discord, "ButtonStyle", None)
-            if btn_cls is not None and style_cls is not None and not getattr(self, "children", None):
-                authorize_btn = btn_cls(
-                    label="Autoriser",
-                    style=getattr(style_cls, "green", getattr(style_cls, "success", 1)),
-                    custom_id="hermes:cron-calendar:authorize",
-                )
-                authorize_btn.callback = self.authorize
-                self.add_item(authorize_btn)
-                refuse_btn = btn_cls(
-                    label="Refuser",
-                    style=getattr(style_cls, "red", getattr(style_cls, "danger", 3)),
-                    custom_id="hermes:cron-calendar:refuse",
-                )
-                refuse_btn.callback = self.refuse
-                self.add_item(refuse_btn)
-
-        def _check_auth(self, interaction: discord.Interaction) -> bool:
-            user_id = str(getattr(getattr(interaction, "user", None), "id", "") or "")
-            return user_id == self.expected_user_id and super()._check_auth(interaction)
-
-        async def _resolve(self, interaction: discord.Interaction, decision: str) -> None:
-            async with self._decision_lock:
-                if not await self._gate(
-                    interaction,
-                    resolved_msg="Cette demande a déjà été traitée.",
-                    unauth_msg=_unauthorized(),
-                ):
-                    return
-                self.resolved = True
-                await interaction.response.defer(ephemeral=True)
-                try:
-                    await self.adapter._dispatch_cron_calendar_authorization(
-                        interaction, self.approval_id, decision)
-                except Exception:
-                    self.resolved = False
-                    logger.exception(
-                        "Failed to dispatch Discord cron calendar decision %s", self.approval_id)
-                    with suppress(Exception):
-                        await interaction.followup.send(
-                            "La décision n'a pas pu être transmise. Réessaie.", ephemeral=True)
-                    return
-                self._disable_all()
-                with suppress(Exception):
-                    await interaction.message.edit(view=self)
-                with suppress(Exception):
-                    await interaction.followup.send("Décision transmise.", ephemeral=True)
-
-        @discord.ui.button(
-            label="Autoriser", style=discord.ButtonStyle.green,
-            custom_id="hermes:cron-calendar:authorize",
-        )
-        async def authorize(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "authorize")
-
-        @discord.ui.button(
-            label="Refuser", style=discord.ButtonStyle.red,
-            custom_id="hermes:cron-calendar:refuse",
-        )
-        async def refuse(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "refuse")
-
-    class ExecApprovalView(_HermesView):
-        """Allow Once / Allow Session / Always Allow / Deny buttons for a dangerous command.
-        Clicks call ``resolve_gateway_approval()`` — the same mechanism as the text ``/approve`` flow."""
-
-        def __init__(
-            self, session_key: str, allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
-            require_admin: bool = False, admin_user_ids: Optional[set] = None,
-            allow_permanent: bool = True, allow_session: bool = True, smart_denied: bool = False,
-        ):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=_read_discord_prompt_timeout())
-            self.session_key = session_key
-            self.require_admin = require_admin
-            self.admin_user_ids = {str(a).strip() for a in (admin_user_ids or set()) if str(a).strip()}
-            self._localize_buttons(
-                allow_once="gateway.exec_approval.action_once", allow_session="gateway.exec_approval.action_session",
-                allow_always="gateway.exec_approval.action_always", deny="gateway.exec_approval.action_deny")
-            if smart_denied or not allow_session:
-                self.remove_item(self.allow_session)
-                self.remove_item(self.allow_always)
-            elif not allow_permanent:
-                self.remove_item(self.allow_always)
-
-        def _check_auth(self, interaction: discord.Interaction) -> bool:
-            """Base admission always required; with ``require_admin`` the clicker must
-            also be an admin. Fails closed (logged once) when no admins are configured."""
-            if not super()._check_auth(interaction):
-                return False
-            if not self.require_admin:
-                return True
-            user = getattr(interaction, "user", None)
-            try:
-                uid = str(getattr(user, "id", "") or "")
-            except Exception:
-                uid = ""
-            if uid and uid in self.admin_user_ids:
-                return True
-            if not self.admin_user_ids:
-                logger.warning(
-                    "[Discord] require_admin_for_exec_approval is enabled but "
-                    "no admins are configured (allow_admin_from is empty) — "
-                    "exec approval buttons are disabled for everyone. Add "
-                    "admin user IDs under the discord platform's "
-                    "allow_admin_from, or disable the toggle."
-                )
-            return False
-
-        async def _resolve(self, interaction: discord.Interaction, choice: str, color: discord.Color, label_key: str):
-            """Resolve the approval via the gateway approval queue and update the embed."""
-            if not await self._gate(
-                interaction, resolved_msg=t("platform.discord.approval.already_resolved"),
-                unauth_msg=_unauthorized(),
-            ):
-                return
-            label = t(label_key)
-            self.resolved = True
-            # Unblock the waiting agent thread FIRST. A click after the approval
-            # wait timed out (count == 0) must not claim "Approved".
-            try:
-                from tools.approval import resolve_gateway_approval
-                count = resolve_gateway_approval(self.session_key, choice)
-                logger.info(
-                    "Discord button resolved %d approval(s) for session %s (choice=%s, user=%s)",
-                    count, self.session_key, choice, interaction.user.display_name,
-                )
-            except Exception as exc:
-                logger.error("Failed to resolve gateway approval from button: %s", exc)
-                count = 0
-            if not count:
-                color = discord.Color.dark_grey()
-                label = t("platform.discord.approval.expired")
-            await self._finalize_embed(
-                interaction, color,
-                t("platform.discord.approval.by_user", label=label, user=interaction.user.display_name) if count else label)
-
-        # Decorator labels are placeholders; ``_localize_buttons`` in __init__ sets the real text.
-        @discord.ui.button(label="Allow Once", style=discord.ButtonStyle.green)
-        async def allow_once(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "once", discord.Color.green(), "platform.discord.approval.resolved_once")
-
-        @discord.ui.button(label="Allow Session", style=discord.ButtonStyle.grey)
-        async def allow_session(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "session", discord.Color.blue(), "platform.discord.approval.resolved_session")
-
-        @discord.ui.button(label="Always Allow", style=discord.ButtonStyle.blurple)
-        async def allow_always(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "always", discord.Color.purple(), "platform.discord.approval.resolved_always")
-
-        @discord.ui.button(label="Deny", style=discord.ButtonStyle.red)
-        async def deny(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "deny", discord.Color.red(), "platform.discord.approval.resolved_deny")
-
-    class SlashConfirmView(_HermesView):
-        """Approve Once / Always Approve / Cancel for slash-command confirmations (``/reload-mcp``,
-        ``GatewayRunner._request_slash_confirm``); clicks call ``tools.slash_confirm.resolve(...)``."""
-
-        def __init__(self, session_key: str, confirm_id: str, allowed_user_ids: set, allowed_role_ids: Optional[set] = None):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=_read_discord_prompt_timeout())
-            self.session_key = session_key
-            self.confirm_id = confirm_id
-            self._localize_buttons(
-                approve_once="platform.discord.slash_confirm.approve_once",
-                approve_always="platform.discord.slash_confirm.always_approve",
-                cancel="platform.discord.slash_confirm.cancel")
-
-        async def _resolve(self, interaction: discord.Interaction, choice: str, color: discord.Color, label_key: str):
-            if not await self._gate(
-                interaction, resolved_msg=t("platform.discord.slash_confirm.already_resolved"),
-                unauth_msg=_unauthorized(),
-            ):
-                return
-            await self._finalize_embed(
-                interaction, color,
-                t("platform.discord.approval.by_user", label=t(label_key), user=interaction.user.display_name))
-            # A returned follow-up message is posted in the same channel.
-            try:
-                from tools import slash_confirm as _slash_confirm_mod
-                result_text = await _slash_confirm_mod.resolve(self.session_key, self.confirm_id, choice)
-                if result_text:
-                    await interaction.followup.send(result_text)
-                logger.info(
-                    "Discord button resolved slash-confirm for session %s "
-                    "(choice=%s, user=%s)",
-                    self.session_key, choice, interaction.user.display_name,
-                )
-            except Exception as exc:
-                logger.error("Discord slash-confirm resolve failed: %s", exc, exc_info=True)
-
-        @discord.ui.button(label="Approve Once", style=discord.ButtonStyle.green)
-        async def approve_once(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "once", discord.Color.green(), "platform.discord.slash_confirm.resolved_once")
-
-        @discord.ui.button(label="Always Approve", style=discord.ButtonStyle.blurple)
-        async def approve_always(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "always", discord.Color.purple(), "platform.discord.slash_confirm.resolved_always")
-
-        @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
-        async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._resolve(interaction, "cancel", discord.Color.greyple(), "platform.discord.slash_confirm.resolved_cancel")
-
-    class UpdatePromptView(_HermesView):
-        """Yes/No buttons for ``hermes update`` prompts; the answer is written to
-        ``.update_response`` for the detached update process to pick up."""
-
-        def __init__(self, session_key: str, allowed_user_ids: set, allowed_role_ids: Optional[set] = None):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=_read_discord_prompt_timeout())
-            self.session_key = session_key
-            self._localize_buttons(yes_btn="platform.discord.prompt.affirm", no_btn="platform.discord.prompt.negate")
-
-        async def _respond(self, interaction: discord.Interaction, answer: str, color: discord.Color, label_key: str):
-            if not await self._gate(interaction, resolved_msg=t("platform.discord.prompt.already_answered"), unauth_msg=_unauthorized()):
-                return
-            await self._finalize_embed(
-                interaction, color,
-                t("platform.discord.approval.by_user", label=t(label_key), user=interaction.user.display_name))
-            try:
-                from hermes_constants import get_hermes_home
-                response_path = get_hermes_home() / ".update_response"
-                tmp = response_path.with_suffix(".tmp")
-                tmp.write_text(answer, encoding="utf-8")
-                tmp.replace(response_path)
-                logger.info("Discord update prompt answered '%s' by %s", answer, interaction.user.display_name)
-            except Exception as exc:
-                logger.error("Failed to write update response: %s", exc)
-
-        @discord.ui.button(label="Yes", style=discord.ButtonStyle.green, emoji="✓")
-        async def yes_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._respond(interaction, "y", discord.Color.green(), "platform.discord.prompt.affirm")
-
-        @discord.ui.button(label="No", style=discord.ButtonStyle.red, emoji="✗")
-        async def no_btn(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._respond(interaction, "n", discord.Color.red(), "platform.discord.prompt.negate")
-
-    class ModelPickerView(_HermesView):
-        """Two-step select-menu model picker: provider dropdown → model dropdown,
-        editing the original message in place. Times out after 2 minutes."""
-
-        def __init__(
-            self, providers: list, current_model: str, current_provider: str, session_key: str,
-            on_model_selected, allowed_user_ids: set, allowed_role_ids: Optional[set] = None,
-        ):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=120)
-            self.providers = providers
-            self.current_model = current_model
-            self.current_provider = current_provider
-            self.session_key = session_key
-            self.on_model_selected = on_model_selected
-            self._selected_provider: str = ""
-            self._pending_expensive_model: str = ""
-            self._build_provider_select()
-
-        def _add_button(self, label: str, style, custom_id: str, callback) -> None:
-            btn = discord.ui.Button(label=label, style=style, custom_id=custom_id)
-            btn.callback = callback
-            self.add_item(btn)
-
-        def _add_select(self, placeholder: str, options: list, custom_id: str, callback) -> None:
-            select = discord.ui.Select(placeholder=placeholder, options=options, custom_id=custom_id)
-            select.callback = callback
-            self.add_item(select)
-
-        async def _edit(self, interaction: discord.Interaction, description: str, *, view=..., **embed_kw) -> None:
-            """Edit the picker message in place with a config embed (``view`` defaults to self)."""
-            await interaction.response.edit_message(
-                embed=self._config_embed(description, **embed_kw), view=self if view is ... else view,
-            )
-
-        def _build_provider_select(self):
-            """Build the provider dropdown menu."""
-            self.clear_items()
-            options = []
-            for p in self.providers:
-                count = p.get("total_models", len(p.get("models", [])))
-                options.append(discord.SelectOption(
-                    label=_t_discord("platform.discord.picker.provider_option", _DISCORD_SELECT_FIELD_LIMIT, provider=p["name"], count=str(count)),
-                    value=p["slug"],
-                    description=_t_discord("platform.discord.picker.current", _DISCORD_SELECT_FIELD_LIMIT) if p.get("is_current") else None,
-                ))
-            if not options:
-                return
-            self._add_select(
-                _t_discord("platform.discord.picker.provider_placeholder", _DISCORD_SELECT_PLACEHOLDER_LIMIT),
-                options[:_DISCORD_SELECT_MAX_OPTIONS], "model_provider_select", self._on_provider_selected,
-            )
-            self._add_button(_t_discord("platform.discord.picker.cancel", _DISCORD_BUTTON_LABEL_LIMIT), discord.ButtonStyle.red, "model_cancel", self._on_cancel)
-
-        def _build_model_select(self, provider_slug: str):
-            """Model dropdown(s) for one provider.
-            Select caps at 25 options and View at 5 rows (2 reserved for Back/Cancel), so models are
-            partitioned across up to 3 selects (75) rather than truncated (tail entries would vanish)."""
-            self.clear_items()
-            provider = next((p for p in self.providers if p["slug"] == provider_slug), None)
-            if not provider:
-                return
-            models = provider.get("models", [])
-            if not models:
-                return
-            chunks = [
-                models[i : i + _DISCORD_SELECT_MAX_OPTIONS]
-                for i in range(0, len(models), _DISCORD_SELECT_MAX_OPTIONS)
-            ][: _DISCORD_SELECT_MAX_ROWS - 2]
-            placeholder_base = t("platform.discord.picker.model_placeholder", provider=provider.get("name", provider_slug))
-            for idx, chunk in enumerate(chunks):
-                options = [
-                    discord.SelectOption(
-                        label=_truncate_discord_component_text(model_id.split("/")[-1], _DISCORD_SELECT_FIELD_LIMIT),
-                        value=_truncate_discord_component_text(model_id, _DISCORD_SELECT_FIELD_LIMIT),
-                    )
-                    for model_id in chunk
-                ]
-                suffix = f" ({idx + 1}/{len(chunks)})" if len(chunks) > 1 else ""
-                self._add_select(
-                    _truncate_discord_component_text(f"{placeholder_base}{suffix}...", _DISCORD_SELECT_PLACEHOLDER_LIMIT),
-                    options, f"model_model_select_{idx}", self._on_model_selected)
-            self._add_button(_t_discord("platform.discord.picker.back", _DISCORD_BUTTON_LABEL_LIMIT), discord.ButtonStyle.grey, "model_back", self._on_back)
-            self._add_button(_t_discord("platform.discord.picker.cancel", _DISCORD_BUTTON_LABEL_LIMIT), discord.ButtonStyle.red, "model_cancel2", self._on_cancel)
-
-        def _build_expensive_confirm(self, model_id: str):
-            """Build confirmation buttons for unusually expensive models."""
-            self.clear_items()
-            self._pending_expensive_model = model_id
-            self._add_button(_t_discord("platform.discord.picker.switch_anyway", _DISCORD_BUTTON_LABEL_LIMIT), discord.ButtonStyle.red, "model_expensive_confirm", self._on_expensive_confirm)
-            self._add_button(_t_discord("platform.discord.picker.cancel", _DISCORD_BUTTON_LABEL_LIMIT), discord.ButtonStyle.grey, "model_expensive_cancel", self._on_cancel)
-
-        async def _expensive_warning_for(self, model_id: str):
-            try:
-                from hermes_cli.model_selection_guards import combined_selection_warning
-                # Pricing lookup can hit models.dev on a cache miss — keep it off the event loop.
-                return await asyncio.to_thread(combined_selection_warning, model_id, provider=self._selected_provider)
-            except Exception:
-                return None
-
-        def _config_embed(self, description: str, *, title: Optional[str] = None, color=None):
-            title = title if title is not None else t("platform.discord.picker.title")
-            return discord.Embed(
-                title=_truncate_discord_component_text(title, _DISCORD_EMBED_TITLE_LIMIT), description=description,
-                color=discord.Color.blue() if color is None else color)
-
-        async def _on_provider_selected(self, interaction: discord.Interaction):
-            if not await self._gate(interaction, resolved_msg=None, unauth_msg=_unauthorized()):
-                return
-            provider_slug = interaction.data["values"][0]
-            self._selected_provider = provider_slug
-            provider = next((p for p in self.providers if p["slug"] == provider_slug), None)
-            pname = provider.get("name", provider_slug) if provider else provider_slug
-            self._build_model_select(provider_slug)
-            # `shown` counts models actually rendered across the partitioned selects (≤ 75).
-            total = provider.get("total_models", 0) if provider else 0
-            shown = min(len(provider.get("models", [])), _DISCORD_MODEL_SELECT_CAPACITY) if provider else 0
-            extra = f"\n*{t('platform.discord.picker.more_available', count=str(total - shown))}*" if total > shown else ""
-            await self._edit(interaction, t("platform.discord.picker.select_model", provider=pname, extra=extra))
-
-        async def _switch_selected_model(self, interaction: discord.Interaction, model_id: str):
-            if not await self._gate(interaction, resolved_msg=t("platform.discord.picker.already_resolved"), unauth_msg=_unauthorized()):
-                return
-            self.resolved = True
-            self.clear_items()
-            await self._edit(
-                interaction, t("platform.discord.picker.switching", model=model_id),
-                title=t("platform.discord.picker.switching_title"), view=None)
-            try:
-                result_text = await self.on_model_selected(str(interaction.channel_id), model_id, self._selected_provider)
-            except Exception as exc:
-                result_text = t("platform.discord.picker.switch_error", error=str(exc))
-            await interaction.edit_original_response(
-                embed=self._config_embed(result_text, title=t("platform.discord.picker.switched_title"), color=discord.Color.green()),
-                view=None,
-            )
-
-        async def _on_model_selected(self, interaction: discord.Interaction):
-            if not await self._gate(interaction, resolved_msg=t("platform.discord.picker.already_resolved"), unauth_msg=_unauthorized()):
-                return
-            model_id = interaction.data["values"][0]
-            warning = await self._expensive_warning_for(model_id)
-            if warning is not None:
-                self._build_expensive_confirm(model_id)
-                await self._edit(interaction, warning.message, title=f"⚠ {warning.title}", color=discord.Color.red())
-                return
-            await self._switch_selected_model(interaction, model_id)
-
-        async def _on_expensive_confirm(self, interaction: discord.Interaction):
-            if not await self._gate(interaction, resolved_msg=None, unauth_msg=_unauthorized()):
-                return
-            if not self._pending_expensive_model:
-                await interaction.response.send_message(t("platform.discord.picker.expired_toast"), ephemeral=True)
-                return
-            await self._switch_selected_model(interaction, self._pending_expensive_model)
-
-        async def _on_back(self, interaction: discord.Interaction):
-            if not await self._gate(interaction, resolved_msg=None, unauth_msg=_unauthorized()):
-                return
-            self._build_provider_select()
-            try:
-                from hermes_cli.providers import get_label
-                provider_label = get_label(self.current_provider)
-            except Exception:
-                provider_label = self.current_provider
-            await self._edit(
-                interaction,
-                t("platform.discord.picker.select_provider",
-                  model=self.current_model or t("platform.discord.picker.unknown_model"), provider=provider_label),
-            )
-
-        async def _on_cancel(self, interaction: discord.Interaction):
-            if not await self._gate(interaction, resolved_msg=None, unauth_msg=_unauthorized()):
-                return
-            self.resolved = True
-            self.clear_items()
-            await self._edit(interaction, t("platform.discord.picker.cancelled"), color=discord.Color.greyple())
-
-        async def on_timeout(self):
-            self.resolved = True
-            self.clear_items()
-            msg = self._message
-            if msg:
-                try:
-                    embed = self._config_embed(t("platform.discord.picker.expired"), color=discord.Color.greyple())
-                    await msg.edit(embed=embed, view=self)
-                except Exception:
-                    pass
-
-    class ChoicePickerView(_HermesView):
-        """Flat single-select picker for finite-choice commands (/reasoning, /fast); 2-minute timeout."""
-
-        def __init__(self, choices: list, on_choice_selected, allowed_user_ids: set, allowed_role_ids: Optional[set] = None):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=120)
-            self.choices = list(choices)[:_DISCORD_SELECT_MAX_OPTIONS]
-            self.on_choice_selected = on_choice_selected
-            options = []
-            for choice in self.choices:
-                label = str(choice.get("label") or choice.get("value") or "")
-                options.append(
-                    discord.SelectOption(
-                        label=_truncate_discord_component_text(label, _DISCORD_SELECT_FIELD_LIMIT),
-                        value=str(choice.get("value") or ""),
-                        description=_t_discord("platform.discord.picker.current", _DISCORD_SELECT_FIELD_LIMIT) if choice.get("is_current") else None,
-                    )
-                )
-            select = discord.ui.Select(
-                placeholder=_t_discord("platform.discord.picker.choice_placeholder", _DISCORD_SELECT_PLACEHOLDER_LIMIT), options=options)
-            select.callback = self._on_select
-            self.add_item(select)
-
-        async def _on_select(self, interaction: discord.Interaction):
-            if not self._check_auth(interaction):
-                await interaction.response.send_message(_unauthorized(), ephemeral=True)
-                return
-            if self.resolved:
-                await interaction.response.defer()
-                return
-            self.resolved = True
-            value = interaction.data.get("values", [""])[0]
-            try:
-                result_text = await self.on_choice_selected(str(interaction.channel_id), value)
-            except Exception as exc:
-                logger.error("Choice picker selection failed: %s", exc)
-                result_text = t("platform.discord.picker.choice_error", error=str(exc))
-            embed = discord.Embed(description=result_text, color=discord.Color.green())
-            self.clear_items()
-            self.stop()
-            await interaction.response.edit_message(embed=embed, view=self)
-
-        async def on_timeout(self):
-            if self.resolved:
-                return
-            msg = self._message
-            if msg is not None:
-                try:
-                    embed = discord.Embed(description=t("platform.discord.picker.choice_expired"), color=discord.Color.greyple())
-                    self.clear_items()
-                    await msg.edit(embed=embed, view=self)
-                except Exception:
-                    pass
-
-    class ClarifyChoiceView(_HermesView):
-        """One button per clarify choice (max 24) plus ``✏️ Other``. A numeric click resolves the
-        gateway clarify entry immediately; ``Other`` flips to text-capture (next message answers).
-        Single-use: after the first valid click all buttons disable."""
-
-        def __init__(self, choices: list[str], clarify_id: str, allowed_user_ids: set, allowed_role_ids: Optional[set] = None):
-            super().__init__(allowed_user_ids, allowed_role_ids, timeout=_read_discord_prompt_timeout())
-            self.choices = list(choices)[:24]
-            self.clarify_id = clarify_id
-            for index, choice in enumerate(self.choices):
-                button = discord.ui.Button(
-                    label=self._button_label(index, choice), style=discord.ButtonStyle.primary,
-                    custom_id=f"clarify:{clarify_id}:{index}",
-                )
-                button.callback = self._make_choice_callback(index, choice)
-                self.add_item(button)
-            other_btn = discord.ui.Button(
-                label=_t_discord("platform.discord.prompt.other", _DISCORD_BUTTON_LABEL_LIMIT), style=discord.ButtonStyle.secondary,
-                custom_id=f"clarify:{clarify_id}:other",
-            )
-            other_btn.callback = self._on_other
-            self.add_item(other_btn)
-
-        @staticmethod
-        def _button_label(index: int, choice: str) -> str:
-            """``"N. <choice>"`` within Discord's 80-char (UTF-16) label cap.
-            Mobile wraps early, so long choices cut at a word boundary in the trailing half, else a
-            soft boundary (``- , . )``, inclusive), else hard."""
-            prefix = f"{index + 1}. "
-            budget = _DISCORD_BUTTON_LABEL_LIMIT - utf16_len(prefix)
-            if utf16_len(choice) <= budget:
-                return f"{prefix}{choice}"
-            truncated = _prefix_within_utf16_limit(choice, max(0, budget - utf16_len(_DISCORD_ELLIPSIS))).rstrip()
-            cut_at = -1
-            space = truncated.rfind(" ")
-            if space >= len(truncated) // 2:
-                cut_at = space
-            if cut_at < 0:
-                latest_soft = max((truncated.rfind(s) for s in ("-", ",", ".", ")")), default=-1)
-                if latest_soft >= len(truncated) // 2:
-                    cut_at = latest_soft + 1
-            if cut_at > 0:
-                truncated = truncated[:cut_at]
-            return f"{prefix}{truncated.rstrip() + _DISCORD_ELLIPSIS}"
-
-        def _make_choice_callback(self, index: int, choice: str):
-            async def _callback(interaction: "discord.Interaction"):
-                await self._resolve_choice(interaction, index, choice)
-            return _callback
-
-        async def _finish(self, interaction: "discord.Interaction", color, footer: str, *, log_edit_failure: bool) -> None:
-            """Disable the buttons and stamp the embed; fall back to a bare defer."""
-            self.resolved = True
-            self._disable_all()
-            embed = self._first_embed(interaction.message) if interaction.message else None
-            if embed:
-                embed.color = color
-                embed.set_footer(text=footer)
-            try:
-                await interaction.response.edit_message(embed=embed, view=self)
-            except Exception:
-                if log_edit_failure:
-                    logger.debug("Discord clarify edit_message failed for %s", self.clarify_id, exc_info=True)
-                try:
-                    await interaction.response.defer()
-                except Exception:
-                    pass
-
-        async def _resolve_choice(self, interaction: "discord.Interaction", index: int, choice: str) -> None:
-            """Resolve the clarify with a chosen option."""
-            if not await self._gate(
-                interaction, resolved_msg=t("platform.discord.prompt.clarify_already_answered"),
-                unauth_msg=_unauthorized(),
-            ):
-                return
-            display_name = getattr(getattr(interaction, "user", None), "display_name", "user")
-            await self._finish(
-                interaction, discord.Color.green(),
-                t("platform.discord.prompt.answered_by", user=display_name, choice=choice), log_edit_failure=True)
-            # Round-trip the canonical choice text from the entry, not the button label.
-            resolved_text: Optional[str] = None
-            try:
-                from tools.clarify_gateway import _entries as _clarify_entries  # type: ignore
-                entry = _clarify_entries.get(self.clarify_id)
-                if entry and entry.choices and 0 <= index < len(entry.choices):
-                    resolved_text = entry.choices[index]
-            except Exception:
-                resolved_text = None
-            if resolved_text is None:
-                resolved_text = choice
-            try:
-                from tools.clarify_gateway import resolve_gateway_clarify
-                resolved = resolve_gateway_clarify(self.clarify_id, resolved_text)
-                logger.info(
-                    "Discord clarify button resolved (id=%s, choice=%r, user=%s, ok=%s)",
-                    self.clarify_id, resolved_text,
-                    getattr(getattr(interaction, "user", None), "display_name", "?"), resolved,
-                )
-            except Exception as exc:
-                logger.error("Discord clarify resolve_gateway_clarify failed (id=%s): %s", self.clarify_id, exc)
-
-        async def _on_other(self, interaction: "discord.Interaction") -> None:
-            """Flip the clarify entry into text-capture mode."""
-            if not await self._gate(
-                interaction, resolved_msg=t("platform.discord.prompt.clarify_already_answered"),
-                unauth_msg=_unauthorized(),
-            ):
-                return
-            # Don't pop: the gateway text-intercept needs the entry until the user types.
-            try:
-                from tools.clarify_gateway import mark_awaiting_text
-                mark_awaiting_text(self.clarify_id)
-            except Exception as exc:
-                logger.warning("Discord clarify mark_awaiting_text failed (id=%s): %s", self.clarify_id, exc)
-            display_name = getattr(getattr(interaction, "user", None), "display_name", "user")
-            await self._finish(
-                interaction, discord.Color.blue(),
-                t("platform.discord.prompt.awaiting_typed", user=display_name), log_edit_failure=False)
-
 if DISCORD_AVAILABLE:
-    _define_discord_view_classes()
+    from plugins.platforms.discord.adapter_views import define_view_classes as _define_extracted_view_classes
+    globals().update(_define_extracted_view_classes(discord))
+
 
 
 # ── Standalone (out-of-process) sender ────────────────────────────────────────

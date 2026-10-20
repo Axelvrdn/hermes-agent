@@ -1946,7 +1946,23 @@ class GatewayTurnMixin:
             # Streaming delivered the body, but the footer was held back (`not already_sent` gate).
             if _footer_line and adapter:
                 try:
-                    await adapter.send(source.chat_id, _footer_line, metadata=self._event_thread_metadata(event, source))
+                    _footer_meta = {**(self._event_thread_metadata(event, source) or {}),
+                                    **(getattr(event, "_discord_sync_metadata", None) or {})}
+                    _footer_result = await adapter.send(
+                        source.chat_id, _footer_line, metadata=_footer_meta)
+                    _exec_gen = getattr(event, "_discord_execution_generation", None)
+                    _cur_fn = getattr(self, "_is_session_run_current", None)
+                    _sess_k = getattr(event, "_discord_sync_session_key", source.chat_id)
+                    if _exec_gen is not None and callable(_cur_fn) and not _cur_fn(_sess_k, _exec_gen):
+                        if getattr(_footer_result, "success", False) and getattr(_footer_result, "message_id", None):
+                            with suppress(Exception):
+                                await adapter.delete_message(source.chat_id, str(_footer_result.message_id))
+                        return None
+                    recorder = getattr(adapter, "record_stream_output_correlation", None)
+                    if callable(recorder):
+                        _recorded = recorder(_footer_result, _footer_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                 except Exception as _e:
                     logger.debug("trailing footer send failed: %s", _e)
             # Return None so the body isn't sent twice; stash the delivered text on the event for the
@@ -2157,6 +2173,18 @@ class GatewayTurnMixin:
         if resolved is None:
             return
         source, session_entry, session_key = resolved
+        if (source.platform.value == "discord" and event.message_id and source.user_id
+                and not event.internal):
+            _adapter = self._delivery_adapter_for(source)
+            _extra = getattr(getattr(_adapter, "config", None), "extra", None)
+            if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
+                _sync_generation = await self._session_db.allocate_discord_turn_generation(
+                    session_entry.session_id, str(event.message_id), str(source.user_id), run_generation)
+                if _sync_generation:
+                    event._discord_sync_session_id = session_entry.session_id
+                    event._discord_sync_generation = _sync_generation
+                    event._discord_execution_generation = run_generation
+                    event._discord_sync_session_key = session_key
         prepared, _session_env_tokens = await self._hmwa_prepare_turn(
             event, source, session_entry, session_key, _quick_key, run_generation,
         )
@@ -2182,6 +2210,17 @@ class GatewayTurnMixin:
             if not heartbeat_owner_is_current(self, event, session_key):
                 return
             _run_start_session_id = session_entry.session_id
+            _discord_sync_metadata = None
+            if getattr(event, "_discord_sync_session_id", None):
+                _discord_sync_metadata = {
+                    "discord_sync_session_id": event._discord_sync_session_id,
+                    "discord_sync_generation": event._discord_sync_generation,
+                    "discord_sync_inbound_id": str(event.message_id),
+                    "discord_sync_author_id": str(source.user_id),
+                    "discord_sync_session_key": session_key,
+                    "discord_execution_generation": run_generation,
+                }
+                event._discord_sync_metadata = _discord_sync_metadata
             _turn_started_monotonic = time.monotonic()
             # Admission/typing is not execution. All routing, authorization and
             # turn preparation gates have passed when the agent runner is entered.
@@ -2205,6 +2244,7 @@ class GatewayTurnMixin:
                 persist_user_timestamp=prepared.persist_user_timestamp,
                 persist_user_display_kind=prepared.persist_user_display_kind,
                 reply_expected=event.reply_expected,
+                discord_sync_metadata=_discord_sync_metadata,
                 persist_user_display_metadata={
                     "gateway_input_owner": prepared.persistence_owner,
                     **reply_expected_metadata(event.reply_expected), **diagnostic_metadata(event)},
@@ -2221,6 +2261,22 @@ class GatewayTurnMixin:
                 _terminal_inbound = agent_result.get("queued_terminal_inbound_id")
                 if _terminal_inbound:
                     event.ledger_message_id = str(_terminal_inbound)
+                _terminal_sync = agent_result.get("queued_terminal_discord_sync")
+                if isinstance(_terminal_sync, dict):
+                    event._discord_sync_session_id = _terminal_sync.get("session_id")
+                    event._discord_sync_generation = _terminal_sync.get("generation")
+                    event._discord_sync_session_key = _terminal_sync.get("session_key")
+                    event._discord_sync_author_id = _terminal_sync.get("author_id")
+                    event._discord_execution_generation = _terminal_sync.get("execution_generation", run_generation)
+                    event.message_id = _terminal_sync.get("inbound_id") or event.message_id
+                    event._discord_sync_metadata = {
+                        "discord_sync_session_id": event._discord_sync_session_id,
+                        "discord_sync_generation": event._discord_sync_generation,
+                        "discord_sync_inbound_id": event.message_id,
+                        "discord_sync_author_id": event._discord_sync_author_id,
+                        "discord_sync_session_key": event._discord_sync_session_key,
+                        "discord_execution_generation": event._discord_execution_generation,
+                    }
                 if "queued_terminal_notification_category" in agent_result:
                     event.metadata["notification_category"] = agent_result["queued_terminal_notification_category"]
                 if isinstance(agent_result.get("_notification_reply_muted"), bool):
@@ -2754,7 +2810,7 @@ class GatewayTurnMixin:
         self, message: str, context_prompt: str, history: list[dict[str, Any]],
         source: "SessionSource", session_id: str, session_key: str | None = None,
         run_generation: Optional[int] = None, event_message_id: Optional[str] = None,
-        scheduled_heartbeat: bool = False,
+        scheduled_heartbeat: bool = False, discord_sync_metadata: Optional[dict[str, Any]] = None,
     ) -> dict[str, Any]:
         """Forward the message to a remote Hermes API server instead of running a local AIAgent.
 
@@ -2810,6 +2866,8 @@ class GatewayTurnMixin:
         body = {"model": "hermes-agent", "messages": api_messages, "stream": True}
 
         _thread_metadata: Optional[dict[str, Any]] = self._thread_metadata_for_source(source, event_message_id)
+        if isinstance(discord_sync_metadata, dict):
+            _thread_metadata = {**(_thread_metadata or {}), **discord_sync_metadata}
         _stream_consumer = (
             None if scheduled_heartbeat
             else self._proxy_stream_consumer(source, event_message_id, _thread_metadata, _run_still_current)
@@ -3131,7 +3189,8 @@ class GatewayTurnMixin:
         return metadata
 
     def _run_agent_progress_threading(
-        self, source: SessionSource, event_message_id: Optional[str], _native_slack_task_cards: bool
+        self, source: SessionSource, event_message_id: Optional[str], _native_slack_task_cards: bool,
+        sync_metadata: Optional[dict[str, Any]] = None,
     ) -> tuple[Optional[dict], Optional[str], Optional[dict]]:
         """Resolve where progress bubbles are threaded (platform-specific).
 
@@ -3181,6 +3240,8 @@ class GatewayTurnMixin:
                 _progress_metadata.setdefault("slack_team_id", source.scope_id)
             if source.user_id:
                 _progress_metadata.setdefault("recipient_user_id", source.user_id)
+        if isinstance(sync_metadata, dict):
+            _progress_metadata = {**(_progress_metadata or {}), **sync_metadata}
         # Buzz has no native thread_id: thread via reply-to unless the user opted out.
         _progress_reply_to = (
             event_message_id
@@ -3195,6 +3256,8 @@ class GatewayTurnMixin:
             _status_thread_metadata = self._thread_metadata_for_progress(
                 source, event_message_id, _progress_thread_id, _relay_prospective_thread_id,
             )
+        if isinstance(sync_metadata, dict):
+            _status_thread_metadata = {**(_status_thread_metadata or {}), **sync_metadata}
         return _progress_metadata, _progress_reply_to, _status_thread_metadata
 
     async def _run_agent_write_tool_log(self, log_queue: Any) -> None:
@@ -3930,6 +3993,24 @@ class GatewayTurnMixin:
         from gateway.run_turn_followup_ack import _followup_cancel_outcome, _run_followup_processing_hook
         _hook_adapter = self._intake_adapter_for(next_source) if pending_event is not None else None
         await _run_followup_processing_hook(_hook_adapter, pending_event, "on_processing_start")
+
+        next_discord_sync_metadata = None
+        if (pending_event is not None and getattr(next_source, "platform", None) and
+                next_source.platform.value == "discord" and getattr(pending_event, "message_id", None) and
+                getattr(next_source, "user_id", None) and not getattr(pending_event, "internal", False)):
+            _adapter = self._delivery_adapter_for(next_source)
+            _extra = getattr(getattr(_adapter, "config", None), "extra", None)
+            if isinstance(_extra, dict) and _extra.get("sync_message_mutations") is True:
+                _sync_generation = await self._session_db.allocate_discord_turn_generation(
+                    session_id, str(pending_event.message_id), str(next_source.user_id), run_generation)
+                if _sync_generation:
+                    next_discord_sync_metadata = {
+                        "discord_sync_session_id": session_id,
+                        "discord_sync_generation": _sync_generation,
+                        "discord_sync_inbound_id": str(pending_event.message_id),
+                        "discord_sync_author_id": str(next_source.user_id),
+                    }
+
         # The re-baseline sits inside the try: a /stop landing on its DB await must still close the marker
         # (the helper's own ``except Exception`` does not catch cancellation).
         try:
@@ -3946,6 +4027,7 @@ class GatewayTurnMixin:
                 reply_expected=next_reply_expected,
                 persist_user_display_metadata={
                     **reply_expected_metadata(next_reply_expected), **diagnostic_metadata(pending_event)} or None,
+                discord_sync_metadata=next_discord_sync_metadata,
             )
         except asyncio.CancelledError:
             await _run_followup_processing_hook(
@@ -3970,6 +4052,15 @@ class GatewayTurnMixin:
                 "queued_terminal_inbound_id": next_inbound_id,
                 "queued_terminal_display_kind": next_display_kind,
                 "queued_terminal_reply_expected": next_reply_expected,
+                "queued_terminal_discord_sync": (
+                    {
+                        "session_id": session_id,
+                        "generation": (next_discord_sync_metadata or {}).get("discord_sync_generation"),
+                        "session_key": next_session_key,
+                        "inbound_id": next_inbound_id,
+                        "author_id": (next_discord_sync_metadata or {}).get("discord_sync_author_id"),
+                        "execution_generation": run_generation,
+                    } if next_discord_sync_metadata else None),
                 "queued_terminal_notification_category": (
                     (pending_event.metadata or {}).get("notification_category", "result")
                     if pending_event is not None and pending_event.internal else "result"),
@@ -4169,12 +4260,16 @@ class GatewayTurnMixin:
     def _run_agent_bind_turn_wiring(
         self, turn_ctx: TurnContext, turn_runner: TurnRunner, source: SessionSource,
         event_message_id: Optional[str], _native_slack_task_cards: bool,
+        sync_metadata: Optional[dict[str, Any]] = None,
     ) -> Optional[dict[str, Any]]:
         """Resolve progress threading, then publish progress metadata and the sync→async bridges onto
         ``turn_ctx`` (the one-slot holders shared with run_sync's executor thread are TurnContext
         defaults). Returns ``_status_thread_metadata``."""
         turn_ctx._progress_metadata, turn_ctx._progress_reply_to, _status_thread_metadata = (
-            self._run_agent_progress_threading(source, event_message_id, _native_slack_task_cards)
+            self._run_agent_progress_threading(
+                source, event_message_id, _native_slack_task_cards,
+                sync_metadata=sync_metadata,
+            )
         )
         # Bridges: sync step/event/status callbacks → async hooks.emit and adapter.send.
         turn_ctx._loop_for_step = asyncio.get_running_loop()
@@ -4251,14 +4346,34 @@ class GatewayTurnMixin:
                         session_key, agent_holder[0], _executor_task_holder[0]
                     ):
                         break
+                    _hb_meta = _interim_metadata(_non_conversational_metadata(_status_thread_metadata, platform=source.platform))
                     _notify_res = await _notify_adapter.send(
                         source.chat_id, _heartbeat_text,
-                        metadata=_interim_metadata(_non_conversational_metadata(_status_thread_metadata, platform=source.platform)),
+                        metadata=_hb_meta,
                     )
+                    if not turn_ctx._run_still_current():
+                        raw = _notify_res.raw_response if isinstance(getattr(_notify_res, "raw_response", None), dict) else {}
+                        raw_ids = raw.get("message_ids")
+                        ids = raw_ids if isinstance(raw_ids, list) else ([_notify_res.message_id] if getattr(_notify_res, "message_id", None) else [])
+                        for mid in ids:
+                            if mid:
+                                with suppress(Exception):
+                                    await _notify_adapter.delete_message(source.chat_id, str(mid))
+                        break
+                    recorder = getattr(_notify_adapter, "record_stream_output_correlation", None)
+                    if callable(recorder):
+                        _recorded = recorder(_notify_res, _hb_meta)
+                        if inspect.isawaitable(_recorded):
+                            await _recorded
                     if getattr(_notify_res, "success", False) and getattr(_notify_res, "message_id", None):
                         _heartbeat_msg_id = str(_notify_res.message_id)
                         if turn_ctx._cleanup_progress:
                             turn_ctx._cleanup_msg_ids.append(_heartbeat_msg_id)
+                else:
+                    if not turn_ctx._run_still_current():
+                        with suppress(Exception):
+                            await _notify_adapter.delete_message(source.chat_id, _heartbeat_msg_id)
+                        break
             except Exception as _ne:
                 logger.debug("Long-running notification error: %s", _ne)
 
@@ -4274,6 +4389,7 @@ class GatewayTurnMixin:
         reply_expected: Optional[bool] = None,
         scheduled_heartbeat: bool = False,
         title_user_message: Optional[str] = None,
+        discord_sync_metadata: Optional[dict[str, Any]] = None,
     ) -> dict[str, Any]:
         """Run the agent; returns the full run_conversation result dict.
 
@@ -4283,6 +4399,7 @@ class GatewayTurnMixin:
                 message=message, context_prompt=context_prompt, history=history, source=source,
                 session_id=session_id, session_key=session_key, run_generation=run_generation,
                 event_message_id=event_message_id, scheduled_heartbeat=scheduled_heartbeat,
+                discord_sync_metadata=discord_sync_metadata,
             )
 
         from run_agent import AIAgent
@@ -4316,6 +4433,7 @@ class GatewayTurnMixin:
         )
         _status_thread_metadata = self._run_agent_bind_turn_wiring(
             turn_ctx, turn_runner, source, event_message_id, disp._native_slack_task_cards,
+            sync_metadata=discord_sync_metadata,
         )
         # Two independent quiet reasons: a muted diagnostic wake (ours) and a scheduled heartbeat.
         if not (scheduled_heartbeat or turn_ctx.mute_notification_reply):
