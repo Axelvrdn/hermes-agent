@@ -49,7 +49,7 @@ async def test_normal_final_response_attaches_conversation_controls_to_last_frag
         "Régénérer", "Modifier", "Obsidian", "Continuer",
     ]
     assert [child.style for child in view.children] == [
-        2, 2, 1, 1,
+        2, 2, 2, 1,
     ]
 
 
